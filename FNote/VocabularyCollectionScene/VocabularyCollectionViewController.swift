@@ -12,14 +12,18 @@ private let reuseIdentifier = "Cell"
 
 class VocabularyCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-    private lazy var cellSize: CGSize = {
-        let padding = flowLayout.minimumLineSpacing * 2
-        let width = collectionView.frame.width - padding
-        let height = VocabularyCollectionCell.defaultHeight
-        return CGSize(width: width, height: height)
+    #warning("sample data")
+    private let vocabularies: [Vocabulary] = {
+        var vocabs = [Vocabulary]()
+        for i in 0...20 {
+            let vocab = Vocabulary()
+            vocab.isFavorited = Double(i).remainder(dividingBy: 2) == 0
+            vocab.relations = Array(repeating: Vocabulary(), count: i * 2)
+            vocab.alternatives = Array(repeating: Vocabulary(), count: i + 2)
+            vocabs.append(vocab)
+        }
+        return vocabs
     }()
-    
-    private var flowLayout: UICollectionViewFlowLayout!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,28 +31,59 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     }
 
     convenience init() {
-        let layout = UICollectionViewFlowLayout()
+        let layout = VocabularyCollectionViewFlowLayout()
         self.init(collectionViewLayout: layout)
-        flowLayout = layout
     }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        let layout = collectionViewLayout as! VocabularyCollectionViewFlowLayout
+        layout.computeItemSize(newBounds: size)
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
+}
 
-    // MARK: UICollectionViewDataSource
 
+// MARK: - Collection View Data Source and Delegate
+
+extension VocabularyCollectionViewController {
+    
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
-
+    
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 20
+        return vocabularies.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return cellSize
-    }
-
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueRegisteredCell(VocabularyCollectionCell.self, for: indexPath)
+        cell.delegate = self
+        cell.reloadCell(with: vocabularies[indexPath.row])
         return cell
+    }
+}
+
+
+extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
+    
+    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapFavoriteButton button: UIButton) {
+        let vocabIndex = collectionView.indexPath(for: cell)!.row
+        let vocab = vocabularies[vocabIndex]
+        vocab.isFavorited.toggle()
+        cell.reloadCell(with: vocab)
+    }
+    
+    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapRelationButton button: UIButton) {
+        let vocabIndex = collectionView.indexPath(for: cell)!.row
+        let vocab = vocabularies[vocabIndex]
+        print(vocab.relations.count)
+    }
+    
+    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapAlternativeButton button: UIButton) {
+        let vocabIndex = collectionView.indexPath(for: cell)!.row
+        let vocab = vocabularies[vocabIndex]
+        print(vocab.alternatives.count)
     }
 }
 
@@ -58,8 +93,5 @@ extension VocabularyCollectionViewController {
     private func setupController() {
         collectionView.registerCell(VocabularyCollectionCell.self)
         collectionView.backgroundColor = UIColor(white: 0.96, alpha: 1)
-        flowLayout.minimumLineSpacing = 20
-        flowLayout.sectionInset.top = flowLayout.minimumLineSpacing
-        flowLayout.sectionInset.bottom = flowLayout.minimumLineSpacing
     }
 }

@@ -8,9 +8,32 @@
 
 import UIKit
 
+
+protocol VocabularyCollectionCellDelegate: class {
+    
+    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapFavoriteButton button: UIButton)
+    
+    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapRelationButton button: UIButton)
+    
+    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapAlternativeButton button: UIButton)
+}
+
+
 class VocabularyCollectionCell: UICollectionViewCell {
     
-    static let defaultHeight: CGFloat = 120
+    weak var delegate: VocabularyCollectionCellDelegate?
+    
+    let originalLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.font = UIFont.preferredFont(forTextStyle: .title1)
+        return lbl
+    }()
+    
+    let translationLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.font = UIFont.preferredFont(forTextStyle: .title1)
+        return lbl
+    }()
     
     let formalityImageView: UIImageView = {
         let view = UIImageView()
@@ -20,39 +43,18 @@ class VocabularyCollectionCell: UICollectionViewCell {
     
     let favoriteButton: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setTitle("Fav", for: .normal)
+        btn.setImage(.favorite, for: .normal)
         return btn
     }()
     
-    let relationButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setTitle("Rel", for: .normal)
-        return btn
-    }()
-    
-    let alternativeButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setTitle("Alt", for: .normal)
-        return btn
-    }()
-    
-    let originalLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.font = UIFont.preferredFont(forTextStyle: .title1)
-        lbl.text = "안녕하세요"
-        return lbl
-    }()
-    
-    let translationLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.font = UIFont.preferredFont(forTextStyle: .title1)
-        lbl.text = "Hello"
-        return lbl
-    }()
+    let relationButton: UIButton = .init(type: .system)
+    let alternativeButton: UIButton = .init(type: .system)
     
     let buttonStackView: UIStackView = {
-        let view = UIStackView()
-        return view
+        let stack = UIStackView()
+        stack.spacing = 30
+        stack.tintColor = .black
+        return stack
     }()
     
     let seperatorView: UIView = {
@@ -74,6 +76,14 @@ class VocabularyCollectionCell: UICollectionViewCell {
         super.layoutSubviews()
         formalityImageView.layer.cornerRadius = formalityImageView.frame.height / 2
     }
+    
+    func reloadCell(with vocab: Vocabulary) {
+        originalLabel.text = vocab.original
+        translationLabel.text = vocab.translation
+        favoriteButton.tintColor = UIColor(named: "favorite-vocab-\(vocab.isFavorited ? "true" : "false")")
+        relationButton.setTitle("\(vocab.relations.count)", for: .normal)
+        alternativeButton.setTitle("\(vocab.alternatives.count)", for: .normal)
+    }
 }
 
 
@@ -81,6 +91,8 @@ extension VocabularyCollectionCell {
     
     private func setupCell() {
         setupConstraints()
+        setupButtonStackView()
+        setupButtonTapHandlers()
         contentView.backgroundColor = .white
         contentView.layer.cornerRadius = 15
         contentView.layer.shadowOpacity = 0.1
@@ -90,19 +102,18 @@ extension VocabularyCollectionCell {
     
     private func setupConstraints() {
         contentView.addSubviews([formalityImageView, translationLabel, originalLabel, favoriteButton, buttonStackView, seperatorView])
-        buttonStackView.addArrangedSubview(alternativeButton)
-        buttonStackView.addArrangedSubview(relationButton)
         
+        let margin: CGFloat = 16
         let safeArea = contentView.safeAreaLayoutGuide
         let constraints = [
-            formalityImageView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 11),
+            formalityImageView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: margin),
             formalityImageView.centerYAnchor.constraint(equalTo: translationLabel.centerYAnchor),
             formalityImageView.heightAnchor.constraint(equalToConstant: 15),
             formalityImageView.widthAnchor.constraint(equalTo: formalityImageView.heightAnchor),
             
-            favoriteButton.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -11),
+            favoriteButton.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -margin),
             favoriteButton.centerYAnchor.constraint(equalTo: translationLabel.centerYAnchor),
-            favoriteButton.heightAnchor.constraint(equalToConstant: 35),
+            favoriteButton.heightAnchor.constraint(equalToConstant: 30),
             favoriteButton.widthAnchor.constraint(equalTo: favoriteButton.heightAnchor),
             
             translationLabel.leadingAnchor.constraint(equalTo: formalityImageView.trailingAnchor, constant: 8),
@@ -121,5 +132,38 @@ extension VocabularyCollectionCell {
             buttonStackView.heightAnchor.constraint(equalToConstant: 30)
         ]
         NSLayoutConstraint.activate(constraints)
+    }
+    
+    @objc private func favoriteButtonTapped() {
+        delegate?.vocabularyCollectionCell(self, didTapFavoriteButton: favoriteButton)
+    }
+    
+    @objc private func relationButtonTapped() {
+        delegate?.vocabularyCollectionCell(self, didTapRelationButton: relationButton)
+    }
+    
+    @objc private func alternativeButtonTapped() {
+        delegate?.vocabularyCollectionCell(self, didTapAlternativeButton: alternativeButton)
+    }
+    
+    private func setupButtonTapHandlers() {
+        favoriteButton.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
+        relationButton.addTarget(self, action: #selector(relationButtonTapped), for: .touchUpInside)
+        alternativeButton.addTarget(self, action: #selector(alternativeButtonTapped), for: .touchUpInside)
+    }
+    
+    private func setupButtonStackView() {
+        buttonStackView.addArrangedSubview(alternativeButton)
+        buttonStackView.addArrangedSubview(relationButton)
+        setupStackViewButton(alternativeButton, title: "99", image: .alternative)
+        setupStackViewButton(relationButton, title: "99", image: .relation)
+    }
+    
+    private func setupStackViewButton(_ button: UIButton, title: String, image: UIImage) {
+        button.setTitle(title, for: .normal)
+        button.setImage(image, for: .normal)
+        button.contentHorizontalAlignment = .trailing
+        button.semanticContentAttribute = .forceRightToLeft
+        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 4)
     }
 }

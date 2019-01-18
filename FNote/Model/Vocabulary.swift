@@ -17,7 +17,7 @@ enum VocabularyFormality: Int {
 }
 
 
-struct Vocabulary {
+class Vocabulary {
     var original: String
     var translation: String
     var note: String
@@ -26,6 +26,15 @@ struct Vocabulary {
     
     var relations: [Vocabulary]
     var alternatives: [Vocabulary]
-    
-    var color: String
+
+    init() {
+        #warning("sample init, must be removed")
+        original = "안녕하세요"
+        translation = "Hello"
+        note = ""
+        isFavorited = false
+        formality = .formal
+        relations = []
+        alternatives = []
+    }
 }

@@ -12,14 +12,14 @@ class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
     
     let vocabularyCollectionVC: VocabularyCollectionViewController = {
         let vc = VocabularyCollectionViewController()
-        vc.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 0)
-        vc.navigationItem.title = "Korean"
+        vc.tabBarItem = UITabBarItem(title: "Collections", image: .tabBarVocabCollection, tag: 0)
+        vc.navigationItem.title = vc.tabBarItem.title
         return vc
     }()
     
     let vocabularyVC: VocabularyViewController = {
         let vc = VocabularyViewController()
-        vc.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 1)
+        vc.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 0)
         vc.navigationItem.title = "Vocabulary"
         return vc
     }()

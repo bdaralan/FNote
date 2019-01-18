@@ -18,6 +18,8 @@
 		B437BDC521F1B86500A1B016 /* VocabularyCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC421F1B86500A1B016 /* VocabularyCollectionCell.swift */; };
 		B437BDC821F1BB0900A1B016 /* Subview+Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */; };
 		B437BDC921F1BB0900A1B016 /* TableView+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */; };
+		B48A620221F23D2500C75A8C /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620121F23D2500C75A8C /* Image.swift */; };
+		B48A620421F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620321F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		B437BDC421F1B86500A1B016 /* VocabularyCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionCell.swift; sourceTree = "<group>"; };
 		B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Subview+Constraint.swift"; sourceTree = "<group>"; };
 		B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TableView+CollectionView.swift"; sourceTree = "<group>"; };
+		B48A620121F23D2500C75A8C /* Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
+		B48A620321F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +113,7 @@
 			children = (
 				B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */,
 				B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */,
+				B48A620121F23D2500C75A8C /* Image.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -125,6 +130,7 @@
 			isa = PBXGroup;
 			children = (
 				B437BDC121F1B80C00A1B016 /* VocabularyCollectionViewController.swift */,
+				B48A620321F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift */,
 				B437BDC421F1B86500A1B016 /* VocabularyCollectionCell.swift */,
 			);
 			path = VocabularyCollectionScene;
@@ -202,10 +208,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				B437BDB721F197E900A1B016 /* MainTabBarViewController.swift in Sources */,
+				B48A620221F23D2500C75A8C /* Image.swift in Sources */,
 				B437BDBF21F19CAC00A1B016 /* Vocabulary.swift in Sources */,
 				B437BDA121F1972600A1B016 /* AppDelegate.swift in Sources */,
 				B437BDC521F1B86500A1B016 /* VocabularyCollectionCell.swift in Sources */,
 				B437BDC821F1BB0900A1B016 /* Subview+Constraint.swift in Sources */,
+				B48A620421F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift in Sources */,
 				B437BDBA21F198DB00A1B016 /* VocabularyViewController.swift in Sources */,
 				B437BDC921F1BB0900A1B016 /* TableView+CollectionView.swift in Sources */,
 				B437BDC221F1B80C00A1B016 /* VocabularyCollectionViewController.swift in Sources */,
