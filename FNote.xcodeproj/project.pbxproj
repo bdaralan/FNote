@@ -8,20 +8,32 @@
 
 /* Begin PBXBuildFile section */
 		B437BDA121F1972600A1B016 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDA021F1972600A1B016 /* AppDelegate.swift */; };
-		B437BDA321F1972600A1B016 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDA221F1972600A1B016 /* ViewController.swift */; };
 		B437BDA621F1972600A1B016 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B437BDA421F1972600A1B016 /* Main.storyboard */; };
 		B437BDA821F1972700A1B016 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B437BDA721F1972700A1B016 /* Assets.xcassets */; };
 		B437BDAB21F1972700A1B016 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B437BDA921F1972700A1B016 /* LaunchScreen.storyboard */; };
+		B437BDB721F197E900A1B016 /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDB621F197E900A1B016 /* MainTabBarViewController.swift */; };
+		B437BDBA21F198DB00A1B016 /* VocabularyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDB921F198DB00A1B016 /* VocabularyViewController.swift */; };
+		B437BDBF21F19CAC00A1B016 /* Vocabulary.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDBE21F19CAC00A1B016 /* Vocabulary.swift */; };
+		B437BDC221F1B80C00A1B016 /* VocabularyCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC121F1B80C00A1B016 /* VocabularyCollectionViewController.swift */; };
+		B437BDC521F1B86500A1B016 /* VocabularyCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC421F1B86500A1B016 /* VocabularyCollectionCell.swift */; };
+		B437BDC821F1BB0900A1B016 /* Subview+Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */; };
+		B437BDC921F1BB0900A1B016 /* TableView+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B437BD9D21F1972600A1B016 /* FNote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FNote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B437BDA021F1972600A1B016 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		B437BDA221F1972600A1B016 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		B437BDA521F1972600A1B016 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B437BDA721F1972700A1B016 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B437BDAA21F1972700A1B016 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B437BDAC21F1972700A1B016 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B437BDB621F197E900A1B016 /* MainTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewController.swift; sourceTree = "<group>"; };
+		B437BDB921F198DB00A1B016 /* VocabularyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyViewController.swift; sourceTree = "<group>"; };
+		B437BDBE21F19CAC00A1B016 /* Vocabulary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vocabulary.swift; sourceTree = "<group>"; };
+		B437BDC121F1B80C00A1B016 /* VocabularyCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionViewController.swift; sourceTree = "<group>"; };
+		B437BDC421F1B86500A1B016 /* VocabularyCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionCell.swift; sourceTree = "<group>"; };
+		B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Subview+Constraint.swift"; sourceTree = "<group>"; };
+		B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TableView+CollectionView.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,14 +66,68 @@
 		B437BD9F21F1972600A1B016 /* FNote */ = {
 			isa = PBXGroup;
 			children = (
-				B437BDA021F1972600A1B016 /* AppDelegate.swift */,
-				B437BDA221F1972600A1B016 /* ViewController.swift */,
-				B437BDA421F1972600A1B016 /* Main.storyboard */,
+				B437BDC021F1B7AD00A1B016 /* VocabularyCollectionScene */,
+				B437BDB821F1981B00A1B016 /* VocabularyScene */,
+				B437BDB421F197AD00A1B016 /* Model */,
+				B437BDB321F197AB00A1B016 /* View */,
+				B437BDB221F1979300A1B016 /* Controller */,
+				B437BDB521F197AF00A1B016 /* Extension */,
 				B437BDA721F1972700A1B016 /* Assets.xcassets */,
+				B437BDA021F1972600A1B016 /* AppDelegate.swift */,
+				B437BDA421F1972600A1B016 /* Main.storyboard */,
 				B437BDA921F1972700A1B016 /* LaunchScreen.storyboard */,
 				B437BDAC21F1972700A1B016 /* Info.plist */,
 			);
 			path = FNote;
+			sourceTree = "<group>";
+		};
+		B437BDB221F1979300A1B016 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				B437BDB621F197E900A1B016 /* MainTabBarViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		B437BDB321F197AB00A1B016 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		B437BDB421F197AD00A1B016 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				B437BDBE21F19CAC00A1B016 /* Vocabulary.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		B437BDB521F197AF00A1B016 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */,
+				B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		B437BDB821F1981B00A1B016 /* VocabularyScene */ = {
+			isa = PBXGroup;
+			children = (
+				B437BDB921F198DB00A1B016 /* VocabularyViewController.swift */,
+			);
+			path = VocabularyScene;
+			sourceTree = "<group>";
+		};
+		B437BDC021F1B7AD00A1B016 /* VocabularyCollectionScene */ = {
+			isa = PBXGroup;
+			children = (
+				B437BDC121F1B80C00A1B016 /* VocabularyCollectionViewController.swift */,
+				B437BDC421F1B86500A1B016 /* VocabularyCollectionCell.swift */,
+			);
+			path = VocabularyCollectionScene;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,8 +201,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B437BDA321F1972600A1B016 /* ViewController.swift in Sources */,
+				B437BDB721F197E900A1B016 /* MainTabBarViewController.swift in Sources */,
+				B437BDBF21F19CAC00A1B016 /* Vocabulary.swift in Sources */,
 				B437BDA121F1972600A1B016 /* AppDelegate.swift in Sources */,
+				B437BDC521F1B86500A1B016 /* VocabularyCollectionCell.swift in Sources */,
+				B437BDC821F1BB0900A1B016 /* Subview+Constraint.swift in Sources */,
+				B437BDBA21F198DB00A1B016 /* VocabularyViewController.swift in Sources */,
+				B437BDC921F1BB0900A1B016 /* TableView+CollectionView.swift in Sources */,
+				B437BDC221F1B80C00A1B016 /* VocabularyCollectionViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
