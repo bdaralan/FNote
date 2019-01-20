@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
+class MainTabBarViewController: UITabBarController {
     
     let vocabularyCollectionVC: VocabularyCollectionViewController = {
         let vc = VocabularyCollectionViewController()
@@ -18,7 +18,7 @@ class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
     }()
     
     let vocabularyVC: VocabularyViewController = {
-        let vc = VocabularyViewController()
+        let vc = VocabularyViewController(vocabulary: nil)
         vc.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 0)
         vc.navigationItem.title = "Vocabulary"
         return vc
@@ -28,9 +28,15 @@ class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
         super.viewDidLoad()
         setupControllers()
     }
+}
+
+
+// MARK: - TabBar Controller Delegate
+
+extension MainTabBarViewController: UITabBarControllerDelegate {
     
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        navigationItem.title = viewController.navigationItem.title
+        reloadNavItem(with: viewController)
     }
 }
 
@@ -38,10 +44,15 @@ class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
 extension MainTabBarViewController {
     
     private func setupControllers() {
+        delegate = self
         view.backgroundColor = .white
         viewControllers = [vocabularyCollectionVC, vocabularyVC]
-        selectedViewController = viewControllers?.first
-        navigationItem.title = selectedViewController?.navigationItem.title
-        delegate = self
+        selectedViewController = vocabularyCollectionVC
+        reloadNavItem(with: selectedViewController!)
+    }
+    
+    private func reloadNavItem(with viewController: UIViewController) {
+        navigationItem.title = viewController.navigationItem.title
+        navigationItem.rightBarButtonItems = viewController.navigationItem.rightBarButtonItems
     }
 }

@@ -28,6 +28,7 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     override func viewDidLoad() {
         super.viewDidLoad()
         setupController()
+        setupNavItem()
     }
 
     convenience init() {
@@ -40,6 +41,16 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         let layout = collectionViewLayout as! VocabularyCollectionViewFlowLayout
         layout.computeItemSize(newBounds: size)
         collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
+    @objc private func addVocabularyButtonTapped() {
+        #warning("need to implement")
+        print("addVocabularyButtonTapped")
+        let vocabVC = VocabularyViewController(vocabulary: nil)
+        vocabVC.delegate = self
+        vocabVC.navigationItem.title = "Add Vocabulary"
+        let navController = UINavigationController(rootViewController: vocabVC)
+        present(navController, animated: true, completion: nil)
     }
 }
 
@@ -88,10 +99,27 @@ extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
 }
 
 
+extension VocabularyCollectionViewController: VocabularyViewControllerDelegate {
+    
+    func vocabularyViewController(_ viewController: VocabularyViewController, didRequestCancel vocabulary: Vocabulary) {
+        viewController.dismiss(animated: true, completion: nil)
+    }
+    
+    func vocabularyViewController(_ viewController: VocabularyViewController, didRequestSave vocabulary: Vocabulary) {
+        viewController.dismiss(animated: true, completion: nil)
+    }
+}
+
+
 extension VocabularyCollectionViewController {
     
     private func setupController() {
         collectionView.registerCell(VocabularyCollectionCell.self)
-        collectionView.backgroundColor = UIColor(white: 0.96, alpha: 1)
+        collectionView.backgroundColor = .offWhiteBackground
+    }
+    
+    private func setupNavItem() {
+        let addVocab = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addVocabularyButtonTapped))
+        navigationItem.rightBarButtonItems = [addVocab]
     }
 }

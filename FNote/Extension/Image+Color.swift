@@ -14,7 +14,13 @@ extension UIImage {
     static let alternative = UIImage(named: "alternative")!
     static let relation = UIImage(named: "relation")!
     static let favorite = UIImage(named: "favorite")!
-    static let formality = UIImage(named: "formality")!
+    static let politeness = UIImage(named: "politeness")!
     
     static let tabBarVocabCollection = UIImage(named: "vocabulary-collection")!
+}
+
+
+extension UIColor {
+    
+    static let offWhiteBackground = UIColor(named: "off-white-background")
 }

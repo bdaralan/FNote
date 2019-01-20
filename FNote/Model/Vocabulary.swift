@@ -6,34 +6,44 @@
 //  Copyright © 2019 Dara Beng. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 
-enum VocabularyFormality: Int {
-    case unknown
-    case informal
-    case neutral
-    case formal
+enum VocabularyPoliteness: String, CaseIterable {
+    case unknown = "Unknown"
+    case informal = "Informal"
+    case neutral = "Neutral"
+    case formal = "Formal"
+    
+    #warning("assets have not been added yet")
+    var image: UIImage {
+        switch self {
+        case .unknown: return UIImage(named: "polite-unknown")!
+        case .informal: return UIImage(named: "polite-informal")!
+        case .neutral: return UIImage(named: "polite-neutral")!
+        case .formal: return UIImage(named: "polite-formal")!
+        }
+    }
 }
 
 
-class Vocabulary {
-    var original: String
+class Vocabulary: NSObject {
+    var native: String
     var translation: String
     var note: String
     var isFavorited: Bool
-    var formality: VocabularyFormality
+    var politeness: VocabularyPoliteness
     
     var relations: [Vocabulary]
     var alternatives: [Vocabulary]
 
-    init() {
+    override init() {
         #warning("sample init, must be removed")
-        original = "안녕하세요"
+        native = "안녕하세요"
         translation = "Hello"
         note = ""
         isFavorited = false
-        formality = .formal
+        politeness = .formal
         relations = []
         alternatives = []
     }

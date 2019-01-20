@@ -18,8 +18,14 @@
 		B437BDC521F1B86500A1B016 /* VocabularyCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC421F1B86500A1B016 /* VocabularyCollectionCell.swift */; };
 		B437BDC821F1BB0900A1B016 /* Subview+Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */; };
 		B437BDC921F1BB0900A1B016 /* TableView+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */; };
-		B48A620221F23D2500C75A8C /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620121F23D2500C75A8C /* Image.swift */; };
+		B460297C21F3F0C1009C11DE /* OptionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B460297B21F3F0C1009C11DE /* OptionTableViewController.swift */; };
+		B48A620221F23D2500C75A8C /* Image+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620121F23D2500C75A8C /* Image+Color.swift */; };
 		B48A620421F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620321F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift */; };
+		B48A620621F2875100C75A8C /* IndexPathList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620521F2875100C75A8C /* IndexPathList.swift */; };
+		B48A620821F28FD200C75A8C /* VocabularyViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620721F28FD200C75A8C /* VocabularyViewController+Extension.swift */; };
+		B48A620A21F2931E00C75A8C /* VocabularyTextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620921F2931E00C75A8C /* VocabularyTextFieldCell.swift */; };
+		B48A620C21F2B33000C75A8C /* VocabularySelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620B21F2B33000C75A8C /* VocabularySelectionCell.swift */; };
+		B48A620E21F2F4CF00C75A8C /* VocabularyNoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620D21F2F4CF00C75A8C /* VocabularyNoteCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,8 +42,14 @@
 		B437BDC421F1B86500A1B016 /* VocabularyCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionCell.swift; sourceTree = "<group>"; };
 		B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Subview+Constraint.swift"; sourceTree = "<group>"; };
 		B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TableView+CollectionView.swift"; sourceTree = "<group>"; };
-		B48A620121F23D2500C75A8C /* Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
+		B460297B21F3F0C1009C11DE /* OptionTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionTableViewController.swift; sourceTree = "<group>"; };
+		B48A620121F23D2500C75A8C /* Image+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Color.swift"; sourceTree = "<group>"; };
 		B48A620321F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
+		B48A620521F2875100C75A8C /* IndexPathList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexPathList.swift; sourceTree = "<group>"; };
+		B48A620721F28FD200C75A8C /* VocabularyViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VocabularyViewController+Extension.swift"; sourceTree = "<group>"; };
+		B48A620921F2931E00C75A8C /* VocabularyTextFieldCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyTextFieldCell.swift; sourceTree = "<group>"; };
+		B48A620B21F2B33000C75A8C /* VocabularySelectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularySelectionCell.swift; sourceTree = "<group>"; };
+		B48A620D21F2F4CF00C75A8C /* VocabularyNoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyNoteCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +88,8 @@
 				B437BDB321F197AB00A1B016 /* View */,
 				B437BDB221F1979300A1B016 /* Controller */,
 				B437BDB521F197AF00A1B016 /* Extension */,
-				B437BDA721F1972700A1B016 /* Assets.xcassets */,
 				B437BDA021F1972600A1B016 /* AppDelegate.swift */,
+				B437BDA721F1972700A1B016 /* Assets.xcassets */,
 				B437BDA421F1972600A1B016 /* Main.storyboard */,
 				B437BDA921F1972700A1B016 /* LaunchScreen.storyboard */,
 				B437BDAC21F1972700A1B016 /* Info.plist */,
@@ -89,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				B437BDB621F197E900A1B016 /* MainTabBarViewController.swift */,
+				B460297B21F3F0C1009C11DE /* OptionTableViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -104,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				B437BDBE21F19CAC00A1B016 /* Vocabulary.swift */,
+				B48A620521F2875100C75A8C /* IndexPathList.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -113,7 +127,7 @@
 			children = (
 				B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */,
 				B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */,
-				B48A620121F23D2500C75A8C /* Image.swift */,
+				B48A620121F23D2500C75A8C /* Image+Color.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -122,6 +136,10 @@
 			isa = PBXGroup;
 			children = (
 				B437BDB921F198DB00A1B016 /* VocabularyViewController.swift */,
+				B48A620921F2931E00C75A8C /* VocabularyTextFieldCell.swift */,
+				B48A620B21F2B33000C75A8C /* VocabularySelectionCell.swift */,
+				B48A620D21F2F4CF00C75A8C /* VocabularyNoteCell.swift */,
+				B48A620721F28FD200C75A8C /* VocabularyViewController+Extension.swift */,
 			);
 			path = VocabularyScene;
 			sourceTree = "<group>";
@@ -207,15 +225,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B48A620E21F2F4CF00C75A8C /* VocabularyNoteCell.swift in Sources */,
 				B437BDB721F197E900A1B016 /* MainTabBarViewController.swift in Sources */,
-				B48A620221F23D2500C75A8C /* Image.swift in Sources */,
+				B460297C21F3F0C1009C11DE /* OptionTableViewController.swift in Sources */,
+				B48A620221F23D2500C75A8C /* Image+Color.swift in Sources */,
 				B437BDBF21F19CAC00A1B016 /* Vocabulary.swift in Sources */,
 				B437BDA121F1972600A1B016 /* AppDelegate.swift in Sources */,
 				B437BDC521F1B86500A1B016 /* VocabularyCollectionCell.swift in Sources */,
 				B437BDC821F1BB0900A1B016 /* Subview+Constraint.swift in Sources */,
 				B48A620421F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift in Sources */,
 				B437BDBA21F198DB00A1B016 /* VocabularyViewController.swift in Sources */,
+				B48A620A21F2931E00C75A8C /* VocabularyTextFieldCell.swift in Sources */,
 				B437BDC921F1BB0900A1B016 /* TableView+CollectionView.swift in Sources */,
+				B48A620621F2875100C75A8C /* IndexPathList.swift in Sources */,
+				B48A620821F28FD200C75A8C /* VocabularyViewController+Extension.swift in Sources */,
+				B48A620C21F2B33000C75A8C /* VocabularySelectionCell.swift in Sources */,
 				B437BDC221F1B80C00A1B016 /* VocabularyCollectionViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
