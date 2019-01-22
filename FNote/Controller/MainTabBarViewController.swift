@@ -7,20 +7,16 @@
 //
 
 import UIKit
+import CoreData
 
 class MainTabBarViewController: UITabBarController {
     
     let vocabularyCollectionVC: VocabularyCollectionViewController = {
-        let vc = VocabularyCollectionViewController()
+        #warning("TODO: let user chooses which collections to view")
+        let collection = CoreDataStack.current.user.collections.first!
+        let vc = VocabularyCollectionViewController(collection: collection)
         vc.tabBarItem = UITabBarItem(title: "Collections", image: .tabBarVocabCollection, tag: 0)
-        vc.navigationItem.title = vc.tabBarItem.title
-        return vc
-    }()
-    
-    let vocabularyVC: VocabularyViewController = {
-        let vc = VocabularyViewController(vocabulary: nil)
-        vc.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 0)
-        vc.navigationItem.title = "Vocabulary"
+        vc.navigationItem.title = collection.name
         return vc
     }()
 
@@ -46,7 +42,7 @@ extension MainTabBarViewController {
     private func setupControllers() {
         delegate = self
         view.backgroundColor = .white
-        viewControllers = [vocabularyCollectionVC, vocabularyVC]
+        viewControllers = [vocabularyCollectionVC]
         selectedViewController = vocabularyCollectionVC
         reloadNavItem(with: selectedViewController!)
     }

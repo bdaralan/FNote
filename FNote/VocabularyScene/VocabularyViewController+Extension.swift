@@ -24,10 +24,4 @@ extension VocabularyViewController {
         case relations, alternatives, favorite, politeness
         case note
     }
-    
-    /// Controller's init style
-    enum Style {
-        case view(Vocabulary)
-        case create(Vocabulary?)
-    }
 }

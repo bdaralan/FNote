@@ -12,28 +12,24 @@ private let reuseIdentifier = "Cell"
 
 class VocabularyCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-    #warning("sample data")
-    private let vocabularies: [Vocabulary] = {
-        var vocabs = [Vocabulary]()
-        for i in 0...20 {
-            let vocab = Vocabulary()
-            vocab.isFavorited = Double(i).remainder(dividingBy: 2) == 0
-            vocab.relations = Array(repeating: Vocabulary(), count: i * 2)
-            vocab.alternatives = Array(repeating: Vocabulary(), count: i + 2)
-            vocabs.append(vocab)
-        }
-        return vocabs
-    }()
+    private let collection: VocabularyCollection
+    private(set) var vocabularies: [Vocabulary] = []
+    
+    init(collection: VocabularyCollection) {
+        self.collection = collection
+        self.vocabularies = collection.vocabularies.sorted(by: { $0.translation < $1.translation })
+        let layout = VocabularyCollectionViewFlowLayout()
+        super.init(collectionViewLayout: layout)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupController()
         setupNavItem()
-    }
-
-    convenience init() {
-        let layout = VocabularyCollectionViewFlowLayout()
-        self.init(collectionViewLayout: layout)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -46,10 +42,10 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     @objc private func addVocabularyButtonTapped() {
         #warning("need to implement")
         print("addVocabularyButtonTapped")
-        let vocabVC = VocabularyViewController(vocabulary: nil)
-        vocabVC.delegate = self
-        vocabVC.navigationItem.title = "Add Vocabulary"
-        let navController = UINavigationController(rootViewController: vocabVC)
+        let addVocabVC = VocabularyViewController(collection: collection)
+        addVocabVC.delegate = self
+        addVocabVC.navigationItem.title = "Add Vocabulary"
+        let navController = UINavigationController(rootViewController: addVocabVC)
         present(navController, animated: true, completion: nil)
     }
 }
@@ -82,6 +78,7 @@ extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
         let vocabIndex = collectionView.indexPath(for: cell)!.row
         let vocab = vocabularies[vocabIndex]
         vocab.isFavorited.toggle()
+        vocab.managedObjectContext?.quickSave()
         cell.reloadCell(with: vocab)
     }
     
@@ -102,10 +99,14 @@ extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
 extension VocabularyCollectionViewController: VocabularyViewControllerDelegate {
     
     func vocabularyViewController(_ viewController: VocabularyViewController, didRequestCancel vocabulary: Vocabulary) {
+        vocabulary.managedObjectContext?.quickSave()
         viewController.dismiss(animated: true, completion: nil)
     }
     
     func vocabularyViewController(_ viewController: VocabularyViewController, didRequestSave vocabulary: Vocabulary) {
+        collection.managedObjectContext?.quickSave()
+        vocabularies = collection.vocabularies.sorted(by: { $0.translation < $1.translation })
+        collectionView.reloadData()
         viewController.dismiss(animated: true, completion: nil)
     }
 }
@@ -116,6 +117,7 @@ extension VocabularyCollectionViewController {
     private func setupController() {
         collectionView.registerCell(VocabularyCollectionCell.self)
         collectionView.backgroundColor = .offWhiteBackground
+        collectionView.alwaysBounceVertical = true
     }
     
     private func setupNavItem() {

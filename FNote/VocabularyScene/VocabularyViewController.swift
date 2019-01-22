@@ -21,8 +21,8 @@ class VocabularyViewController: UITableViewController {
     
     weak var delegate: VocabularyViewControllerDelegate?
     
+    private let isCreatingVocabulary: Bool
     private let vocabulary: Vocabulary
-    private let isViewingMode: Bool
     
     let indexPathList: IndexPathList<InputSection, Input> = {
         var list = IndexPathList<InputSection, Input>()
@@ -32,15 +32,26 @@ class VocabularyViewController: UITableViewController {
         return list
     }()
     
-    let politenessOptions: [VocabularyPoliteness] = VocabularyPoliteness.allCases
+    let politenessOptions: [Vocabulary.Politeness] = Vocabulary.Politeness.allCases
     
     weak var noteCell: VocabularyNoteCell?
     weak var politenessCell: VocabularySelectionCell?
     
-    /// - parameter style: Controller's layout style.
-    init(vocabulary: Vocabulary?) {
-        self.vocabulary = vocabulary ?? Vocabulary()
-        self.isViewingMode = vocabulary != nil
+    /// Constructor for viewing a vocabulary.
+    /// - parameter vocabulary: The vocabulary to be viewed.
+    init(vocabulary: Vocabulary) {
+        self.isCreatingVocabulary = false
+        self.vocabulary = vocabulary
+        super.init(style: .grouped)
+    }
+    
+    /// Constructor for creating a new vocabulary.
+    /// - parameter collection: The collection for the new vocabulary to be added in.
+    init(collection: VocabularyCollection) {
+        self.isCreatingVocabulary = true
+        let newVocabulary = Vocabulary(context: collection.managedObjectContext!)
+        newVocabulary.collection = collection
+        self.vocabulary = newVocabulary
         super.init(style: .grouped)
     }
     
@@ -53,12 +64,21 @@ class VocabularyViewController: UITableViewController {
         setupController()
     }
     
-    @objc private func saveVocabulary() {
-        delegate?.vocabularyViewController(self, didRequestSave: Vocabulary())
+    @objc private func requestSaveVocabulary() {
+        delegate?.vocabularyViewController(self, didRequestSave: vocabulary)
     }
     
-    @objc private func cancelVocabulary() {
-        delegate?.vocabularyViewController(self, didRequestCancel: Vocabulary())
+    @objc private func requestCancelVocabulary() {
+        delegate?.vocabularyViewController(self, didRequestCancel: vocabulary)
+    }
+    
+    @objc private func updateVocabularyNavtiveTranslation(_ sender: UITextField) {
+        guard let input = VocabularyViewController.Input(rawValue: sender.tag) else { return }
+        switch input {
+        case .native: vocabulary.native = sender.text ?? ""
+        case .translation: vocabulary.translation = sender.text ?? ""
+        default: fatalError("unknown sender text field!!!")
+        }
     }
 }
 
@@ -94,13 +114,17 @@ extension VocabularyViewController {
         switch input {
         case .native:
             let cell = tableView.dequeueRegisteredCell(VocabularyTextFieldCell.self, for: indexPath)
-            cell.reloadCell(text: "안녕하세요", placeholder: "Native")
+            cell.reloadCell(text: vocabulary.native, placeholder: "Native")
+            cell.textField.tag = input.rawValue
             cell.textField.delegate = self
+            cell.textField.addTarget(self, action: #selector(updateVocabularyNavtiveTranslation(_:)), for: .allEditingEvents)
             return cell
         case .translation:
             let cell = tableView.dequeueRegisteredCell(VocabularyTextFieldCell.self, for: indexPath)
-            cell.reloadCell(text: "Hello", placeholder: "Translation")
+            cell.reloadCell(text: vocabulary.translation, placeholder: "Translation")
+            cell.textField.tag = input.rawValue
             cell.textField.delegate = self
+            cell.textField.addTarget(self, action: #selector(updateVocabularyNavtiveTranslation(_:)), for: .allEditingEvents)
             return cell
         case .relations:
             let cell = tableView.dequeueRegisteredCell(VocabularySelectionCell.self, for: indexPath)
@@ -114,7 +138,7 @@ extension VocabularyViewController {
             return cell
         case .politeness:
             let cell = tableView.dequeueRegisteredCell(VocabularySelectionCell.self, for: indexPath)
-            cell.reloadCell(text: "Politeness", detail: vocabulary.politeness.rawValue, image: .politeness)
+            cell.reloadCell(text: "Politeness", detail: vocabulary.politeness, image: .politeness)
             cell.accessoryType = .disclosureIndicator
             return cell
         case .favorite:
@@ -140,10 +164,12 @@ extension VocabularyViewController {
             guard !cell.textField.isFirstResponder else { return }
             cell.textField.becomeFirstResponder()
         case .politeness:
-            politenessCell = tableView.cellForRow(at: indexPath) as? VocabularySelectionCell
+            let cell = tableView.cellForRow(at: indexPath) as! VocabularySelectionCell
+            politenessCell = cell
             let optionVC = OptionTableViewController()
             optionVC.dataSourceDelegate = self
             optionVC.navigationItem.title = "Politeness"
+            view.endEditing(true)
             navigationController?.pushViewController(optionVC, animated: true)
         default:
             view.endEditing(true)
@@ -163,13 +189,13 @@ extension VocabularyViewController: OptionTableViewControllerDataSoureDelegate {
     }
     
     func optionTableViewController(_ controller: OptionTableViewController, showsCheckmarkAt index: Int) -> Bool {
-        return politenessOptions[index] == vocabulary.politeness
+        return politenessOptions[index].rawValue == vocabulary.politeness
     }
     
     func optionTableViewController(_ controller: OptionTableViewController, didSelectOptionAtIndex index: Int) {
         print("optionTableViewController didSelectOptionAtIndex: \(index)")
-        vocabulary.politeness = politenessOptions[index]
-        politenessCell?.reloadCell(detail: vocabulary.politeness.rawValue)
+        vocabulary.politeness = politenessOptions[index].rawValue
+        politenessCell?.reloadCell(detail: vocabulary.politeness)
         politenessCell = nil
         navigationController?.popViewController(animated: true)
     }
@@ -192,6 +218,7 @@ extension VocabularyViewController: UITextFieldDelegate, UITextViewDelegate {
     }
     
     func textViewDidChange(_ textView: UITextView) {
+        vocabulary.note = textView.text
         noteCell?.hidePlaceholderIfNeeded()
     }
 }
@@ -208,14 +235,14 @@ extension VocabularyViewController {
     }
     
     private func setupNavItem() {
-        if isViewingMode {
-            let done = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(saveVocabulary))
-            navigationItem.rightBarButtonItem = done
-        } else {
-            let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelVocabulary))
-            let add = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(saveVocabulary))
+        if isCreatingVocabulary {
+            let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(requestCancelVocabulary))
+            let add = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(requestSaveVocabulary))
             navigationItem.leftBarButtonItem = cancel
             navigationItem.rightBarButtonItem = add
+        } else {
+            let done = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(requestSaveVocabulary))
+            navigationItem.rightBarButtonItem = done
         }
     }
 }
