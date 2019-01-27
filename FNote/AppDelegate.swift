@@ -17,6 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         setupRootViewController()
+        CloudKitService.current.checkAccountStatus()
+        CloudKitService.current.checkAccountID()
         return true
     }
 }

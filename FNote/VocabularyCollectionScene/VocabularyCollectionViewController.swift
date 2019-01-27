@@ -12,7 +12,7 @@ private let reuseIdentifier = "Cell"
 
 class VocabularyCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-    private let collection: VocabularyCollection
+    private var collection: VocabularyCollection
     private(set) var vocabularies: [Vocabulary] = []
     
     init(collection: VocabularyCollection) {
@@ -37,6 +37,12 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         let layout = collectionViewLayout as! VocabularyCollectionViewFlowLayout
         layout.computeItemSize(newBounds: size)
         collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
+    func reloadCollection(_ collection: VocabularyCollection) {
+        self.collection = collection
+        self.vocabularies = collection.vocabularies.sorted(by: { $0.translation < $1.translation })
+        collectionView.reloadData()
     }
     
     @objc private func addVocabularyButtonTapped() {
