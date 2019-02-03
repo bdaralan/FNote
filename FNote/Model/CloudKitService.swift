@@ -49,4 +49,6 @@ class CloudKitService {
 extension CloudKitService {
     
     static let nUserRecordIDNameDidChange = Notification.Name(rawValue: "CloudKitService.nUserRecordIDNameDidChange")
+    
+    static let ckVocabularyCollectionZone = CKRecordZone(zoneName: "VocabularyCollectionZone")
 }

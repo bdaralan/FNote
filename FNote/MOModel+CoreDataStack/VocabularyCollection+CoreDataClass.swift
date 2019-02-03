@@ -7,21 +7,32 @@
 //
 //
 
-import Foundation
+import CloudKit
 import CoreData
 
 
-public class VocabularyCollection: NSManagedObject {
-
+public class VocabularyCollection: NSManagedObject, LocalRecord {
+    
+    var recordType: CKRecord.RecordType { return "VocabularyCollection" }
+    var recordZone: CKRecordZone { return CloudKitService.ckVocabularyCollectionZone }
+    
+    @NSManaged public var recordSystemFields: Data!
     @NSManaged public var name: String
-    @NSManaged public var vocabularies: Set<Vocabulary>
-    @NSManaged public var createdDate: Date
-    @NSManaged public var user: User
+    @NSManaged private(set) var vocabularies: Set<Vocabulary>
+    
     
     public override func awakeFromInsert() {
         super.awakeFromInsert()
+        initRecordSystemFields()
         name = ""
-        vocabularies = .init()
-        createdDate = .init()
+        vocabularies = []
+    }
+    
+    func recordValuesForServerKeys() -> [String : Any] {
+        return [Key.name.stringValue: name]
+    }
+    
+    enum Key: LocalRecord.ServerKey {
+        case name
     }
 }

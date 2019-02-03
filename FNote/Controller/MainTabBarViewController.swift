@@ -22,7 +22,7 @@ class MainTabBarViewController: UITabBarController {
     @objc private func handleCloudKitUserRecordIDNameChanged() {
         DispatchQueue.main.async { [unowned self] in
             CoreDataStack.current.changePersistentStore(forUserRecordIDName: CloudKitService.current.userRecordIDName)
-            let collection = CoreDataStack.current.user()!.collections.first!
+            let collection = CoreDataStack.current.firstCollection()!
             self.vocabularyCollectionVC.reloadCollection(collection)
         }
     }
@@ -52,8 +52,7 @@ extension MainTabBarViewController {
     
     private func setupVocabularyCollectionController() {
         #warning("TODO: let user chooses which collections to view")
-        let user = CoreDataStack.current.user()!
-        let collection = user.collections.first!
+        let collection = CoreDataStack.current.firstCollection()!
         let vc = VocabularyCollectionViewController(collection: collection)
         vc.tabBarItem = UITabBarItem(title: "Collections", image: .tabBarVocabCollection, tag: 0)
         vc.navigationItem.title = collection.name

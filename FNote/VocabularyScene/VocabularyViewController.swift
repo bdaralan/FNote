@@ -50,7 +50,7 @@ class VocabularyViewController: UITableViewController {
     init(collection: VocabularyCollection) {
         self.isCreatingVocabulary = true
         let newVocabulary = Vocabulary(context: collection.managedObjectContext!)
-        newVocabulary.collection = collection
+        newVocabulary.setCollection(collection)
         self.vocabulary = newVocabulary
         super.init(style: .grouped)
     }
@@ -185,16 +185,16 @@ extension VocabularyViewController: OptionTableViewControllerDataSoureDelegate {
     }
     
     func optionTableViewController(_ controller: OptionTableViewController, optionAtIndex index: Int) -> String {
-        return politenessOptions[index].rawValue
+        return politenessOptions[index].string
     }
     
     func optionTableViewController(_ controller: OptionTableViewController, showsCheckmarkAt index: Int) -> Bool {
-        return politenessOptions[index].rawValue == vocabulary.politeness
+        return politenessOptions[index].string == vocabulary.politeness
     }
     
     func optionTableViewController(_ controller: OptionTableViewController, didSelectOptionAtIndex index: Int) {
         print("optionTableViewController didSelectOptionAtIndex: \(index)")
-        vocabulary.politeness = politenessOptions[index].rawValue
+        vocabulary.politeness = politenessOptions[index].string
         politenessCell?.reloadCell(detail: vocabulary.politeness)
         politenessCell = nil
         navigationController?.popViewController(animated: true)

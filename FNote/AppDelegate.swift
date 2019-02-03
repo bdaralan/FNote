@@ -12,11 +12,10 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var rootNavController: UINavigationController!
-
+    var mainCoordinator: MainCoordinator?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        setupRootViewController()
+        setupMainCoordinator()
         CloudKitService.current.checkAccountStatus()
         CloudKitService.current.checkAccountID()
         return true
@@ -26,13 +25,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension AppDelegate {
     
-    private func setupRootViewController() {
-        let tabBarVC = MainTabBarViewController()
-        rootNavController = UINavigationController(rootViewController: tabBarVC)
-        rootNavController.navigationBar.prefersLargeTitles = true
+    private func setupMainCoordinator() {
+        let navController = UINavigationController()
+        mainCoordinator = MainCoordinator(navController: navController)
+        mainCoordinator?.start()
         
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = rootNavController
+        window?.rootViewController = navController
         window?.makeKeyAndVisible()
     }
 }

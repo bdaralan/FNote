@@ -48,11 +48,8 @@ extension CoreDataStack {
     func createNewUser(userRecordIDName: String) {
         let user = User(context: mainContext)
         user.userID = userRecordIDName
-        
         let collection = VocabularyCollection(context: mainContext)
         collection.name = "Korean"
-        collection.user = user
-        
         mainContext.quickSave()
     }
     
@@ -63,8 +60,15 @@ extension CoreDataStack {
         return results?.first
     }
     
-    func user() -> User? {
+    func currentUser() -> User? {
         return fetchUser(userRecordIDName: CloudKitService.current.userRecordIDName)
+    }
+    
+    #warning("test func")
+    func firstCollection() -> VocabularyCollection? {
+        let request: NSFetchRequest<VocabularyCollection> = VocabularyCollection.fetchRequest()
+        let results = try? mainContext.fetch(request)
+        return results?.first
     }
 }
 

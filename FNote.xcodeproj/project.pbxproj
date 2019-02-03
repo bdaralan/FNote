@@ -22,6 +22,9 @@
 		B437BDC821F1BB0900A1B016 /* Subview+Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */; };
 		B437BDC921F1BB0900A1B016 /* TableView+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */; };
 		B460297C21F3F0C1009C11DE /* OptionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B460297B21F3F0C1009C11DE /* OptionTableViewController.swift */; };
+		B472F74222073EBF00761939 /* LocalRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B472F74122073EBF00761939 /* LocalRecord.swift */; };
+		B472F74422076AE200761939 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B472F74322076AE200761939 /* Coordinator.swift */; };
+		B472F74622076B3000761939 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B472F74522076B3000761939 /* MainCoordinator.swift */; };
 		B48A620221F23D2500C75A8C /* Image+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620121F23D2500C75A8C /* Image+Color.swift */; };
 		B48A620421F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620321F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift */; };
 		B48A620621F2875100C75A8C /* IndexPathList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620521F2875100C75A8C /* IndexPathList.swift */; };
@@ -55,6 +58,9 @@
 		B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Subview+Constraint.swift"; sourceTree = "<group>"; };
 		B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TableView+CollectionView.swift"; sourceTree = "<group>"; };
 		B460297B21F3F0C1009C11DE /* OptionTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionTableViewController.swift; sourceTree = "<group>"; };
+		B472F74122073EBF00761939 /* LocalRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalRecord.swift; sourceTree = "<group>"; };
+		B472F74322076AE200761939 /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
+		B472F74522076B3000761939 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
 		B48A620121F23D2500C75A8C /* Image+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Color.swift"; sourceTree = "<group>"; };
 		B48A620321F25E6D00C75A8C /* VocabularyCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		B48A620521F2875100C75A8C /* IndexPathList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexPathList.swift; sourceTree = "<group>"; };
@@ -155,7 +161,10 @@
 			children = (
 				B40A803021F59C9100DCDF11 /* CoreDataStack.swift */,
 				B4F5C82D21F7BF67007E8108 /* CloudKitService.swift */,
+				B472F74522076B3000761939 /* MainCoordinator.swift */,
 				B48A620521F2875100C75A8C /* IndexPathList.swift */,
+				B472F74122073EBF00761939 /* LocalRecord.swift */,
+				B472F74322076AE200761939 /* Coordinator.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -280,6 +289,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B4F5C82E21F7BF67007E8108 /* CloudKitService.swift in Sources */,
+				B472F74222073EBF00761939 /* LocalRecord.swift in Sources */,
+				B472F74422076AE200761939 /* Coordinator.swift in Sources */,
 				B48A620E21F2F4CF00C75A8C /* VocabularyNoteCell.swift in Sources */,
 				B437BDB721F197E900A1B016 /* MainTabBarViewController.swift in Sources */,
 				B460297C21F3F0C1009C11DE /* OptionTableViewController.swift in Sources */,
@@ -302,6 +313,7 @@
 				B4F03CEF21F62D89004C4225 /* User+CoreDataProperties.swift in Sources */,
 				B4F03CEB21F62ADC004C4225 /* VocabularyCollection+CoreDataProperties.swift in Sources */,
 				B48A620C21F2B33000C75A8C /* VocabularySelectionCell.swift in Sources */,
+				B472F74622076B3000761939 /* MainCoordinator.swift in Sources */,
 				B437BDC221F1B80C00A1B016 /* VocabularyCollectionViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
