@@ -32,6 +32,7 @@
 		B48A620A21F2931E00C75A8C /* VocabularyTextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620921F2931E00C75A8C /* VocabularyTextFieldCell.swift */; };
 		B48A620C21F2B33000C75A8C /* VocabularySelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620B21F2B33000C75A8C /* VocabularySelectionCell.swift */; };
 		B48A620E21F2F4CF00C75A8C /* VocabularyNoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620D21F2F4CF00C75A8C /* VocabularyNoteCell.swift */; };
+		B4D1CB8F2215FAA80030FA45 /* UserDefaults+KeyValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D1CB8E2215FAA80030FA45 /* UserDefaults+KeyValue.swift */; };
 		B4F03CEA21F62ADC004C4225 /* VocabularyCollection+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F03CE821F62ADC004C4225 /* VocabularyCollection+CoreDataClass.swift */; };
 		B4F03CEB21F62ADC004C4225 /* VocabularyCollection+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F03CE921F62ADC004C4225 /* VocabularyCollection+CoreDataProperties.swift */; };
 		B4F03CEE21F62D89004C4225 /* User+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F03CEC21F62D89004C4225 /* User+CoreDataClass.swift */; };
@@ -68,6 +69,7 @@
 		B48A620921F2931E00C75A8C /* VocabularyTextFieldCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyTextFieldCell.swift; sourceTree = "<group>"; };
 		B48A620B21F2B33000C75A8C /* VocabularySelectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularySelectionCell.swift; sourceTree = "<group>"; };
 		B48A620D21F2F4CF00C75A8C /* VocabularyNoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyNoteCell.swift; sourceTree = "<group>"; };
+		B4D1CB8E2215FAA80030FA45 /* UserDefaults+KeyValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+KeyValue.swift"; sourceTree = "<group>"; };
 		B4F03CE821F62ADC004C4225 /* VocabularyCollection+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VocabularyCollection+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B4F03CE921F62ADC004C4225 /* VocabularyCollection+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VocabularyCollection+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B4F03CEC21F62D89004C4225 /* User+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */,
 				B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */,
 				B48A620121F23D2500C75A8C /* Image+Color.swift */,
+				B4D1CB8E2215FAA80030FA45 /* UserDefaults+KeyValue.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -294,6 +297,7 @@
 				B48A620E21F2F4CF00C75A8C /* VocabularyNoteCell.swift in Sources */,
 				B437BDB721F197E900A1B016 /* MainTabBarViewController.swift in Sources */,
 				B460297C21F3F0C1009C11DE /* OptionTableViewController.swift in Sources */,
+				B4D1CB8F2215FAA80030FA45 /* UserDefaults+KeyValue.swift in Sources */,
 				B48A620221F23D2500C75A8C /* Image+Color.swift in Sources */,
 				B40A802621F5917300DCDF11 /* DataModel.xcdatamodeld in Sources */,
 				B437BDA121F1972600A1B016 /* AppDelegate.swift in Sources */,
