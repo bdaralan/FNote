@@ -12,7 +12,7 @@ import CoreData
 class CoreDataStack {
     
     #warning("TODO: need logic to get current user's iCloud account id")
-    static private(set) var current: CoreDataStack = .init(userAccountToken: CloudKitService.current.iCloudToken)
+    static private(set) var current: CoreDataStack = .init(userAccountToken: CloudKitService.currentAccountToken)
     
     static let coreDataModel: NSManagedObjectModel = {
         let url = Bundle.main.url(forResource: "DataModel", withExtension: "momd")!
@@ -23,7 +23,10 @@ class CoreDataStack {
     let persistentContainer: NSPersistentContainer
     let mainContext: NSManagedObjectContext
     
+    private(set) var userAccountToken: String
+    
     init(userAccountToken: String) {
+        self.userAccountToken = userAccountToken
         let container = NSPersistentContainer(name: userAccountToken, managedObjectModel: CoreDataStack.coreDataModel)
         let persistentStore = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("\(userAccountToken).sqlite")
         let options = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
@@ -62,7 +65,7 @@ extension CoreDataStack {
     }
     
     func currentUser() -> User? {
-        return fetchUser(userRecordIDName: CloudKitService.current.iCloudToken)
+        return fetchUser(userRecordIDName: CloudKitService.currentAccountToken)
     }
     
     #warning("test func")

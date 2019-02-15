@@ -28,10 +28,12 @@ class MainTabBarViewController: UITabBarController {
         setupAccountTokenChangedHandler(actived: false)
     }
     
-    @objc private func handleUserAccountChanged() {
-        DispatchQueue.main.async { [unowned self] in
-            let token = CloudKitService.current.iCloudToken
-            CoreDataStack.current.setPersistentStore(forUserAccountToken: token)
+    @objc private func handleUserAccountChanged(notification: Notification) {
+        guard let accountToken = notification.object as? String else { return }
+        guard accountToken != CoreDataStack.current.userAccountToken else { return }
+        CoreDataStack.current.setPersistentStore(forUserAccountToken: accountToken)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             let collection = CoreDataStack.current.firstCollection()!
             self.vocabularyCollectionVC.reloadCollection(collection)
         }
@@ -75,7 +77,7 @@ extension MainTabBarViewController {
     
     private func setupAccountTokenChangedHandler(actived: Bool) {
         let name = CloudKitService.nameUserAccountTokenDidChange
-        let action = #selector(handleUserAccountChanged)
+        let action = #selector(handleUserAccountChanged(notification:))
         let notificationCenter = NotificationCenter.default
         if actived {
             notificationCenter.addObserver(self, selector: action, name: name, object: nil)

@@ -18,33 +18,17 @@ class CloudKitService {
     
     private(set) var accountStatus: CKAccountStatus = .couldNotDetermine
     
-    /// Current user's iCloud token.
-    /// - note: A notification, `CloudKitService.nameUserAccountTokenDidChange`, is posted when this value is changed.
-    private(set) var iCloudToken: String {
-        didSet {
-            UserDefaults.standard.updateValue(iCloudToken, forKey: .cachedAccountToken)
-            NotificationCenter.default.post(name: CloudKitService.nameUserAccountTokenDidChange, object: iCloudToken)
-        }
-    }
     
     // MARK: - Constructor
     
-    private init() {
-        iCloudToken = CloudKitService.currentAccountToken
-    }
+    private init() {}
     
     
     // MARK: - Function
     
     func checkAccountStatus() {
         container.accountStatus { (status, error) in
-            guard error == nil else {
-                self.accountStatus = .couldNotDetermine
-                self.iCloudToken = CloudKitService.noAccountToken
-                return
-            }
-            self.accountStatus = status
-            self.iCloudToken = CloudKitService.currentAccountToken
+            self.accountStatus = error == nil ? status : .couldNotDetermine
         }
     }
     
@@ -55,29 +39,26 @@ class CloudKitService {
     
     @objc private func handleAccountChanged() {
         checkAccountStatus()
+        let accountToken = CloudKitService.currentAccountToken
+        NotificationCenter.default.post(name: CloudKitService.nameUserAccountTokenDidChange, object: accountToken)
     }
 }
 
 
 extension CloudKitService {
     
-    static let nameUserAccountTokenDidChange = Notification.Name(rawValue: "CloudKitService.nameUserAccountTokenDidChange")
+    static let nameUserAccountTokenDidChange = Notification.Name(rawValue: "CloudKitService.UserAccountTokenDidChangeName")
     
     static let ckVocabularyCollectionZone = CKRecordZone(zoneName: "VocabularyCollectionZone")
     
-    static var noAccountToken: String { return "0000000000000000000000000" }
+    /// The account token indicated that there is no account.
+    static var noAccountToken: String { return "00000-00000-00000-00000-00000" }
     
-    static var cachedAccountToken: String {
-        let key = "cachedAccountToken"
-        let token = UserDefaults.standard.string(forKey: key) ?? noAccountToken
-        UserDefaults.standard.setValue(token, forKey: key)
-        return token
-    }
-    
+    /// The current account token. Return a `noAccountToken` if account is not available.
     static var currentAccountToken: String {
         var token = FileManager.default.ubiquityIdentityToken?.description ?? noAccountToken
         token = token.trimmingCharacters(in: .symbols)
-        token = token.replacingOccurrences(of: " ", with: "")
+        token = token.replacingOccurrences(of: " ", with: "-")
         return token
     }
 }
