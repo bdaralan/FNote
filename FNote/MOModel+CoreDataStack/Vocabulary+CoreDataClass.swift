@@ -86,7 +86,7 @@ public class Vocabulary: NSManagedObject, LocalRecord {
 extension Vocabulary {
     
     func setCollection(_ collection: VocabularyCollection) {
-        #warning("TODO: need logic for cross collection")
+        #warning("TODO: set collection and reconfigure its CKRecord")
         self.collection = collection
     }
     
@@ -102,5 +102,17 @@ extension Vocabulary {
         default:
             return nil
         }
+    }
+    
+    func copyValues(from vocabluary: Vocabulary) {
+        self.recordSystemFields = vocabluary.recordSystemFields
+        self.native = vocabluary.native
+        self.translation = vocabluary.translation
+        self.note = vocabluary.note
+        self.politeness = vocabluary.politeness
+        self.isFavorited = vocabluary.isFavorited
+        self.relations = vocabluary.relations
+        self.alternatives = vocabluary.alternatives
+        self.collection = vocabluary.collection
     }
 }

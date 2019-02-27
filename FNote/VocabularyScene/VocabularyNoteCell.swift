@@ -35,6 +35,10 @@ class VocabularyNoteCell: UITableViewCell {
         super.setSelected(false, animated: false)
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+    }
+    
     func reloadCell(text: String, placeholder: String) {
         textView.text = text
         placeholderLabel.text = placeholder

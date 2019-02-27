@@ -107,25 +107,25 @@ extension VocabularyCollectionCell {
         let safeArea = contentView.safeAreaLayoutGuide
         let constraints = [
             politenessImageView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: margin),
-            politenessImageView.centerYAnchor.constraint(equalTo: translationLabel.centerYAnchor),
+            politenessImageView.centerYAnchor.constraint(equalTo: nativeLabel.centerYAnchor),
             politenessImageView.heightAnchor.constraint(equalToConstant: 15),
             politenessImageView.widthAnchor.constraint(equalTo: politenessImageView.heightAnchor),
             
             favoriteButton.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -margin),
-            favoriteButton.centerYAnchor.constraint(equalTo: translationLabel.centerYAnchor),
+            favoriteButton.centerYAnchor.constraint(equalTo: nativeLabel.centerYAnchor),
             favoriteButton.heightAnchor.constraint(equalToConstant: 30),
             favoriteButton.widthAnchor.constraint(equalTo: favoriteButton.heightAnchor),
             
-            translationLabel.leadingAnchor.constraint(equalTo: politenessImageView.trailingAnchor, constant: 8),
-            translationLabel.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 8),
+            nativeLabel.leadingAnchor.constraint(equalTo: politenessImageView.trailingAnchor, constant: 8),
+            nativeLabel.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 8),
             
-            seperatorView.topAnchor.constraint(equalTo: translationLabel.bottomAnchor, constant: 4),
+            seperatorView.topAnchor.constraint(equalTo: nativeLabel.bottomAnchor, constant: 4),
             seperatorView.leadingAnchor.constraint(equalTo: politenessImageView.leadingAnchor),
             seperatorView.trailingAnchor.constraint(equalTo: favoriteButton.trailingAnchor),
             seperatorView.heightAnchor.constraint(equalToConstant: 0.5),
             
-            nativeLabel.topAnchor.constraint(equalTo: seperatorView.bottomAnchor, constant: 8),
-            nativeLabel.leadingAnchor.constraint(equalTo: politenessImageView.leadingAnchor),
+            translationLabel.topAnchor.constraint(equalTo: seperatorView.bottomAnchor, constant: 8),
+            translationLabel.leadingAnchor.constraint(equalTo: politenessImageView.leadingAnchor),
             
             buttonStackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8),
             buttonStackView.trailingAnchor.constraint(equalTo: favoriteButton.trailingAnchor),

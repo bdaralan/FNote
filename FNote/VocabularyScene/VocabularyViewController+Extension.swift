@@ -11,17 +11,28 @@ import Foundation
 
 extension VocabularyViewController {
     
-    /// Controller's table view section type
+    /// View controlelr mode.
+    enum Mode {
+        case view
+        case edit
+        case add
+    }
+    
+    /// Controller's table view section type.
     enum InputSection: Int {
         case vocabulary
         case relation
         case note
     }
     
-    /// Controller's table view row type in section
+    /// Controller's table view row type in section.
     enum Input: Int {
-        case native, translation
-        case relations, alternatives, favorite, politeness
+        case native
+        case translation
+        case relations
+        case alternatives
+        case favorite
+        case politeness
         case note
     }
 }

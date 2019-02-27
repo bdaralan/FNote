@@ -11,8 +11,10 @@ import UIKit
 
 protocol Coordinator {
     
-    var navigationController: UINavigationController { set get }
     var children: [Coordinator] { set get }
+    
+    var navigationController: UINavigationController { set get }
+    
     
     func start()
 }

@@ -12,26 +12,13 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var mainCoordinator: MainCoordinator?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        setupMainCoordinator()
-        CloudKitService.current.setupUserAccountChangedNotification()
-        return true
-    }
-}
-
-
-extension AppDelegate {
-    
-    private func setupMainCoordinator() {
-        let navController = UINavigationController()
-        mainCoordinator = MainCoordinator(navController: navController)
-        mainCoordinator?.start()
-        
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = navController
+        window?.rootViewController = MainTabBarViewController()
         window?.makeKeyAndVisible()
+        CloudKitService.current.checkAccountStatus()
+        return true
     }
 }
 

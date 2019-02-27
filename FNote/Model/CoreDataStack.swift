@@ -11,8 +11,7 @@ import CoreData
 
 class CoreDataStack {
     
-    #warning("TODO: need logic to get current user's iCloud account id")
-    static private(set) var current: CoreDataStack = .init(userAccountToken: CloudKitService.currentAccountToken)
+    static private(set) var current: CoreDataStack = .init(userAccountToken: CloudKitService.accountToken)
     
     static let coreDataModel: NSManagedObjectModel = {
         let url = Bundle.main.url(forResource: "DataModel", withExtension: "momd")!
@@ -65,26 +64,13 @@ extension CoreDataStack {
     }
     
     func currentUser() -> User? {
-        return fetchUser(userRecordIDName: CloudKitService.currentAccountToken)
+        return fetchUser(userRecordIDName: CloudKitService.accountToken)
     }
     
     #warning("test func")
-    func firstCollection() -> VocabularyCollection? {
+    func lastSelectedCollection() -> VocabularyCollection? {
         let request: NSFetchRequest<VocabularyCollection> = VocabularyCollection.fetchRequest()
         let results = try? mainContext.fetch(request)
         return results?.first
-    }
-}
-
-
-extension NSManagedObjectContext {
-    
-    func quickSave() {
-        do {
-            guard hasChanges else { return }
-            try save()
-        } catch {
-            fatalError("quickSave() failed!!!")
-        }
     }
 }

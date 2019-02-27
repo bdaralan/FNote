@@ -10,6 +10,18 @@ import UIKit
 
 class VocabularyTextFieldCell: UITableViewCell {
     
+    var isQuickCopyEnabled: Bool = true {
+        didSet { longPressView.isHidden = !isQuickCopyEnabled }
+    }
+    
+    var quickCopyCompletion: ((String) -> Void)?
+    
+    var longPressView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
+    }()
+    
     let textField: UITextField = {
         let tf = UITextField()
         tf.font = UIFont.preferredFont(forTextStyle: .title1)
@@ -26,6 +38,7 @@ class VocabularyTextFieldCell: UITableViewCell {
         return lbl
     }()
     
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupCel()
@@ -39,6 +52,12 @@ class VocabularyTextFieldCell: UITableViewCell {
         super.setSelected(false, animated: false)
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        quickCopyCompletion = nil
+    }
+    
+    
     func reloadCell(text: String, placeholder: String) {
         textField.text = text
         textField.placeholder = placeholder
@@ -51,7 +70,7 @@ extension VocabularyTextFieldCell {
     
     private func setupCel() {
         selectionStyle = .none
-        contentView.addSubviews([textField, label])
+        contentView.addSubviews([textField, label, longPressView])
         
         let safeArea = contentView.safeAreaLayoutGuide
         let margin: CGFloat = 16
@@ -63,8 +82,27 @@ extension VocabularyTextFieldCell {
             label.leadingAnchor.constraint(equalTo: textField.leadingAnchor),
             label.trailingAnchor.constraint(equalTo: textField.trailingAnchor),
             label.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 4),
-            label.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8)
+            label.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8),
+            
+            longPressView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            longPressView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            longPressView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            longPressView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ]
         NSLayoutConstraint.activate(constraints)
+        setupLongPressViewGesture()
+    }
+    
+    private func setupLongPressViewGesture() {
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleContentViewLongPressed(_:)))
+        longPress.minimumPressDuration = 1
+        longPressView.addGestureRecognizer(longPress)
+    }
+    
+    @objc private func handleContentViewLongPressed(_ gesture: UILongPressGestureRecognizer) {
+        guard isQuickCopyEnabled, gesture.state == .began else { return }
+        guard let text = textField.text, !text.isEmpty else { return }
+        UIPasteboard.general.string = text
+        quickCopyCompletion?(text)
     }
 }

@@ -7,19 +7,22 @@
 //
 
 import UIKit
+import CoreData
 
-private let reuseIdentifier = "Cell"
 
 class VocabularyCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-    private var collection: VocabularyCollection
-    private(set) var vocabularies: [Vocabulary] = []
+    weak var coordinator: (VocabularyViewer & VocabularyAdder)?
+    
+    private(set) var collection: VocabularyCollection
+    
+    private(set) var fetchController: NSFetchedResultsController<Vocabulary>!
     
     init(collection: VocabularyCollection) {
         self.collection = collection
-        self.vocabularies = collection.vocabularies.sorted(by: { $0.translation < $1.translation })
         let layout = VocabularyCollectionViewFlowLayout()
         super.init(collectionViewLayout: layout)
+        configureFetchController()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -29,7 +32,7 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     override func viewDidLoad() {
         super.viewDidLoad()
         setupController()
-        setupNavItem()
+        setupNavItems()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -39,20 +42,32 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         collectionView.collectionViewLayout.invalidateLayout()
     }
     
-    func reloadCollection(_ collection: VocabularyCollection) {
-        self.collection = collection
-        self.vocabularies = collection.vocabularies.sorted(by: { $0.translation < $1.translation })
-        collectionView.reloadData()
+    @objc private func addVocabularyButtonTapped() {
+        coordinator?.addNewVocabulary(to: collection)
     }
     
-    @objc private func addVocabularyButtonTapped() {
-        #warning("need to implement")
-        print("addVocabularyButtonTapped")
-        let addVocabVC = VocabularyViewController(collection: collection)
-        addVocabVC.delegate = self
-        addVocabVC.navigationItem.title = "Add Vocabulary"
-        let navController = UINavigationController(rootViewController: addVocabVC)
-        present(navController, animated: true, completion: nil)
+    private func configureFetchController() {
+        let request: NSFetchRequest<Vocabulary> = Vocabulary.fetchRequest()
+        request.predicate = NSPredicate(format: "collection == %@", collection)
+        request.sortDescriptors = []
+        fetchController = NSFetchedResultsController<Vocabulary>(
+            fetchRequest: request,
+            managedObjectContext: collection.managedObjectContext!,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        do {
+            try fetchController.performFetch()
+            fetchController.delegate = self
+        } catch {
+            print("failed to fetch vocabulary with error: \(error)")
+        }
+    }
+    
+    func setCollection(_ collection: VocabularyCollection) {
+        self.collection = collection
+        configureFetchController()
+        collectionView.reloadData()
     }
 }
 
@@ -66,14 +81,35 @@ extension VocabularyCollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return vocabularies.count
+        return fetchController.fetchedObjects?.count ?? 0
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueRegisteredCell(VocabularyCollectionCell.self, for: indexPath)
         cell.delegate = self
-        cell.reloadCell(with: vocabularies[indexPath.row])
+        cell.reloadCell(with: fetchController.object(at: indexPath))
         return cell
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        coordinator?.viewVocabulary(fetchController.object(at: indexPath))
+    }
+}
+
+
+extension VocabularyCollectionViewController: NSFetchedResultsControllerDelegate {
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        switch type {
+        case .insert:
+            collectionView.insertItems(at: [newIndexPath!])
+        case .update:
+            collectionView.reloadItems(at: [indexPath!])
+        case .delete:
+            collectionView.deleteItems(at: [indexPath!])
+        case .move:
+            collectionView.moveItem(at: indexPath!, to: newIndexPath!)
+        }
     }
 }
 
@@ -81,39 +117,23 @@ extension VocabularyCollectionViewController {
 extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
     
     func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapFavoriteButton button: UIButton) {
-        let vocabIndex = collectionView.indexPath(for: cell)!.row
-        let vocab = vocabularies[vocabIndex]
+        let vocabIndexPath = collectionView.indexPath(for: cell)!
+        let vocab = fetchController.object(at: vocabIndexPath)
         vocab.isFavorited.toggle()
         vocab.managedObjectContext?.quickSave()
         cell.reloadCell(with: vocab)
     }
     
     func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapRelationButton button: UIButton) {
-        let vocabIndex = collectionView.indexPath(for: cell)!.row
-        let vocab = vocabularies[vocabIndex]
+        let vocabIndexPath = collectionView.indexPath(for: cell)!
+        let vocab = fetchController.object(at: vocabIndexPath)
         print(vocab.relations.count)
     }
     
     func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapAlternativeButton button: UIButton) {
-        let vocabIndex = collectionView.indexPath(for: cell)!.row
-        let vocab = vocabularies[vocabIndex]
+        let vocabIndexPath = collectionView.indexPath(for: cell)!
+        let vocab = fetchController.object(at: vocabIndexPath)
         print(vocab.alternatives.count)
-    }
-}
-
-
-extension VocabularyCollectionViewController: VocabularyViewControllerDelegate {
-    
-    func vocabularyViewController(_ viewController: VocabularyViewController, didRequestCancel vocabulary: Vocabulary) {
-        vocabulary.managedObjectContext?.quickSave()
-        viewController.dismiss(animated: true, completion: nil)
-    }
-    
-    func vocabularyViewController(_ viewController: VocabularyViewController, didRequestSave vocabulary: Vocabulary) {
-        collection.managedObjectContext?.quickSave()
-        vocabularies = collection.vocabularies.sorted(by: { $0.translation < $1.translation })
-        collectionView.reloadData()
-        viewController.dismiss(animated: true, completion: nil)
     }
 }
 
@@ -126,7 +146,7 @@ extension VocabularyCollectionViewController {
         collectionView.alwaysBounceVertical = true
     }
     
-    private func setupNavItem() {
+    private func setupNavItems() {
         let addVocab = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addVocabularyButtonTapped))
         navigationItem.rightBarButtonItems = [addVocab]
     }

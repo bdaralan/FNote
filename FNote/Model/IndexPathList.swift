@@ -9,16 +9,6 @@
 import Foundation
 
 
-//class IndexPathList<S, I> {
-//    var section: S
-//    var items: [I]
-//
-//    init(section: S, items: [I]) {
-//        self.section = section
-//        self.items = items
-//    }
-//}
-
 struct IndexPathList<S, I> {
     
     private(set) var elements: [Item<S, I>]
@@ -37,6 +27,19 @@ struct IndexPathList<S, I> {
     
     mutating func addElement(_ item: Item<S, I>) {
         elements.append(item)
+    }
+}
+
+
+extension IndexPathList where S: Equatable, I: Equatable {
+    
+    func indexPath(for item: I) -> IndexPath? {
+        for (sectionIndex, section) in elements.enumerated() where section.items.contains(item) {
+            for (itemIndex, sectionItem) in section.items.enumerated() where sectionItem == item {
+                return IndexPath(item: itemIndex, section: sectionIndex)
+            }
+        }
+        return nil
     }
 }
 
