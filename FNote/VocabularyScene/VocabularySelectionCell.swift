@@ -9,15 +9,9 @@
 import UIKit
 
 
-protocol VocabularySelectionCellDelegate: class {
-    
-    func vocabularySelectionCell(_ cell: VocabularySelectionCell, didToggleSwitcher switcher: UISwitch)
-}
-
-
 class VocabularySelectionCell: UITableViewCell {
     
-    weak var delegate: VocabularySelectionCellDelegate?
+    var switcherValueChangedHandler: ((Bool) -> Void)?
     
     let switcher: UISwitch = {
         let switcher = UISwitch()
@@ -59,11 +53,11 @@ class VocabularySelectionCell: UITableViewCell {
         contentView.bringSubviewToFront(switcher)
         switcher.isHidden = false
         switcher.isOn = on
-        setupSwitcherValueChangedHandler()
+        switcher.addTarget(self, action: #selector(switcherValueChanged), for: .valueChanged)
     }
     
     @objc private func switcherValueChanged() {
-        delegate?.vocabularySelectionCell(self, didToggleSwitcher: switcher)
+        switcherValueChangedHandler?(switcher.isOn)
     }
 }
 
@@ -81,9 +75,5 @@ extension VocabularySelectionCell {
             switcher.widthAnchor.constraint(equalToConstant: 49)
         ]
         NSLayoutConstraint.activate(constraints)
-    }
-    
-    private func setupSwitcherValueChangedHandler() {
-        switcher.addTarget(self, action: #selector(switcherValueChanged), for: .valueChanged)
     }
 }

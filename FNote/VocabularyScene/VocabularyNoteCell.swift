@@ -8,9 +8,12 @@
 
 import UIKit
 
-class VocabularyNoteCell: UITableViewCell {
+
+class VocabularyNoteCell: UITableViewCell, UITextViewDelegate {
     
-    let textView: UITextView = {
+    var noteChangedHandler: ((_ note: String) -> Void)?
+    
+    private let textView: UITextView = {
         let tv = UITextView()
         tv.font = UIFont.preferredFont(forTextStyle: .body)
         return tv
@@ -19,12 +22,14 @@ class VocabularyNoteCell: UITableViewCell {
     private let placeholderLabel: UILabel = {
         let lbl = UILabel()
         lbl.textColor = .lightGray
+        lbl.text = ". . ."
         return lbl
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupCell()
+        textView.delegate = self
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -39,18 +44,22 @@ class VocabularyNoteCell: UITableViewCell {
         super.prepareForReuse()
     }
     
-    func reloadCell(text: String, placeholder: String) {
-        textView.text = text
+    func textViewDidChange(_ textView: UITextView) {
+        noteChangedHandler?(textView.text)
+        hidePlaceHolderIfNeeded()
+    }
+    
+    func reloadCell(note: String) {
+        textView.text = note
+        hidePlaceHolderIfNeeded()
+    }
+    
+    func setPlaceholder(_ placeholder: String) {
         placeholderLabel.text = placeholder
-        hidePlaceholderIfNeeded()
     }
     
-    func hidePlaceholderIfNeeded() {
+    private func hidePlaceHolderIfNeeded() {
         placeholderLabel.isHidden = !textView.text.isEmpty
-    }
-    
-    @objc private func dismissTextView() {
-        textView.resignFirstResponder()
     }
 }
 
@@ -80,9 +89,13 @@ extension VocabularyNoteCell {
     
     private func setupTextViewInputAccessoryView() {
         let toolBar = UIToolbar(frame: .init(x: 0, y: 0, width: 45, height: 45))
-        let dismiss = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissTextView))
+        let done = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolBar.items = [space, dismiss]
+        toolBar.items = [space, done]
         textView.inputAccessoryView = toolBar
+    }
+    
+    @objc private func doneButtonTapped() {
+        textView.resignFirstResponder()
     }
 }

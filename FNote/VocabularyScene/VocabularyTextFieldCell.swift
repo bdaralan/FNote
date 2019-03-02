@@ -10,16 +10,6 @@ import UIKit
 
 class VocabularyTextFieldCell: UITableViewCell {
     
-    var isQuickCopyEnabled: Bool = true {
-        didSet { longPressView.isHidden = !isQuickCopyEnabled }
-    }
-    
-    var longPressView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        return view
-    }()
-    
     let textField: UITextField = {
         let tf = UITextField()
         tf.font = UIFont.preferredFont(forTextStyle: .title1)
@@ -63,8 +53,7 @@ extension VocabularyTextFieldCell {
     
     private func setupCel() {
         selectionStyle = .none
-        contentView.addSubviews([textField, label, longPressView])
-        
+        contentView.addSubviews([textField, label])
         let safeArea = contentView.safeAreaLayoutGuide
         let margin: CGFloat = 16
         let constraints = [
@@ -75,25 +64,8 @@ extension VocabularyTextFieldCell {
             label.leadingAnchor.constraint(equalTo: textField.leadingAnchor),
             label.trailingAnchor.constraint(equalTo: textField.trailingAnchor),
             label.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 4),
-            label.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8),
-            
-            longPressView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            longPressView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            longPressView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            longPressView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            label.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8)
         ]
         NSLayoutConstraint.activate(constraints)
-        setupLongPressViewGesture()
-    }
-    
-    private func setupLongPressViewGesture() {
-        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleContentViewLongPressed(_:)))
-        longPress.minimumPressDuration = 1
-        longPressView.addGestureRecognizer(longPress)
-    }
-    
-    @objc private func handleContentViewLongPressed(_ gesture: UILongPressGestureRecognizer) {
-        guard isQuickCopyEnabled, gesture.state == .began else { return }
-        UIPasteboard.general.string = textField.text
     }
 }

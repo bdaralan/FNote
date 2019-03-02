@@ -12,7 +12,7 @@ import CoreData
 
 class VocabularyCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-    weak var coordinator: (VocabularyViewer & VocabularyAdder)?
+    weak var coordinator: (VocabularyViewer & VocabularyAdder & VocabularyRemover)?
     
     private(set) var collection: VocabularyCollection
     
@@ -48,7 +48,7 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     
     private func configureFetchController() {
         let request: NSFetchRequest<Vocabulary> = Vocabulary.fetchRequest()
-        request.predicate = NSPredicate(format: "collection.name == %@", collection.name)
+        request.predicate = NSPredicate(format: "collection == %@", collection)
         request.sortDescriptors = [.init(key: "native", ascending: true)]
         fetchController = NSFetchedResultsController<Vocabulary>(
             fetchRequest: request,
@@ -140,8 +140,7 @@ extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
     
     func vocabularyCollectionCellDidBeginLongPress(_ cell: VocabularyCollectionCell) {
         let indexPath = collectionView.indexPath(for: cell)!
-        collection.managedObjectContext?.delete(fetchController.object(at: indexPath))
-        collection.managedObjectContext?.quickSave()
+        coordinator?.removeVocabulary(fetchController.object(at: indexPath), from: collection)
     }
 }
 

@@ -7,15 +7,20 @@
 //
 
 import UIKit
+import CoreData
 
 
-class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, VocabularyAdder {
+class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, VocabularyAdder, VocabularyRemover {
     
     var children: [Coordinator] = []
     
     var navigationController: UINavigationController
     
     var vocabularyCollectionVC: VocabularyCollectionViewController!
+    
+    var collectionContext: NSManagedObjectContext? {
+        return vocabularyCollectionVC.collection.managedObjectContext
+    }
     
     
     init(navigationController: UINavigationController) {
@@ -37,8 +42,8 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
     func viewVocabulary(_ vocabulary: Vocabulary) {
         let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
         vocabularyVC.navigationItem.title = "Vocabulary"
-        vocabularyVC.saveChangesHandler = { [weak self] (vocabulary) in
-            vocabulary.managedObjectContext?.quickSave()
+        vocabularyVC.saveCompletion = { [weak self] in
+            self?.collectionContext?.quickSave()
             self?.navigationController.popViewController(animated: true)
         }
         navigationController.pushViewController(vocabularyVC, animated: true)
@@ -47,16 +52,25 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
     func addNewVocabulary(to collection: VocabularyCollection) {
         let vocabularyVC = VocabularyViewController(mode: .add(collection))
         vocabularyVC.navigationItem.title = "Add Vocabulary"
-
-        vocabularyVC.cancelActionHandler = {
+        vocabularyVC.cancelCompletion = {
             vocabularyVC.dismiss(animated: true, completion: nil)
         }
-
-        vocabularyVC.addVocabularyHandler = { (newVocabulary) in
-            newVocabulary.managedObjectContext?.quickSave()
+        vocabularyVC.saveCompletion = { [weak self] in
+            self?.collectionContext?.quickSave()
             vocabularyVC.dismiss(animated: true, completion: nil)
         }
-        
         navigationController.present(vocabularyVC.withNavController(), animated: true, completion: nil)
+    }
+    
+    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection) {
+        guard collection.vocabularies.contains(vocabulary), let context = collection.managedObjectContext else { return }
+        let alert = UIAlertController(title: "Delete Vocabulary", message: nil, preferredStyle: .actionSheet)
+        alert.addAction(.init(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(.init(title: "Delete", style: .destructive) { (action) in
+            context.delete(vocabulary)
+            context.quickSave()
+        })
+        alert.preferredAction = alert.actions.first
+        navigationController.present(alert, animated: true, completion: nil)
     }
 }

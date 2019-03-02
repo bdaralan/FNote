@@ -14,11 +14,11 @@ extension VocabularyViewController {
     
     /// View controlelr mode.
     enum Mode {
-        /// View vocabulary.
+        /// View vocabulary mode.
         case view(Vocabulary)
         
-        /// Add vocabulary. Requires a collection for the vocabulary.
-        case add(_ collection: VocabularyCollection)
+        /// Add vocabulary mode. Requires a collection for the vocabulary.
+        case add(VocabularyCollection)
     }
     
     /// Controller's table view section type.
@@ -45,15 +45,13 @@ class VocabularyViewController: UITableViewController {
     
     private let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     private let vocabulary: Vocabulary
-    private let mode: Mode
     
-    private var beforeEditContext: NSManagedObjectContext?
-    private var beforeEditVocabulary: Vocabulary?
+    private var beforeChangeContext: NSManagedObjectContext?
+    private var beforeChangeVocabulary: Vocabulary?
     private var saveChangesBarButton: UIBarButtonItem?
     
-    var cancelActionHandler: (() -> Void)?
-    var saveChangesHandler: ((Vocabulary)->Void)?
-    var addVocabularyHandler: ((Vocabulary) -> Void)?
+    var cancelCompletion: (() -> Void)?
+    var saveCompletion: (() -> Void)?
     
     let inputList: IndexPathList<InputSection, Input> = {
         var list = IndexPathList<InputSection, Input>()
@@ -65,27 +63,17 @@ class VocabularyViewController: UITableViewController {
     
     weak var nativeCell: VocabularyTextFieldCell?
     weak var translationCell: VocabularyTextFieldCell?
-    weak var noteCell: VocabularyNoteCell?
     weak var politenessCell: VocabularySelectionCell?
     
-    /// Construct a vocabulary viewer
-    /// - parameters:
-    ///   - vocabulary: The vocabulary to view.
-    ///   - collection: The collection of the vocabulary.
-    ///   - mode: The controller mode.
+    /// Construct a vocabulary viewer or adder based on the specified mode.
     init(mode: Mode) {
-        self.mode = mode
         switch mode {
         case .view(let vocabulary):
-            let vocabularyID = vocabulary.objectID
-            let parentContext = vocabulary.managedObjectContext!
-            context.parent = parentContext
-            self.vocabulary = context.object(with: vocabularyID) as! Vocabulary
-            
-            beforeEditContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-            beforeEditContext?.parent = parentContext
-            beforeEditVocabulary = beforeEditContext?.object(with: vocabularyID) as? Vocabulary
-       
+            context.parent = vocabulary.managedObjectContext!
+            self.vocabulary = context.object(with: vocabulary.objectID) as! Vocabulary
+            beforeChangeContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+            beforeChangeContext?.parent = context.parent
+            beforeChangeVocabulary = beforeChangeContext?.object(with: vocabulary.objectID) as? Vocabulary
         case .add(let collection):
             context.parent = collection.managedObjectContext!
             let collection = context.object(with: collection.objectID) as! VocabularyCollection
@@ -93,6 +81,7 @@ class VocabularyViewController: UITableViewController {
             vocabulary.setCollection(collection)
         }
         super.init(style: .grouped)
+        setupNavItems(mode: mode)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -102,7 +91,16 @@ class VocabularyViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupController()
-        setupNavItems()
+    }
+    
+    @objc private func handleTextFieldCellTextChanged(_ notification: Notification) {
+        guard let textField = notification.object as? UITextField else { return }
+        if textField === nativeCell?.textField {
+            vocabulary.native = textField.text ?? ""
+        } else if textField === translationCell?.textField {
+            vocabulary.translation = textField.text ?? ""
+        }
+        toggleSaveButtonEnableStateIfNeeded()
     }
 }
 
@@ -139,14 +137,12 @@ extension VocabularyViewController {
         case .native:
             let cell = tableView.dequeueRegisteredCell(VocabularyTextFieldCell.self, for: indexPath)
             cell.reloadCell(text: vocabulary.native, placeholder: "Native")
-            cell.textField.tag = input.rawValue
             cell.textField.delegate = self
             nativeCell = cell
             return cell
         case .translation:
             let cell = tableView.dequeueRegisteredCell(VocabularyTextFieldCell.self, for: indexPath)
             cell.reloadCell(text: vocabulary.translation, placeholder: "Translation")
-            cell.textField.tag = input.rawValue
             cell.textField.delegate = self
             translationCell = cell
             return cell
@@ -169,13 +165,18 @@ extension VocabularyViewController {
             let cell = tableView.dequeueRegisteredCell(VocabularySelectionCell.self, for: indexPath)
             cell.reloadCell(text: "Favorite", detail: "", image: .favorite)
             cell.showSwitcher(on: vocabulary.isFavorited)
-            cell.delegate = self
+            cell.switcherValueChangedHandler = { [weak self] (isOn) in
+                self?.vocabulary.isFavorited = isOn
+                self?.toggleSaveButtonEnableStateIfNeeded()
+            }
             return cell
         case .note:
             let cell = tableView.dequeueRegisteredCell(VocabularyNoteCell.self, for: indexPath)
-            cell.reloadCell(text: "", placeholder: ". . .")
-            cell.textView.delegate = self
-            noteCell = cell
+            cell.reloadCell(note: vocabulary.note)
+            cell.noteChangedHandler = { [weak self] (note) in
+                self?.vocabulary.note = note
+                self?.toggleSaveButtonEnableStateIfNeeded()
+            }
             return cell
         }
     }
@@ -210,25 +211,10 @@ extension VocabularyViewController {
 }
 
 
-extension VocabularyViewController: VocabularySelectionCellDelegate {
-    
-    func vocabularySelectionCell(_ cell: VocabularySelectionCell, didToggleSwitcher switcher: UISwitch) {
-        vocabulary.isFavorited = switcher.isOn
-        toggleSaveButtonEnableStateIfNeeded()
-    }
-}
-
-
-extension VocabularyViewController: UITextFieldDelegate, UITextViewDelegate {
+extension VocabularyViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         return textField.resignFirstResponder()
-    }
-    
-    func textViewDidChange(_ textView: UITextView) {
-        vocabulary.note = textView.text
-        noteCell?.hidePlaceholderIfNeeded()
-        toggleSaveButtonEnableStateIfNeeded()
     }
 }
 
@@ -240,60 +226,45 @@ extension VocabularyViewController {
         tableView.registerCell(VocabularyTextFieldCell.self)
         tableView.registerCell(VocabularySelectionCell.self)
         tableView.registerCell(VocabularyNoteCell.self)
-        setupNotificationHandlers()
+        let name = UITextField.textDidChangeNotification
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTextFieldCellTextChanged), name: name, object: nil)
     }
     
-    private func setupNavItems() {
+    private func setupNavItems(mode: Mode) {
         switch mode {
         case .view:
             navigationItem.leftBarButtonItem = nil
             saveChangesBarButton = .init(barButtonSystemItem: .save, target: self, action: #selector(saveChanges))
         case .add:
             let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelAction))
-            let add = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(addVocabulary))
+            let add = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(saveChanges))
             navigationItem.leftBarButtonItem = cancel
             navigationItem.rightBarButtonItem = add
         }
-    }
-    
-    private func setupNotificationHandlers() {
-        let name = UITextField.textDidChangeNotification
-        NotificationCenter.default.addObserver(self, selector: #selector(handleTextFieldCellTextChanged), name: name, object: nil)
-    }
-    
-    @objc private func handleTextFieldCellTextChanged(_ notification: Notification) {
-        guard let textField = notification.object as? UITextField else { return }
-        guard let input = VocabularyViewController.Input(rawValue: textField.tag) else { return }
-        switch input {
-        case .native:
-            vocabulary.native = textField.text ?? ""
-        case .translation:
-            vocabulary.translation = textField.text ?? ""
-        default:
-            fatalError("handling unknown textfield")
-        }
-        toggleSaveButtonEnableStateIfNeeded()
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     @objc private func cancelAction() {
-        cancelActionHandler?()
+        cancelCompletion?()
     }
     
     @objc private func saveChanges() {
-        saveChangesHandler?(vocabulary)
-    }
-    
-    @objc private func addVocabulary() {
+        vocabulary.native = vocabulary.native.trimmingCharacters(in: .whitespaces)
+        vocabulary.translation = vocabulary.translation.trimmingCharacters(in: .whitespaces)
+        vocabulary.note = vocabulary.note.trimmingCharacters(in: .whitespacesAndNewlines)
+        
         view.endEditing(true)
-        if vocabulary.native.trimmingCharacters(in: .whitespaces).isEmpty {
+        if vocabulary.native.isEmpty {
             animateTextFieldCelldInvalidInput(.native)
             return
         }
-        if vocabulary.translation.trimmingCharacters(in: .whitespaces).isEmpty {
+        if vocabulary.translation.isEmpty {
             animateTextFieldCelldInvalidInput(.translation)
             return
         }
-        addVocabularyHandler?(vocabulary)
+        
+        context.quickSave()
+        saveCompletion?()
     }
 }
 
@@ -315,21 +286,22 @@ extension VocabularyViewController {
         }
     }
     
-    /// Check if vocabulary has different value. This compare excludes `relations` and `alternatives`.
+    /// Check if vocabulary has different value. Currently does not compare `relations` and `alternatives`.
+    /// - note: This method is async.
     private func toggleSaveButtonEnableStateIfNeeded() {
-        guard let before = beforeEditVocabulary else { return }
-        let after = vocabulary
-        
-        let hasChanges = before.native != after.native
-            || before.translation != after.translation
-            || before.politeness != after.politeness
-            || before.isFavorited != after.isFavorited
-            || before.note != after.note
-        
-        if !hasChanges {
-            navigationItem.setRightBarButton(nil, animated: true)
-        } else if hasChanges, navigationItem.rightBarButtonItem == nil {
-            navigationItem.setRightBarButton(saveChangesBarButton, animated: true)
+        DispatchQueue.main.async { [weak self] in
+            guard let before = self?.beforeChangeVocabulary, let after = self?.vocabulary else { return }
+            let hasChanges = before.native != after.native
+                || before.translation != after.translation
+                || before.politeness != after.politeness
+                || before.isFavorited != after.isFavorited
+                || before.note != after.note
+            
+            if !hasChanges {
+                self?.navigationItem.setRightBarButton(nil, animated: true)
+            } else if hasChanges, self?.navigationItem.rightBarButtonItem == nil {
+                self?.navigationItem.setRightBarButton(self?.saveChangesBarButton, animated: true)
+            }
         }
     }
 }
