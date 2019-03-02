@@ -16,6 +16,8 @@ protocol VocabularyCollectionCellDelegate: class {
     func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapRelationButton button: UIButton)
     
     func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapAlternativeButton button: UIButton)
+    
+    func vocabularyCollectionCellDidBeginLongPress(_ cell: VocabularyCollectionCell)
 }
 
 
@@ -77,12 +79,12 @@ class VocabularyCollectionCell: UICollectionViewCell {
         politenessImageView.layer.cornerRadius = politenessImageView.frame.height / 2
     }
     
-    func reloadCell(with vocab: Vocabulary) {
-        nativeLabel.text = vocab.native
-        translationLabel.text = vocab.translation
-        favoriteButton.tintColor = UIColor(named: "favorite-vocab-\(vocab.isFavorited ? "true" : "false")")
-        relationButton.setTitle("\(vocab.relations.count)", for: .normal)
-        alternativeButton.setTitle("\(vocab.alternatives.count)", for: .normal)
+    func reloadCell(with vocabulary: Vocabulary) {
+        nativeLabel.text = vocabulary.native
+        translationLabel.text = vocabulary.translation
+        favoriteButton.tintColor = UIColor(named: "favorite-vocab-\(vocabulary.isFavorited ? "true" : "false")")
+        relationButton.setTitle("\(vocabulary.relations.count)", for: .normal)
+        alternativeButton.setTitle("\(vocabulary.alternatives.count)", for: .normal)
     }
 }
 
@@ -93,6 +95,7 @@ extension VocabularyCollectionCell {
         setupConstraints()
         setupButtonStackView()
         setupButtonTapHandlers()
+        setupLongPressHandler()
         contentView.backgroundColor = .white
         contentView.layer.cornerRadius = 15
         contentView.layer.shadowOpacity = 0.1
@@ -146,6 +149,11 @@ extension VocabularyCollectionCell {
         delegate?.vocabularyCollectionCell(self, didTapAlternativeButton: alternativeButton)
     }
     
+    @objc private func longPressBegan(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began else { return }
+        delegate?.vocabularyCollectionCellDidBeginLongPress(self)
+    }
+    
     private func setupButtonTapHandlers() {
         favoriteButton.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
         relationButton.addTarget(self, action: #selector(relationButtonTapped), for: .touchUpInside)
@@ -165,5 +173,11 @@ extension VocabularyCollectionCell {
         button.contentHorizontalAlignment = .trailing
         button.semanticContentAttribute = .forceRightToLeft
         button.titleEdgeInsets = UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 4)
+    }
+    
+    private func setupLongPressHandler() {
+        let press = UILongPressGestureRecognizer(target: self, action: #selector(longPressBegan(_:)))
+        press.minimumPressDuration = 1
+        contentView.addGestureRecognizer(press)
     }
 }

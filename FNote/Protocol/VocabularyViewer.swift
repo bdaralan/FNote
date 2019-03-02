@@ -6,7 +6,7 @@
 //  Copyright © 2019 Dara Beng. All rights reserved.
 //
 
-import Foundation
+import CoreData
 
 
 protocol VocabularyViewer: AnyObject {

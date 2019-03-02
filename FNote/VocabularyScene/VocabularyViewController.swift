@@ -10,22 +10,50 @@ import UIKit
 import CoreData
 
 
-class VocabularyViewController: UITableViewController {
+extension VocabularyViewController {
     
-    private(set) var vocabulary: Vocabulary
-    private(set) var collection: VocabularyCollection
-    
-    private lazy var vocabularyBeforeEdit = VocabularyModel()
-
-    private var mode: Mode
-    
-    var isTextEditingAllowed: Bool {
-        return mode == .edit || mode == .add
+    /// View controlelr mode.
+    enum Mode {
+        /// View vocabulary.
+        case view(Vocabulary)
+        
+        /// Add vocabulary. Requires a collection for the vocabulary.
+        case add(_ collection: VocabularyCollection)
     }
     
+    /// Controller's table view section type.
+    enum InputSection: Int {
+        case vocabulary
+        case relation
+        case note
+    }
+    
+    /// Controller's table view row type in section.
+    enum Input: Int {
+        case native
+        case translation
+        case relations
+        case alternatives
+        case favorite
+        case politeness
+        case note
+    }
+}
+
+
+class VocabularyViewController: UITableViewController {
+    
+    private let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+    private let vocabulary: Vocabulary
+    private let mode: Mode
+    
+    private var beforeEditContext: NSManagedObjectContext?
+    private var beforeEditVocabulary: Vocabulary?
+    private var saveChangesBarButton: UIBarButtonItem?
+    
     var cancelActionHandler: (() -> Void)?
-    var saveChangesHandler: ((Vocabulary) -> Void)?
-    var addVocabularyHandler: ((Vocabulary, VocabularyCollection) -> Void)?
+    var saveChangesHandler: ((Vocabulary)->Void)?
+    var addVocabularyHandler: ((Vocabulary) -> Void)?
     
     let inputList: IndexPathList<InputSection, Input> = {
         var list = IndexPathList<InputSection, Input>()
@@ -35,21 +63,35 @@ class VocabularyViewController: UITableViewController {
         return list
     }()
     
-    let politenessOptions: [Vocabulary.Politeness] = Vocabulary.Politeness.allCases
-    
     weak var nativeCell: VocabularyTextFieldCell?
     weak var translationCell: VocabularyTextFieldCell?
     weak var noteCell: VocabularyNoteCell?
     weak var politenessCell: VocabularySelectionCell?
     
-    /// Construct a vocabulary viewer or creater.
+    /// Construct a vocabulary viewer
     /// - parameters:
-    ///   - vocabulary: The vocabulary to view or pass `nil` to create a vocabulary.
+    ///   - vocabulary: The vocabulary to view.
     ///   - collection: The collection of the vocabulary.
-    init(vocabulary: Vocabulary?, collection: VocabularyCollection) {
-        self.mode = vocabulary == nil ? .add : .view
-        self.vocabulary = vocabulary ?? Vocabulary(context: collection.managedObjectContext!)
-        self.collection = collection
+    ///   - mode: The controller mode.
+    init(mode: Mode) {
+        self.mode = mode
+        switch mode {
+        case .view(let vocabulary):
+            let vocabularyID = vocabulary.objectID
+            let parentContext = vocabulary.managedObjectContext!
+            context.parent = parentContext
+            self.vocabulary = context.object(with: vocabularyID) as! Vocabulary
+            
+            beforeEditContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+            beforeEditContext?.parent = parentContext
+            beforeEditVocabulary = beforeEditContext?.object(with: vocabularyID) as? Vocabulary
+       
+        case .add(let collection):
+            context.parent = collection.managedObjectContext!
+            let collection = context.object(with: collection.objectID) as! VocabularyCollection
+            vocabulary = Vocabulary(context: context)
+            vocabulary.setCollection(collection)
+        }
         super.init(style: .grouped)
     }
     
@@ -60,70 +102,6 @@ class VocabularyViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupController()
-    }
-    
-    @objc private func updateVocabularyNavtiveTranslation(_ sender: UITextField) {
-        sender.tintColor = nil
-        guard let input = VocabularyViewController.Input(rawValue: sender.tag) else { return }
-        switch input {
-        case .native: vocabulary.native = sender.text ?? ""
-        case .translation: vocabulary.translation = sender.text ?? ""
-        default: fatalError("unknown sender text field!!!")
-        }
-        print("same values: \(vocabularyBeforeEdit.isValuesEqualTo(vocabulary))")
-    }
-    
-    @objc private func handleTextFieldTextChanged(_ notification: Notification) {
-        guard let textField = notification.object as? UITextField else { return }
-        guard let input = VocabularyViewController.Input(rawValue: textField.tag) else { return }
-        switch input {
-        case .native:
-            vocabulary.native = textField.text ?? ""
-        case .translation:
-            vocabulary.translation = textField.text ?? ""
-        default:
-            fatalError("handling unknown textfield")
-        }
-        print(vocabulary)
-    }
-    
-    /// Validate the required fields.
-    /// - returns: `false` and play appropriate animation if there any invalid inputs. Otherwise, `true`
-    private func validateInputFields() -> Bool {
-        view.endEditing(true)
-        
-        if vocabulary.native.trimmingCharacters(in: .whitespaces).isEmpty {
-            animateTextFielCelldInvalidInput(input: .native)
-            return false
-        }
-        
-        if vocabulary.translation.trimmingCharacters(in: .whitespaces).isEmpty {
-            animateTextFielCelldInvalidInput(input: .translation)
-            return false
-        }
-        
-        return true
-    }
-    
-    private func animateTextFielCelldInvalidInput(input: VocabularyViewController.Input) {
-        guard input == .native || input == .translation else { return }
-        guard let nativeIndex = inputList.indexPath(for: input) else { return }
-        if let cell = tableView.cellForRow(at: nativeIndex) {
-            cell.contentView.shakeHorizontally()
-        } else {
-            UIView.animate(withDuration: 0.2) { [weak self] in
-                guard let self = self else { return }
-                self.tableView.scrollToRow(at: nativeIndex, at: .top, animated: false)
-                let cell = self.tableView.cellForRow(at: nativeIndex) as! VocabularyTextFieldCell
-                cell.contentView.shakeHorizontally(duration: 0.4)
-            }
-        }
-    }
-    
-    func setMode(_ mode: Mode) {
-        self.mode = mode
-        nativeCell?.isQuickCopyEnabled = !isTextEditingAllowed
-        translationCell?.isQuickCopyEnabled = !isTextEditingAllowed
         setupNavItems()
     }
 }
@@ -163,7 +141,6 @@ extension VocabularyViewController {
             cell.reloadCell(text: vocabulary.native, placeholder: "Native")
             cell.textField.tag = input.rawValue
             cell.textField.delegate = self
-            cell.isQuickCopyEnabled = !isTextEditingAllowed
             nativeCell = cell
             return cell
         case .translation:
@@ -171,7 +148,6 @@ extension VocabularyViewController {
             cell.reloadCell(text: vocabulary.translation, placeholder: "Translation")
             cell.textField.tag = input.rawValue
             cell.textField.delegate = self
-            cell.isQuickCopyEnabled = !isTextEditingAllowed
             translationCell = cell
             return cell
         case .relations:
@@ -214,16 +190,16 @@ extension VocabularyViewController {
         case .politeness:
             let cell = tableView.cellForRow(at: indexPath) as! VocabularySelectionCell
             politenessCell = cell
-            let options = politenessOptions.map({ $0.string })
+            let options = Vocabulary.Politeness.allCases.map({ $0.string })
             let optionVC = OptionTableViewController(options: options, selectedOptions: [vocabulary.politeness])
             optionVC.navigationItem.title = "Politeness"
-            optionVC.selectOptionHandler = { [weak self] (index) in
+            optionVC.selectOptionHandler = { [weak self] (selectedIndex) in
                 guard let self = self else { return }
-                self.vocabulary.politeness = options[index]
-                self.vocabulary.managedObjectContext?.quickSave()
+                self.vocabulary.politeness = options[selectedIndex]
                 self.politenessCell?.reloadCell(detail: self.vocabulary.politeness)
                 self.politenessCell = nil
                 self.navigationController?.popViewController(animated: true)
+                self.toggleSaveButtonEnableStateIfNeeded()
             }
             view.endEditing(true)
             navigationController?.pushViewController(optionVC, animated: true)
@@ -238,31 +214,21 @@ extension VocabularyViewController: VocabularySelectionCellDelegate {
     
     func vocabularySelectionCell(_ cell: VocabularySelectionCell, didToggleSwitcher switcher: UISwitch) {
         vocabulary.isFavorited = switcher.isOn
-        vocabulary.managedObjectContext?.quickSave()
+        toggleSaveButtonEnableStateIfNeeded()
     }
 }
 
 
-extension VocabularyViewController: UITextFieldDelegate {
-    
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        return isTextEditingAllowed
-    }
+extension VocabularyViewController: UITextFieldDelegate, UITextViewDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         return textField.resignFirstResponder()
-    }
-}
-
-extension VocabularyViewController: UITextViewDelegate {
-    
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        return isTextEditingAllowed
     }
     
     func textViewDidChange(_ textView: UITextView) {
         vocabulary.note = textView.text
         noteCell?.hidePlaceholderIfNeeded()
+        toggleSaveButtonEnableStateIfNeeded()
     }
 }
 
@@ -274,26 +240,14 @@ extension VocabularyViewController {
         tableView.registerCell(VocabularyTextFieldCell.self)
         tableView.registerCell(VocabularySelectionCell.self)
         tableView.registerCell(VocabularyNoteCell.self)
-        setupNavItems()
         setupNotificationHandlers()
-    }
-    
-    private func setupNotificationHandlers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleTextFieldTextChanged(_:)), name: UITextField.textDidChangeNotification, object: nil)
     }
     
     private func setupNavItems() {
         switch mode {
         case .view:
-            let edit = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editVocaulary))
             navigationItem.leftBarButtonItem = nil
-            navigationItem.rightBarButtonItem = edit
-        case .edit:
-            let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelAction))
-            let done = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(saveChanges))
-            navigationItem.leftBarButtonItem = cancel
-            navigationItem.rightBarButtonItem = done
-            vocabularyBeforeEdit.setValues(with: vocabulary)
+            saveChangesBarButton = .init(barButtonSystemItem: .save, target: self, action: #selector(saveChanges))
         case .add:
             let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelAction))
             let add = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(addVocabulary))
@@ -302,21 +256,80 @@ extension VocabularyViewController {
         }
     }
     
-    @objc private func editVocaulary() {
-        setMode(.edit)
+    private func setupNotificationHandlers() {
+        let name = UITextField.textDidChangeNotification
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTextFieldCellTextChanged), name: name, object: nil)
     }
     
-    @objc private func saveChanges() {
-        guard validateInputFields() else { return }
-        saveChangesHandler?(vocabulary)
-    }
-    
-    @objc private func addVocabulary() {
-        guard validateInputFields() else { return }
-        addVocabularyHandler?(vocabulary, collection)
+    @objc private func handleTextFieldCellTextChanged(_ notification: Notification) {
+        guard let textField = notification.object as? UITextField else { return }
+        guard let input = VocabularyViewController.Input(rawValue: textField.tag) else { return }
+        switch input {
+        case .native:
+            vocabulary.native = textField.text ?? ""
+        case .translation:
+            vocabulary.translation = textField.text ?? ""
+        default:
+            fatalError("handling unknown textfield")
+        }
+        toggleSaveButtonEnableStateIfNeeded()
     }
     
     @objc private func cancelAction() {
         cancelActionHandler?()
+    }
+    
+    @objc private func saveChanges() {
+        saveChangesHandler?(vocabulary)
+    }
+    
+    @objc private func addVocabulary() {
+        view.endEditing(true)
+        if vocabulary.native.trimmingCharacters(in: .whitespaces).isEmpty {
+            animateTextFieldCelldInvalidInput(.native)
+            return
+        }
+        if vocabulary.translation.trimmingCharacters(in: .whitespaces).isEmpty {
+            animateTextFieldCelldInvalidInput(.translation)
+            return
+        }
+        addVocabularyHandler?(vocabulary)
+    }
+}
+
+
+extension VocabularyViewController {
+    
+    private func animateTextFieldCelldInvalidInput(_ input: VocabularyViewController.Input) {
+        guard input == .native || input == .translation else { return }
+        guard let indexPath = inputList.indexPath(for: input) else { return }
+        if let cell = tableView.cellForRow(at: indexPath) {
+            cell.contentView.shakeHorizontally()
+        } else {
+            UIView.animate(withDuration: 0.2) { [weak self] in
+                guard let self = self else { return }
+                self.tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                let cell = self.tableView.cellForRow(at: indexPath)
+                cell?.contentView.shakeHorizontally(duration: 0.4)
+            }
+        }
+    }
+    
+    /// Check if vocabulary has different value. This compare excludes `relations` and `alternatives`.
+    private func toggleSaveButtonEnableStateIfNeeded() {
+        guard let before = beforeEditVocabulary else { return }
+        let after = vocabulary
+        
+        let hasChanges = before.native != after.native
+            || before.translation != after.translation
+            || before.politeness != after.politeness
+            || before.isFavorited != after.isFavorited
+            || before.note != after.note
+        
+        if !hasChanges {
+            navigationItem.setRightBarButton(nil, animated: true)
+        } else if hasChanges, navigationItem.rightBarButtonItem == nil {
+            navigationItem.setRightBarButton(saveChangesBarButton, animated: true)
+        }
     }
 }

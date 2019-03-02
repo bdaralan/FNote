@@ -14,8 +14,6 @@ class VocabularyTextFieldCell: UITableViewCell {
         didSet { longPressView.isHidden = !isQuickCopyEnabled }
     }
     
-    var quickCopyCompletion: ((String) -> Void)?
-    
     var longPressView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
@@ -50,11 +48,6 @@ class VocabularyTextFieldCell: UITableViewCell {
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(false, animated: false)
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        quickCopyCompletion = nil
     }
     
     
@@ -101,8 +94,6 @@ extension VocabularyTextFieldCell {
     
     @objc private func handleContentViewLongPressed(_ gesture: UILongPressGestureRecognizer) {
         guard isQuickCopyEnabled, gesture.state == .began else { return }
-        guard let text = textField.text, !text.isEmpty else { return }
-        UIPasteboard.general.string = text
-        quickCopyCompletion?(text)
+        UIPasteboard.general.string = textField.text
     }
 }

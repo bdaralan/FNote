@@ -20,6 +20,7 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
+        navigationController.navigationBar.prefersLargeTitles = true
     }
     
     
@@ -28,46 +29,34 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
         let collection = CoreDataStack.current.lastSelectedCollection()!
         vocabularyCollectionVC = VocabularyCollectionViewController(collection: collection)
         vocabularyCollectionVC.coordinator = self
-        vocabularyCollectionVC.navigationItem.title = vocabularyCollectionVC.collection.name
+        vocabularyCollectionVC.navigationItem.title = collection.name
         navigationController.tabBarItem = UITabBarItem(title: "Collections", image: .tabBarVocabCollection, tag: 0)
         navigationController.pushViewController(vocabularyCollectionVC, animated: false)
     }
     
     func viewVocabulary(_ vocabulary: Vocabulary) {
-        print("viewVocabulary")
-        let vc = VocabularyViewController(vocabulary: vocabulary, collection: vocabulary.collection)
-        vc.navigationItem.title = "Vocabulary"
-        
-        vc.cancelActionHandler = {
-            vc.setMode(.view)
-            vc.view.endEditing(true)
-        }
-        
-        vc.saveChangesHandler = { (vocabulary) in
+        let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
+        vocabularyVC.navigationItem.title = "Vocabulary"
+        vocabularyVC.saveChangesHandler = { [weak self] (vocabulary) in
             vocabulary.managedObjectContext?.quickSave()
-            vc.setMode(.view)
-            vc.view.endEditing(true)
+            self?.navigationController.popViewController(animated: true)
         }
-        
-        navigationController.pushViewController(vc, animated: true)
+        navigationController.pushViewController(vocabularyVC, animated: true)
     }
     
     func addNewVocabulary(to collection: VocabularyCollection) {
-        print("addVocabulary")
-        let vc = VocabularyViewController(vocabulary: nil, collection: collection)
-        vc.navigationItem.title = "Add Vocabulary"
-        
-        vc.cancelActionHandler = {
-            vc.dismiss(animated: true, completion: nil)
+        let vocabularyVC = VocabularyViewController(mode: .add(collection))
+        vocabularyVC.navigationItem.title = "Add Vocabulary"
+
+        vocabularyVC.cancelActionHandler = {
+            vocabularyVC.dismiss(animated: true, completion: nil)
+        }
+
+        vocabularyVC.addVocabularyHandler = { (newVocabulary) in
+            newVocabulary.managedObjectContext?.quickSave()
+            vocabularyVC.dismiss(animated: true, completion: nil)
         }
         
-        vc.addVocabularyHandler = { (vocabulary, collection) in
-            vocabulary.setCollection(collection)
-            vocabulary.managedObjectContext?.quickSave()
-            vc.dismiss(animated: true, completion: nil)
-        }
-        
-        let navController = UINavigationController(rootViewController: vc)
-        navigationController.present(navController, animated: true, completion: nil)
+        navigationController.present(vocabularyVC.withNavController(), animated: true, completion: nil)
     }
 }

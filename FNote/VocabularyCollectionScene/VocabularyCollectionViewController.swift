@@ -48,8 +48,8 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     
     private func configureFetchController() {
         let request: NSFetchRequest<Vocabulary> = Vocabulary.fetchRequest()
-        request.predicate = NSPredicate(format: "collection == %@", collection)
-        request.sortDescriptors = []
+        request.predicate = NSPredicate(format: "collection.name == %@", collection.name)
+        request.sortDescriptors = [.init(key: "native", ascending: true)]
         fetchController = NSFetchedResultsController<Vocabulary>(
             fetchRequest: request,
             managedObjectContext: collection.managedObjectContext!,
@@ -117,23 +117,31 @@ extension VocabularyCollectionViewController: NSFetchedResultsControllerDelegate
 extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
     
     func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapFavoriteButton button: UIButton) {
-        let vocabIndexPath = collectionView.indexPath(for: cell)!
-        let vocab = fetchController.object(at: vocabIndexPath)
-        vocab.isFavorited.toggle()
-        vocab.managedObjectContext?.quickSave()
-        cell.reloadCell(with: vocab)
+        let indexPath = collectionView.indexPath(for: cell)!
+        let vocabulary = fetchController.object(at: indexPath)
+        vocabulary.managedObjectContext?.perform {
+            vocabulary.isFavorited.toggle()
+            cell.reloadCell(with: vocabulary)
+            vocabulary.managedObjectContext?.quickSave()
+        }
     }
     
     func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapRelationButton button: UIButton) {
         let vocabIndexPath = collectionView.indexPath(for: cell)!
-        let vocab = fetchController.object(at: vocabIndexPath)
-        print(vocab.relations.count)
+        let vocabulary = fetchController.object(at: vocabIndexPath)
+        print(vocabulary.relations.count)
     }
     
     func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapAlternativeButton button: UIButton) {
         let vocabIndexPath = collectionView.indexPath(for: cell)!
-        let vocab = fetchController.object(at: vocabIndexPath)
-        print(vocab.alternatives.count)
+        let vocabulary = fetchController.object(at: vocabIndexPath)
+        print(vocabulary.alternatives.count)
+    }
+    
+    func vocabularyCollectionCellDidBeginLongPress(_ cell: VocabularyCollectionCell) {
+        let indexPath = collectionView.indexPath(for: cell)!
+        collection.managedObjectContext?.delete(fetchController.object(at: indexPath))
+        collection.managedObjectContext?.quickSave()
     }
 }
 
