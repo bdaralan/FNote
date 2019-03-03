@@ -43,6 +43,8 @@ extension VocabularyViewController {
 
 class VocabularyViewController: UITableViewController {
     
+    weak var coordinator: VocabularyViewer?
+    
     private let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     private let vocabulary: Vocabulary
     
@@ -60,10 +62,7 @@ class VocabularyViewController: UITableViewController {
         list.addElement(.init(section: .note, items: [.note]))
         return list
     }()
-    
-    weak var nativeCell: VocabularyTextFieldCell?
-    weak var translationCell: VocabularyTextFieldCell?
-    weak var politenessCell: VocabularySelectionCell?
+
     
     /// Construct a vocabulary viewer or adder based on the specified mode.
     init(mode: Mode) {
@@ -93,12 +92,15 @@ class VocabularyViewController: UITableViewController {
         setupController()
     }
     
-    @objc private func handleTextFieldCellTextChanged(_ notification: Notification) {
-        guard let textField = notification.object as? UITextField else { return }
-        if textField === nativeCell?.textField {
+    @objc private func inputTextFieldTextChanged(_ textField: UITextField) {
+        guard let input = Input(rawValue: textField.tag) else { return }
+        switch input {
+        case .native:
             vocabulary.native = textField.text ?? ""
-        } else if textField === translationCell?.textField {
+        case .translation:
             vocabulary.translation = textField.text ?? ""
+        default:
+            fatalError("unknown text field text changed!!!")
         }
         toggleSaveButtonEnableStateIfNeeded()
     }
@@ -137,14 +139,14 @@ extension VocabularyViewController {
         case .native:
             let cell = tableView.dequeueRegisteredCell(VocabularyTextFieldCell.self, for: indexPath)
             cell.reloadCell(text: vocabulary.native, placeholder: "Native")
-            cell.textField.delegate = self
-            nativeCell = cell
+            cell.textField.tag = input.rawValue
+            cell.textField.addTarget(self, action: #selector(inputTextFieldTextChanged), for: .editingChanged)
             return cell
         case .translation:
             let cell = tableView.dequeueRegisteredCell(VocabularyTextFieldCell.self, for: indexPath)
             cell.reloadCell(text: vocabulary.translation, placeholder: "Translation")
-            cell.textField.delegate = self
-            translationCell = cell
+            cell.textField.tag = input.rawValue
+            cell.textField.addTarget(self, action: #selector(inputTextFieldTextChanged), for: .editingChanged)
             return cell
         case .relations:
             let cell = tableView.dequeueRegisteredCell(VocabularySelectionCell.self, for: indexPath)
@@ -189,32 +191,18 @@ extension VocabularyViewController {
             guard !cell.textField.isFirstResponder else { return }
             cell.textField.becomeFirstResponder()
         case .politeness:
+            view.endEditing(true)
             let cell = tableView.cellForRow(at: indexPath) as! VocabularySelectionCell
-            politenessCell = cell
-            let options = Vocabulary.Politeness.allCases.map({ $0.string })
-            let optionVC = OptionTableViewController(options: options, selectedOptions: [vocabulary.politeness])
-            optionVC.navigationItem.title = "Politeness"
-            optionVC.selectOptionHandler = { [weak self] (selectedIndex) in
+            coordinator?.selectPoliteness(for: vocabulary) { [weak self] (selectedPoliteness) in
                 guard let self = self else { return }
-                self.vocabulary.politeness = options[selectedIndex]
-                self.politenessCell?.reloadCell(detail: self.vocabulary.politeness)
-                self.politenessCell = nil
-                self.navigationController?.popViewController(animated: true)
+                cell.reloadCell(detail: selectedPoliteness.string)
+                self.vocabulary.politeness = selectedPoliteness.string
                 self.toggleSaveButtonEnableStateIfNeeded()
             }
-            view.endEditing(true)
-            navigationController?.pushViewController(optionVC, animated: true)
         default:
+            #warning("add handler relations and alternatives")
             view.endEditing(true)
         }
-    }
-}
-
-
-extension VocabularyViewController: UITextFieldDelegate {
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        return textField.resignFirstResponder()
     }
 }
 
@@ -226,8 +214,6 @@ extension VocabularyViewController {
         tableView.registerCell(VocabularyTextFieldCell.self)
         tableView.registerCell(VocabularySelectionCell.self)
         tableView.registerCell(VocabularyNoteCell.self)
-        let name = UITextField.textDidChangeNotification
-        NotificationCenter.default.addObserver(self, selector: #selector(handleTextFieldCellTextChanged), name: name, object: nil)
     }
     
     private func setupNavItems(mode: Mode) {
@@ -286,7 +272,8 @@ extension VocabularyViewController {
         }
     }
     
-    /// Check if vocabulary has different value. Currently does not compare `relations` and `alternatives`.
+    /// Check if vocabulary has different value then decide to show or hide the save button.
+    /// This does not compare `relations` and `alternatives`.
     /// - note: This method is async.
     private func toggleSaveButtonEnableStateIfNeeded() {
         DispatchQueue.main.async { [weak self] in

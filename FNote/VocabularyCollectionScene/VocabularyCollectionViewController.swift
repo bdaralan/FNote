@@ -140,6 +140,8 @@ extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
     
     func vocabularyCollectionCellDidBeginLongPress(_ cell: VocabularyCollectionCell) {
         let indexPath = collectionView.indexPath(for: cell)!
+//        collection.managedObjectContext?.delete(fetchController.object(at: indexPath))
+//        collection.managedObjectContext?.quickSave()
         coordinator?.removeVocabulary(fetchController.object(at: indexPath), from: collection)
     }
 }

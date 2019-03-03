@@ -41,6 +41,7 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
     
     func viewVocabulary(_ vocabulary: Vocabulary) {
         let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
+        vocabularyVC.coordinator = self
         vocabularyVC.navigationItem.title = "Vocabulary"
         vocabularyVC.saveCompletion = { [weak self] in
             self?.collectionContext?.quickSave()
@@ -49,8 +50,21 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
         navigationController.pushViewController(vocabularyVC, animated: true)
     }
     
+    func selectPoliteness(for vocabulary: Vocabulary, completion: @escaping (Vocabulary.Politeness) -> Void) {
+        let options = Vocabulary.Politeness.allCases
+        let optionVC = OptionTableViewController(options: options.map({ $0.string }), selectedOptions: [vocabulary.politeness])
+        optionVC.navigationItem.title = "Politeness"
+        optionVC.selectOptionHandler = { [weak self] (selectedIndex) in
+            guard let self = self else { return }
+            completion(options[selectedIndex])
+            self.navigationController.popViewController(animated: true)
+        }
+        navigationController.pushViewController(optionVC, animated: true)
+    }
+    
     func addNewVocabulary(to collection: VocabularyCollection) {
         let vocabularyVC = VocabularyViewController(mode: .add(collection))
+        vocabularyVC.coordinator = self
         vocabularyVC.navigationItem.title = "Add Vocabulary"
         vocabularyVC.cancelCompletion = {
             vocabularyVC.dismiss(animated: true, completion: nil)

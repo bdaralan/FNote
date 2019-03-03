@@ -12,4 +12,6 @@ import CoreData
 protocol VocabularyViewer: AnyObject {
     
     func viewVocabulary(_ vocabulary: Vocabulary)
+    
+    func selectPoliteness(for vocabulary: Vocabulary, completion: @escaping (Vocabulary.Politeness) -> Void)
 }
