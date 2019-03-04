@@ -28,6 +28,8 @@ class CoreDataStack {
         self.userAccountToken = userAccountToken
         let container = NSPersistentContainer(name: userAccountToken, managedObjectModel: CoreDataStack.coreDataModel)
         let persistentStore = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("\(userAccountToken).sqlite")
+        let isPersistentStoreExisted = FileManager.default.fileExists(atPath: persistentStore.path)
+        
         let options = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
         let coordinator = container.persistentStoreCoordinator
         try! coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStore, options: options)
@@ -35,8 +37,8 @@ class CoreDataStack {
         mainContext = persistentContainer.viewContext
         
         #warning("TODO: remove this test code and implenent no account user")
-        guard fetchUser(userRecordIDName: userAccountToken) == nil else { return }
-        createNewUser(userRecordIDName: userAccountToken)
+        guard !isPersistentStoreExisted else { return }
+        createUser(userRecordIDName: userAccountToken)
     }
     
     func setPersistentStore(forUserAccountToken token: String) {
@@ -48,29 +50,24 @@ class CoreDataStack {
 extension CoreDataStack {
     
     #warning("TODO: need real logic")
-    func createNewUser(userRecordIDName: String) {
+    func createUser(userRecordIDName: String) {
         let user = User(context: mainContext)
         user.userID = userRecordIDName
         let collection = VocabularyCollection(context: mainContext)
-        collection.name = "Korean"
+        collection.name = "Sample Collection"
         mainContext.quickSave()
     }
     
-    func fetchUser(userRecordIDName: String) -> User? {
+    func currentUser() -> User {
         let request: NSFetchRequest<User> = User.fetchRequest()
-        request.predicate = NSPredicate(format: "userID == %@", userRecordIDName)
-        let results = try? mainContext.fetch(request)
-        return results?.first
+        request.predicate = NSPredicate(value: true)
+        let results = try! mainContext.fetch(request)
+        return results.first!
     }
-    
-    func currentUser() -> User? {
-        return fetchUser(userRecordIDName: CloudKitService.accountToken)
-    }
-    
-    #warning("test func")
-    func lastSelectedCollection() -> VocabularyCollection? {
+
+    func vocabularyCollections() -> [VocabularyCollection] {
         let request: NSFetchRequest<VocabularyCollection> = VocabularyCollection.fetchRequest()
         let results = try? mainContext.fetch(request)
-        return results?.first
+        return results ?? []
     }
 }

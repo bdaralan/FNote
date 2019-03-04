@@ -31,7 +31,7 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
     
     func start() {
         #warning("TODO: set sample collection if last selected collection is nil")
-        let collection = CoreDataStack.current.lastSelectedCollection()!
+        let collection = CoreDataStack.current.vocabularyCollections().first!
         vocabularyCollectionVC = VocabularyCollectionViewController(collection: collection)
         vocabularyCollectionVC.coordinator = self
         vocabularyCollectionVC.navigationItem.title = collection.name
