@@ -22,14 +22,14 @@ extension VocabularyViewController {
     }
     
     /// Controller's table view section type.
-    enum InputSection: Int {
+    enum Section: Int {
         case vocabulary
         case relation
         case note
     }
     
     /// Controller's table view row type in section.
-    enum Input: Int {
+    enum Row: Int {
         case native
         case translation
         case relations
@@ -55,12 +55,12 @@ class VocabularyViewController: UITableViewController {
     var cancelCompletion: (() -> Void)?
     var saveCompletion: (() -> Void)?
     
-    let inputList: IndexPathList<InputSection, Input> = {
-        var list = IndexPathList<InputSection, Input>()
-        list.addElement(.init(section: .vocabulary, items: [.native, .translation]))
-        list.addElement(.init(section: .relation, items: [.relations, .alternatives, .politeness, .favorite]))
-        list.addElement(.init(section: .note, items: [.note]))
-        return list
+    let indexPathSections: IndexPathSections<Section, Row> = {
+        var sections = IndexPathSections<Section, Row>()
+        sections.addSection(type: .vocabulary, items: [.native, .translation])
+        sections.addSection(type: .relation, items: [.relations, .alternatives, .politeness, .favorite])
+        sections.addSection(type: .note, items: [.note])
+        return sections
     }()
 
     
@@ -93,7 +93,7 @@ class VocabularyViewController: UITableViewController {
     }
     
     @objc private func inputTextFieldTextChanged(_ textField: UITextField) {
-        guard let input = Input(rawValue: textField.tag) else { return }
+        guard let input = Row(rawValue: textField.tag) else { return }
         switch input {
         case .native:
             vocabulary.native = textField.text ?? ""
@@ -110,15 +110,15 @@ class VocabularyViewController: UITableViewController {
 extension VocabularyViewController {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return inputList.count
+        return indexPathSections.count
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return inputList[section].items.count
+        return indexPathSections[section].items.count
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch inputList[section].section {
+        switch indexPathSections[section].type {
         case .vocabulary: return "NATIVE AND TRANSLATION"
         case .relation: return "RELATIONS AND ALTERNATIVES"
         case .note: return "NOTE"
@@ -126,7 +126,7 @@ extension VocabularyViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch inputList[indexPath.section].section {
+        switch indexPathSections[indexPath.section].type {
         case .vocabulary: return 70
         case .relation: return 44
         case .note: return 200
@@ -134,7 +134,7 @@ extension VocabularyViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let input = inputList[indexPath.section].items[indexPath.row]
+        let input = indexPathSections[indexPath.section].items[indexPath.row]
         switch input {
         case .native:
             let cell = tableView.dequeueRegisteredCell(VocabularyTextFieldCell.self, for: indexPath)
@@ -184,7 +184,7 @@ extension VocabularyViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let input = inputList[indexPath.section].items[indexPath.row]
+        let input = indexPathSections[indexPath.section].items[indexPath.row]
         switch input {
         case .native, .translation:
             let cell = tableView.cellForRow(at: indexPath) as! VocabularyTextFieldCell
@@ -257,9 +257,9 @@ extension VocabularyViewController {
 
 extension VocabularyViewController {
     
-    private func animateTextFieldCelldInvalidInput(_ input: VocabularyViewController.Input) {
+    private func animateTextFieldCelldInvalidInput(_ input: VocabularyViewController.Row) {
         guard input == .native || input == .translation else { return }
-        guard let indexPath = inputList.indexPath(for: input) else { return }
+        guard let indexPath = indexPathSections.firstIndexPath(of: input) else { return }
         if let cell = tableView.cellForRow(at: indexPath) {
             cell.contentView.shakeHorizontally()
         } else {
