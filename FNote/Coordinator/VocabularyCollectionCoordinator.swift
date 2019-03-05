@@ -50,16 +50,15 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
         navigationController.pushViewController(vocabularyVC, animated: true)
     }
     
-    func selectPoliteness(for vocabulary: Vocabulary, completion: @escaping (Vocabulary.Politeness) -> Void) {
-        let options = Vocabulary.Politeness.allCases
-        let optionVC = OptionTableViewController(options: options.map({ $0.string }), selectedOptions: [vocabulary.politeness])
+    func selectVocabularyPoliteness(for viewController: VocabularyViewController?, options: [String], current: String, completion: @escaping (String) -> Void) {
+        guard let navController = viewController?.navigationController else { return }
+        let optionVC = OptionTableViewController(options: options, selectedOptions: [current])
         optionVC.navigationItem.title = "Politeness"
-        optionVC.selectOptionHandler = { [weak self] (selectedIndex) in
-            guard let self = self else { return }
+        optionVC.selectOptionHandler = { (selectedIndex) in
             completion(options[selectedIndex])
-            self.navigationController.popViewController(animated: true)
+            navController.popViewController(animated: true)
         }
-        navigationController.pushViewController(optionVC, animated: true)
+        navController.pushViewController(optionVC, animated: true)
     }
     
     func addNewVocabulary(to collection: VocabularyCollection) {

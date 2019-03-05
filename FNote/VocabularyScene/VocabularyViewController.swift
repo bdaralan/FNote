@@ -193,11 +193,13 @@ extension VocabularyViewController {
         case .politeness:
             view.endEditing(true)
             let cell = tableView.cellForRow(at: indexPath) as! VocabularySelectionCell
-            coordinator?.selectPoliteness(for: vocabulary) { [weak self] (selectedPoliteness) in
+            let options = Vocabulary.Politeness.allCases.map({ $0.string })
+            let current = vocabulary.politeness
+            coordinator?.selectVocabularyPoliteness(for: self, options: options, current: current) { [weak self] (selected) in
                 guard let self = self else { return }
-                cell.reloadCell(detail: selectedPoliteness.string)
-                self.vocabulary.politeness = selectedPoliteness.string
+                self.vocabulary.politeness = selected
                 self.toggleSaveButtonEnableStateIfNeeded()
+                cell.reloadCell(detail: selected)
             }
         default:
             #warning("add handler relations and alternatives")

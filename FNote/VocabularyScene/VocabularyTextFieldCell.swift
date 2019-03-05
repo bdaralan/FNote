@@ -8,7 +8,7 @@
 
 import UIKit
 
-class VocabularyTextFieldCell: UITableViewCell {
+class VocabularyTextFieldCell: UITableViewCell, UITextFieldDelegate {
     
     let textField: UITextField = {
         let tf = UITextField()
@@ -40,6 +40,9 @@ class VocabularyTextFieldCell: UITableViewCell {
         super.setSelected(false, animated: false)
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return textField.resignFirstResponder()
+    }
     
     func reloadCell(text: String, placeholder: String) {
         textField.text = text
@@ -53,6 +56,7 @@ extension VocabularyTextFieldCell {
     
     private func setupCel() {
         selectionStyle = .none
+        textField.delegate = self
         contentView.addSubviews([textField, label])
         let safeArea = contentView.safeAreaLayoutGuide
         let margin: CGFloat = 16

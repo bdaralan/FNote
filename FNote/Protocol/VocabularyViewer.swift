@@ -13,5 +13,5 @@ protocol VocabularyViewer: AnyObject {
     
     func viewVocabulary(_ vocabulary: Vocabulary)
     
-    func selectPoliteness(for vocabulary: Vocabulary, completion: @escaping (Vocabulary.Politeness) -> Void)
+    func selectVocabularyPoliteness(for viewController: VocabularyViewController?, options: [String], current: String, completion: @escaping (String) -> Void)
 }
