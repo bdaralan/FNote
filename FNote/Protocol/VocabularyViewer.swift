@@ -6,12 +6,12 @@
 //  Copyright © 2019 Dara Beng. All rights reserved.
 //
 
-import CoreData
+import UIKit
 
 
 protocol VocabularyViewer: AnyObject {
     
     func viewVocabulary(_ vocabulary: Vocabulary)
     
-    func selectVocabularyPoliteness(for viewController: VocabularyViewController?, options: [String], current: String, completion: @escaping (String) -> Void)
+    func selectVocabularyPoliteness(options: [String], current: String, navigationController: UINavigationController?, completion: @escaping (String) -> Void)
 }

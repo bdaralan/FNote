@@ -138,12 +138,12 @@
 			children = (
 				B437BDB221F1979300A1B016 /* Controller */,
 				B48D5F522217756800066564 /* Coordinator */,
+				B45AB9B62219C7F0009D337C /* Protocol */,
 				B437BDC021F1B7AD00A1B016 /* VocabularyCollectionScene */,
 				B437BDB821F1981B00A1B016 /* VocabularyScene */,
 				B437BDB421F197AD00A1B016 /* Model */,
 				B40A802721F5958F00DCDF11 /* MOModel+CoreDataStack */,
 				B437BDB321F197AB00A1B016 /* View */,
-				B45AB9B62219C7F0009D337C /* Protocol */,
 				B437BDB521F197AF00A1B016 /* Extension+Utility */,
 				B437BDA021F1972600A1B016 /* AppDelegate.swift */,
 				B437BDA721F1972700A1B016 /* Assets.xcassets */,

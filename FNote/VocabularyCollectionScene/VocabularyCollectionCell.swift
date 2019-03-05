@@ -177,7 +177,6 @@ extension VocabularyCollectionCell {
     
     private func setupLongPressHandler() {
         let press = UILongPressGestureRecognizer(target: self, action: #selector(longPressBegan(_:)))
-        press.minimumPressDuration = 1
         contentView.addGestureRecognizer(press)
     }
 }

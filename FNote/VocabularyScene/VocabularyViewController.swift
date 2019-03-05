@@ -17,8 +17,8 @@ extension VocabularyViewController {
         /// View vocabulary mode.
         case view(Vocabulary)
         
-        /// Add vocabulary mode. Requires a collection for the vocabulary.
-        case add(VocabularyCollection)
+        /// Create vocabulary mode. Requires a collection for the vocabulary.
+        case create(VocabularyCollection)
     }
     
     /// Controller's table view section type.
@@ -73,7 +73,7 @@ class VocabularyViewController: UITableViewController {
             beforeChangeContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
             beforeChangeContext?.parent = context.parent
             beforeChangeVocabulary = beforeChangeContext?.object(with: vocabulary.objectID) as? Vocabulary
-        case .add(let collection):
+        case .create(let collection):
             context.parent = collection.managedObjectContext!
             let collection = context.object(with: collection.objectID) as! VocabularyCollection
             vocabulary = Vocabulary(context: context)
@@ -195,7 +195,7 @@ extension VocabularyViewController {
             let cell = tableView.cellForRow(at: indexPath) as! VocabularySelectionCell
             let options = Vocabulary.Politeness.allCases.map({ $0.string })
             let current = vocabulary.politeness
-            coordinator?.selectVocabularyPoliteness(for: self, options: options, current: current) { [weak self] (selected) in
+            coordinator?.selectVocabularyPoliteness(options: options, current: current, navigationController: navigationController) { [weak self] (selected) in
                 guard let self = self else { return }
                 self.vocabulary.politeness = selected
                 self.toggleSaveButtonEnableStateIfNeeded()
@@ -203,7 +203,7 @@ extension VocabularyViewController {
             }
         default:
             #warning("add handler relations and alternatives")
-            view.endEditing(true)
+            tableView.deselectRow(at: indexPath, animated: true)
         }
     }
 }
@@ -222,8 +222,8 @@ extension VocabularyViewController {
         switch mode {
         case .view:
             navigationItem.leftBarButtonItem = nil
-            saveChangesBarButton = .init(barButtonSystemItem: .save, target: self, action: #selector(saveChanges))
-        case .add:
+            saveChangesBarButton = .init(title: "Save", style: .done, target: self, action: #selector(saveChanges))
+        case .create:
             let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelAction))
             let add = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(saveChanges))
             navigationItem.leftBarButtonItem = cancel
@@ -240,8 +240,8 @@ extension VocabularyViewController {
         vocabulary.native = vocabulary.native.trimmingCharacters(in: .whitespaces)
         vocabulary.translation = vocabulary.translation.trimmingCharacters(in: .whitespaces)
         vocabulary.note = vocabulary.note.trimmingCharacters(in: .whitespacesAndNewlines)
-        
         view.endEditing(true)
+        
         if vocabulary.native.isEmpty {
             animateTextFieldCelldInvalidInput(.native)
             return
@@ -262,14 +262,17 @@ extension VocabularyViewController {
     private func animateTextFieldCelldInvalidInput(_ input: VocabularyViewController.Row) {
         guard input == .native || input == .translation else { return }
         guard let indexPath = indexPathSections.firstIndexPath(of: input) else { return }
+        let hapticFeedback = UINotificationFeedbackGenerator()
         if let cell = tableView.cellForRow(at: indexPath) {
             cell.contentView.shakeHorizontally()
+            hapticFeedback.notificationOccurred(.error)
         } else {
             UIView.animate(withDuration: 0.2) { [weak self] in
                 guard let self = self else { return }
                 self.tableView.scrollToRow(at: indexPath, at: .top, animated: false)
                 let cell = self.tableView.cellForRow(at: indexPath)
-                cell?.contentView.shakeHorizontally(duration: 0.4)
+                cell?.contentView.shakeHorizontally()
+                hapticFeedback.notificationOccurred(.error)
             }
         }
     }
@@ -279,17 +282,21 @@ extension VocabularyViewController {
     /// - note: This method is async.
     private func toggleSaveButtonEnableStateIfNeeded() {
         DispatchQueue.main.async { [weak self] in
-            guard let before = self?.beforeChangeVocabulary, let after = self?.vocabulary else { return }
-            let hasChanges = before.native != after.native
-                || before.translation != after.translation
-                || before.politeness != after.politeness
-                || before.isFavorited != after.isFavorited
-                || before.note != after.note
+            guard let self = self, let before = self.beforeChangeVocabulary else { return }
+            let current = self.vocabulary
+            let hasChanges = current.isFavorited != before.isFavorited
+                || current.politeness != before.politeness
+                || current.translation != before.translation
+                || current.native != before.native
+                || current.note != before.note
             
-            if !hasChanges {
-                self?.navigationItem.setRightBarButton(nil, animated: true)
-            } else if hasChanges, self?.navigationItem.rightBarButtonItem == nil {
-                self?.navigationItem.setRightBarButton(self?.saveChangesBarButton, animated: true)
+            
+            switch hasChanges {
+            case false where self.navigationItem.rightBarButtonItem != nil:
+                self.navigationItem.setRightBarButton(nil, animated: true)
+            case true where self.navigationItem.rightBarButtonItem == nil:
+                self.navigationItem.setRightBarButton(self.saveChangesBarButton, animated: true)
+            default: ()
             }
         }
     }

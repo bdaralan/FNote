@@ -49,7 +49,7 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     private func configureFetchController() {
         let request: NSFetchRequest<Vocabulary> = Vocabulary.fetchRequest()
         request.predicate = NSPredicate(format: "collection == %@", collection)
-        request.sortDescriptors = [.init(key: "native", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: "translation", ascending: true)]
         fetchController = NSFetchedResultsController<Vocabulary>(
             fetchRequest: request,
             managedObjectContext: collection.managedObjectContext!,

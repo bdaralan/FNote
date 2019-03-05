@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 
-class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, VocabularyAdder, VocabularyRemover {
+class VocabularyCollectionCoordinator: Coordinator {
     
     var children: [Coordinator] = []
     
@@ -38,6 +38,10 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
         navigationController.tabBarItem = UITabBarItem(title: "Collections", image: .tabBarVocabCollection, tag: 0)
         navigationController.pushViewController(vocabularyCollectionVC, animated: false)
     }
+}
+
+
+extension VocabularyCollectionCoordinator: VocabularyViewer {
     
     func viewVocabulary(_ vocabulary: Vocabulary) {
         let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
@@ -50,8 +54,8 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
         navigationController.pushViewController(vocabularyVC, animated: true)
     }
     
-    func selectVocabularyPoliteness(for viewController: VocabularyViewController?, options: [String], current: String, completion: @escaping (String) -> Void) {
-        guard let navController = viewController?.navigationController else { return }
+    func selectVocabularyPoliteness(options: [String], current: String, navigationController: UINavigationController?, completion: @escaping (String) -> Void) {
+        guard let navController = navigationController else { return }
         let optionVC = OptionTableViewController(options: options, selectedOptions: [current])
         optionVC.navigationItem.title = "Politeness"
         optionVC.selectOptionHandler = { (selectedIndex) in
@@ -60,9 +64,13 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
         }
         navController.pushViewController(optionVC, animated: true)
     }
+}
+
+
+extension VocabularyCollectionCoordinator: VocabularyAdder {
     
     func addNewVocabulary(to collection: VocabularyCollection) {
-        let vocabularyVC = VocabularyViewController(mode: .add(collection))
+        let vocabularyVC = VocabularyViewController(mode: .create(collection))
         vocabularyVC.coordinator = self
         vocabularyVC.navigationItem.title = "Add Vocabulary"
         vocabularyVC.cancelCompletion = {
@@ -74,6 +82,10 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
         }
         navigationController.present(vocabularyVC.withNavController(), animated: true, completion: nil)
     }
+}
+
+
+extension VocabularyCollectionCoordinator: VocabularyRemover {
     
     func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection) {
         guard collection.vocabularies.contains(vocabulary), let context = collection.managedObjectContext else { return }
@@ -82,7 +94,7 @@ class VocabularyCollectionCoordinator: Coordinator, VocabularyViewer, Vocabulary
         alert.addAction(.init(title: "Delete", style: .destructive) { (action) in
             context.delete(vocabulary)
             context.quickSave()
-        })
+            })
         alert.preferredAction = alert.actions.first
         navigationController.present(alert, animated: true, completion: nil)
     }

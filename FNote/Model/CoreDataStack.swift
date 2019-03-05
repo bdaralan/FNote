@@ -54,7 +54,7 @@ extension CoreDataStack {
         let user = User(context: mainContext)
         user.userID = userRecordIDName
         let collection = VocabularyCollection(context: mainContext)
-        collection.name = "Sample Collection"
+        collection.name = "Sample"
         mainContext.quickSave()
     }
     
