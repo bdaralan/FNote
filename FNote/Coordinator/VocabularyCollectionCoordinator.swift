@@ -47,19 +47,23 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
         let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
         vocabularyVC.coordinator = self
         vocabularyVC.navigationItem.title = "Vocabulary"
-        vocabularyVC.saveCompletion = { [weak self] in
-            self?.collectionContext?.quickSave()
+        vocabularyVC.completion = { [weak self] (result) in
+            if result == .save {
+                self?.collectionContext?.quickSave()
+            }
             self?.navigationController.popViewController(animated: true)
         }
         navigationController.pushViewController(vocabularyVC, animated: true)
     }
     
-    func selectVocabularyPoliteness(options: [String], current: String, navigationController: UINavigationController?, completion: @escaping (String) -> Void) {
-        guard let navController = navigationController else { return }
-        let optionVC = OptionTableViewController(options: options, selectedOptions: [current])
+    func selectPoliteness(for viewController: VocabularyViewController, current: Vocabulary.Politeness) {
+        guard let navController = viewController.navigationController else { return }
+        let availableOptions = Vocabulary.Politeness.allCases
+        let options = availableOptions.map({ OptionTableViewController.Option(name: $0.rawValue, isSelected: $0.rawValue == current.rawValue) })
+        let optionVC = OptionTableViewController(options: options)
         optionVC.navigationItem.title = "Politeness"
-        optionVC.selectOptionHandler = { (selectedIndex) in
-            completion(options[selectedIndex])
+        optionVC.selectCompletion = { (index) in
+            viewController.setPoliteness(availableOptions[index])
             navController.popViewController(animated: true)
         }
         navController.pushViewController(optionVC, animated: true)
@@ -73,11 +77,10 @@ extension VocabularyCollectionCoordinator: VocabularyAdder {
         let vocabularyVC = VocabularyViewController(mode: .create(collection))
         vocabularyVC.coordinator = self
         vocabularyVC.navigationItem.title = "Add Vocabulary"
-        vocabularyVC.cancelCompletion = {
-            vocabularyVC.dismiss(animated: true, completion: nil)
-        }
-        vocabularyVC.saveCompletion = { [weak self] in
-            self?.collectionContext?.quickSave()
+        vocabularyVC.completion = { [weak self] (result) in
+            if result == .save {
+                self?.collectionContext?.quickSave()
+            }
             vocabularyVC.dismiss(animated: true, completion: nil)
         }
         navigationController.present(vocabularyVC.withNavController(), animated: true, completion: nil)

@@ -9,18 +9,26 @@
 import UIKit
 
 
+extension OptionTableViewController {
+    
+    struct Option {
+        let name: String
+        var isSelected: Bool
+    }
+}
+
+
 class OptionTableViewController: UITableViewController {
     
-    var options: [String]
-    var selectedOptions: [String]
+    private var options: [Option]
     
-    var selectOptionHandler: ((_ index: Int) -> Void)?
-    var deselectOptionHandler: ((_ index: Int) -> Void)?
+    var allowsMultipleSelection: Bool = false
+    var selectCompletion: ((_ index: Int) -> Void)?
+    var deselectCompletion: ((_ index: Int) -> Void)?
     
     
-    init(options: [String], selectedOptions: [String]) {
+    init(options: [Option]) {
         self.options = options
-        self.selectedOptions = selectedOptions
         super.init(style: .grouped)
     }
     
@@ -47,22 +55,30 @@ extension OptionTableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueRegisteredCell(UITableViewCell.self, for: indexPath)
-        let isSelectedOption = selectedOptions.contains(options[indexPath.row])
-        cell.textLabel?.text = options[indexPath.row]
-        cell.accessoryType = isSelectedOption ? .checkmark : .none
+        let option = options[indexPath.row]
+        cell.textLabel?.text = option.name
+        cell.accessoryType = option.isSelected ? .checkmark : .none
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.dequeueRegisteredCell(UITableViewCell.self, for: indexPath)
-        let willSelectOption = cell.accessoryType == .none
-        if willSelectOption {
-            cell.accessoryType = .checkmark
-            selectOptionHandler?(indexPath.row)
+        if allowsMultipleSelection {
+            options[indexPath.row].isSelected.toggle()
         } else {
-            cell.accessoryType = .none
-            deselectOptionHandler?(indexPath.row)
+            options[indexPath.row].isSelected = true
+            for (index, _) in options.enumerated() where index != indexPath.row {
+                options[index].isSelected = false
+            }
         }
+        
+        if options[indexPath.row].isSelected {
+            selectCompletion?(indexPath.row)
+            print("selected")
+        } else {
+            deselectCompletion?(indexPath.row)
+            print("deselected")
+        }
+        tableView.reloadRows(at: tableView.indexPathsForVisibleRows ?? [indexPath], with: .none)
     }
 }
 

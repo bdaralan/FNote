@@ -21,6 +21,11 @@ extension VocabularyViewController {
         case create(VocabularyCollection)
     }
     
+    enum CompletionResult {
+        case save
+        case cancel
+    }
+    
     /// Controller's table view section type.
     enum Section: Int {
         case vocabulary
@@ -52,8 +57,18 @@ class VocabularyViewController: UITableViewController {
     private var beforeChangeVocabulary: Vocabulary?
     private var saveChangesBarButton: UIBarButtonItem?
     
-    var cancelCompletion: (() -> Void)?
-    var saveCompletion: (() -> Void)?
+    var completion: ((CompletionResult) -> Void)?
+    
+    /// Check if the vocabulary values has changed.
+    /// - note: In `.create` mode, this always return `true`.
+    private var hasChanges: Bool  {
+        guard let before = beforeChangeVocabulary else { return true }
+        return vocabulary.isFavorited != before.isFavorited
+            || vocabulary.politeness != before.politeness
+            || vocabulary.translation != before.translation
+            || vocabulary.native != before.native
+            || vocabulary.note != before.note
+    }
     
     let indexPathSections: IndexPathSections<Section, Row> = {
         var sections = IndexPathSections<Section, Row>()
@@ -62,7 +77,7 @@ class VocabularyViewController: UITableViewController {
         sections.addSection(type: .note, items: [.note])
         return sections
     }()
-
+    
     
     /// Construct a vocabulary viewer or adder based on the specified mode.
     init(mode: Mode) {
@@ -103,6 +118,14 @@ class VocabularyViewController: UITableViewController {
             fatalError("unknown text field text changed!!!")
         }
         toggleSaveButtonEnableStateIfNeeded()
+    }
+    
+    func setPoliteness(_ politeness: Vocabulary.Politeness) {
+        vocabulary.politeness = politeness.rawValue
+        toggleSaveButtonEnableStateIfNeeded()
+        let indexPath = indexPathSections.firstIndexPath(of: .politeness)!
+        let cell = tableView.cellForRow(at: indexPath) as? VocabularySelectionCell
+        cell?.reloadCell(detail: politeness.rawValue)
     }
 }
 
@@ -192,15 +215,8 @@ extension VocabularyViewController {
             cell.textField.becomeFirstResponder()
         case .politeness:
             view.endEditing(true)
-            let cell = tableView.cellForRow(at: indexPath) as! VocabularySelectionCell
-            let options = Vocabulary.Politeness.allCases.map({ $0.string })
-            let current = vocabulary.politeness
-            coordinator?.selectVocabularyPoliteness(options: options, current: current, navigationController: navigationController) { [weak self] (selected) in
-                guard let self = self else { return }
-                self.vocabulary.politeness = selected
-                self.toggleSaveButtonEnableStateIfNeeded()
-                cell.reloadCell(detail: selected)
-            }
+            let current = Vocabulary.Politeness(rawValue: vocabulary.politeness) ?? .unknown
+            coordinator?.selectPoliteness(for: self, current: current)
         default:
             #warning("add handler relations and alternatives")
             tableView.deselectRow(at: indexPath, animated: true)
@@ -233,7 +249,7 @@ extension VocabularyViewController {
     }
     
     @objc private func cancelAction() {
-        cancelCompletion?()
+        completion?(.cancel)
     }
     
     @objc private func saveChanges() {
@@ -251,8 +267,13 @@ extension VocabularyViewController {
             return
         }
         
-        context.quickSave()
-        saveCompletion?()
+        
+        if hasChanges {
+            context.quickSave()
+            completion?(.save)
+        } else {
+            completion?(.cancel)
+        }
     }
 }
 

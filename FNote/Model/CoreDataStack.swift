@@ -11,38 +11,35 @@ import CoreData
 
 class CoreDataStack {
     
-    static private(set) var current: CoreDataStack = .init(userAccountToken: CloudKitService.accountToken)
-    
-    static let coreDataModel: NSManagedObjectModel = {
-        let url = Bundle.main.url(forResource: "DataModel", withExtension: "momd")!
-        let model = NSManagedObjectModel(contentsOf: url)!
-        return model
-    }()
+    static private(set) var current = CoreDataStack(userAccountToken: CloudKitService.accountToken)
     
     let persistentContainer: NSPersistentContainer
-    let mainContext: NSManagedObjectContext
+    
+    var mainContext: NSManagedObjectContext {
+        return persistentContainer.viewContext
+    }
     
     private(set) var userAccountToken: String
     
     init(userAccountToken: String) {
         self.userAccountToken = userAccountToken
-        let container = NSPersistentContainer(name: userAccountToken, managedObjectModel: CoreDataStack.coreDataModel)
+
         let persistentStore = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("\(userAccountToken).sqlite")
+        let options = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
         let isPersistentStoreExisted = FileManager.default.fileExists(atPath: persistentStore.path)
         
-        let options = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
-        let coordinator = container.persistentStoreCoordinator
-        try! coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStore, options: options)
-        persistentContainer = container
-        mainContext = persistentContainer.viewContext
+        let objectModelUrl = Bundle.main.url(forResource: "DataModel", withExtension: "momd")!
+        let objectModel = NSManagedObjectModel(contentsOf: objectModelUrl)!
+        persistentContainer = NSPersistentContainer(name: userAccountToken, managedObjectModel: objectModel)
+        try! persistentContainer.persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStore, options: options)
         
         #warning("TODO: remove this test code and implenent no account user")
         guard !isPersistentStoreExisted else { return }
         createUser(userRecordIDName: userAccountToken)
     }
     
-    func setPersistentStore(forUserAccountToken token: String) {
-        CoreDataStack.current = .init(userAccountToken: token)
+    func setPersistentStore(userAccountToken: String) {
+        CoreDataStack.current = .init(userAccountToken: userAccountToken)
     }
 }
 

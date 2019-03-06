@@ -33,7 +33,7 @@ public class Vocabulary: NSManagedObject, LocalRecord {
         native = ""
         translation = ""
         note = ""
-        politeness = Politeness.unknown.string
+        politeness = Politeness.unknown.rawValue
         relations = []
         alternatives = []
     }
@@ -57,20 +57,11 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     }
     
     /// - warning: These values should not be changed because they will be stored in the database.
-    enum Politeness: Int, CaseIterable {
-        case unknown
-        case informal
-        case neutral
-        case formal
-        
-        var string: String {
-            switch self {
-            case .unknown: return "Unknown"
-            case .informal: return "Informal"
-            case .neutral: return "Neutral"
-            case .formal: return "Formal"
-            }
-        }
+    enum Politeness: String, CaseIterable {
+        case unknown = "Unknown"
+        case informal = "Informal"
+        case neutral = "Neutral"
+        case formal = "Formal"
     }
     
     /// - warning: These values should not be changed because they will be stored in the database.

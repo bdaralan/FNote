@@ -36,10 +36,10 @@ extension MainTabBarViewController {
     }
     
     @objc private func handleUserAccountChanged() {
-        let newToken = CloudKitService.accountToken
-        let currentToken = CoreDataStack.current.userAccountToken
-        guard currentToken != newToken else { return }
-        CoreDataStack.current.setPersistentStore(forUserAccountToken: newToken)
+        let iCloudToken = CloudKitService.accountToken
+        let coreDataToken = CoreDataStack.current.userAccountToken
+        guard coreDataToken != iCloudToken else { return }
+        CoreDataStack.current.setPersistentStore(userAccountToken: iCloudToken)
         DispatchQueue.main.async { [unowned self] in
             self.selectedViewController = self.vocabularyCollectionCoordinator.navigationController
             let collection = CoreDataStack.current.vocabularyCollections().first!
