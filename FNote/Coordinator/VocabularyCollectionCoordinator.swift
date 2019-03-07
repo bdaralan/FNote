@@ -47,8 +47,8 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
         let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
         vocabularyVC.coordinator = self
         vocabularyVC.navigationItem.title = "Vocabulary"
-        vocabularyVC.completion = { [weak self] (result) in
-            if result == .save {
+        vocabularyVC.completion = { [weak self] (action) in
+            if action == .save {
                 self?.collectionContext?.quickSave()
             }
             self?.navigationController.popViewController(animated: true)
@@ -77,8 +77,8 @@ extension VocabularyCollectionCoordinator: VocabularyAdder {
         let vocabularyVC = VocabularyViewController(mode: .create(collection))
         vocabularyVC.coordinator = self
         vocabularyVC.navigationItem.title = "Add Vocabulary"
-        vocabularyVC.completion = { [weak self] (result) in
-            if result == .save {
+        vocabularyVC.completion = { [weak self] (action) in
+            if action == .save {
                 self?.collectionContext?.quickSave()
             }
             vocabularyVC.dismiss(animated: true, completion: nil)

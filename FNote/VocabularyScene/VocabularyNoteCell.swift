@@ -87,7 +87,9 @@ extension VocabularyNoteCell {
         setupTextViewInputAccessoryView()
     }
     
+    /// Add a **Done** button to the accessory view if the device is an iPhone.
     private func setupTextViewInputAccessoryView() {
+        guard UIDevice.current.userInterfaceIdiom == .phone else { return }
         let toolBar = UIToolbar(frame: .init(x: 0, y: 0, width: 45, height: 45))
         let done = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
