@@ -83,7 +83,9 @@ class VocabularyCollectionCell: UICollectionViewCell {
         nativeLabel.text = vocabulary.native
         translationLabel.text = vocabulary.translation
         favoriteButton.tintColor = UIColor(named: "favorite-vocab-\(vocabulary.isFavorited ? "true" : "false")")
-        relationButton.setTitle("\(vocabulary.relations.count)", for: .normal)
+        
+        relationButton.setTitle("\(vocabulary.relations.count)", for: .normal) // TEST
+        
         alternativeButton.setTitle("\(vocabulary.alternatives.count)", for: .normal)
     }
 }

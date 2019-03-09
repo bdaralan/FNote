@@ -16,16 +16,16 @@ public class VocabularyCollection: NSManagedObject, LocalRecord {
     var recordType: CKRecord.RecordType { return "VocabularyCollection" }
     var recordZone: CKRecordZone { return CloudKitService.ckVocabularyCollectionZone }
     
-    @NSManaged public var recordSystemFields: Data!
+    @NSManaged private(set) var recordMetadata: RecordMetadata
     @NSManaged public var name: String
     @NSManaged private(set) var vocabularies: Set<Vocabulary>
     
     
     public override func awakeFromInsert() {
         super.awakeFromInsert()
-        initRecordSystemFields()
         name = ""
         vocabularies = []
+        recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
     }
     
     func recordValuesForServerKeys() -> [String : Any] {

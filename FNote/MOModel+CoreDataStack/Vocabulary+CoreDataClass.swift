@@ -16,7 +16,7 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     var recordType: CKRecord.RecordType { return "Vocabulary" }
     var recordZone: CKRecordZone { return CloudKitService.ckVocabularyCollectionZone }
 
-    @NSManaged public var recordSystemFields: Data!
+    @NSManaged private(set) var recordMetadata: RecordMetadata
     @NSManaged public var native: String
     @NSManaged public var translation: String
     @NSManaged public var note: String
@@ -29,13 +29,13 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     
     public override func awakeFromInsert() {
         super.awakeFromInsert()
-        initRecordSystemFields()
         native = ""
         translation = ""
         note = ""
         politeness = Politeness.unknown.rawValue
         relations = []
         alternatives = []
+        recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
     }
     
     func recordValuesForServerKeys() -> [String : Any] {
@@ -58,16 +58,10 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     
     /// - warning: These values should not be changed because they will be stored in the database.
     enum Politeness: String, CaseIterable {
-        case unknown = "Unknown"
-        case informal = "Informal"
-        case neutral = "Neutral"
-        case formal = "Formal"
-    }
-    
-    /// - warning: These values should not be changed because they will be stored in the database.
-    enum ConnectionType: Int {
-        case relation
-        case alternative
+        case unknown
+        case informal
+        case neutral
+        case formal
     }
     
     #warning("TODO: need init that has to set collection")
@@ -83,27 +77,15 @@ extension Vocabulary {
     
     /// Locally make a connection between two vocabularies.
     /// - returns: A `CKRecord` of record type `VocabularyConnection`.
-    func setConnection(first: Vocabulary, second: Vocabulary, type: ConnectionType) -> CKRecord? {
+    func setConnection(first: Vocabulary, second: Vocabulary, type: VocabularyConnection.ConnectionType) -> CKRecord? {
         #warning("TODO: implement")
         switch type {
-        case .relation where !first.relations.contains(second):
+        case .related where !first.relations.contains(second):
             return nil
         case .alternative where !first.alternatives.contains(second):
             return nil
         default:
             return nil
         }
-    }
-    
-    func copyValues(from vocabluary: Vocabulary) {
-        self.recordSystemFields = vocabluary.recordSystemFields
-        self.native = vocabluary.native
-        self.translation = vocabluary.translation
-        self.note = vocabluary.note
-        self.politeness = vocabluary.politeness
-        self.isFavorited = vocabluary.isFavorited
-        self.relations = vocabluary.relations
-        self.alternatives = vocabluary.alternatives
-        self.collection = vocabluary.collection
     }
 }

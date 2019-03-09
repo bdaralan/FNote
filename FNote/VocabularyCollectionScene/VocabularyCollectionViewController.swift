@@ -129,7 +129,6 @@ extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
     func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapRelationButton button: UIButton) {
         let vocabIndexPath = collectionView.indexPath(for: cell)!
         let vocabulary = fetchController.object(at: vocabIndexPath)
-        print(vocabulary.relations.count)
     }
     
     func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapAlternativeButton button: UIButton) {
