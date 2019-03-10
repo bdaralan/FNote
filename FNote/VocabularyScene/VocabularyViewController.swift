@@ -91,8 +91,7 @@ class VocabularyViewController: UITableViewController {
         case .create(let collection):
             context.parent = collection.managedObjectContext!
             let collection = context.object(with: collection.objectID) as! VocabularyCollection
-            vocabulary = Vocabulary(context: context)
-            vocabulary.setCollection(collection)
+            vocabulary = Vocabulary(collection: collection, context: context)
         }
         super.init(style: .grouped)
         setupNavItems(mode: mode)

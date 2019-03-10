@@ -2,7 +2,7 @@
 //  Vocabulary+CoreDataProperties.swift
 //  FNote
 //
-//  Created by Dara Beng on 3/8/19.
+//  Created by Dara Beng on 3/9/19.
 //  Copyright © 2019 Dara Beng. All rights reserved.
 //
 //
@@ -49,5 +49,56 @@ extension Vocabulary {
 
     @objc(removeRelations:)
     @NSManaged public func removeFromRelations(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for sourceOf
+extension Vocabulary {
+
+    @objc(addSourceOfObject:)
+    @NSManaged public func addToSourceOf(_ value: VocabularyConnection)
+
+    @objc(removeSourceOfObject:)
+    @NSManaged public func removeFromSourceOf(_ value: VocabularyConnection)
+
+    @objc(addSourceOf:)
+    @NSManaged public func addToSourceOf(_ values: NSSet)
+
+    @objc(removeSourceOf:)
+    @NSManaged public func removeFromSourceOf(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for targetOf
+extension Vocabulary {
+
+    @objc(addTargetOfObject:)
+    @NSManaged public func addToTargetOf(_ value: VocabularyConnection)
+
+    @objc(removeTargetOfObject:)
+    @NSManaged public func removeFromTargetOf(_ value: VocabularyConnection)
+
+    @objc(addTargetOf:)
+    @NSManaged public func addToTargetOf(_ values: NSSet)
+
+    @objc(removeTargetOf:)
+    @NSManaged public func removeFromTargetOf(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for connections
+extension Vocabulary {
+
+    @objc(addConnectionsObject:)
+    @NSManaged public func addToConnections(_ value: VocabularyConnection)
+
+    @objc(removeConnectionsObject:)
+    @NSManaged public func removeFromConnections(_ value: VocabularyConnection)
+
+    @objc(addConnections:)
+    @NSManaged public func addToConnections(_ values: NSSet)
+
+    @objc(removeConnections:)
+    @NSManaged public func removeFromConnections(_ values: NSSet)
 
 }

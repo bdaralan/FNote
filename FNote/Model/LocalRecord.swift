@@ -15,6 +15,9 @@ protocol LocalRecord: class {
     /// `CKRecord` key-value-pair key.
     typealias ServerKey = CodingKey
     
+    /// `CKRecord` string value.
+    typealias ServerStringValue = String
+    
     /// Database Record Type
     var recordType: CKRecord.RecordType { get }
     

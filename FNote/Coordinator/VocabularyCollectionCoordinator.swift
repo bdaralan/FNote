@@ -31,7 +31,7 @@ class VocabularyCollectionCoordinator: Coordinator {
     
     func start() {
         #warning("TODO: set sample collection if last selected collection is nil")
-        let collection = CoreDataStack.current.vocabularyCollections().first!
+        let collection = CoreDataStack.current.allVocabularyCollections().first!
         vocabularyCollectionVC = VocabularyCollectionViewController(collection: collection)
         vocabularyCollectionVC.coordinator = self
         vocabularyCollectionVC.navigationItem.title = collection.name
@@ -90,14 +90,18 @@ extension VocabularyCollectionCoordinator: VocabularyAdder {
 
 extension VocabularyCollectionCoordinator: VocabularyRemover {
     
-    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection) {
-        guard collection.vocabularies.contains(vocabulary), let context = collection.managedObjectContext else { return }
-        let alert = UIAlertController(title: "Delete Vocabulary", message: nil, preferredStyle: .actionSheet)
+    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, vc: VocabularyCollectionViewController) {
+        guard collection.vocabularies.contains(vocabulary) else { return }
+        let alert = UIAlertController(title: "Delete Vocabulary", message: nil, preferredStyle: .actionSheet) 
         alert.addAction(.init(title: "Cancel", style: .cancel, handler: nil))
-        alert.addAction(.init(title: "Delete", style: .destructive) { (action) in
-            context.delete(vocabulary)
-            context.quickSave()
-            })
+        let delete = UIAlertAction(title: "Delete", style: .destructive) { (action) in
+            collection.removeFromVocabularies(vocabulary)
+            collection.managedObjectContext?.perform {
+                collection.managedObjectContext?.delete(vocabulary)
+                collection.managedObjectContext?.quickSave()
+            }
+        }
+        alert.addAction(delete)
         alert.preferredAction = alert.actions.first
         navigationController.present(alert, animated: true, completion: nil)
     }

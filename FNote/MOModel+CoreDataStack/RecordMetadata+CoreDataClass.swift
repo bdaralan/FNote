@@ -50,10 +50,10 @@ public class RecordMetadata: NSManagedObject {
         return true
     }
     
-    /// An empty `CKRecord` with only its `recordSystemFields` metadata.
+    /// The `CKRecord` from the encoded `systemFields`.
     func ckRecord() -> CKRecord {
         guard let coder = try? NSKeyedUnarchiver(forReadingFrom: systemFields), let record = CKRecord(coder: coder) else {
-            fatalError("\(String(describing: self)) failed to unarchive cloudkit system fields!!!")
+            fatalError("\(self) failed to unarchive cloudkit system fields!!!")
         }
         return record
     }

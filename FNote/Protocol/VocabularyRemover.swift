@@ -11,5 +11,5 @@ import Foundation
 
 protocol VocabularyRemover: AnyObject {
     
-    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection)
+    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, vc: VocabularyCollectionViewController)
 }

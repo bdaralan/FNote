@@ -42,7 +42,7 @@ extension MainTabBarViewController {
         CoreDataStack.current.setPersistentStore(userAccountToken: iCloudToken)
         DispatchQueue.main.async { [unowned self] in
             self.selectedViewController = self.vocabularyCollectionCoordinator.navigationController
-            let collection = CoreDataStack.current.vocabularyCollections().first!
+            let collection = CoreDataStack.current.allVocabularyCollections().first!
             self.vocabularyCollectionCoordinator.vocabularyCollectionVC.setCollection(collection)
         }
     }

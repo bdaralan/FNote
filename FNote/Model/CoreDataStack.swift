@@ -33,37 +33,13 @@ class CoreDataStack {
         persistentContainer = NSPersistentContainer(name: userAccountToken, managedObjectModel: objectModel)
         try! persistentContainer.persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStore, options: options)
         
-        createConnections(true)
-        
-        let r: NSFetchRequest<VocabularyConnection> = VocabularyConnection.fetchRequest()
-        r.predicate = NSPredicate(value: true)
-        r.sortDescriptors = []
-        let vcs = try? mainContext.fetch(r)
-        print("all connections:", vcs?.count ?? 0)
-        
-        #warning("TODO: remove this test code and implenent no account user")
         guard !isPersistentStoreExisted else { return }
+        #warning("TODO: remove this test code and implenent no account user")
         createUser(userRecordIDName: userAccountToken)
     }
     
     func setPersistentStore(userAccountToken: String) {
         CoreDataStack.current = .init(userAccountToken: userAccountToken)
-    }
-    
-    func createConnections(_ bool: Bool) {
-        guard bool else { return }
-        let collection = vocabularyCollections().first!
-        let a = Vocabulary(context: mainContext)
-        a.native = "A"
-        a.translation = "a"
-        a.setCollection(collection)
-
-        let b = Vocabulary(context: mainContext)
-        b.native = "B"
-        b.translation = "b"
-        b.setCollection(collection)
-        
-        mainContext.quickSave()
     }
 }
 
@@ -86,7 +62,7 @@ extension CoreDataStack {
         return results.first!
     }
 
-    func vocabularyCollections() -> [VocabularyCollection] {
+    func allVocabularyCollections() -> [VocabularyCollection] {
         let request: NSFetchRequest<VocabularyCollection> = VocabularyCollection.fetchRequest()
         let results = try? mainContext.fetch(request)
         return results ?? []

@@ -20,26 +20,29 @@
         <attribute name="translation" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="alternatives" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="alternatives" inverseEntity="Vocabulary" syncable="YES"/>
         <relationship name="collection" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VocabularyCollection" inverseName="vocabularies" inverseEntity="VocabularyCollection" syncable="YES"/>
+        <relationship name="connections" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="VocabularyConnection" inverseName="vocabularies" inverseEntity="VocabularyConnection" syncable="YES"/>
         <relationship name="recordMetadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RecordMetadata" inverseName="vocabulary" inverseEntity="RecordMetadata" syncable="YES"/>
         <relationship name="relations" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="relations" inverseEntity="Vocabulary" syncable="YES"/>
+        <relationship name="sourceOf" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="VocabularyConnection" inverseName="source" inverseEntity="VocabularyConnection" syncable="YES"/>
+        <relationship name="targetOf" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="VocabularyConnection" inverseName="target" inverseEntity="VocabularyConnection" syncable="YES"/>
     </entity>
     <entity name="VocabularyCollection" representedClassName=".VocabularyCollection" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="recordSystemFields" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="recordMetadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RecordMetadata" inverseName="vocabularyCollection" inverseEntity="RecordMetadata" syncable="YES"/>
         <relationship name="vocabularies" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Vocabulary" inverseName="collection" inverseEntity="Vocabulary" syncable="YES"/>
     </entity>
     <entity name="VocabularyConnection" representedClassName=".VocabularyConnection" syncable="YES">
         <attribute name="connectionType" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="sourceRecordName" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="targetRecordName" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="recordMetadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RecordMetadata" inverseName="vocabularyConnection" inverseEntity="RecordMetadata" syncable="YES"/>
+        <relationship name="source" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="sourceOf" inverseEntity="Vocabulary" syncable="YES"/>
+        <relationship name="target" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="targetOf" inverseEntity="Vocabulary" syncable="YES"/>
+        <relationship name="vocabularies" optional="YES" toMany="YES" minCount="2" maxCount="2" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="connections" inverseEntity="Vocabulary" syncable="YES"/>
     </entity>
     <elements>
         <element name="RecordMetadata" positionX="-36" positionY="99" width="128" height="150"/>
         <element name="User" positionX="-36" positionY="81" width="128" height="60"/>
-        <element name="Vocabulary" positionX="-54" positionY="-9" width="128" height="180"/>
-        <element name="VocabularyCollection" positionX="-45" positionY="63" width="128" height="105"/>
-        <element name="VocabularyConnection" positionX="-45" positionY="72" width="128" height="105"/>
+        <element name="Vocabulary" positionX="-54" positionY="-9" width="128" height="225"/>
+        <element name="VocabularyCollection" positionX="-45" positionY="63" width="128" height="90"/>
+        <element name="VocabularyConnection" positionX="-45" positionY="72" width="128" height="120"/>
     </elements>
 </model>

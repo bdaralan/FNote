@@ -27,6 +27,10 @@ public class VocabularyCollection: NSManagedObject, LocalRecord {
         vocabularies = []
         recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
     }
+}
+
+
+extension VocabularyCollection {
     
     func recordValuesForServerKeys() -> [String : Any] {
         return [Key.name.stringValue: name]
