@@ -21,7 +21,7 @@ extension VocabularyViewController {
         case create(VocabularyCollection)
     }
     
-    enum CompletionResult {
+    enum CompletionAction {
         case save
         case cancel
     }
@@ -57,7 +57,7 @@ class VocabularyViewController: UITableViewController {
     private var beforeChangeVocabulary: Vocabulary?
     private var saveChangesBarButton: UIBarButtonItem?
     
-    var completion: ((CompletionResult) -> Void)?
+    var completion: ((CompletionAction) -> Void)?
     
     /// Check if the vocabulary values has changed.
     /// - note: In `.create` mode, this always return `true`.
@@ -91,8 +91,7 @@ class VocabularyViewController: UITableViewController {
         case .create(let collection):
             context.parent = collection.managedObjectContext!
             let collection = context.object(with: collection.objectID) as! VocabularyCollection
-            vocabulary = Vocabulary(context: context)
-            vocabulary.setCollection(collection)
+            vocabulary = Vocabulary(collection: collection, context: context)
         }
         super.init(style: .grouped)
         setupNavItems(mode: mode)

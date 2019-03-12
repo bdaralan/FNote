@@ -30,13 +30,15 @@ class VocabularyCollectionCoordinator: Coordinator {
     
     
     func start() {
-        #warning("TODO: set sample collection if last selected collection is nil")
-        let collection = CoreDataStack.current.vocabularyCollections().first!
+        let coreData = CoreDataStack.current
+        let recordName = UserDefaultsManager.selectedVocabularyCollectionRecordName ?? ""
+        let collection = coreData.fetchVocabularyCollection(recordName: recordName, context: coreData.mainContext) ?? coreData.userVocabularyCollections().first!
         vocabularyCollectionVC = VocabularyCollectionViewController(collection: collection)
         vocabularyCollectionVC.coordinator = self
         vocabularyCollectionVC.navigationItem.title = collection.name
         navigationController.tabBarItem = UITabBarItem(title: "Collections", image: .tabBarVocabCollection, tag: 0)
         navigationController.pushViewController(vocabularyCollectionVC, animated: false)
+        UserDefaultsManager.rememberSelectedVocabularyCollection(recordName: collection.recordMetadata.recordName)
     }
 }
 
@@ -47,8 +49,8 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
         let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
         vocabularyVC.coordinator = self
         vocabularyVC.navigationItem.title = "Vocabulary"
-        vocabularyVC.completion = { [weak self] (result) in
-            if result == .save {
+        vocabularyVC.completion = { [weak self] (action) in
+            if action == .save {
                 self?.collectionContext?.quickSave()
             }
             self?.navigationController.popViewController(animated: true)
@@ -77,8 +79,8 @@ extension VocabularyCollectionCoordinator: VocabularyAdder {
         let vocabularyVC = VocabularyViewController(mode: .create(collection))
         vocabularyVC.coordinator = self
         vocabularyVC.navigationItem.title = "Add Vocabulary"
-        vocabularyVC.completion = { [weak self] (result) in
-            if result == .save {
+        vocabularyVC.completion = { [weak self] (action) in
+            if action == .save {
                 self?.collectionContext?.quickSave()
             }
             vocabularyVC.dismiss(animated: true, completion: nil)
@@ -90,14 +92,18 @@ extension VocabularyCollectionCoordinator: VocabularyAdder {
 
 extension VocabularyCollectionCoordinator: VocabularyRemover {
     
-    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection) {
-        guard collection.vocabularies.contains(vocabulary), let context = collection.managedObjectContext else { return }
-        let alert = UIAlertController(title: "Delete Vocabulary", message: nil, preferredStyle: .actionSheet)
+    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, vc: VocabularyCollectionViewController) {
+        guard collection.vocabularies.contains(vocabulary) else { return }
+        let alert = UIAlertController(title: "Delete Vocabulary", message: nil, preferredStyle: .actionSheet) 
         alert.addAction(.init(title: "Cancel", style: .cancel, handler: nil))
-        alert.addAction(.init(title: "Delete", style: .destructive) { (action) in
-            context.delete(vocabulary)
-            context.quickSave()
-            })
+        let delete = UIAlertAction(title: "Delete", style: .destructive) { (action) in
+            collection.removeFromVocabularies(vocabulary)
+            collection.managedObjectContext?.perform {
+                collection.managedObjectContext?.delete(vocabulary)
+                collection.managedObjectContext?.quickSave()
+            }
+        }
+        alert.addAction(delete)
         alert.preferredAction = alert.actions.first
         navigationController.present(alert, animated: true, completion: nil)
     }

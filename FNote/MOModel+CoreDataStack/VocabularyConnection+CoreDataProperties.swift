@@ -1,8 +1,8 @@
 //
-//  VocabularyCollection+CoreDataProperties.swift
+//  VocabularyConnection+CoreDataProperties.swift
 //  FNote
 //
-//  Created by Dara Beng on 3/8/19.
+//  Created by Dara Beng on 3/9/19.
 //  Copyright © 2019 Dara Beng. All rights reserved.
 //
 //
@@ -11,15 +11,15 @@ import Foundation
 import CoreData
 
 
-extension VocabularyCollection {
+extension VocabularyConnection {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<VocabularyCollection> {
-        return NSFetchRequest<VocabularyCollection>(entityName: "VocabularyCollection")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<VocabularyConnection> {
+        return NSFetchRequest<VocabularyConnection>(entityName: "VocabularyConnection")
     }
 }
 
 // MARK: Generated accessors for vocabularies
-extension VocabularyCollection {
+extension VocabularyConnection {
 
     @objc(addVocabulariesObject:)
     @NSManaged public func addToVocabularies(_ value: Vocabulary)

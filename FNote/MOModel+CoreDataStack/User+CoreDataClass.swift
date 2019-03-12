@@ -2,7 +2,7 @@
 //  User+CoreDataClass.swift
 //  FNote
 //
-//  Created by Dara Beng on 1/21/19.
+//  Created by Dara Beng on 3/9/19.
 //  Copyright © 2019 Dara Beng. All rights reserved.
 //
 //
@@ -13,7 +13,11 @@ import CoreData
 
 public class User: NSManagedObject {
 
-    @NSManaged public var userID: String
+    @NSManaged public var accountToken: String
     
-    #warning("TODO: need to implement syncing user id with icloud")
+    
+    convenience init(accountToken: String, context: NSManagedObjectContext) {
+        self.init(context: context)
+        self.accountToken = accountToken
+    }
 }
