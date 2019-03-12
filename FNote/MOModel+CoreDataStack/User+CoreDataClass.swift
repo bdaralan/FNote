@@ -13,11 +13,11 @@ import CoreData
 
 public class User: NSManagedObject {
 
-    @NSManaged public var userID: String
+    @NSManaged public var accountToken: String
     
     
-    convenience init(userID: String, context: NSManagedObjectContext) {
+    convenience init(accountToken: String, context: NSManagedObjectContext) {
         self.init(context: context)
-        self.userID = userID
+        self.accountToken = accountToken
     }
 }

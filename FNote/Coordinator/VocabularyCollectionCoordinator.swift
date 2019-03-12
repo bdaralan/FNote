@@ -30,13 +30,15 @@ class VocabularyCollectionCoordinator: Coordinator {
     
     
     func start() {
-        #warning("TODO: set sample collection if last selected collection is nil")
-        let collection = CoreDataStack.current.allVocabularyCollections().first!
+        let coreData = CoreDataStack.current
+        let recordName = UserDefaultsManager.selectedVocabularyCollectionRecordName ?? ""
+        let collection = coreData.fetchVocabularyCollection(recordName: recordName, context: coreData.mainContext) ?? coreData.userVocabularyCollections().first!
         vocabularyCollectionVC = VocabularyCollectionViewController(collection: collection)
         vocabularyCollectionVC.coordinator = self
         vocabularyCollectionVC.navigationItem.title = collection.name
         navigationController.tabBarItem = UITabBarItem(title: "Collections", image: .tabBarVocabCollection, tag: 0)
         navigationController.pushViewController(vocabularyCollectionVC, animated: false)
+        UserDefaultsManager.rememberSelectedVocabularyCollection(recordName: collection.recordMetadata.recordName)
     }
 }
 

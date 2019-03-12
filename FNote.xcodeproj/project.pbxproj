@@ -25,6 +25,7 @@
 		B437BDC521F1B86500A1B016 /* VocabularyCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC421F1B86500A1B016 /* VocabularyCollectionCell.swift */; };
 		B437BDC821F1BB0900A1B016 /* Subview+Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */; };
 		B437BDC921F1BB0900A1B016 /* TableView+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */; };
+		B450E81A22383016002EDC04 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E81922383016002EDC04 /* UserDefaultsManager.swift */; };
 		B45AB9B12219C724009D337C /* VocabularyCollectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B02219C724009D337C /* VocabularyCollectionCoordinator.swift */; };
 		B45AB9B32219C780009D337C /* VocbularyAdder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B22219C780009D337C /* VocbularyAdder.swift */; };
 		B45AB9B52219C7C1009D337C /* VocabularyViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B42219C7C1009D337C /* VocabularyViewer.swift */; };
@@ -71,6 +72,7 @@
 		B437BDC421F1B86500A1B016 /* VocabularyCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionCell.swift; sourceTree = "<group>"; };
 		B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Subview+Constraint.swift"; sourceTree = "<group>"; };
 		B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TableView+CollectionView.swift"; sourceTree = "<group>"; };
+		B450E81922383016002EDC04 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 		B45AB9B02219C724009D337C /* VocabularyCollectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionCoordinator.swift; sourceTree = "<group>"; };
 		B45AB9B22219C780009D337C /* VocbularyAdder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocbularyAdder.swift; sourceTree = "<group>"; };
 		B45AB9B42219C7C1009D337C /* VocabularyViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyViewer.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 				B45AB9B62219C7F0009D337C /* Protocol */,
 				B437BDC021F1B7AD00A1B016 /* VocabularyCollectionScene */,
 				B437BDB821F1981B00A1B016 /* VocabularyScene */,
+				B450E81622382819002EDC04 /* Manager+Service */,
 				B437BDB421F197AD00A1B016 /* Model */,
 				B40A802721F5958F00DCDF11 /* MOModel+CoreDataStack */,
 				B437BDB321F197AB00A1B016 /* View */,
@@ -185,8 +188,6 @@
 		B437BDB421F197AD00A1B016 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				B40A803021F59C9100DCDF11 /* CoreDataStack.swift */,
-				B4F5C82D21F7BF67007E8108 /* CloudKitService.swift */,
 				B48A620521F2875100C75A8C /* IndexPathSections.swift */,
 				B472F74122073EBF00761939 /* LocalRecord.swift */,
 			);
@@ -200,9 +201,9 @@
 				B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */,
 				B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */,
 				B48A620121F23D2500C75A8C /* Image+Color.swift */,
-				B47A07442217E41200EE8856 /* ManagedObjectContext.swift */,
 				B4AD1A622225E30C00459D46 /* Animation.swift */,
 				B4D5E69D222A2E33000C2DB3 /* ViewController.swift */,
+				B47A07442217E41200EE8856 /* ManagedObjectContext.swift */,
 			);
 			path = "Extension+Utility";
 			sourceTree = "<group>";
@@ -226,6 +227,16 @@
 				B437BDC421F1B86500A1B016 /* VocabularyCollectionCell.swift */,
 			);
 			path = VocabularyCollectionScene;
+			sourceTree = "<group>";
+		};
+		B450E81622382819002EDC04 /* Manager+Service */ = {
+			isa = PBXGroup;
+			children = (
+				B40A803021F59C9100DCDF11 /* CoreDataStack.swift */,
+				B4F5C82D21F7BF67007E8108 /* CloudKitService.swift */,
+				B450E81922383016002EDC04 /* UserDefaultsManager.swift */,
+			);
+			path = "Manager+Service";
 			sourceTree = "<group>";
 		};
 		B45AB9B62219C7F0009D337C /* Protocol */ = {
@@ -358,6 +369,7 @@
 				B48A620A21F2931E00C75A8C /* VocabularyTextFieldCell.swift in Sources */,
 				B437BDC921F1BB0900A1B016 /* TableView+CollectionView.swift in Sources */,
 				B48A620621F2875100C75A8C /* IndexPathSections.swift in Sources */,
+				B450E81A22383016002EDC04 /* UserDefaultsManager.swift in Sources */,
 				B4AD1A632225E30C00459D46 /* Animation.swift in Sources */,
 				B45AB9B12219C724009D337C /* VocabularyCollectionCoordinator.swift in Sources */,
 				B40A802A21F595B500DCDF11 /* Vocabulary+CoreDataClass.swift in Sources */,
