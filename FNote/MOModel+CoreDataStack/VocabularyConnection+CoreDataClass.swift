@@ -38,6 +38,7 @@ public class VocabularyConnection: NSManagedObject, LocalRecord {
         recordMetadata = RecordMetadata(recordType: recordType, recordName: recordName, zone: recordZone, context: context)
     }
     
+    
     func isConnection(of vocabularies: (Vocabulary, Vocabulary)) -> Bool {
         return self.vocabularies.contains(vocabularies.0) && self.vocabularies.contains(vocabularies.1)
     }
@@ -74,13 +75,14 @@ extension VocabularyConnection {
     /// Fetch `VocabularConnection` from the given context.
     /// - parameters:
     ///   - context: The context to fetch from.
-    ///   - recordNames: The source and target vocabulary's record name. The order does not matter.
-    static func fetch(from context: NSManagedObjectContext, type: VocabularyConnection.ConnectionType, vocabularies: (Vocabulary, Vocabulary)) -> VocabularyConnection? {
+    ///   - type: The connection type.
+    ///   - vocabularies: The source and target of the connection.
+    /// - returns: Array of matched connections or empty.
+    static func fetch(from context: NSManagedObjectContext, type: VocabularyConnection.ConnectionType, vocabularies: (Vocabulary, Vocabulary)) -> [VocabularyConnection] {
         let request: NSFetchRequest<VocabularyConnection> = VocabularyConnection.fetchRequest()
-        let recordNameContains = "recordMetadata.recordName contains[c]"
-        let format = "((source == %@ AND target == %@) OR (source == %@ AND target == %@)) AND connectionType == %@"
-        request.predicate = NSPredicate(format: format, vocabularies.0, vocabularies.1, vocabularies.1, vocabularies.0, type.rawValue)
+        let format = "connectionType == %@ AND vocabularies contains[c] AND vocabularies contains[c]"
+        request.predicate = NSPredicate(format: format, vocabularies.0, vocabularies.1, type.rawValue)
         let connections = try? context.fetch(request)
-        return connections?.first
+        return connections ?? []
     }
 }

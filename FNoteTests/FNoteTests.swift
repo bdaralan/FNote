@@ -8,17 +8,14 @@
 
 import XCTest
 import CoreData
-
 @testable import FNote
 
+
 class FNoteTests: XCTestCase {
-    
 
     override func setUp() {
-        
     }
 
     override func tearDown() {
-        
     }
 }
