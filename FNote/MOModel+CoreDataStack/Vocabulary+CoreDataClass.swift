@@ -86,7 +86,7 @@ extension Vocabulary {
     
     /// Add connection between the given vocabulary and create a connection object.
     /// - returns: The connection object created.
-    @discardableResult func addConnection(with vocabulary: Vocabulary, type: VocabularyConnection.ConnectionType) -> VocabularyConnection {
+    func addConnection(with vocabulary: Vocabulary, type: VocabularyConnection.ConnectionType) -> VocabularyConnection {
         switch type {
         case .related:
             addToRelations(vocabulary)
@@ -104,7 +104,7 @@ extension Vocabulary {
     
     /// Remove the connection between the given vocabulary and delete the connection object.
     /// - returns: The deleted connection object if the connections is removed. Otherwise, `nil`.
-    @discardableResult func removeConnection(with vocabulary: Vocabulary, type: VocabularyConnection.ConnectionType) -> VocabularyConnection? {
+    func removeConnection(with vocabulary: Vocabulary, type: VocabularyConnection.ConnectionType) -> VocabularyConnection? {
         for connection in connections where connection.type == type && connection.isConnection(of: (self, vocabulary)) {
             switch type {
             case .related:
