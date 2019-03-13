@@ -26,6 +26,7 @@
 		B437BDC821F1BB0900A1B016 /* Subview+Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */; };
 		B437BDC921F1BB0900A1B016 /* TableView+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */; };
 		B450E81A22383016002EDC04 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E81922383016002EDC04 /* UserDefaultsManager.swift */; };
+		B450E82222384C72002EDC04 /* FNoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E82122384C72002EDC04 /* FNoteTests.swift */; };
 		B45AB9B12219C724009D337C /* VocabularyCollectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B02219C724009D337C /* VocabularyCollectionCoordinator.swift */; };
 		B45AB9B32219C780009D337C /* VocbularyAdder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B22219C780009D337C /* VocbularyAdder.swift */; };
 		B45AB9B52219C7C1009D337C /* VocabularyViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B42219C7C1009D337C /* VocabularyViewer.swift */; };
@@ -51,6 +52,16 @@
 		B4F5C82E21F7BF67007E8108 /* CloudKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F5C82D21F7BF67007E8108 /* CloudKitService.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		B450E82422384C72002EDC04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B437BD9521F1972600A1B016 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B437BD9C21F1972600A1B016;
+			remoteInfo = FNote;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		B4081058223329130081919B /* VocabularyConnection+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VocabularyConnection+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B4081059223329130081919B /* VocabularyConnection+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VocabularyConnection+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -73,6 +84,9 @@
 		B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Subview+Constraint.swift"; sourceTree = "<group>"; };
 		B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TableView+CollectionView.swift"; sourceTree = "<group>"; };
 		B450E81922383016002EDC04 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
+		B450E81F22384C72002EDC04 /* FNoteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FNoteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B450E82122384C72002EDC04 /* FNoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FNoteTests.swift; sourceTree = "<group>"; };
+		B450E82322384C72002EDC04 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B45AB9B02219C724009D337C /* VocabularyCollectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionCoordinator.swift; sourceTree = "<group>"; };
 		B45AB9B22219C780009D337C /* VocbularyAdder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocbularyAdder.swift; sourceTree = "<group>"; };
 		B45AB9B42219C7C1009D337C /* VocabularyViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyViewer.swift; sourceTree = "<group>"; };
@@ -108,6 +122,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B450E81C22384C72002EDC04 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -132,6 +153,7 @@
 			isa = PBXGroup;
 			children = (
 				B437BD9F21F1972600A1B016 /* FNote */,
+				B450E82022384C72002EDC04 /* FNoteTests */,
 				B437BD9E21F1972600A1B016 /* Products */,
 				B4F5C82A21F7B910007E8108 /* Frameworks */,
 			);
@@ -141,6 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				B437BD9D21F1972600A1B016 /* FNote.app */,
+				B450E81F22384C72002EDC04 /* FNoteTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -239,6 +262,15 @@
 			path = "Manager+Service";
 			sourceTree = "<group>";
 		};
+		B450E82022384C72002EDC04 /* FNoteTests */ = {
+			isa = PBXGroup;
+			children = (
+				B450E82122384C72002EDC04 /* FNoteTests.swift */,
+				B450E82322384C72002EDC04 /* Info.plist */,
+			);
+			path = FNoteTests;
+			sourceTree = "<group>";
+		};
 		B45AB9B62219C7F0009D337C /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
@@ -286,6 +318,24 @@
 			productReference = B437BD9D21F1972600A1B016 /* FNote.app */;
 			productType = "com.apple.product-type.application";
 		};
+		B450E81E22384C72002EDC04 /* FNoteTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B450E82822384C73002EDC04 /* Build configuration list for PBXNativeTarget "FNoteTests" */;
+			buildPhases = (
+				B450E81B22384C72002EDC04 /* Sources */,
+				B450E81C22384C72002EDC04 /* Frameworks */,
+				B450E81D22384C72002EDC04 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B450E82522384C72002EDC04 /* PBXTargetDependency */,
+			);
+			name = FNoteTests;
+			productName = FNoteTests;
+			productReference = B450E81F22384C72002EDC04 /* FNoteTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -307,6 +357,10 @@
 							};
 						};
 					};
+					B450E81E22384C72002EDC04 = {
+						CreatedOnToolsVersion = 10.1;
+						TestTargetID = B437BD9C21F1972600A1B016;
+					};
 				};
 			};
 			buildConfigurationList = B437BD9821F1972600A1B016 /* Build configuration list for PBXProject "FNote" */;
@@ -323,6 +377,7 @@
 			projectRoot = "";
 			targets = (
 				B437BD9C21F1972600A1B016 /* FNote */,
+				B450E81E22384C72002EDC04 /* FNoteTests */,
 			);
 		};
 /* End PBXProject section */
@@ -335,6 +390,13 @@
 				B437BDAB21F1972700A1B016 /* LaunchScreen.storyboard in Resources */,
 				B437BDA821F1972700A1B016 /* Assets.xcassets in Resources */,
 				B437BDA621F1972600A1B016 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B450E81D22384C72002EDC04 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -386,7 +448,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B450E81B22384C72002EDC04 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B450E82222384C72002EDC04 /* FNoteTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B450E82522384C72002EDC04 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B437BD9C21F1972600A1B016 /* FNote */;
+			targetProxy = B450E82422384C72002EDC04 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		B437BDA421F1972600A1B016 /* Main.storyboard */ = {
@@ -562,6 +640,46 @@
 			};
 			name = Release;
 		};
+		B450E82622384C72002EDC04 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = J58QF9TXDQ;
+				INFOPLIST_FILE = FNoteTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bdaralan.FNoteTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FNote.app/FNote";
+			};
+			name = Debug;
+		};
+		B450E82722384C72002EDC04 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = J58QF9TXDQ;
+				INFOPLIST_FILE = FNoteTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bdaralan.FNoteTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FNote.app/FNote";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -579,6 +697,15 @@
 			buildConfigurations = (
 				B437BDB021F1972700A1B016 /* Debug */,
 				B437BDB121F1972700A1B016 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B450E82822384C73002EDC04 /* Build configuration list for PBXNativeTarget "FNoteTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B450E82622384C72002EDC04 /* Debug */,
+				B450E82722384C72002EDC04 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

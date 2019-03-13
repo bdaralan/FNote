@@ -31,12 +31,12 @@ class CoreDataStack {
     init(userAccountToken: String) {
         self.userAccountToken = userAccountToken
 
-        let persistentStore = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("\(userAccountToken).sqlite")
+        let persistentStoreUrl = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("\(userAccountToken).sqlite")
         let options = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
-        let isPersistentStoreExisted = FileManager.default.fileExists(atPath: persistentStore.path)
+        let isPersistentStoreExisted = FileManager.default.fileExists(atPath: persistentStoreUrl.path)
         
         persistentContainer = NSPersistentContainer(name: userAccountToken, managedObjectModel: CoreDataStack.objectModel)
-        try! persistentContainer.persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStore, options: options)
+        try! persistentContainer.persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStoreUrl, options: options)
         
         if isPersistentStoreExisted {
             createSampleVocabulryCollectionIfNeeded()
