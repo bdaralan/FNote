@@ -111,7 +111,7 @@ extension VocabularyCollectionCoordinator: VocabularyRemover {
 extension VocabularyCollectionCoordinator: UserProfileViewer {
     
     func viewUserProfile() {
-        let collectionListVC = VocabularyCollectionListViewController(context: CoreDataStack.current.mainContext)
+        let collectionListVC = UserProfileViewController(context: CoreDataStack.current.mainContext)
         collectionListVC.doneTappedHandler = { [weak self] in
             self?.vocabularyCollectionVC.setCollection(collectionListVC.selectedCollection)
             collectionListVC.dismiss(animated: true, completion: nil)

@@ -1,5 +1,5 @@
 //
-//  VocabularyCollectionListTextFieldCell.swift
+//  UserProfileTextFieldCell.swift
 //  FNote
 //
 //  Created by Dara Beng on 3/13/19.
@@ -9,15 +9,15 @@
 import UIKit
 
 
-protocol VocabularyCollectionListTextFieldCellDelegate: AnyObject {
+protocol UserProfileTextFieldCellDelegate: AnyObject {
     
-    func textFieldCellDidEndEditing(_ cell: VocabularyCollectionListTextFieldCell, text: String)
+    func textFieldCellDidEndEditing(_ cell: UserProfileTextFieldCell, text: String)
 }
 
 
-class VocabularyCollectionListTextFieldCell: UITableViewCell, UITextFieldDelegate {
+class UserProfileTextFieldCell: UITableViewCell, UITextFieldDelegate {
     
-    weak var delegate: VocabularyCollectionListTextFieldCellDelegate?
+    weak var delegate: UserProfileTextFieldCellDelegate?
     
     private let textField: UITextField = {
         let tf = UITextField()
@@ -54,7 +54,7 @@ class VocabularyCollectionListTextFieldCell: UITableViewCell, UITextFieldDelegat
 }
 
 
-extension VocabularyCollectionListTextFieldCell {
+extension UserProfileTextFieldCell {
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         return allowsEditing
@@ -71,7 +71,7 @@ extension VocabularyCollectionListTextFieldCell {
 }
 
 
-extension VocabularyCollectionListTextFieldCell {
+extension UserProfileTextFieldCell {
     
     private func setupCell() {
         contentView.addSubviews([textField])

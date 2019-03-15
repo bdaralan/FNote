@@ -1,5 +1,5 @@
 //
-//  ProfileHeaderView.swift
+//  UserProfileHeaderView.swift
 //  FNote
 //
 //  Created by Dara Beng on 3/13/19.
@@ -8,12 +8,12 @@
 
 import UIKit
 
-class ProfileHeaderView: UIView {
+
+class UserProfileHeaderView: UIView {
     
     let profile: UIImageView = {
         let iv = UIImageView(image: .profileNavImagePlaceholder)
         iv.contentMode = .scaleAspectFit
-//        iv.backgroundColor = .yellow
         return iv
     }()
     

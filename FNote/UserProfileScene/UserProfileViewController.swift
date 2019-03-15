@@ -1,5 +1,5 @@
 //
-//  VocabularyCollectionListViewController.swift
+//  UserProfileViewController.swift
 //  FNote
 //
 //  Created by Dara Beng on 3/13/19.
@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 
-class VocabularyCollectionListViewController: UITableViewController {
+class UserProfileViewController: UITableViewController {
     
     let context: NSManagedObjectContext
     let fetchController: NSFetchedResultsController<VocabularyCollection>
@@ -53,20 +53,21 @@ class VocabularyCollectionListViewController: UITableViewController {
     
     private func showDuplicateNameAlert(name: String) {
         let message = "\"\(name)\" is already in the collections"
-        let alert = UIAlertController(title: "Duplicate Name", message: message, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Found Duplicate", message: message, preferredStyle: .alert)
         alert.addAction(.init(title: "Dismiss", style: .cancel, handler: nil))
         present(alert, animated: true, completion: nil)
     }
     
-    private func cellAddNewVocabularyCollection(_ cell: VocabularyCollectionListTextFieldCell, name: String) {
-        let validator = VocabularyCollectionValidator()
-        switch validator.validateName(name, collections: collections) {
-        case .invalid:
+    private func cellAddNewVocabularyCollection(_ cell: UserProfileTextFieldCell, name: String) {
+        let validator = StringValidator()
+        let name = name.trimmingCharacters(in: .whitespaces)
+        switch validator.validateNewName(name, existingNames: collections.map({ $0.name })) {
+        case .empty:
             cell.setTextField(text: "")
-        case .duplicate(let name):
+        case .duplicate:
             cell.setTextField(text: "")
             showDuplicateNameAlert(name: name)
-        case .valid(let name):
+        case .unique:
             cell.setTextField(text: "")
             let collection = VocabularyCollection(context: context)
             collection.name = name
@@ -78,33 +79,52 @@ class VocabularyCollectionListViewController: UITableViewController {
         }
     }
     
-    private func cellRenameVocabularyCollection(_ cell: VocabularyCollectionListTextFieldCell, collection: VocabularyCollection, newName: String) {
-        let validator = VocabularyCollectionValidator()
-        switch validator.validateName(newName, collections: collections) {
-        case .invalid:
+    private func cellRenameVocabularyCollection(_ cell: UserProfileTextFieldCell, collection: VocabularyCollection, newName: String) {
+        let validator = StringValidator()
+        let newName = newName.trimmingCharacters(in: .whitespaces)
+        guard collection.name != newName else { return }
+        switch validator.validateNewName(newName, existingNames: collections.map({ $0.name })) {
+        case .empty:
             cell.setTextField(text: collection.name)
-        case .duplicate(let name):
+        case .duplicate:
             cell.setTextField(text: collection.name)
-            showDuplicateNameAlert(name: name)
-        case .valid(let name):
-            collection.name = name
+            showDuplicateNameAlert(name: newName)
+        case .unique:
+            collection.name = newName
             context.quickSave()
         }
     }
     
     private func cellDeleteVocabularyCollection(_ collection: VocabularyCollection) {
+        if collection.vocabularies.isEmpty {
+            deleteVocabluaryCollection(collection)
+            return
+        }
+        let count = String(count: collection.vocabularies.count, single: "vocabulary", plural: "vocabularies")
+        let message = "\(count) in the collection will be deleted."
+        let confirmAlert = UIAlertController(title: "Delete Collection", message: message, preferredStyle: .alert)
+        let delete = UIAlertAction(title: "Delete", style: .destructive) { [weak self] (action) in
+            self?.deleteVocabluaryCollection(collection)
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        confirmAlert.addAction(delete)
+        confirmAlert.addAction(cancel)
+        present(confirmAlert, animated: true, completion: nil)
+    }
+    
+    private func deleteVocabluaryCollection(_ collection: VocabularyCollection) {
         let collectionRecordName = collection.recordMetadata.recordName
-        context.delete(collection)
-        context.quickSave()
+        self.context.delete(collection)
+        self.context.quickSave()
         if collectionRecordName == UserDefaultsManager.selectedVocabularyCollectionRecordName {
             UserDefaultsManager.rememberSelectedVocabularyCollection(recordName: nil)
-            selectedCollection = nil
+            self.selectedCollection = nil
         }
     }
 }
 
 
-extension VocabularyCollectionListViewController {
+extension UserProfileViewController {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 2
@@ -139,7 +159,7 @@ extension VocabularyCollectionListViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueRegisteredCell(VocabularyCollectionListTextFieldCell.self, for: indexPath)
+        let cell = tableView.dequeueRegisteredCell(UserProfileTextFieldCell.self, for: indexPath)
         cell.delegate = self
         if addNewCollectionIndexPath == indexPath {
             cell.setTextField(text: "")
@@ -164,7 +184,7 @@ extension VocabularyCollectionListViewController {
             self.cellDeleteVocabularyCollection(collection)
         }
         let rename = UITableViewRowAction(style: .normal, title: "Rename") { (action, indexPath) in
-            let cell = tableView.cellForRow(at: indexPath) as! VocabularyCollectionListTextFieldCell
+            let cell = tableView.cellForRow(at: indexPath) as! UserProfileTextFieldCell
             cell.allowsEditing = true
             cell.beginEditing()
         }
@@ -175,7 +195,7 @@ extension VocabularyCollectionListViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if addNewCollectionIndexPath == indexPath {
-            let cell = tableView.cellForRow(at: indexPath) as! VocabularyCollectionListTextFieldCell
+            let cell = tableView.cellForRow(at: indexPath) as! UserProfileTextFieldCell
             cell.beginEditing()
         } else {
             selectedCollection = collections[indexPath.row]
@@ -188,7 +208,7 @@ extension VocabularyCollectionListViewController {
 }
 
 
-extension VocabularyCollectionListViewController: NSFetchedResultsControllerDelegate {
+extension UserProfileViewController: NSFetchedResultsControllerDelegate {
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
@@ -209,9 +229,9 @@ extension VocabularyCollectionListViewController: NSFetchedResultsControllerDele
 }
 
 
-extension VocabularyCollectionListViewController: VocabularyCollectionListTextFieldCellDelegate {
+extension UserProfileViewController: UserProfileTextFieldCellDelegate {
     
-    func textFieldCellDidEndEditing(_ cell: VocabularyCollectionListTextFieldCell, text: String) {
+    func textFieldCellDidEndEditing(_ cell: UserProfileTextFieldCell, text: String) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         if addNewCollectionIndexPath == indexPath {
             cellAddNewVocabularyCollection(cell, name: text)
@@ -223,19 +243,18 @@ extension VocabularyCollectionListViewController: VocabularyCollectionListTextFi
 }
 
 
-extension VocabularyCollectionListViewController {
+extension UserProfileViewController {
     
     private func setupController() {
-        tableView.keyboardDismissMode = .onDrag
+        navigationItem.title = "Profile"
         tableView.backgroundColor = .offWhiteBackground
-        tableView.registerCell(VocabularyCollectionListTextFieldCell.self)
-        tableView.tableHeaderView = ProfileHeaderView(frame: CGRect(x: 0, y: 0, width: 0, height: 150))
+        tableView.registerCell(UserProfileTextFieldCell.self)
+        tableView.tableHeaderView = UserProfileHeaderView(frame: CGRect(x: 0, y: 0, width: 0, height: 150))
     }
     
     private func setupNavItems() {
         let done = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = done
-        setToolbarItems([UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: nil)], animated: false)
     }
     
     @objc private func doneButtonTapped() {
