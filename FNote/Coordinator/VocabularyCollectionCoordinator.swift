@@ -76,7 +76,7 @@ extension VocabularyCollectionCoordinator: VocabularyAdder {
     func addNewVocabulary(to collection: VocabularyCollection) {
         let vocabularyVC = VocabularyViewController(mode: .create(collection))
         vocabularyVC.coordinator = self
-        vocabularyVC.navigationItem.title = "Add Vocabulary"
+        vocabularyVC.navigationItem.title = "New Vocabulary"
         vocabularyVC.completion = { [weak self] (action) in
             if action == .save {
                 self?.collectionContext?.quickSave()
