@@ -124,7 +124,7 @@ class VocabularyViewController: UITableViewController {
         toggleSaveButtonEnableStateIfNeeded()
         let indexPath = indexPathSections.firstIndexPath(of: .politeness)!
         let cell = tableView.cellForRow(at: indexPath) as? VocabularySelectionCell
-        cell?.reloadCell(detail: politeness.rawValue)
+        cell?.reloadCell(detail: politeness.rawValue.capitalized)
     }
 }
 
@@ -182,7 +182,7 @@ extension VocabularyViewController {
             return cell
         case .politeness:
             let cell = tableView.dequeueRegisteredCell(VocabularySelectionCell.self, for: indexPath)
-            cell.reloadCell(text: "Politeness", detail: vocabulary.politeness, image: .politeness)
+            cell.reloadCell(text: "Politeness", detail: vocabulary.politeness.capitalized, image: .politeness)
             cell.accessoryType = .disclosureIndicator
             return cell
         case .favorite:

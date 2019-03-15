@@ -16,6 +16,7 @@ extension UIImage {
     static var relation: UIImage { return UIImage(named: "relation")! }
     static var favorite: UIImage { return UIImage(named: "favorite")! }
     static var politeness: UIImage { return UIImage(named: "politeness")! }
+    static var trashCan: UIImage { return UIImage(named: "trash-can")! }
     
     // MARK: - Nav Item
     static var profileNavImagePlaceholder: UIImage { return UIImage(named: "nav-profile-img-placeholder")! }

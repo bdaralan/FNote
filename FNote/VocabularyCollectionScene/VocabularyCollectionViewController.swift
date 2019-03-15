@@ -84,6 +84,40 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         navigationItem.title = collection?.name ?? "Let's Get Started"
         collectionView.reloadData()
     }
+    
+    private func cellFavoriteButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+        guard let vocabulary = fetchController?.object(at: indexPath) else { return }
+        vocabulary.managedObjectContext?.perform {
+            vocabulary.isFavorited.toggle()
+            cell.reloadCell(with: vocabulary)
+            vocabulary.managedObjectContext?.quickSave()
+        }
+    }
+    
+    private func cellRelationButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+        guard let vocabulary = fetchController?.object(at: indexPath) else { return }
+        print(vocabulary.relations.count)
+    }
+    
+    private func cellAlternativeButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+        guard let vocabulary = fetchController?.object(at: indexPath) else { return }
+        print(vocabulary.alternatives.count)
+    }
+    
+    private func cellPolitenessButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+        guard let vocabulary = fetchController?.object(at: indexPath) else { return }
+        let currentTitle = cell.politenessButton.title(for: .normal)
+        cell.politenessButton.setTitle(vocabulary.politeness.capitalized, for: .normal)
+        guard currentTitle?.count == 2 else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            cell.politenessButton.setTitle(currentTitle, for: .normal)
+        }
+    }
+    
+    private func cellDeleteButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+        guard let collection = collection, let vocabulary = fetchController?.object(at: indexPath) else { return }
+        coordinator?.removeVocabulary(vocabulary, from: collection, vc: self)
+    }
 }
 
 
@@ -129,28 +163,16 @@ extension VocabularyCollectionViewController: NSFetchedResultsControllerDelegate
 
 extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
     
-    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapFavoriteButton button: UIButton) {
-        guard let indexPath = collectionView.indexPath(for: cell), let vocabulary = fetchController?.object(at: indexPath) else { return }
-        vocabulary.managedObjectContext?.perform {
-            vocabulary.isFavorited.toggle()
-            cell.reloadCell(with: vocabulary)
-            vocabulary.managedObjectContext?.quickSave()
+    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapButton button: UIButton) {
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        switch button {
+        case cell.favoriteButton: cellFavoriteButtonTapped(cell: cell, indexPath: indexPath)
+        case cell.relationButton: cellRelationButtonTapped(cell: cell, indexPath: indexPath)
+        case cell.alternativeButton: cellAlternativeButtonTapped(cell: cell, indexPath: indexPath)
+        case cell.politenessButton: cellPolitenessButtonTapped(cell: cell, indexPath: indexPath)
+        case cell.deleteButton: cellDeleteButtonTapped(cell: cell, indexPath: indexPath)
+        default: ()
         }
-    }
-    
-    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapRelationButton button: UIButton) {
-        guard let indexPath = collectionView.indexPath(for: cell), let vocabulary = fetchController?.object(at: indexPath) else { return }
-        print(vocabulary.relations.count)
-    }
-    
-    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapAlternativeButton button: UIButton) {
-        guard let indexPath = collectionView.indexPath(for: cell), let vocabulary = fetchController?.object(at: indexPath) else { return }
-        print(vocabulary.alternatives.count)
-    }
-    
-    func vocabularyCollectionCellDidBeginLongPress(_ cell: VocabularyCollectionCell) {
-        guard let indexPath = collectionView.indexPath(for: cell), let collection = collection, let vocabulary = fetchController?.object(at: indexPath) else { return }
-        coordinator?.removeVocabulary(vocabulary, from: collection, vc: self)
     }
 }
 

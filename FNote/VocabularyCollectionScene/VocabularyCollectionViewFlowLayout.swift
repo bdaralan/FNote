@@ -30,6 +30,6 @@ class VocabularyCollectionViewFlowLayout: UICollectionViewFlowLayout {
     func computeItemSize(newBounds: CGSize) {
         let sectionInsetWidth = sectionInset.left + sectionInset.right
         let width = newBounds.width - sectionInsetWidth
-        itemSize = CGSize(width: width, height: 120)
+        itemSize = CGSize(width: width, height: 132)
     }
 }
