@@ -38,11 +38,8 @@ class CoreDataStack {
         persistentContainer = NSPersistentContainer(name: userAccountToken, managedObjectModel: CoreDataStack.objectModel)
         try! persistentContainer.persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStoreUrl, options: options)
         
-        if isPersistentStoreExisted {
-            createSampleVocabulryCollectionIfNeeded()
-        } else {
-            setupUserProfile(accountToken: userAccountToken)
-        }
+        guard isPersistentStoreExisted == false else { return }
+        setupUserProfile(accountToken: userAccountToken)
     }
     
     func setPersistentStore(userAccountToken: String) {
@@ -58,8 +55,7 @@ extension CoreDataStack {
     func setupUserProfile(accountToken: String) {
         let context = mainContext
         let user = User(accountToken: accountToken, context: context)
-        createSampleVocabularyCollection(for: user)
-        context.quickSave()
+        user.managedObjectContext?.quickSave()
     }
     
     /// Fetch the current user from the given context.
@@ -72,9 +68,12 @@ extension CoreDataStack {
         return results.first!
     }
 
-    func userVocabularyCollections() -> [VocabularyCollection] {
+    /// Fetch vocabulary collections from the given context. If `nil`, the default main context is used.
+    func fetchVocabularyCollections(from context: NSManagedObjectContext? = nil) -> [VocabularyCollection] {
+        let context = context ?? mainContext
         let request: NSFetchRequest<VocabularyCollection> = VocabularyCollection.fetchRequest()
-        let results = try? mainContext.fetch(request)
+        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        let results = try? context.fetch(request)
         return results ?? []
     }
     
@@ -83,17 +82,5 @@ extension CoreDataStack {
         request.predicate = NSPredicate(format: "recordMetadata.recordName == %@", recordName)
         let collections = try? context.fetch(request)
         return collections?.first
-    }
-    
-    func createSampleVocabularyCollection(for user: User) {
-        guard let context = user.managedObjectContext else { return }
-        let collection = VocabularyCollection(context: context)
-        collection.name = "My Collection"
-    }
-    
-    private func createSampleVocabulryCollectionIfNeeded() {
-        guard userVocabularyCollections().isEmpty else { return }
-        createSampleVocabularyCollection(for: currentUser())
-        mainContext.quickSave()
     }
 }

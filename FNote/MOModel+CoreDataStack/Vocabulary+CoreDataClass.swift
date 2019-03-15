@@ -70,6 +70,7 @@ extension Vocabulary {
         case alternatives
     }
     
+    /// Vocabulary politeness value.
     /// - warning: These values should not be changed because they must be matched with the database.
     enum Politeness: LocalRecord.ServerStringValue, CaseIterable {
         case unknown
@@ -85,7 +86,7 @@ extension Vocabulary {
 extension Vocabulary {
     
     /// Add connection between the given vocabulary and create a connection object.
-    /// - returns: The connection object created.
+    /// - returns: The `VocabularyConnection` created.
     func addConnection(with vocabulary: Vocabulary, type: VocabularyConnection.ConnectionType) -> VocabularyConnection {
         switch type {
         case .related:
@@ -103,7 +104,7 @@ extension Vocabulary {
     }
     
     /// Remove the connection between the given vocabulary and delete the connection object.
-    /// - returns: The deleted connection object if the connections is removed. Otherwise, `nil`.
+    /// - returns: The deleted `VocabularyConnection` if the connections was removed. Otherwise, `nil`.
     func removeConnection(with vocabulary: Vocabulary, type: VocabularyConnection.ConnectionType) -> VocabularyConnection? {
         for connection in connections where connection.type == type && connection.isConnection(of: (self, vocabulary)) {
             switch type {

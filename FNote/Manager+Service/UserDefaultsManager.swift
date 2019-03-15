@@ -30,7 +30,7 @@ struct UserDefaultsManager {
     }
     
     
-    static func rememberSelectedVocabularyCollection(recordName: String) {
+    static func rememberSelectedVocabularyCollection(recordName: String?) {
         userDefaults.setValue(recordName, forKey: Key.selectedVocabularyCollection.string)
     }
 }

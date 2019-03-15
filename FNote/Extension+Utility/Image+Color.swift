@@ -11,12 +11,21 @@ import UIKit
 
 extension UIImage {
     
-    static let alternative = UIImage(named: "alternative")!
-    static let relation = UIImage(named: "relation")!
-    static let favorite = UIImage(named: "favorite")!
-    static let politeness = UIImage(named: "politeness")!
+    // MARK: - Button
+    static var alternative: UIImage { return UIImage(named: "alternative")! }
+    static var relation: UIImage { return UIImage(named: "relation")! }
+    static var favorite: UIImage { return UIImage(named: "favorite")! }
+    static var politeness: UIImage { return UIImage(named: "politeness")! }
     
-    static let tabBarVocabCollection = UIImage(named: "vocabulary-collection")!
+    // MARK: - Nav Item
+    static var profileNavImagePlaceholder: UIImage { return UIImage(named: "nav-profile-img-placeholder")! }
+    
+    
+    // MARK: - Tab Bar Item
+    static var tabBarVocabCollection: UIImage { return UIImage(named: "vocabulary-collection")! }
+    
+    // MARK: - Image
+    static var lightbulb: UIImage { return UIImage(named: "lightbulb")! }
 }
 
 

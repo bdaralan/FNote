@@ -44,7 +44,7 @@ extension MainTabBarViewController {
             self.selectedViewController = self.vocabularyCollectionCoordinator.navigationController
             let coreData = CoreDataStack.current
             let recordName = UserDefaultsManager.selectedVocabularyCollectionRecordName ?? ""
-            let collection = coreData.fetchVocabularyCollection(recordName: recordName, context: coreData.mainContext) ?? coreData.userVocabularyCollections().first!
+            let collection = coreData.fetchVocabularyCollection(recordName: recordName, context: coreData.mainContext)
             self.vocabularyCollectionCoordinator.vocabularyCollectionVC.setCollection(collection)
         }
     }

@@ -19,7 +19,7 @@ class VocabularyCollectionCoordinator: Coordinator {
     var vocabularyCollectionVC: VocabularyCollectionViewController!
     
     var collectionContext: NSManagedObjectContext? {
-        return vocabularyCollectionVC.collection.managedObjectContext
+        return vocabularyCollectionVC.collection?.managedObjectContext
     }
     
     
@@ -32,13 +32,11 @@ class VocabularyCollectionCoordinator: Coordinator {
     func start() {
         let coreData = CoreDataStack.current
         let recordName = UserDefaultsManager.selectedVocabularyCollectionRecordName ?? ""
-        let collection = coreData.fetchVocabularyCollection(recordName: recordName, context: coreData.mainContext) ?? coreData.userVocabularyCollections().first!
+        let collection = coreData.fetchVocabularyCollection(recordName: recordName, context: coreData.mainContext)
         vocabularyCollectionVC = VocabularyCollectionViewController(collection: collection)
         vocabularyCollectionVC.coordinator = self
-        vocabularyCollectionVC.navigationItem.title = collection.name
-        navigationController.tabBarItem = UITabBarItem(title: "Collections", image: .tabBarVocabCollection, tag: 0)
+        navigationController.tabBarItem = UITabBarItem(title: "Collection", image: .tabBarVocabCollection, tag: 0)
         navigationController.pushViewController(vocabularyCollectionVC, animated: false)
-        UserDefaultsManager.rememberSelectedVocabularyCollection(recordName: collection.recordMetadata.recordName)
     }
 }
 
@@ -106,5 +104,18 @@ extension VocabularyCollectionCoordinator: VocabularyRemover {
         alert.addAction(delete)
         alert.preferredAction = alert.actions.first
         navigationController.present(alert, animated: true, completion: nil)
+    }
+}
+
+
+extension VocabularyCollectionCoordinator: UserProfileViewer {
+    
+    func viewUserProfile() {
+        let collectionListVC = VocabularyCollectionListViewController(context: CoreDataStack.current.mainContext)
+        collectionListVC.doneTappedHandler = { [weak self] in
+            self?.vocabularyCollectionVC.setCollection(collectionListVC.selectedCollection)
+            collectionListVC.dismiss(animated: true, completion: nil)
+        }
+        navigationController.present(collectionListVC.withNavController(), animated: true, completion: nil)
     }
 }
