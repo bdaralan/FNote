@@ -82,12 +82,12 @@ class UserProfileViewController: UITableViewController {
     private func cellRenameVocabularyCollection(_ cell: UserProfileTextFieldCell, collection: VocabularyCollection, newName: String) {
         let validator = StringValidator()
         let newName = newName.trimmingCharacters(in: .whitespaces)
-        guard collection.name != newName else { return }
         switch validator.validateNewName(newName, existingNames: collections.map({ $0.name })) {
         case .empty:
             cell.setTextField(text: collection.name)
         case .duplicate:
             cell.setTextField(text: collection.name)
+            guard collection.name != newName else { return }
             showDuplicateNameAlert(name: newName)
         case .unique:
             collection.name = newName
@@ -178,6 +178,7 @@ extension UserProfileViewController {
     }
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        guard indexPath != addNewCollectionIndexPath else { return [] }
         let delete = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] (action, indexPath) in
             guard let self = self else { return }
             let collection = self.fetchController.object(at: indexPath)
@@ -238,6 +239,7 @@ extension UserProfileViewController: UserProfileTextFieldCellDelegate {
         } else {
             let collection = collections[indexPath.row]
             cellRenameVocabularyCollection(cell, collection: collection, newName: text)
+            cell.allowsEditing = false
         }
     }
 }
