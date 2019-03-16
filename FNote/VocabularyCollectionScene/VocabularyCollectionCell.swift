@@ -43,7 +43,7 @@ class VocabularyCollectionCell: UICollectionViewCell {
     let deleteButton: UIButton = createStackViewButton(image: .trashCan)
     
     var stackViewButtons: [UIButton] { // leading to trailing order
-        return [deleteButton, politenessButton, alternativeButton, relationButton]
+        return [politenessButton, alternativeButton, relationButton, deleteButton]
     }
     
     let buttonStackView: UIStackView = {
@@ -74,7 +74,7 @@ class VocabularyCollectionCell: UICollectionViewCell {
         favoriteButton.tintColor = UIColor(named: "favorite-vocab-\(vocabulary.isFavorited ? "true" : "false")")
         relationButton.setTitle("\(vocabulary.relations.count)", for: .normal)
         alternativeButton.setTitle("\(vocabulary.alternatives.count)", for: .normal)
-        politenessButton.setTitle(vocabulary.politeness.prefix(2).capitalized, for: .normal)
+        politenessButton.setTitle(vocabulary.politeness.capitalized, for: .normal)
     }
 }
 

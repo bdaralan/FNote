@@ -22,6 +22,9 @@ class VocabularyCollectionCoordinator: Coordinator {
         return vocabularyCollectionVC.collection?.managedObjectContext
     }
     
+    private var viewControllerToDismiss: UIViewController?
+    private var dismissAnimated: Bool?
+    
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -37,6 +40,14 @@ class VocabularyCollectionCoordinator: Coordinator {
         vocabularyCollectionVC.coordinator = self
         navigationController.tabBarItem = UITabBarItem(title: "Collection", image: .tabBarVocabCollection, tag: 0)
         navigationController.pushViewController(vocabularyCollectionVC, animated: false)
+    }
+    
+    @objc func dismissViewController() {
+        let vc = viewControllerToDismiss
+        let animated = dismissAnimated ?? true
+        viewControllerToDismiss = nil
+        dismissAnimated = nil
+        vc?.dismiss(animated: animated, completion: nil)
     }
 }
 
@@ -57,18 +68,34 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
     }
     
     func selectPoliteness(for viewController: VocabularyViewController, current: Vocabulary.Politeness) {
-        guard let navController = viewController.navigationController else { return }
         let politenesses = Vocabulary.Politeness.allCases
-        let options = politenesses.map({
+        let options = politenesses.map {
             OptionTableViewController.Option(name: $0.rawValue.capitalized, isSelected: $0.rawValue == current.rawValue)
-        })
+        }
         let optionVC = OptionTableViewController(options: options)
         optionVC.navigationItem.title = "Politeness"
-        optionVC.selectCompletion = { (index) in
-            viewController.setPoliteness(politenesses[index])
-            navController.popViewController(animated: true)
+        
+        if let navController = viewController.navigationController {
+            optionVC.selectCompletion = { (index) in
+                viewController.setPoliteness(politenesses[index])
+                navController.popViewController(animated: true)
+            }
+            navController.pushViewController(optionVC, animated: true)
+        } else {
+            let optionVCWithNav = optionVC.withNavController()
+            viewControllerToDismiss = optionVCWithNav
+            optionVC.selectCompletion = { (index) in
+                viewController.setPoliteness(politenesses[index])
+                viewController.saveChanges()
+                optionVC.dismiss(animated: true, completion: nil)
+            }
+            let cancel = #selector(dismissViewController)
+            optionVC.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: cancel)
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                optionVCWithNav.modalPresentationStyle = .formSheet
+            }
+            navigationController.present(optionVCWithNav, animated: true, completion: nil)
         }
-        navController.pushViewController(optionVC, animated: true)
     }
 }
 
@@ -92,19 +119,22 @@ extension VocabularyCollectionCoordinator: VocabularyAdder {
 
 extension VocabularyCollectionCoordinator: VocabularyRemover {
     
-    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, vc: VocabularyCollectionViewController) {
+    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, sender: UIView) {
         guard collection.vocabularies.contains(vocabulary) else { return }
-        let alert = UIAlertController(title: "Delete Vocabulary", message: nil, preferredStyle: .actionSheet) 
-        alert.addAction(.init(title: "Cancel", style: .cancel, handler: nil))
+        let alert = UIAlertController(title: "Delete Vocabulary", message: nil, preferredStyle: .actionSheet)
         let delete = UIAlertAction(title: "Delete", style: .destructive) { (action) in
-            collection.removeFromVocabularies(vocabulary)
             collection.managedObjectContext?.perform {
                 collection.managedObjectContext?.delete(vocabulary)
                 collection.managedObjectContext?.quickSave()
             }
         }
         alert.addAction(delete)
-        alert.preferredAction = alert.actions.first
+        alert.addAction(.init(title: "Cancel", style: .cancel, handler: nil))
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            alert.popoverPresentationController?.sourceView = sender
+            alert.popoverPresentationController?.sourceRect = sender.bounds
+            alert.popoverPresentationController?.permittedArrowDirections = [.right]
+        }
         navigationController.present(alert, animated: true, completion: nil)
     }
 }
@@ -118,11 +148,10 @@ extension VocabularyCollectionCoordinator: UserProfileViewer {
             self?.vocabularyCollectionVC.setCollection(collectionListVC.selectedCollection)
             collectionListVC.dismiss(animated: true, completion: nil)
         }
-        
-        let userInterface = UIDevice.current.userInterfaceIdiom
-        let presentStyle = userInterface == .pad ? UIModalPresentationStyle.formSheet : .fullScreen
-        let viewControllerWithNav = collectionListVC.withNavController()
-        viewControllerWithNav.modalPresentationStyle = presentStyle
-        navigationController.present(viewControllerWithNav, animated: true, completion: nil)
+        let collectionListVCWithNav = collectionListVC.withNavController()
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            collectionListVCWithNav.modalPresentationStyle = .formSheet
+        }
+        navigationController.present(collectionListVCWithNav, animated: true, completion: nil)
     }
 }

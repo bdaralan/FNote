@@ -251,7 +251,7 @@ extension VocabularyViewController {
         completion?(.cancel)
     }
     
-    @objc private func saveChanges() {
+    @objc func saveChanges() {
         vocabulary.native = vocabulary.native.trimmingCharacters(in: .whitespaces)
         vocabulary.translation = vocabulary.translation.trimmingCharacters(in: .whitespaces)
         vocabulary.note = vocabulary.note.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -265,7 +265,6 @@ extension VocabularyViewController {
             animateTextFieldCelldInvalidInput(.translation)
             return
         }
-        
         
         if hasChanges {
             context.quickSave()

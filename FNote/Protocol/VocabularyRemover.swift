@@ -6,10 +6,10 @@
 //  Copyright © 2019 Dara Beng. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 
 protocol VocabularyRemover: AnyObject {
     
-    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, vc: VocabularyCollectionViewController)
+    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, sender: UIView)
 }

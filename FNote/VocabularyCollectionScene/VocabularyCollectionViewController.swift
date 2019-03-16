@@ -105,18 +105,14 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     }
     
     private func cellPolitenessButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
-        guard let vocabulary = fetchController?.object(at: indexPath) else { return }
-        let currentTitle = cell.politenessButton.title(for: .normal)
-        cell.politenessButton.setTitle(vocabulary.politeness.capitalized, for: .normal)
-        guard currentTitle?.count == 2 else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-            cell.politenessButton.setTitle(currentTitle, for: .normal)
-        }
+        guard let vocabulary = fetchController?.object(at: indexPath), let politeness = Vocabulary.Politeness(rawValue: vocabulary.politeness) else { return }
+        let vc = VocabularyViewController(mode: .view(vocabulary))
+        coordinator?.selectPoliteness(for: vc, current: politeness)
     }
     
     private func cellDeleteButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         guard let collection = collection, let vocabulary = fetchController?.object(at: indexPath) else { return }
-        coordinator?.removeVocabulary(vocabulary, from: collection, vc: self)
+        coordinator?.removeVocabulary(vocabulary, from: collection, sender: cell.deleteButton)
     }
 }
 
