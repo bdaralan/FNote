@@ -27,6 +27,7 @@ extension UIImage {
     
     // MARK: - Image
     static var lightbulb: UIImage { return UIImage(named: "lightbulb")! }
+    static var userProfilePlaceholder: UIImage { return UIImage(named: "user-profile-placeholder")! }
 }
 
 

@@ -12,7 +12,7 @@ import UIKit
 class UserProfileHeaderView: UIView {
     
     let profile: UIImageView = {
-        let iv = UIImageView(image: .profileNavImagePlaceholder)
+        let iv = UIImageView(image: .userProfilePlaceholder)
         iv.contentMode = .scaleAspectFit
         return iv
     }()
