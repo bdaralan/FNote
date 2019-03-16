@@ -118,6 +118,11 @@ extension VocabularyCollectionCoordinator: UserProfileViewer {
             self?.vocabularyCollectionVC.setCollection(collectionListVC.selectedCollection)
             collectionListVC.dismiss(animated: true, completion: nil)
         }
-        navigationController.present(collectionListVC.withNavController(), animated: true, completion: nil)
+        
+        let userInterface = UIDevice.current.userInterfaceIdiom
+        let presentStyle = userInterface == .pad ? UIModalPresentationStyle.formSheet : .fullScreen
+        let viewControllerWithNav = collectionListVC.withNavController()
+        viewControllerWithNav.modalPresentationStyle = presentStyle
+        navigationController.present(viewControllerWithNav, animated: true, completion: nil)
     }
 }

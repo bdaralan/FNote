@@ -83,7 +83,7 @@ extension VocabularyCollectionCell {
     
     private func setupCell() {
         setupConstraints()
-        setupButtonStackView()
+        setupButtonTapHandler()
         contentView.backgroundColor = .white
         contentView.layer.cornerRadius = 15
         contentView.layer.shadowOpacity = 0.1
@@ -122,10 +122,12 @@ extension VocabularyCollectionCell {
         NSLayoutConstraint.activate(constraints)
     }
     
-    private func setupButtonStackView() {
+    private func setupButtonTapHandler() {
+        let tapAction = #selector(buttonTapped(_:))
+        favoriteButton.addTarget(self, action: tapAction, for: .touchUpInside)
         for button in stackViewButtons {
             buttonStackView.addArrangedSubview(button)
-            button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+            button.addTarget(self, action: tapAction, for: .touchUpInside)
         }
     }
     
