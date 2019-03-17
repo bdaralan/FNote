@@ -35,14 +35,6 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         setupNavItems()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationItem.rightBarButtonItems?.forEach({ $0.isEnabled = collection != nil })
-        guard collection == nil else { return }
-        setupGuideViewIfNeeded()
-        guideView?.show(in: view)
-    }
-    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         let layout = collectionViewLayout as! VocabularyCollectionViewFlowLayout
@@ -69,19 +61,21 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
             try fetchController?.performFetch()
             fetchController?.delegate = self
         } catch {
-            print("failed to fetch vocabulary with error: \(error)")
+            fatalError("failed to fetch vocabulary with error: \(error)")
         }
     }
     
     func setCollection(_ collection: VocabularyCollection?) {
         self.collection = collection
         if collection == nil {
+            setupGuideViewIfNeeded()
             guideView?.show(in: view)
         } else {
             guideView?.remove()
         }
         configureFetchController()
         navigationItem.title = collection?.name ?? "Let's Get Started"
+        navigationItem.rightBarButtonItems?.forEach({ $0.isEnabled = collection != nil })
         collectionView.reloadData()
     }
     
@@ -96,12 +90,12 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     
     private func cellRelationButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         guard let vocabulary = fetchController?.object(at: indexPath) else { return }
-        print(vocabulary.relations.count)
+        print("relation button tapped \(vocabulary.relations.count)")
     }
     
     private func cellAlternativeButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         guard let vocabulary = fetchController?.object(at: indexPath) else { return }
-        print(vocabulary.alternatives.count)
+        print("alternative button tapped \(vocabulary.relations.count)")
     }
     
     private func cellPolitenessButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {

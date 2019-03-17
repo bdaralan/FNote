@@ -22,8 +22,7 @@ class VocabularyCollectionCoordinator: Coordinator {
         return vocabularyCollectionVC.collection?.managedObjectContext
     }
     
-    private var viewControllerToDismiss: UIViewController?
-    private var dismissAnimated: Bool?
+    private var dismissCurrentViewControllerHandler: (() -> Void)?
     
     
     init(navigationController: UINavigationController) {
@@ -42,12 +41,10 @@ class VocabularyCollectionCoordinator: Coordinator {
         navigationController.pushViewController(vocabularyCollectionVC, animated: false)
     }
     
-    @objc func dismissViewController() {
-        let vc = viewControllerToDismiss
-        let animated = dismissAnimated ?? true
-        viewControllerToDismiss = nil
-        dismissAnimated = nil
-        vc?.dismiss(animated: animated, completion: nil)
+    @objc func executeDismissCurrentViewControllerHandler() {
+        guard let handler = dismissCurrentViewControllerHandler else { return }
+        dismissCurrentViewControllerHandler = nil
+        handler()
     }
 }
 
@@ -79,20 +76,29 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
                 navController.popViewController(animated: true)
             }
             navController.pushViewController(optionVC, animated: true)
+            
         } else {
-            let optionVCWithNav = optionVC.withNavController()
-            viewControllerToDismiss = optionVCWithNav
+            let optionNavController = optionVC.withNavController()
             optionVC.selectCompletion = { (index) in
+                viewController.completion = { [weak self] (result) in
+                    guard result == .save else { return }
+                    self?.collectionContext?.quickSave()
+                }
                 viewController.setPoliteness(politenesses[index])
                 viewController.saveChanges()
-                optionVC.dismiss(animated: true, completion: nil)
+                optionNavController.dismiss(animated: true, completion: nil)
             }
-            let cancel = #selector(dismissViewController)
-            optionVC.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: cancel)
+            dismissCurrentViewControllerHandler = { optionNavController.dismiss(animated: true, completion: nil) }
+            let selector = #selector(executeDismissCurrentViewControllerHandler)
+            let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: selector)
+            optionVC.navigationItem.leftBarButtonItem = cancel
             if UIDevice.current.userInterfaceIdiom == .pad {
-                optionVCWithNav.modalPresentationStyle = .formSheet
+                let width = UIScreen.main.bounds.width / 2
+                let height = CGFloat(options.count) * optionVC.tableView.rowHeight + 70
+                optionNavController.preferredContentSize = CGSize(width: width, height: height)
+                optionNavController.modalPresentationStyle = .formSheet
             }
-            navigationController.present(optionVCWithNav, animated: true, completion: nil)
+            navigationController.present(optionNavController, animated: true, completion: nil)
         }
     }
 }

@@ -73,10 +73,8 @@ extension OptionTableViewController {
         
         if options[indexPath.row].isSelected {
             selectCompletion?(indexPath.row)
-            print("selected")
         } else {
             deselectCompletion?(indexPath.row)
-            print("deselected")
         }
         tableView.reloadRows(at: tableView.indexPathsForVisibleRows ?? [indexPath], with: .none)
     }
@@ -88,5 +86,6 @@ extension OptionTableViewController {
     private func setupController() {
         tableView.backgroundColor = .offWhiteBackground
         tableView.registerCell(UITableViewCell.self)
+        tableView.rowHeight = 44
     }
 }
