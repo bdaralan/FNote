@@ -74,7 +74,7 @@ class VocabularyCollectionCell: UICollectionViewCell {
         favoriteButton.tintColor = UIColor(named: "favorite-vocab-\(vocabulary.isFavorited ? "true" : "false")")
         relationButton.setTitle("\(vocabulary.relations.count)", for: .normal)
         alternativeButton.setTitle("\(vocabulary.alternatives.count)", for: .normal)
-        politenessButton.setTitle(vocabulary.politeness.capitalized, for: .normal)
+        politenessButton.setTitle(vocabulary.politeness.string, for: .normal)
     }
 }
 

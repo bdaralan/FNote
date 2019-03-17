@@ -120,11 +120,11 @@ class VocabularyViewController: UITableViewController {
     }
     
     func setPoliteness(_ politeness: Vocabulary.Politeness) {
-        vocabulary.politeness = politeness.rawValue
+        vocabulary.politeness = politeness
         toggleSaveButtonEnableStateIfNeeded()
         let indexPath = indexPathSections.firstIndexPath(of: .politeness)!
         let cell = tableView.cellForRow(at: indexPath) as? VocabularySelectionCell
-        cell?.reloadCell(detail: politeness.rawValue.capitalized)
+        cell?.reloadCell(detail: politeness.string)
     }
 }
 
@@ -182,7 +182,7 @@ extension VocabularyViewController {
             return cell
         case .politeness:
             let cell = tableView.dequeueRegisteredCell(VocabularySelectionCell.self, for: indexPath)
-            cell.reloadCell(text: "Politeness", detail: vocabulary.politeness.capitalized, image: .politeness)
+            cell.reloadCell(text: "Politeness", detail: vocabulary.politeness.string, image: .politeness)
             cell.accessoryType = .disclosureIndicator
             return cell
         case .favorite:
@@ -214,8 +214,7 @@ extension VocabularyViewController {
             cell.textField.becomeFirstResponder()
         case .politeness:
             view.endEditing(true)
-            let current = Vocabulary.Politeness(rawValue: vocabulary.politeness) ?? .unknown
-            coordinator?.selectPoliteness(for: self, current: current)
+            coordinator?.selectPoliteness(for: self, current: vocabulary.politeness)
         default:
             #warning("add handler relations and alternatives")
             tableView.deselectRow(at: indexPath, animated: true)

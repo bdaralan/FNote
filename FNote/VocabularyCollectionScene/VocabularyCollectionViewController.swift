@@ -105,9 +105,9 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     }
     
     private func cellPolitenessButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
-        guard let vocabulary = fetchController?.object(at: indexPath), let politeness = Vocabulary.Politeness(rawValue: vocabulary.politeness) else { return }
-        let vc = VocabularyViewController(mode: .view(vocabulary))
-        coordinator?.selectPoliteness(for: vc, current: politeness)
+        guard let vocabulary = fetchController?.object(at: indexPath) else { return }
+        let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
+        coordinator?.selectPoliteness(for: vocabularyVC, current: vocabulary.politeness)
     }
     
     private func cellDeleteButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {

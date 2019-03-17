@@ -16,7 +16,7 @@
         <attribute name="isFavorited" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="native" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="note" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="politeness" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="politenessValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="translation" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="alternatives" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="alternatives" inverseEntity="Vocabulary" syncable="YES"/>
         <relationship name="collection" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VocabularyCollection" inverseName="vocabularies" inverseEntity="VocabularyCollection" syncable="YES"/>
@@ -32,7 +32,7 @@
         <relationship name="vocabularies" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Vocabulary" inverseName="collection" inverseEntity="Vocabulary" syncable="YES"/>
     </entity>
     <entity name="VocabularyConnection" representedClassName=".VocabularyConnection" syncable="YES">
-        <attribute name="connectionType" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="connectionTypeValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="recordMetadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RecordMetadata" inverseName="vocabularyConnection" inverseEntity="RecordMetadata" syncable="YES"/>
         <relationship name="source" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="sourceOf" inverseEntity="Vocabulary" syncable="YES"/>
         <relationship name="target" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="targetOf" inverseEntity="Vocabulary" syncable="YES"/>

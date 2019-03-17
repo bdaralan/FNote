@@ -20,8 +20,8 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     @NSManaged public var native: String
     @NSManaged public var translation: String
     @NSManaged public var note: String
-    @NSManaged public var politeness: String
     @NSManaged public var isFavorited: Bool
+    @NSManaged private var politenessValue: Int16
     @NSManaged private(set) var collection: VocabularyCollection
     @NSManaged private(set) var relations: Set<Vocabulary>
     @NSManaged private(set) var alternatives: Set<Vocabulary>
@@ -29,6 +29,11 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     @NSManaged private(set) var connections: Set<VocabularyConnection>
     @NSManaged private(set) var sourceOf: VocabularyConnection?
     @NSManaged private(set) var targetOf: VocabularyConnection?
+    
+    var politeness: Politeness {
+        set { politenessValue = newValue.rawValue }
+        get { return Politeness(rawValue: politenessValue) ?? .undecided }
+    }
 
     
     public override func awakeFromInsert() {
@@ -36,7 +41,7 @@ public class Vocabulary: NSManagedObject, LocalRecord {
         native = ""
         translation = ""
         note = ""
-        politeness = Politeness.unknown.rawValue
+        politeness = Politeness.undecided
         relations = []
         alternatives = []
         recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
@@ -72,11 +77,20 @@ extension Vocabulary {
     
     /// Vocabulary politeness value.
     /// - warning: These values should not be changed because they must be matched with the database.
-    enum Politeness: LocalRecord.ServerStringValue, CaseIterable {
-        case unknown
+    enum Politeness: LocalRecord.ServerIntegerEnum, CaseIterable {
+        case undecided
         case informal
         case neutral
         case formal
+        
+        var string: String {
+            switch self {
+            case .undecided: return "Undecided"
+            case .informal: return "Informal"
+            case .neutral: return "Neutral"
+            case .formal: return "Formal"
+            }
+        }
     }
     
     #warning("TODO: need init that has to set collection")

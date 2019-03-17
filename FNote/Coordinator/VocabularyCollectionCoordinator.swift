@@ -69,9 +69,7 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
     
     func selectPoliteness(for viewController: VocabularyViewController, current: Vocabulary.Politeness) {
         let politenesses = Vocabulary.Politeness.allCases
-        let options = politenesses.map {
-            OptionTableViewController.Option(name: $0.rawValue.capitalized, isSelected: $0.rawValue == current.rawValue)
-        }
+        let options = politenesses.map({ OptionTableViewController.Option(name: $0.string, isSelected: $0 == current) })
         let optionVC = OptionTableViewController(options: options)
         optionVC.navigationItem.title = "Politeness"
         

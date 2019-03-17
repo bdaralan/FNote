@@ -18,19 +18,20 @@ public class VocabularyConnection: NSManagedObject, LocalRecord {
     var recordZone: CKRecordZone { return CloudKitService.ckVocabularyCollectionZone }
 
     @NSManaged private(set) var recordMetadata: RecordMetadata
-    @NSManaged private(set) var connectionType: String
+    @NSManaged private var connectionTypeValue: Int16
     @NSManaged private(set) var source: Vocabulary
     @NSManaged private(set) var target: Vocabulary
     @NSManaged private(set) var vocabularies: Set<Vocabulary>
     
     var type: ConnectionType {
-        return ConnectionType(rawValue: connectionType) ?? .unknown
+        set { connectionTypeValue = newValue.rawValue }
+        get { return ConnectionType(rawValue: connectionTypeValue) ?? .unknown }
     }
     
     
     convenience init(type: ConnectionType, source: Vocabulary, target: Vocabulary, context: NSManagedObjectContext) {
         self.init(context: context)
-        self.connectionType = type.rawValue
+        self.type = type
         self.source = source
         self.target = target
         self.vocabularies = [source, target]
@@ -49,7 +50,7 @@ extension VocabularyConnection {
     
     func recordValuesForServerKeys() -> [String : Any] {
         return [
-            Key.connectionType.stringValue: connectionType,
+            Key.connectionType.stringValue: connectionTypeValue,
             Key.sourceRecordName.stringValue: source.recordMetadata.recordName,
             Key.targetRecordName.stringValue: target.recordMetadata.recordName
         ]
@@ -62,7 +63,7 @@ extension VocabularyConnection {
     }
     
     /// - warning: These values should not be changed because they must be matched with the database.
-    enum ConnectionType: LocalRecord.ServerStringValue, CaseIterable {
+    enum ConnectionType: LocalRecord.ServerIntegerEnum, CaseIterable {
         case unknown
         case related
         case alternative
