@@ -21,7 +21,7 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     @NSManaged public var translation: String
     @NSManaged public var note: String
     @NSManaged public var isFavorited: Bool
-    @NSManaged private var politenessValue: Int16
+    @NSManaged private var politenessValue: Int64
     @NSManaged private(set) var collection: VocabularyCollection
     @NSManaged private(set) var relations: Set<Vocabulary>
     @NSManaged private(set) var alternatives: Set<Vocabulary>
@@ -31,8 +31,8 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     @NSManaged private(set) var targetOf: VocabularyConnection?
     
     var politeness: Politeness {
-        set { politenessValue = newValue.rawValue }
-        get { return Politeness(rawValue: politenessValue) ?? .undecided }
+        set { politenessValue = Int64(newValue.rawValue) }
+        get { return Politeness(rawValue: Int(politenessValue)) ?? .undecided }
     }
 
     
@@ -66,7 +66,7 @@ extension Vocabulary {
         ]
     }
     
-    enum Key: LocalRecord.ServerKey {
+    enum Key: LocalRecord.DatabaseKey {
         case native
         case translation
         case note
@@ -77,7 +77,7 @@ extension Vocabulary {
     
     /// Vocabulary politeness value.
     /// - warning: These values should not be changed because they must be matched with the database.
-    enum Politeness: LocalRecord.ServerIntegerEnum, CaseIterable {
+    enum Politeness: LocalRecord.DatabaseIntegerEnum, CaseIterable {
         case undecided
         case informal
         case neutral

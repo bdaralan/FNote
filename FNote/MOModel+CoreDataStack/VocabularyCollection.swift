@@ -36,7 +36,7 @@ extension VocabularyCollection {
         return [Key.name.stringValue: name]
     }
     
-    enum Key: LocalRecord.ServerKey {
+    enum Key: LocalRecord.DatabaseKey {
         case name
     }
 }

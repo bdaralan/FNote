@@ -13,11 +13,11 @@ import CoreData
 protocol LocalRecord: class {
     
     /// `CKRecord` key-value-pair key.
-    typealias ServerKey = CodingKey
+    typealias DatabaseKey = CodingKey
     
     /// `CKRecord`'s integer `enum` value.
     /// - warning: Since their values are store in the database, they must not be changed or reordered carelessly.
-    typealias ServerIntegerEnum = Int16
+    typealias DatabaseIntegerEnum = Int
     
     /// Database Record Type
     var recordType: CKRecord.RecordType { get }

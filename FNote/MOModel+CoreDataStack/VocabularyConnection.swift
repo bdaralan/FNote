@@ -18,14 +18,14 @@ public class VocabularyConnection: NSManagedObject, LocalRecord {
     var recordZone: CKRecordZone { return CloudKitService.ckVocabularyCollectionZone }
 
     @NSManaged private(set) var recordMetadata: RecordMetadata
-    @NSManaged private var connectionTypeValue: Int16
+    @NSManaged private var connectionTypeValue: Int64
     @NSManaged private(set) var source: Vocabulary
     @NSManaged private(set) var target: Vocabulary
     @NSManaged private(set) var vocabularies: Set<Vocabulary>
     
     var type: ConnectionType {
-        set { connectionTypeValue = newValue.rawValue }
-        get { return ConnectionType(rawValue: connectionTypeValue) ?? .unknown }
+        set { connectionTypeValue = Int64(newValue.rawValue) }
+        get { return ConnectionType(rawValue: Int(connectionTypeValue)) ?? .unknown }
     }
     
     
@@ -56,14 +56,14 @@ extension VocabularyConnection {
         ]
     }
     
-    enum Key: LocalRecord.ServerKey {
+    enum Key: LocalRecord.DatabaseKey {
         case connectionType
         case sourceRecordName
         case targetRecordName
     }
     
     /// - warning: These values should not be changed because they must be matched with the database.
-    enum ConnectionType: LocalRecord.ServerIntegerEnum, CaseIterable {
+    enum ConnectionType: LocalRecord.DatabaseIntegerEnum, CaseIterable {
         case unknown
         case related
         case alternative
