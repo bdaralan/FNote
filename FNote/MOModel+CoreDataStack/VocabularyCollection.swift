@@ -40,3 +40,23 @@ extension VocabularyCollection {
         case name
     }
 }
+
+
+extension VocabularyCollection {
+    
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<VocabularyCollection> {
+        return NSFetchRequest<VocabularyCollection>(entityName: "VocabularyCollection")
+    }
+    
+    @objc(addVocabulariesObject:)
+    @NSManaged private func addToVocabularies(_ value: Vocabulary)
+    
+    @objc(removeVocabulariesObject:)
+    @NSManaged private func removeFromVocabularies(_ value: Vocabulary)
+    
+    @objc(addVocabularies:)
+    @NSManaged private func addToVocabularies(_ values: NSSet)
+    
+    @objc(removeVocabularies:)
+    @NSManaged private func removeFromVocabularies(_ values: NSSet)
+}

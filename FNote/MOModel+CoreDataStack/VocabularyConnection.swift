@@ -87,3 +87,23 @@ extension VocabularyConnection {
         return connections ?? []
     }
 }
+
+
+extension VocabularyConnection {
+    
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<VocabularyConnection> {
+        return NSFetchRequest<VocabularyConnection>(entityName: "VocabularyConnection")
+    }
+    
+    @objc(addVocabulariesObject:)
+    @NSManaged private func addToVocabularies(_ value: Vocabulary)
+    
+    @objc(removeVocabulariesObject:)
+    @NSManaged private func removeFromVocabularies(_ value: Vocabulary)
+    
+    @objc(addVocabularies:)
+    @NSManaged private func addToVocabularies(_ values: NSSet)
+    
+    @objc(removeVocabularies:)
+    @NSManaged private func removeFromVocabularies(_ values: NSSet)
+}

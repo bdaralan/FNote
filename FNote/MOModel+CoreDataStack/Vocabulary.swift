@@ -34,7 +34,14 @@ public class Vocabulary: NSManagedObject, LocalRecord {
         set { politenessValue = Int64(newValue.rawValue) }
         get { return Politeness(rawValue: Int(politenessValue)) ?? .undecided }
     }
-
+    
+    
+    convenience init(collection: VocabularyCollection, context: NSManagedObjectContext) {
+        self.init(context: context)
+        self.collection = collection
+        #warning("TODO: set collection and reconfigure its CKRecord")
+    }
+    
     
     public override func awakeFromInsert() {
         super.awakeFromInsert()
@@ -45,12 +52,6 @@ public class Vocabulary: NSManagedObject, LocalRecord {
         relations = []
         alternatives = []
         recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
-    }
-    
-    convenience init(collection: VocabularyCollection, context: NSManagedObjectContext) {
-        self.init(context: context)
-        self.collection = collection
-        #warning("TODO: set collection and reconfigure its CKRecord")
     }
 }
 
@@ -138,4 +139,71 @@ extension Vocabulary {
         }
         return nil
     }
+}
+
+extension Vocabulary {
+    
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Vocabulary> {
+        return NSFetchRequest<Vocabulary>(entityName: "Vocabulary")
+    }
+    
+    @objc(addAlternativesObject:)
+    @NSManaged private func addToAlternatives(_ value: Vocabulary)
+    
+    @objc(removeAlternativesObject:)
+    @NSManaged private func removeFromAlternatives(_ value: Vocabulary)
+    
+    @objc(addAlternatives:)
+    @NSManaged public func addToAlternatives(_ values: NSSet)
+    
+    @objc(removeAlternatives:)
+    @NSManaged private func removeFromAlternatives(_ values: NSSet)
+    
+    @objc(addRelationsObject:)
+    @NSManaged private func addToRelations(_ value: Vocabulary)
+    
+    @objc(removeRelationsObject:)
+    @NSManaged private func removeFromRelations(_ value: Vocabulary)
+    
+    @objc(addRelations:)
+    @NSManaged private func addToRelations(_ values: NSSet)
+    
+    @objc(removeRelations:)
+    @NSManaged private func removeFromRelations(_ values: NSSet)
+    
+    @objc(addSourceOfObject:)
+    @NSManaged private func addToSourceOf(_ value: VocabularyConnection)
+    
+    @objc(removeSourceOfObject:)
+    @NSManaged private func removeFromSourceOf(_ value: VocabularyConnection)
+    
+    @objc(addSourceOf:)
+    @NSManaged private func addToSourceOf(_ values: NSSet)
+    
+    @objc(removeSourceOf:)
+    @NSManaged private func removeFromSourceOf(_ values: NSSet)
+    
+    @objc(addTargetOfObject:)
+    @NSManaged private func addToTargetOf(_ value: VocabularyConnection)
+    
+    @objc(removeTargetOfObject:)
+    @NSManaged private func removeFromTargetOf(_ value: VocabularyConnection)
+    
+    @objc(addTargetOf:)
+    @NSManaged private func addToTargetOf(_ values: NSSet)
+    
+    @objc(removeTargetOf:)
+    @NSManaged private func removeFromTargetOf(_ values: NSSet)
+    
+    @objc(addConnectionsObject:)
+    @NSManaged private func addToConnections(_ value: VocabularyConnection)
+    
+    @objc(removeConnectionsObject:)
+    @NSManaged private func removeFromConnections(_ value: VocabularyConnection)
+    
+    @objc(addConnections:)
+    @NSManaged private func addToConnections(_ values: NSSet)
+    
+    @objc(removeConnections:)
+    @NSManaged private func removeFromConnections(_ values: NSSet)
 }

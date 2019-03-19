@@ -22,6 +22,7 @@ public class RecordMetadata: NSManagedObject {
     @NSManaged private(set) var vocabularyConnection: VocabularyConnection?
     @NSManaged private(set) var vocabularyCollection: VocabularyCollection?
     
+    
     convenience init(recordType: CKRecord.RecordType, recordName: String?, zone: CKRecordZone, context: NSManagedObjectContext) {
         self.init(context: context)
         let recordID: CKRecord.ID
@@ -38,6 +39,7 @@ public class RecordMetadata: NSManagedObject {
         self.recordName = record.recordID.recordName
         self.zoneName = zone.zoneID.zoneName
     }
+    
     
     /// Update `systemFields` with an up to date record.
     /// - parameter record: An up to date record.
@@ -56,5 +58,13 @@ public class RecordMetadata: NSManagedObject {
             fatalError("\(self) failed to unarchive cloudkit system fields!!!")
         }
         return record
+    }
+}
+
+
+extension RecordMetadata {
+    
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<RecordMetadata> {
+        return NSFetchRequest<RecordMetadata>(entityName: "RecordMetadata")
     }
 }

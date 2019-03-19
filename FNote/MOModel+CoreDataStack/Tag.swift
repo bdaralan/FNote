@@ -20,14 +20,6 @@ public class Tag: NSManagedObject, LocalRecord {
     @NSManaged private(set) var colorHex: String
     @NSManaged private(set) var recordMetadata: RecordMetadata
     
-    
-    public override func awakeFromInsert() {
-        super.awakeFromInsert()
-        name = ""
-        colorHex = "FFFFFF"
-        recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
-    }
-    
     /// - parameters:
     ///   - name: The name of the tag.
     ///   - colorHex: The color of the tag in hex. Must be 6 characters without # symbol.
@@ -37,14 +29,17 @@ public class Tag: NSManagedObject, LocalRecord {
         guard let colorHex = colorHex, colorHex.count == 6 else { return }
         self.colorHex = colorHex
     }
+    
+    public override func awakeFromInsert() {
+        super.awakeFromInsert()
+        name = ""
+        colorHex = "FFFFFF"
+        recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
+    }
 }
 
 
 extension Tag {
-    
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Tag> {
-        return NSFetchRequest<Tag>(entityName: "Tag")
-    }
     
     func recordValuesForServerKeys() -> [String : Any] {
         return [
@@ -56,5 +51,13 @@ extension Tag {
     enum Key: LocalRecord.DatabaseKey {
         case name
         case colorHex
+    }
+}
+
+
+extension Tag {
+    
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Tag> {
+        return NSFetchRequest<Tag>(entityName: "Tag")
     }
 }
