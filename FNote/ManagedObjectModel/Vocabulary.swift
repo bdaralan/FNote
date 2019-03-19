@@ -25,8 +25,9 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     @NSManaged private(set) var collection: VocabularyCollection
     @NSManaged private(set) var relations: Set<Vocabulary>
     @NSManaged private(set) var alternatives: Set<Vocabulary>
-    
     @NSManaged private(set) var connections: Set<VocabularyConnection>
+    @NSManaged private(set) var tags: Set<Tag>
+    
     @NSManaged private(set) var sourceOf: VocabularyConnection?
     @NSManaged private(set) var targetOf: VocabularyConnection?
     
@@ -48,9 +49,11 @@ public class Vocabulary: NSManagedObject, LocalRecord {
         native = ""
         translation = ""
         note = ""
-        politeness = Politeness.undecided
+        politeness = .undecided
         relations = []
         alternatives = []
+        tags = []
+        connections = []
         recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
     }
 }
@@ -206,4 +209,16 @@ extension Vocabulary {
     
     @objc(removeConnections:)
     @NSManaged private func removeFromConnections(_ values: NSSet)
+    
+    @objc(addTagsObject:)
+    @NSManaged private func addToTags(_ value: Tag)
+    
+    @objc(removeTagsObject:)
+    @NSManaged private func removeFromTags(_ value: Tag)
+    
+    @objc(addTags:)
+    @NSManaged private func addToTags(_ values: NSSet)
+    
+    @objc(removeTags:)
+    @NSManaged private func removeFromTags(_ values: NSSet)
 }

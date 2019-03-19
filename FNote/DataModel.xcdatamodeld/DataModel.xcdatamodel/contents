@@ -14,6 +14,8 @@
         <attribute name="colorHex" optional="YES" attributeType="String" minValueString="6" maxValueString="6" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="recordMetadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RecordMetadata" inverseName="tag" inverseEntity="RecordMetadata" syncable="YES"/>
+        <relationship name="vocabularies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="tags" inverseEntity="Vocabulary" syncable="YES"/>
+        <relationship name="vocabularyCollections" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="VocabularyCollection" inverseName="tags" inverseEntity="VocabularyCollection" syncable="YES"/>
     </entity>
     <entity name="User" representedClassName=".User" syncable="YES">
         <attribute name="accountToken" optional="YES" attributeType="String" syncable="YES"/>
@@ -30,11 +32,13 @@
         <relationship name="recordMetadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RecordMetadata" inverseName="vocabulary" inverseEntity="RecordMetadata" syncable="YES"/>
         <relationship name="relations" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="relations" inverseEntity="Vocabulary" syncable="YES"/>
         <relationship name="sourceOf" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="VocabularyConnection" inverseName="source" inverseEntity="VocabularyConnection" syncable="YES"/>
+        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tag" inverseName="vocabularies" inverseEntity="Tag" syncable="YES"/>
         <relationship name="targetOf" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="VocabularyConnection" inverseName="target" inverseEntity="VocabularyConnection" syncable="YES"/>
     </entity>
     <entity name="VocabularyCollection" representedClassName=".VocabularyCollection" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="recordMetadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RecordMetadata" inverseName="vocabularyCollection" inverseEntity="RecordMetadata" syncable="YES"/>
+        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tag" inverseName="vocabularyCollections" inverseEntity="Tag" syncable="YES"/>
         <relationship name="vocabularies" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Vocabulary" inverseName="collection" inverseEntity="Vocabulary" syncable="YES"/>
     </entity>
     <entity name="VocabularyConnection" representedClassName=".VocabularyConnection" syncable="YES">
@@ -46,10 +50,10 @@
     </entity>
     <elements>
         <element name="RecordMetadata" positionX="-36" positionY="99" width="128" height="165"/>
+        <element name="Tag" positionX="-45" positionY="108" width="128" height="120"/>
         <element name="User" positionX="-36" positionY="81" width="128" height="60"/>
-        <element name="Vocabulary" positionX="-54" positionY="-9" width="128" height="225"/>
-        <element name="VocabularyCollection" positionX="-45" positionY="63" width="128" height="90"/>
+        <element name="Vocabulary" positionX="-54" positionY="-9" width="128" height="240"/>
+        <element name="VocabularyCollection" positionX="-45" positionY="63" width="128" height="105"/>
         <element name="VocabularyConnection" positionX="-45" positionY="72" width="128" height="120"/>
-        <element name="Tag" positionX="-45" positionY="108" width="128" height="90"/>
     </elements>
 </model>

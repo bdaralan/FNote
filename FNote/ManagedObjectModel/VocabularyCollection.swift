@@ -19,12 +19,14 @@ public class VocabularyCollection: NSManagedObject, LocalRecord {
     @NSManaged private(set) var recordMetadata: RecordMetadata
     @NSManaged public var name: String
     @NSManaged private(set) var vocabularies: Set<Vocabulary>
+    @NSManaged private(set) var tags: Set<Tag>
     
     
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         name = ""
         vocabularies = []
+        tags = []
         recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
     }
 }
@@ -59,4 +61,16 @@ extension VocabularyCollection {
     
     @objc(removeVocabularies:)
     @NSManaged private func removeFromVocabularies(_ values: NSSet)
+    
+    @objc(addTagsObject:)
+    @NSManaged private func addToTags(_ value: Tag)
+    
+    @objc(removeTagsObject:)
+    @NSManaged private func removeFromTags(_ value: Tag)
+    
+    @objc(addTags:)
+    @NSManaged private func addToTags(_ values: NSSet)
+    
+    @objc(removeTags:)
+    @NSManaged private func removeFromTags(_ values: NSSet)
 }

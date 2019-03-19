@@ -16,9 +16,12 @@ public class Tag: NSManagedObject, LocalRecord {
     var recordType: CKRecord.RecordType { return "Tag" }
     var recordZone: CKRecordZone { return CloudKitService.ckVocabularyCollectionZone }
 
+    @NSManaged private(set) var recordMetadata: RecordMetadata
     @NSManaged private(set) var name: String
     @NSManaged private(set) var colorHex: String
-    @NSManaged private(set) var recordMetadata: RecordMetadata
+    
+    @NSManaged private(set) var vocabularies: Set<Vocabulary>
+    @NSManaged private(set) var vocabularyCollections: Set<VocabularyCollection>
     
     /// - parameters:
     ///   - name: The name of the tag.
@@ -34,6 +37,8 @@ public class Tag: NSManagedObject, LocalRecord {
         super.awakeFromInsert()
         name = ""
         colorHex = "FFFFFF"
+        vocabularies = []
+        vocabularyCollections = []
         recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
     }
 }
@@ -60,4 +65,28 @@ extension Tag {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Tag> {
         return NSFetchRequest<Tag>(entityName: "Tag")
     }
+    
+    @objc(addVocabulariesObject:)
+    @NSManaged private func addToVocabularies(_ value: Vocabulary)
+    
+    @objc(removeVocabulariesObject:)
+    @NSManaged private func removeFromVocabularies(_ value: Vocabulary)
+    
+    @objc(addVocabularies:)
+    @NSManaged private func addToVocabularies(_ values: NSSet)
+    
+    @objc(removeVocabularies:)
+    @NSManaged private func removeFromVocabularies(_ values: NSSet)
+    
+    @objc(addVocabularyCollectionsObject:)
+    @NSManaged private func addToVocabularyCollections(_ value: VocabularyCollection)
+    
+    @objc(removeVocabularyCollectionsObject:)
+    @NSManaged private func removeFromVocabularyCollections(_ value: VocabularyCollection)
+    
+    @objc(addVocabularyCollections:)
+    @NSManaged private func addToVocabularyCollections(_ values: NSSet)
+    
+    @objc(removeVocabularyCollections:)
+    @NSManaged private func removeFromVocabularyCollections(_ values: NSSet)
 }

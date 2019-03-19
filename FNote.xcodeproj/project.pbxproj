@@ -144,7 +144,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B40A802721F5958F00DCDF11 /* MOModel+CoreDataStack */ = {
+		B40A802721F5958F00DCDF11 /* ManagedObjectModel */ = {
 			isa = PBXGroup;
 			children = (
 				B40F58AF22337C35008E0241 /* RecordMetadata.swift */,
@@ -154,7 +154,7 @@
 				B4081058223329130081919B /* VocabularyConnection.swift */,
 				B4FE95A4224177F0002285BC /* Tag.swift */,
 			);
-			path = "MOModel+CoreDataStack";
+			path = ManagedObjectModel;
 			sourceTree = "<group>";
 		};
 		B437BD9421F1972600A1B016 = {
@@ -187,7 +187,7 @@
 				B43FDF762239BEB700191392 /* UserProfileScene */,
 				B450E81622382819002EDC04 /* Manager+Service */,
 				B437BDB421F197AD00A1B016 /* Model */,
-				B40A802721F5958F00DCDF11 /* MOModel+CoreDataStack */,
+				B40A802721F5958F00DCDF11 /* ManagedObjectModel */,
 				B437BDB321F197AB00A1B016 /* View */,
 				B437BDB521F197AF00A1B016 /* Extension+Utility */,
 				B464F664223B0E45007F906B /* Resource */,

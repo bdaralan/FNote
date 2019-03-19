@@ -21,6 +21,7 @@ public class RecordMetadata: NSManagedObject {
     @NSManaged private(set) var vocabulary: Vocabulary?
     @NSManaged private(set) var vocabularyConnection: VocabularyConnection?
     @NSManaged private(set) var vocabularyCollection: VocabularyCollection?
+    @NSManaged private(set) var tag: Tag?
     
     
     convenience init(recordType: CKRecord.RecordType, recordName: String?, zone: CKRecordZone, context: NSManagedObjectContext) {
