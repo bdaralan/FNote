@@ -19,7 +19,7 @@ protocol LocalRecord: class {
     /// - warning: Since their values are store in the database, they must not be changed or reordered carelessly.
     typealias DatabaseIntegerEnum = Int
     
-    /// Database Record Type
+    /// Database Record Type. This must not be changed without re-configure the whole database.
     var recordType: CKRecord.RecordType { get }
     
     /// Database Record Zone

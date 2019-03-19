@@ -60,6 +60,7 @@
 		B4F03CEB21F62ADC004C4225 /* VocabularyCollection+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F03CE921F62ADC004C4225 /* VocabularyCollection+CoreDataProperties.swift */; };
 		B4F5C82C21F7B910007E8108 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4F5C82B21F7B910007E8108 /* CloudKit.framework */; };
 		B4F5C82E21F7BF67007E8108 /* CloudKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F5C82D21F7BF67007E8108 /* CloudKitService.swift */; };
+		B4FE95A6224177F0002285BC /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FE95A4224177F0002285BC /* Tag.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -131,6 +132,7 @@
 		B4F5C82921F7B8CA007E8108 /* FNote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FNote.entitlements; sourceTree = "<group>"; };
 		B4F5C82B21F7B910007E8108 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B4F5C82D21F7BF67007E8108 /* CloudKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitService.swift; sourceTree = "<group>"; };
+		B4FE95A4224177F0002285BC /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +167,7 @@
 				B40A802E21F59A8A00DCDF11 /* Vocabulary+CoreDataProperties.swift */,
 				B4081058223329130081919B /* VocabularyConnection.swift */,
 				B4081059223329130081919B /* VocabularyConnection+CoreDataProperties.swift */,
+				B4FE95A4224177F0002285BC /* Tag.swift */,
 			);
 			path = "MOModel+CoreDataStack";
 			sourceTree = "<group>";
@@ -496,6 +499,7 @@
 				B450E81A22383016002EDC04 /* UserDefaultsManager.swift in Sources */,
 				B4AD1A632225E30C00459D46 /* Animation.swift in Sources */,
 				B45AB9B12219C724009D337C /* VocabularyCollectionCoordinator.swift in Sources */,
+				B4FE95A6224177F0002285BC /* Tag.swift in Sources */,
 				B40A802A21F595B500DCDF11 /* Vocabulary.swift in Sources */,
 				B40A802F21F59A8A00DCDF11 /* Vocabulary+CoreDataProperties.swift in Sources */,
 				B4F03CEB21F62ADC004C4225 /* VocabularyCollection+CoreDataProperties.swift in Sources */,
