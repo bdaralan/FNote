@@ -101,10 +101,12 @@ class VocabularyViewController: UITableViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupController()
     }
+    
     
     @objc private func inputTextFieldTextChanged(_ textField: UITextField) {
         guard let input = Row(rawValue: textField.tag) else { return }

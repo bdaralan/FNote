@@ -17,8 +17,10 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     private(set) var collection: VocabularyCollection?
     private(set) var fetchController: NSFetchedResultsController<Vocabulary>?
     
-    private var guideView: DescriptionGuideView?
-    private lazy var guide = UserGuide.load(resource: "add-new-vocabulary-collection")
+    private lazy var guideView = DescriptionGuideView()
+    private lazy var addVocabularyGuide = UserGuide.load(resource: .addVocabulary)
+    private lazy var welcomeGuide = UserGuide.load(resource: .addCollection)
+    
     
     init(collection: VocabularyCollection?) {
         super.init(collectionViewLayout: VocabularyCollectionViewFlowLayout())
@@ -28,6 +30,7 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,21 +45,17 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         collectionView.collectionViewLayout.invalidateLayout()
     }
     
-    private func configureFetchController() {
+    
+    private func configureFetchController(collection: VocabularyCollection?) {
         guard let collection = collection, let context = collection.managedObjectContext else {
-            self.collection = nil
             fetchController = nil
             return
         }
+        
         let request: NSFetchRequest<Vocabulary> = Vocabulary.fetchRequest()
         request.predicate = NSPredicate(format: "collection == %@", collection)
         request.sortDescriptors = [NSSortDescriptor(key: "translation", ascending: true)]
-        fetchController = NSFetchedResultsController<Vocabulary>(
-            fetchRequest: request,
-            managedObjectContext: context,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
+        fetchController = NSFetchedResultsController<Vocabulary>(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
         do {
             try fetchController?.performFetch()
             fetchController?.delegate = self
@@ -66,17 +65,23 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     }
     
     func setCollection(_ collection: VocabularyCollection?) {
-        self.collection = collection
         if collection == nil {
-            setupGuideViewIfNeeded()
-            guideView?.show(in: view)
+            guideView.guide = welcomeGuide
+            guideView.show(in: view)
+        } else if collection?.vocabularies.isEmpty == true {
+            guideView.guide = addVocabularyGuide
+            guideView.show(in: view)
         } else {
-            guideView?.remove()
+            guideView.remove()
         }
-        configureFetchController()
-        navigationItem.title = collection?.name ?? "Let's Get Started"
+        navigationItem.title = collection?.name ?? guideView.guide?.name
         navigationItem.rightBarButtonItems?.forEach({ $0.isEnabled = collection != nil })
-        collectionView.reloadData()
+        
+        if self.collection == nil || self.collection !== collection {
+            configureFetchController(collection: collection)
+            collectionView.reloadData()
+        }
+        self.collection = collection
     }
     
     private func cellFavoriteButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
@@ -148,6 +153,15 @@ extension VocabularyCollectionViewController: NSFetchedResultsControllerDelegate
         case .move: collectionView.moveItem(at: indexPath!, to: newIndexPath!)
         }
     }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        if collection?.vocabularies.isEmpty == true {
+            guideView.guide = addVocabularyGuide
+            guideView.show(in: view)
+        } else {
+            guideView.remove()
+        }
+    }
 }
 
 
@@ -189,14 +203,5 @@ extension VocabularyCollectionViewController {
     @objc private func addVocabularyButtonTapped() {
         guard let collection = collection else { return }
         coordinator?.addNewVocabulary(to: collection)
-    }
-    
-    private func setupGuideViewIfNeeded() {
-        guard guideView == nil else { return }
-        guideView = DescriptionGuideView()
-        guideView?.guideTitle.text = guide?.title
-        guideView?.guideDescription.text = guide?.description
-        guideView?.imageView.image = UIImage(named: guide?.image ?? "")?.withRenderingMode(.alwaysTemplate)
-        guideView?.imageView.tintColor = .darkGray
     }
 }

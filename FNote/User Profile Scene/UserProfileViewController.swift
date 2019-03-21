@@ -51,6 +51,7 @@ class UserProfileViewController: UITableViewController {
         setupNavItems()
     }
     
+    
     private func showDuplicateNameAlert(name: String) {
         let message = "\"\(name)\" is already in the collections"
         let alert = UIAlertController(title: "Found Duplicate", message: message, preferredStyle: .alert)
