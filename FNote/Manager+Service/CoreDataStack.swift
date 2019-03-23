@@ -60,7 +60,7 @@ extension CoreDataStack {
     
     /// Fetch the current user from the given context.
     /// The main context is used, if the given context is `nil`.
-    func currentUser(context: NSManagedObjectContext? = nil) -> User {
+    func user(context: NSManagedObjectContext? = nil) -> User {
         let context = context ?? mainContext
         let request: NSFetchRequest<User> = User.fetchRequest()
         request.predicate = NSPredicate(value: true)

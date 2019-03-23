@@ -12,8 +12,10 @@ import CoreData
 
 class UserProfileViewController: UITableViewController {
     
+    let user: User
     let context: NSManagedObjectContext
     let fetchController: NSFetchedResultsController<VocabularyCollection>
+    
     private(set) var selectedCollection: VocabularyCollection?
     
     var doneTappedHandler: (() -> Void)?
@@ -27,8 +29,9 @@ class UserProfileViewController: UITableViewController {
     }
     
     
-    init(context: NSManagedObjectContext) {
-        self.context = context
+    init(user: User) {
+        self.user = user
+        self.context = user.managedObjectContext!
         let request: NSFetchRequest<VocabularyCollection> = VocabularyCollection.fetchRequest()
         request.predicate = NSPredicate(value: true)
         request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
@@ -70,8 +73,7 @@ class UserProfileViewController: UITableViewController {
             showDuplicateNameAlert(name: name)
         case .unique:
             cell.setTextField(text: "")
-            let collection = VocabularyCollection(context: context)
-            collection.name = name
+            let collection = VocabularyCollection(user: user, name: name)
             if collections.isEmpty {
                 selectedCollection = collection
                 UserDefaultsManager.rememberSelectedVocabularyCollection(recordName: collection.recordMetadata.recordName)
@@ -91,7 +93,7 @@ class UserProfileViewController: UITableViewController {
             guard collection.name != newName else { return }
             showDuplicateNameAlert(name: newName)
         case .unique:
-            collection.name = newName
+            collection.rename(newName)
             context.quickSave()
         }
     }

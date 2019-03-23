@@ -42,6 +42,15 @@ extension UITableView {
 }
 
 
+extension UITableView {
+    
+    func reloadVisibleRows(animation: UITableView.RowAnimation) {
+        guard let visibleIndexPaths = indexPathsForVisibleRows else { return }
+        reloadRows(at: visibleIndexPaths, with: animation)
+    }
+}
+
+
 extension UICollectionView {
     
     /// Register a cell using its class name as the identifier.

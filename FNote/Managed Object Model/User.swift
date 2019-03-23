@@ -14,11 +14,15 @@ import CoreData
 public class User: NSManagedObject {
 
     @NSManaged public var accountToken: String
+    @NSManaged private(set) var tags: Set<Tag>
+    @NSManaged private(set) var vocabularyCollections: Set<VocabularyCollection>
     
     
     convenience init(accountToken: String, context: NSManagedObjectContext) {
         self.init(context: context)
         self.accountToken = accountToken
+        tags = []
+        vocabularyCollections = []
     }
 }
 

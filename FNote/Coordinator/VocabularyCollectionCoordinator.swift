@@ -22,8 +22,6 @@ class VocabularyCollectionCoordinator: Coordinator {
         return vocabularyCollectionVC.collection?.managedObjectContext
     }
     
-    private var dismissCurrentViewControllerHandler: (() -> Void)?
-    
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -39,12 +37,6 @@ class VocabularyCollectionCoordinator: Coordinator {
         vocabularyCollectionVC.coordinator = self
         navigationController.tabBarItem = UITabBarItem(title: "Collection", image: .tabBarVocabCollection, tag: 0)
         navigationController.pushViewController(vocabularyCollectionVC, animated: false)
-    }
-    
-    @objc func executeDismissCurrentViewControllerHandler() {
-        guard let handler = dismissCurrentViewControllerHandler else { return }
-        dismissCurrentViewControllerHandler = nil
-        handler()
     }
 }
 
@@ -67,11 +59,15 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
     func selectPoliteness(for viewController: VocabularyViewController, current: Vocabulary.Politeness) {
         let politenesses = Vocabulary.Politeness.allCases
         let options = politenesses.map({ OptionTableViewController.Option(name: $0.string, isSelected: $0 == current) })
-        let optionVC = OptionTableViewController(options: options, title: "Politeness")
+        let optionVC = OptionTableViewController(selectMode: .single, options: options, title: "Politeness")
         
         if let navController = viewController.navigationController {
+            optionVC.useNavCancelItem = false
             optionVC.selectCompletion = { (index) in
                 viewController.setPoliteness(politenesses[index])
+                navController.popViewController(animated: true)
+            }
+            optionVC.cancelCompletion = {
                 navController.popViewController(animated: true)
             }
             navController.pushViewController(optionVC, animated: true)
@@ -87,10 +83,10 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
                 viewController.saveChanges()
                 optionNavController.dismiss(animated: true, completion: nil)
             }
-            
-            dismissCurrentViewControllerHandler = { optionNavController.dismiss(animated: true, completion: nil) }
-            let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(executeDismissCurrentViewControllerHandler))
-            optionVC.navigationItem.leftBarButtonItem = cancel
+            optionVC.cancelCompletion = {
+                optionNavController.dismiss(animated: true, completion: nil)
+            }
+
             if UIDevice.current.userInterfaceIdiom == .pad {
                 let width = UIScreen.main.bounds.width / 2
                 let height = CGFloat(options.count) * optionVC.tableView.rowHeight + 70
@@ -102,25 +98,25 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
     }
     
     func selectTags(for viewController: VocabularyViewController, current: [Tag]) {
-        let options = current.map({ OptionTableViewController.Option.init(name: $0.name, isSelected: true) })
-        let optionVC = OptionTableViewController(options: options, title: "Tag")
-        optionVC.allowsMultipleSelection = true
+        let allTags = CoreDataStack.current.user().tags.sorted(by: { $0.name < $1.name })
+        let options = allTags.map({ OptionTableViewController.Option(name: $0.name, isSelected: current.contains($0)) })
+        let optionVC = OptionTableViewController(selectMode: .multiple, options: options, title: "Tags")
         optionVC.allowAddNewOption = true
-        optionVC.selectCompletion = { (index) in
-            print(options[index].name)
-        }
-        optionVC.multipleSelectionCompletion = { (indexs) in
-            options.enumerated().forEach({ if indexs.contains($0) { print($1.name) }})
-            optionVC.dismiss(animated: true, completion: nil)
-        }
-        optionVC.deselectCompletion = { (index) in
-            print(options[index].name)
-        }
         
-        dismissCurrentViewControllerHandler = { optionVC.dismiss(animated: true, completion: nil) }
-        let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(executeDismissCurrentViewControllerHandler))
-        optionVC.navigationItem.leftBarButtonItem = cancel
-        navigationController.present(optionVC.withNavController(), animated: true, completion: nil)
+        if let navController = viewController.navigationController {
+            optionVC.useNavCancelItem = false
+            optionVC.selectCompletion = { (index) in
+                print("selected \(options[index].name)")
+            }
+            optionVC.deselectCompletion = { (index) in
+                print("deselected \(options[index].name)")
+            }
+            optionVC.doneCompletion = {
+                print("done selected \(optionVC.options)")
+                navController.popViewController(animated: true)
+            }
+            navController.pushViewController(optionVC, animated: true)
+        }
     }
 }
 
@@ -168,7 +164,7 @@ extension VocabularyCollectionCoordinator: VocabularyRemover {
 extension VocabularyCollectionCoordinator: UserProfileViewer {
     
     func viewUserProfile() {
-        let collectionListVC = UserProfileViewController(context: CoreDataStack.current.mainContext)
+        let collectionListVC = UserProfileViewController(user: CoreDataStack.current.user())
         collectionListVC.doneTappedHandler = { [weak self] in
             self?.vocabularyCollectionVC.setCollection(collectionListVC.selectedCollection)
             collectionListVC.dismiss(animated: true, completion: nil)
