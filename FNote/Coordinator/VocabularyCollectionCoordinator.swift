@@ -67,8 +67,7 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
     func selectPoliteness(for viewController: VocabularyViewController, current: Vocabulary.Politeness) {
         let politenesses = Vocabulary.Politeness.allCases
         let options = politenesses.map({ OptionTableViewController.Option(name: $0.string, isSelected: $0 == current) })
-        let optionVC = OptionTableViewController(options: options)
-        optionVC.navigationItem.title = "Politeness"
+        let optionVC = OptionTableViewController(options: options, title: "Politeness")
         
         if let navController = viewController.navigationController {
             optionVC.selectCompletion = { (index) in
@@ -88,9 +87,9 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
                 viewController.saveChanges()
                 optionNavController.dismiss(animated: true, completion: nil)
             }
+            
             dismissCurrentViewControllerHandler = { optionNavController.dismiss(animated: true, completion: nil) }
-            let selector = #selector(executeDismissCurrentViewControllerHandler)
-            let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: selector)
+            let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(executeDismissCurrentViewControllerHandler))
             optionVC.navigationItem.leftBarButtonItem = cancel
             if UIDevice.current.userInterfaceIdiom == .pad {
                 let width = UIScreen.main.bounds.width / 2
@@ -100,6 +99,28 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
             }
             navigationController.present(optionNavController, animated: true, completion: nil)
         }
+    }
+    
+    func selectTags(for viewController: VocabularyViewController, current: [Tag]) {
+        let options = current.map({ OptionTableViewController.Option.init(name: $0.name, isSelected: true) })
+        let optionVC = OptionTableViewController(options: options, title: "Tag")
+        optionVC.allowsMultipleSelection = true
+        optionVC.allowAddNewOption = true
+        optionVC.selectCompletion = { (index) in
+            print(options[index].name)
+        }
+        optionVC.multipleSelectionCompletion = { (indexs) in
+            options.enumerated().forEach({ if indexs.contains($0) { print($1.name) }})
+            optionVC.dismiss(animated: true, completion: nil)
+        }
+        optionVC.deselectCompletion = { (index) in
+            print(options[index].name)
+        }
+        
+        dismissCurrentViewControllerHandler = { optionVC.dismiss(animated: true, completion: nil) }
+        let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(executeDismissCurrentViewControllerHandler))
+        optionVC.navigationItem.leftBarButtonItem = cancel
+        navigationController.present(optionVC.withNavController(), animated: true, completion: nil)
     }
 }
 

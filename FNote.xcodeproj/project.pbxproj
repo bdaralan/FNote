@@ -49,6 +49,9 @@
 		B48A620E21F2F4CF00C75A8C /* VocabularyNoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620D21F2F4CF00C75A8C /* VocabularyNoteCell.swift */; };
 		B49B72AA223AE77D0083C1DE /* DescriptionGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B72A9223AE77D0083C1DE /* DescriptionGuideView.swift */; };
 		B4AD1A632225E30C00459D46 /* Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AD1A622225E30C00459D46 /* Animation.swift */; };
+		B4B1DC1F2244B85300297572 /* VocabularyTagCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B1DC1E2244B85300297572 /* VocabularyTagCell.swift */; };
+		B4B1DC212244BC8400297572 /* VocabularyCollectionViewTagCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B1DC202244BC8400297572 /* VocabularyCollectionViewTagCell.swift */; };
+		B4B1DC232245754A00297572 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B1DC222245754A00297572 /* Label.swift */; };
 		B4B95FFE22441D0500B9560D /* add-vocabulary-guide.json in Resources */ = {isa = PBXBuildFile; fileRef = B4B95FFD22441D0500B9560D /* add-vocabulary-guide.json */; };
 		B4D5E69E222A2E33000C2DB3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D5E69D222A2E33000C2DB3 /* ViewController.swift */; };
 		B4D83D55222B350500CBE6FE /* VocabularyRemover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D83D54222B350500CBE6FE /* VocabularyRemover.swift */; };
@@ -116,6 +119,9 @@
 		B48A620D21F2F4CF00C75A8C /* VocabularyNoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyNoteCell.swift; sourceTree = "<group>"; };
 		B49B72A9223AE77D0083C1DE /* DescriptionGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionGuideView.swift; sourceTree = "<group>"; };
 		B4AD1A622225E30C00459D46 /* Animation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animation.swift; sourceTree = "<group>"; };
+		B4B1DC1E2244B85300297572 /* VocabularyTagCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyTagCell.swift; sourceTree = "<group>"; };
+		B4B1DC202244BC8400297572 /* VocabularyCollectionViewTagCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionViewTagCell.swift; sourceTree = "<group>"; };
+		B4B1DC222245754A00297572 /* Label.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		B4B95FFD22441D0500B9560D /* add-vocabulary-guide.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "add-vocabulary-guide.json"; sourceTree = "<group>"; };
 		B4D5E69D222A2E33000C2DB3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		B4D83D54222B350500CBE6FE /* VocabularyRemover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyRemover.swift; sourceTree = "<group>"; };
@@ -243,6 +249,7 @@
 				B4D5E69D222A2E33000C2DB3 /* ViewController.swift */,
 				B47A07442217E41200EE8856 /* ManagedObjectContext.swift */,
 				B4419DFD223C4F3200F0F3AB /* String.swift */,
+				B4B1DC222245754A00297572 /* Label.swift */,
 			);
 			path = "Extension+Utility";
 			sourceTree = "<group>";
@@ -254,6 +261,8 @@
 				B48A620921F2931E00C75A8C /* VocabularyTextFieldCell.swift */,
 				B48A620B21F2B33000C75A8C /* VocabularySelectionCell.swift */,
 				B48A620D21F2F4CF00C75A8C /* VocabularyNoteCell.swift */,
+				B4B1DC1E2244B85300297572 /* VocabularyTagCell.swift */,
+				B4B1DC202244BC8400297572 /* VocabularyCollectionViewTagCell.swift */,
 			);
 			path = "Vocabulary Scene";
 			sourceTree = "<group>";
@@ -482,11 +491,13 @@
 				B47A07452217E41200EE8856 /* ManagedObjectContext.swift in Sources */,
 				B48A620A21F2931E00C75A8C /* VocabularyTextFieldCell.swift in Sources */,
 				B437BDC921F1BB0900A1B016 /* TableView+CollectionView.swift in Sources */,
+				B4B1DC1F2244B85300297572 /* VocabularyTagCell.swift in Sources */,
 				B48A620621F2875100C75A8C /* IndexPathSections.swift in Sources */,
 				B43FDF7C2239D22900191392 /* UserProfileTextFieldCell.swift in Sources */,
 				B450E81A22383016002EDC04 /* UserDefaultsManager.swift in Sources */,
 				B4AD1A632225E30C00459D46 /* Animation.swift in Sources */,
 				B45AB9B12219C724009D337C /* VocabularyCollectionCoordinator.swift in Sources */,
+				B4B1DC232245754A00297572 /* Label.swift in Sources */,
 				B4FE95A6224177F0002285BC /* Tag.swift in Sources */,
 				B40A802A21F595B500DCDF11 /* Vocabulary.swift in Sources */,
 				B45AB9B52219C7C1009D337C /* VocabularyViewer.swift in Sources */,
@@ -497,6 +508,7 @@
 				B49B72AA223AE77D0083C1DE /* DescriptionGuideView.swift in Sources */,
 				B437BDC221F1B80C00A1B016 /* VocabularyCollectionViewController.swift in Sources */,
 				B4419DFE223C4F3200F0F3AB /* String.swift in Sources */,
+				B4B1DC212244BC8400297572 /* VocabularyCollectionViewTagCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

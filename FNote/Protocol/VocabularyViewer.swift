@@ -14,4 +14,6 @@ protocol VocabularyViewer: AnyObject {
     func viewVocabulary(_ vocabulary: Vocabulary)
     
     func selectPoliteness(for viewController: VocabularyViewController, current: Vocabulary.Politeness)
+    
+    func selectTags(for viewController: VocabularyViewController, current: [Tag])
 }

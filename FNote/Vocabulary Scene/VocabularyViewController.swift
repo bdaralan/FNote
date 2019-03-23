@@ -39,8 +39,9 @@ extension VocabularyViewController {
         case translation
         case relations
         case alternatives
-        case favorite
         case politeness
+        case favorite
+        case tag
         case note
     }
 }
@@ -52,6 +53,11 @@ class VocabularyViewController: UITableViewController {
     
     private let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     private let vocabulary: Vocabulary
+    
+    private var tags: [Tag] {
+        return vocabulary.tags.sorted(by: { $0.name < $1.name })
+    }
+    private var estimatedTagCellSizes: [CGSize] = []
     
     private var beforeChangeContext: NSManagedObjectContext?
     private var beforeChangeVocabulary: Vocabulary?
@@ -73,7 +79,7 @@ class VocabularyViewController: UITableViewController {
     let indexPathSections: IndexPathSections<Section, Row> = {
         var sections = IndexPathSections<Section, Row>()
         sections.addSection(type: .vocabulary, items: [.native, .translation])
-        sections.addSection(type: .relation, items: [.relations, .alternatives, .politeness, .favorite])
+        sections.addSection(type: .relation, items: [.favorite, .relations, .alternatives, .politeness, .tag])
         sections.addSection(type: .note, items: [.note])
         return sections
     }()
@@ -127,6 +133,15 @@ class VocabularyViewController: UITableViewController {
         let indexPath = indexPathSections.firstIndexPath(of: .politeness)!
         let cell = tableView.cellForRow(at: indexPath) as? VocabularySelectionCell
         cell?.reloadCell(detail: politeness.string)
+    }
+    
+    private func computeEstimatedTagCellSizes() -> [CGSize] {
+        let label = UILabel()
+        return tags.map {
+            let width = label.estimatedWidth(for: $0.name) + 16
+            let size = CGSize(width: width < 45 ? 45 : width, height: 30)
+            return size
+        }
     }
 }
 
@@ -196,6 +211,17 @@ extension VocabularyViewController {
                 self?.toggleSaveButtonEnableStateIfNeeded()
             }
             return cell
+        case .tag:
+            #warning("TODO: add tag cell")
+            let cell = tableView.dequeueRegisteredCell(VocabularyTagCell.self, for: indexPath)
+            cell.reload(with: vocabulary, dataSourceDelegate: self)
+            cell.collectionViewTappedHandler = { [weak self] in
+                guard let self = self else { return }
+                tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+                self.coordinator?.selectTags(for: self, current: self.tags)
+            }
+            cell.accessoryType = .disclosureIndicator
+            return cell
         case .note:
             let cell = tableView.dequeueRegisteredCell(VocabularyNoteCell.self, for: indexPath)
             cell.reloadCell(note: vocabulary.note)
@@ -217,10 +243,35 @@ extension VocabularyViewController {
         case .politeness:
             view.endEditing(true)
             coordinator?.selectPoliteness(for: self, current: vocabulary.politeness)
+        case .tag:
+            #warning("TODO: add tag cell")
+            view.endEditing(true)
+            coordinator?.selectTags(for: self, current: tags)
         default:
             #warning("add handler relations and alternatives")
             tableView.deselectRow(at: indexPath, animated: true)
         }
+    }
+}
+
+
+extension VocabularyViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return vocabulary.tags.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if estimatedTagCellSizes.isEmpty {
+            estimatedTagCellSizes = computeEstimatedTagCellSizes()
+        }
+        return estimatedTagCellSizes[indexPath.row]
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueRegisteredCell(VocabularyCollectionViewTagCell.self, for: indexPath)
+        cell.reload(with: tags[indexPath.row])
+        return cell
     }
 }
 
@@ -232,6 +283,7 @@ extension VocabularyViewController {
         tableView.registerCell(VocabularyTextFieldCell.self)
         tableView.registerCell(VocabularySelectionCell.self)
         tableView.registerCell(VocabularyNoteCell.self)
+        tableView.registerCell(VocabularyTagCell.self)
     }
     
     private func setupNavItems(mode: Mode) {

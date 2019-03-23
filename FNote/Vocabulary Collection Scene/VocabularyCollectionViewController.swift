@@ -77,7 +77,7 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         navigationItem.title = collection?.name ?? guideView.guide?.name
         navigationItem.rightBarButtonItems?.forEach({ $0.isEnabled = collection != nil })
         
-        if self.collection == nil || self.collection !== collection {
+        if self.collection == nil || self.collection != collection {
             configureFetchController(collection: collection)
             collectionView.reloadData()
         }

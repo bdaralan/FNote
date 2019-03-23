@@ -14,8 +14,9 @@ extension UIImage {
     // MARK: - Button
     static var alternative: UIImage { return UIImage(named: "alternative")! }
     static var relation: UIImage { return UIImage(named: "relation")! }
-    static var favorite: UIImage { return UIImage(named: "favorite")! }
     static var politeness: UIImage { return UIImage(named: "politeness")! }
+    static var favorite: UIImage { return UIImage(named: "favorite")! }
+    static var tag: UIImage { return UIImage(named: "tag")! }
     static var trashCan: UIImage { return UIImage(named: "trash-can")! }
     
     // MARK: - Nav Item
