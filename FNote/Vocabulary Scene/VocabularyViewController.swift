@@ -47,6 +47,10 @@ extension VocabularyViewController {
 }
 
 
+/// A view controller to view or create vocabulary.
+/// - note: This controller creates and manipulates its own context.
+///         Its parent context is the context of the vocabulary or collection passed into the initializer.
+///         Any data manipulation must be save on the parent context.
 class VocabularyViewController: UITableViewController {
     
     weak var coordinator: VocabularyViewer?
@@ -54,27 +58,17 @@ class VocabularyViewController: UITableViewController {
     private let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     private let vocabulary: Vocabulary
     
-    private var tags: [Tag] {
+    private var sortedTags: [Tag] {
         return vocabulary.tags.sorted(by: { $0.name < $1.name })
     }
     private var estimatedTagCellSizes: [CGSize] = []
     
-    private var beforeChangeContext: NSManagedObjectContext?
+    /// The vocabulary values before changed. In create mode, this value is always `nil`.
     private var beforeChangeVocabulary: Vocabulary?
+    private var beforeChangeContext: NSManagedObjectContext?
     private var saveChangesBarButton: UIBarButtonItem?
     
     var completion: ((CompletionAction) -> Void)?
-    
-    /// Check if the vocabulary values has changed.
-    /// - note: In `.create` mode, this always return `true`.
-    private var hasChanges: Bool  {
-        guard let before = beforeChangeVocabulary else { return true }
-        return vocabulary.isFavorited != before.isFavorited
-            || vocabulary.politeness != before.politeness
-            || vocabulary.translation != before.translation
-            || vocabulary.native != before.native
-            || vocabulary.note != before.note
-    }
     
     let indexPathSections: IndexPathSections<Section, Row> = {
         var sections = IndexPathSections<Section, Row>()
@@ -127,6 +121,18 @@ class VocabularyViewController: UITableViewController {
         toggleSaveButtonEnableStateIfNeeded()
     }
     
+    /// Check if the vocabulary values has changed. In create mode, this always return `true`.
+    private func hasChanges() -> Bool  {
+        guard let before = beforeChangeVocabulary else { return true } // create mode
+        return vocabulary.isFavorited != before.isFavorited
+            || vocabulary.politeness != before.politeness
+            || vocabulary.translation != before.translation
+            || vocabulary.native != before.native
+            || vocabulary.note != before.note
+            || vocabulary.tags.count != before.tags.count
+            || Set(vocabulary.tags.map({ $0.name })).isSubset(of: before.tags.map({ $0.name })) != true
+    }
+    
     func setPoliteness(_ politeness: Vocabulary.Politeness) {
         vocabulary.politeness = politeness
         toggleSaveButtonEnableStateIfNeeded()
@@ -135,9 +141,25 @@ class VocabularyViewController: UITableViewController {
         cell?.reloadCell(detail: politeness.string)
     }
     
+    func addTag(_ tag: Tag) {
+        guard let tagToAdd = context.object(with: tag.objectID) as? Tag else { return }
+        vocabulary.addTag(tagToAdd)
+        toggleSaveButtonEnableStateIfNeeded()
+        estimatedTagCellSizes.removeAll()
+        tableView.reloadData()
+    }
+    
+    func removeTag(name: String) {
+        guard let tagToRemove = vocabulary.tags.first(where: { $0.name == name }) else { return }
+        vocabulary.removeTag(tagToRemove)
+        toggleSaveButtonEnableStateIfNeeded()
+        estimatedTagCellSizes.removeAll()
+        tableView.reloadData()
+    }
+    
     private func computeEstimatedTagCellSizes() -> [CGSize] {
         let label = UILabel()
-        return tags.map {
+        return sortedTags.map {
             let width = label.estimatedWidth(for: $0.name) + 16
             let size = CGSize(width: width < 45 ? 45 : width, height: 30)
             return size
@@ -218,7 +240,7 @@ extension VocabularyViewController {
             cell.collectionViewTappedHandler = { [weak self] in
                 guard let self = self else { return }
                 tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
-                self.coordinator?.selectTags(for: self, current: self.tags)
+                self.coordinator?.selectTags(for: self, current: self.sortedTags)
             }
             cell.accessoryType = .disclosureIndicator
             return cell
@@ -246,7 +268,7 @@ extension VocabularyViewController {
         case .tag:
             #warning("TODO: add tag cell")
             view.endEditing(true)
-            coordinator?.selectTags(for: self, current: tags)
+            coordinator?.selectTags(for: self, current: sortedTags)
         default:
             #warning("add handler relations and alternatives")
             tableView.deselectRow(at: indexPath, animated: true)
@@ -270,7 +292,7 @@ extension VocabularyViewController: UICollectionViewDataSource, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueRegisteredCell(VocabularyCollectionViewTagCell.self, for: indexPath)
-        cell.reload(with: tags[indexPath.row])
+        cell.reload(with: sortedTags[indexPath.row])
         return cell
     }
 }
@@ -319,7 +341,7 @@ extension VocabularyViewController {
             return
         }
         
-        if hasChanges {
+        if hasChanges() {
             context.quickSave()
             completion?(.save)
         } else {
@@ -354,16 +376,8 @@ extension VocabularyViewController {
     /// - note: This method is async.
     private func toggleSaveButtonEnableStateIfNeeded() {
         DispatchQueue.main.async { [weak self] in
-            guard let self = self, let before = self.beforeChangeVocabulary else { return }
-            let current = self.vocabulary
-            let hasChanges = current.isFavorited != before.isFavorited
-                || current.politeness != before.politeness
-                || current.translation != before.translation
-                || current.native != before.native
-                || current.note != before.note
-            
-            
-            switch hasChanges {
+            guard let self = self else { return }
+            switch self.hasChanges() {
             case false where self.navigationItem.rightBarButtonItem != nil:
                 self.navigationItem.setRightBarButton(nil, animated: true)
             case true where self.navigationItem.rightBarButtonItem == nil:

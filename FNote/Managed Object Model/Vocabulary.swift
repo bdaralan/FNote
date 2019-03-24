@@ -139,4 +139,18 @@ extension Vocabulary {
             return nil
         }
     }
+    
+    @discardableResult
+    func addTag(_ tag: Tag) -> Bool {
+        guard tags.contains(tag) == false else { return false }
+        tags.insert(tag)
+        return true
+    }
+    
+    @discardableResult
+    func removeTag(_ tag: Tag) -> Bool {
+        guard tags.contains(tag) else { return false }
+        tags.remove(tag)
+        return true
+    }
 }

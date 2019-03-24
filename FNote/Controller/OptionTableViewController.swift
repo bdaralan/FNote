@@ -11,9 +11,13 @@ import UIKit
 
 extension OptionTableViewController {
     
-    struct Option {
+    struct Option: Equatable {
         let name: String
         var isSelected: Bool
+
+        static func == (lhs: Option, rhs: Option) -> Bool {
+            return lhs.name == rhs.name
+        }
     }
     
     enum SelectMode {
@@ -49,9 +53,13 @@ class OptionTableViewController: UITableViewController {
     var allowAddNewOption: Bool = false
     
     /// A completion block that get called when a new option is added.
-    /// The block passing in the new option `String`.
+    /// The block passing in the new option `String` and its index.
     /// - note: Return `true` to tell the controller to add the option.
-    var addNewOptionCompletion: ((String) -> Bool)?
+    var addNewOptionCompletion: ((String, Int) -> Bool)?
+    
+    /// A completion block tag get called when an option is deleted.
+    /// The block passing in the deleted option `String` and its index.
+    var deleteOptionCompletion: ((String, Int) -> Void)?
     
     var doneCompletion: (() -> Void)?
     var cancelCompletion: (() -> Void)?
@@ -64,6 +72,8 @@ class OptionTableViewController: UITableViewController {
     private var addNewOptionIndexPath: IndexPath {
         return .init(row: 0, section: 1)
     }
+    
+    private let optionSection = 0
     
     
     init(selectMode: SelectMode, options: [Option], title: String?) {
@@ -83,6 +93,12 @@ class OptionTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupController()
+    }
+    
+    func sortOptions(reloaded: Bool) {
+        options.sort(by: { $0.name < $1.name })
+        guard reloaded else { return }
+        tableView.reloadVisibleRows(animation: .none)
     }
 }
 
@@ -145,6 +161,22 @@ extension OptionTableViewController {
             }
         }
     }
+    
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        guard indexPath != addNewOptionIndexPath else { return [] }
+        let delete = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] (action, indexPath) in
+            guard let self = self else { return }
+            let index = indexPath.row
+            if self.options[index].isSelected {
+                self.deselectCompletion?(index)
+            }
+            let option = self.options.remove(at: index)
+            let indexPath = IndexPath(row: index, section: self.optionSection)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+            self.deleteOptionCompletion?(option.name, index)
+        }
+        return [delete]
+    }
 }
 
 
@@ -152,10 +184,16 @@ extension OptionTableViewController: UserProfileTextFieldCellDelegate {
     
     func textFieldCellDidEndEditing(_ cell: UserProfileTextFieldCell, text: String) {
         cell.setTextField(text: "")
-        guard addNewOptionCompletion?(text) == true else { return }
-        options.append(.init(name: text, isSelected: false))
-        let newIndexPath = IndexPath(row: options.count - 1, section: 0)
-        tableView.insertRows(at: [newIndexPath], with: .automatic)
+        let newOption = Option(name: text, isSelected: true)
+        guard options.contains(newOption) == false else { return }
+        options.append(newOption)
+        sortOptions(reloaded: false)
+        guard let appendedIndex = options.firstIndex(of: newOption) else { return }
+        guard addNewOptionCompletion?(text, appendedIndex) == true else { return }
+        let indexPath = IndexPath(row: appendedIndex, section: self.optionSection)
+        tableView.insertRows(at: [indexPath], with: .automatic)
+//        tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+        tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
     }
 }
 

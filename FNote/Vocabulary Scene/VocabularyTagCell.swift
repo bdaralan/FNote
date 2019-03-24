@@ -38,7 +38,7 @@ class VocabularyTagCell: UITableViewCell {
     func reload(with vocabulary: Vocabulary, dataSourceDelegate: UICollectionViewDataSource & UICollectionViewDelegate & UICollectionViewDelegateFlowLayout) {
         let isTagCountZero = vocabulary.tags.isEmpty
         textLabel?.text = isTagCountZero ? "Tags" : nil
-        detailTextLabel?.text = vocabulary.tags.isEmpty ? "0" : nil
+        detailTextLabel?.text = vocabulary.tags.isEmpty ? "None" : nil
         collectionView.isHidden = isTagCountZero
         collectionView.dataSource = dataSourceDelegate
         collectionView.delegate = dataSourceDelegate

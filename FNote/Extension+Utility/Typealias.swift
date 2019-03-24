@@ -7,7 +7,3 @@
 //
 
 import Foundation
-
-
-typealias SucceedHandler = () -> Void
-typealias UIUpdateHandler = () -> Void

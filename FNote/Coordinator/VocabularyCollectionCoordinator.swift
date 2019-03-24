@@ -98,24 +98,53 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
     }
     
     func selectTags(for viewController: VocabularyViewController, current: [Tag]) {
-        let allTags = CoreDataStack.current.user().tags.sorted(by: { $0.name < $1.name })
-        let options = allTags.map({ OptionTableViewController.Option(name: $0.name, isSelected: current.contains($0)) })
+        let user = CoreDataStack.current.user() // user in main context
+        var allTags = user.tags.sorted(by: { $0.name < $1.name })
+        let allTagNames = allTags.map({ $0.name })
+        let currentNames = current.map({ $0.name })
+        let options = allTagNames.map({ OptionTableViewController.Option(name: $0, isSelected: currentNames.contains($0)) })
         let optionVC = OptionTableViewController(selectMode: .multiple, options: options, title: "Tags")
         optionVC.allowAddNewOption = true
         
+        optionVC.selectCompletion = { (index) in
+            #warning("TODO: implement")
+            viewController.addTag(allTags[index])
+        }
+        optionVC.deselectCompletion = { (index) in
+            #warning("TODO: implement")
+            viewController.removeTag(name: optionVC.options[index].name)
+        }
+        optionVC.addNewOptionCompletion = { (newTagName, index) in
+            guard allTags.contains(where: { $0.name == newTagName }) == false else { return false }
+            let newTag = Tag(name: newTagName, colorHex: nil, user: user)
+            user.managedObjectContext?.quickSave()
+            viewController.addTag(newTag)
+            allTags.insert(newTag, at: index)
+            return true
+        }
+        optionVC.deleteOptionCompletion = { (tagNameToDelete, index) in
+            guard let tag = allTags.first(where: { $0.name == tagNameToDelete }) else { return }
+            user.managedObjectContext?.delete(tag)
+            user.managedObjectContext?.quickSave()
+        }
+        
         if let navController = viewController.navigationController {
             optionVC.useNavCancelItem = false
-            optionVC.selectCompletion = { (index) in
-                print("selected \(options[index].name)")
-            }
-            optionVC.deselectCompletion = { (index) in
-                print("deselected \(options[index].name)")
-            }
             optionVC.doneCompletion = {
-                print("done selected \(optionVC.options)")
+                #warning("TODO: implement")
                 navController.popViewController(animated: true)
             }
             navController.pushViewController(optionVC, animated: true)
+        } else {
+            let optionVCNavController = optionVC.withNavController()
+            optionVC.cancelCompletion = {
+                optionVCNavController.dismiss(animated: true, completion: nil)
+            }
+            
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                optionVCNavController.modalPresentationStyle = .formSheet
+            }
+            navigationController.present(optionVCNavController, animated: true, completion: nil)
         }
     }
 }
