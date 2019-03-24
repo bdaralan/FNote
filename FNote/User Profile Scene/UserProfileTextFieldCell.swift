@@ -61,12 +61,9 @@ extension UserProfileTextFieldCell {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        delegate?.textFieldCellDidEndEditing(self, text: textField.text ?? "")
         textField.resignFirstResponder()
         return true
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
-        delegate?.textFieldCellDidEndEditing(self, text: textField.text ?? "")
     }
 }
 

@@ -184,16 +184,24 @@ extension OptionTableViewController: UserProfileTextFieldCellDelegate {
     
     func textFieldCellDidEndEditing(_ cell: UserProfileTextFieldCell, text: String) {
         cell.setTextField(text: "")
-        let newOption = Option(name: text, isSelected: true)
-        guard options.contains(newOption) == false else { return }
-        options.append(newOption)
-        sortOptions(reloaded: false)
-        guard let appendedIndex = options.firstIndex(of: newOption) else { return }
-        guard addNewOptionCompletion?(text, appendedIndex) == true else { return }
-        let indexPath = IndexPath(row: appendedIndex, section: self.optionSection)
-        tableView.insertRows(at: [indexPath], with: .automatic)
-//        tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
-        tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
+        let validator = StringValidator()
+        let newTag = text.trimmingCharacters(in: .whitespaces)
+        let existingTags = options.map({ $0.name })
+        switch validator.validateNewName(newTag, existingNames: existingTags) {
+        case .unique:
+            let newOption = Option(name: newTag, isSelected: true)
+            options.append(newOption)
+            sortOptions(reloaded: false)
+            guard let newIndex = options.firstIndex(of: newOption), addNewOptionCompletion?(newTag, newIndex) == true else { return }
+            let indexPath = IndexPath(row: newIndex, section: self.optionSection)
+            tableView.insertRows(at: [indexPath], with: .automatic)
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
+        case .duplicate:
+            let alert = UIAlertController(title: "Duplicate", message: nil, preferredStyle: .alert)
+            alert.addAction(.init(title: "Dismiss", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        case .empty: ()
+        }
     }
 }
 
