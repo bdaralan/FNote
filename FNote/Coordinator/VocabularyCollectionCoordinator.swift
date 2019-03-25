@@ -56,15 +56,15 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
         navigationController.pushViewController(vocabularyVC, animated: true)
     }
     
-    func selectPoliteness(for viewController: VocabularyViewController, current: Vocabulary.Politeness) {
+    func selectPoliteness(for vocabularyVC: VocabularyViewController, current: Vocabulary.Politeness) {
         let politenesses = Vocabulary.Politeness.allCases
         let options = politenesses.map({ OptionTableViewController.Option(name: $0.string, isSelected: $0 == current) })
         let optionVC = OptionTableViewController(selectMode: .single, options: options, title: "Politeness")
         
-        if let navController = viewController.navigationController {
-            optionVC.useNavCancelItem = false
+        if let navController = vocabularyVC.navigationController {
+            optionVC.setupNavItems(showCancel: false, showDone: false, animated: false)
             optionVC.selectCompletion = { (index) in
-                viewController.setPoliteness(politenesses[index])
+                vocabularyVC.setPoliteness(politenesses[index])
                 navController.popViewController(animated: true)
             }
             optionVC.cancelCompletion = {
@@ -74,13 +74,14 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
             
         } else {
             let optionNavController = optionVC.withNavController()
+            optionVC.setupNavItems(showCancel: true, showDone: false, animated: false)
             optionVC.selectCompletion = { (index) in
-                viewController.completion = { [weak self] (result) in
+                vocabularyVC.completion = { [weak self] (result) in
                     guard result == .save else { return }
                     self?.collectionContext?.quickSave()
                 }
-                viewController.setPoliteness(politenesses[index])
-                viewController.saveChanges()
+                vocabularyVC.setPoliteness(politenesses[index])
+                vocabularyVC.saveChanges()
                 optionNavController.dismiss(animated: true, completion: nil)
             }
             optionVC.cancelCompletion = {
@@ -97,47 +98,39 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
         }
     }
     
-    func selectTags(for viewController: VocabularyViewController, current: [Tag]) {
-        let user = CoreDataStack.current.user() // user in main context
-        var allTags = user.tags.sorted(by: { $0.name < $1.name })
-        let allTagNames = allTags.map({ $0.name })
-        let currentNames = current.map({ $0.name })
-        let options = allTagNames.map({ OptionTableViewController.Option(name: $0, isSelected: currentNames.contains($0)) })
+    func selectTags(for vocabularyVC: VocabularyViewController, allTags: [String], current: [String]) {
+        let options = allTags.map({ OptionTableViewController.Option(name: $0, isSelected: current.contains($0)) })
         let optionVC = OptionTableViewController(selectMode: .multiple, options: options, title: "Tags")
-        optionVC.allowAddNewOption = true
-        
         optionVC.selectCompletion = { (index) in
-            #warning("TODO: implement")
-            viewController.addTag(allTags[index])
+            vocabularyVC.addTag(name: optionVC.options[index].name, create: false)
         }
         optionVC.deselectCompletion = { (index) in
-            #warning("TODO: implement")
-            viewController.removeTag(name: optionVC.options[index].name)
+            vocabularyVC.removeTag(name: optionVC.options[index].name, delete: false)
         }
         optionVC.addNewOptionCompletion = { (newTagName, index) in
-            guard allTags.contains(where: { $0.name == newTagName }) == false else { return false }
-            let newTag = Tag(name: newTagName, colorHex: nil, user: user)
-            user.managedObjectContext?.quickSave()
-            viewController.addTag(newTag)
-            allTags.insert(newTag, at: index)
-            return true
+            vocabularyVC.addTag(name: newTagName, create: true)
         }
-        optionVC.deleteOptionCompletion = { (tagNameToDelete, index) in
-            guard let tag = allTags.first(where: { $0.name == tagNameToDelete }) else { return }
-            user.managedObjectContext?.delete(tag)
-            user.managedObjectContext?.quickSave()
+        optionVC.deleteOptionCompletion = { (deletedOption) in
+            if deletedOption.isSelected {
+                vocabularyVC.removeTag(name: deletedOption.name, delete: true)
+            } else { // if the deleted tag is not in the vocabulary's tags, delete it from the user's available tags
+                let user = CoreDataStack.current.user()
+                guard let tagToDelete = user.tags.first(where: { $0.name == deletedOption.name }) else { return }
+                user.managedObjectContext?.delete(tagToDelete)
+                user.managedObjectContext?.quickSave()
+            }
         }
         
-        if let navController = viewController.navigationController {
-            optionVC.useNavCancelItem = false
-            optionVC.doneCompletion = {
-                #warning("TODO: implement")
-                navController.popViewController(animated: true)
-            }
+        optionVC.allowAddNewOption = true
+        optionVC.sortOptions(reloaded: false)
+        
+        if let navController = vocabularyVC.navigationController {
+            optionVC.setupNavItems(showCancel: false, showDone: false, animated: false)
             navController.pushViewController(optionVC, animated: true)
         } else {
             let optionVCNavController = optionVC.withNavController()
-            optionVC.cancelCompletion = {
+            optionVC.setupNavItems(showCancel: false, showDone: true, animated: false)
+            optionVC.doneCompletion = {
                 optionVCNavController.dismiss(animated: true, completion: nil)
             }
             

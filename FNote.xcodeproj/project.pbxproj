@@ -27,6 +27,7 @@
 		B43FDF7C2239D22900191392 /* UserProfileTextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43FDF7B2239D22900191392 /* UserProfileTextFieldCell.swift */; };
 		B43FDF7E223A0AD500191392 /* UserProfileViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43FDF7D223A0AD500191392 /* UserProfileViewer.swift */; };
 		B4419DFE223C4F3200F0F3AB /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4419DFD223C4F3200F0F3AB /* String.swift */; };
+		B44CA61522485D010001177A /* CustomAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44CA61422485D010001177A /* CustomAlert.swift */; };
 		B450E81A22383016002EDC04 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E81922383016002EDC04 /* UserDefaultsManager.swift */; };
 		B450E82222384C72002EDC04 /* FNoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E82122384C72002EDC04 /* FNoteTests.swift */; };
 		B45AB9B12219C724009D337C /* VocabularyCollectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B02219C724009D337C /* VocabularyCollectionCoordinator.swift */; };
@@ -95,6 +96,7 @@
 		B43FDF7B2239D22900191392 /* UserProfileTextFieldCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileTextFieldCell.swift; sourceTree = "<group>"; };
 		B43FDF7D223A0AD500191392 /* UserProfileViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewer.swift; sourceTree = "<group>"; };
 		B4419DFD223C4F3200F0F3AB /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		B44CA61422485D010001177A /* CustomAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlert.swift; sourceTree = "<group>"; };
 		B450E81922383016002EDC04 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 		B450E81F22384C72002EDC04 /* FNoteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FNoteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B450E82122384C72002EDC04 /* FNoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FNoteTests.swift; sourceTree = "<group>"; };
@@ -242,6 +244,7 @@
 			isa = PBXGroup;
 			children = (
 				B47A07402217D59500EE8856 /* Typealias.swift */,
+				B44CA61422485D010001177A /* CustomAlert.swift */,
 				B437BDC621F1BB0800A1B016 /* Subview+Constraint.swift */,
 				B437BDC721F1BB0900A1B016 /* TableView+CollectionView.swift */,
 				B48A620121F23D2500C75A8C /* Image+Color.swift */,
@@ -467,6 +470,7 @@
 				B4EA7755223493CB00D5AD2C /* User.swift in Sources */,
 				B472F74222073EBF00761939 /* LocalRecord.swift in Sources */,
 				B472F74422076AE200761939 /* Coordinator.swift in Sources */,
+				B44CA61522485D010001177A /* CustomAlert.swift in Sources */,
 				B48A620E21F2F4CF00C75A8C /* VocabularyNoteCell.swift in Sources */,
 				B437BDB721F197E900A1B016 /* MainTabBarViewController.swift in Sources */,
 				B460297C21F3F0C1009C11DE /* OptionTableViewController.swift in Sources */,

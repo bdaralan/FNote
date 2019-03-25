@@ -51,6 +51,10 @@ public class Vocabulary: NSManagedObject, LocalRecord {
         recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
         #warning("TODO: set collection and reconfigure its CKRecord")
     }
+    
+    func tagNames() -> [String] {
+        return tags.map({ $0.name })
+    }
 }
 
 
@@ -95,8 +99,6 @@ extension Vocabulary {
             }
         }
     }
-    
-    #warning("TODO: need init that has to set collection")
 }
 
 

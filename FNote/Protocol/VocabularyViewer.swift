@@ -13,7 +13,7 @@ protocol VocabularyViewer: AnyObject {
     
     func viewVocabulary(_ vocabulary: Vocabulary)
     
-    func selectPoliteness(for viewController: VocabularyViewController, current: Vocabulary.Politeness)
+    func selectPoliteness(for vocabularyVC: VocabularyViewController, current: Vocabulary.Politeness)
     
-    func selectTags(for viewController: VocabularyViewController, current: [Tag])
+    func selectTags(for vocabularyVC: VocabularyViewController, allTags: [String], current: [String])
 }

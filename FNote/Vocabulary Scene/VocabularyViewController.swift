@@ -58,9 +58,18 @@ class VocabularyViewController: UITableViewController {
     private let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     private let vocabulary: Vocabulary
     
-    private var sortedTags: [Tag] {
-        return vocabulary.tags.sorted(by: { $0.name < $1.name })
+    private var user: User {
+        return vocabulary.collection.user
     }
+    
+    private var userAllTags: [String] {
+        return user.tags.map({ $0.name })
+    }
+    
+    private var sortedCurrentTags: [String] {
+        return vocabulary.tags.map({ $0.name }).sorted()
+    }
+    
     private var estimatedTagCellSizes: [CGSize] = []
     
     /// The vocabulary values before changed. In create mode, this value is always `nil`.
@@ -130,7 +139,7 @@ class VocabularyViewController: UITableViewController {
             || vocabulary.native != before.native
             || vocabulary.note != before.note
             || vocabulary.tags.count != before.tags.count
-            || Set(vocabulary.tags.map({ $0.name })).isSubset(of: before.tags.map({ $0.name })) != true
+            || Set(vocabulary.tagNames()).isSubset(of: before.tagNames()) != true
     }
     
     func setPoliteness(_ politeness: Vocabulary.Politeness) {
@@ -141,17 +150,33 @@ class VocabularyViewController: UITableViewController {
         cell?.reloadCell(detail: politeness.string)
     }
     
-    func addTag(_ tag: Tag) {
-        guard let tagToAdd = context.object(with: tag.objectID) as? Tag else { return }
-        vocabulary.addTag(tagToAdd)
+    /// Add tag to the vocabulary.
+    /// - parameters:
+    ///   - name: The name of the tag to be added.
+    ///   - create: Pass `true` to create a new tag if it does not exist.
+    func addTag(name: String, create: Bool) {
+        guard sortedCurrentTags.contains(name) == false else { return }
+        if let existingTag = user.tags.first(where: { $0.name == name }) {
+            vocabulary.addTag(existingTag)
+        } else if create {
+            let newTag = Tag(name: name, colorHex: nil, user: user)
+            vocabulary.addTag(newTag)
+        }
         toggleSaveButtonEnableStateIfNeeded()
         estimatedTagCellSizes.removeAll()
         tableView.reloadData()
     }
     
-    func removeTag(name: String) {
-        guard let tagToRemove = vocabulary.tags.first(where: { $0.name == name }) else { return }
-        vocabulary.removeTag(tagToRemove)
+    /// Remove tag from the vocabulary.
+    /// - parameters:
+    ///   - name: The name of the tag to be removed.
+    ///   - delete: Pass `true` to remove and delete the tag.
+    func removeTag(name: String, delete: Bool) {
+        if delete, let tagToDelete = user.tags.first(where: { $0.name == name }) {
+            context.delete(tagToDelete)
+        } else if let tagToRemove = vocabulary.tags.first(where: { $0.name == name }) {
+            vocabulary.removeTag(tagToRemove)
+        }
         toggleSaveButtonEnableStateIfNeeded()
         estimatedTagCellSizes.removeAll()
         tableView.reloadData()
@@ -159,7 +184,7 @@ class VocabularyViewController: UITableViewController {
     
     private func computeEstimatedTagCellSizes() -> [CGSize] {
         let label = UILabel()
-        return sortedTags.map {
+        return vocabulary.tags.map {
             let width = label.estimatedWidth(for: $0.name) + 16
             let size = CGSize(width: width < 45 ? 45 : width, height: 30)
             return size
@@ -234,13 +259,12 @@ extension VocabularyViewController {
             }
             return cell
         case .tag:
-            #warning("TODO: add tag cell")
             let cell = tableView.dequeueRegisteredCell(VocabularyTagCell.self, for: indexPath)
             cell.reload(with: vocabulary, dataSourceDelegate: self)
             cell.collectionViewTappedHandler = { [weak self] in
                 guard let self = self else { return }
                 tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
-                self.coordinator?.selectTags(for: self, current: self.sortedTags)
+                self.coordinator?.selectTags(for: self, allTags: self.userAllTags, current: self.sortedCurrentTags)
             }
             cell.accessoryType = .disclosureIndicator
             return cell
@@ -266,12 +290,12 @@ extension VocabularyViewController {
             view.endEditing(true)
             coordinator?.selectPoliteness(for: self, current: vocabulary.politeness)
         case .tag:
-            #warning("TODO: add tag cell")
             view.endEditing(true)
-            coordinator?.selectTags(for: self, current: sortedTags)
-        default:
-            #warning("add handler relations and alternatives")
-            tableView.deselectRow(at: indexPath, animated: true)
+            coordinator?.selectTags(for: self, allTags: userAllTags, current: sortedCurrentTags)
+        case .relations, .alternatives:
+            #warning("TODO: implement add relations and alternatives")
+            CustomAlert.showFeatureNotAvailable(presenter: self)
+        case .favorite, .note: ()
         }
     }
 }
@@ -292,7 +316,7 @@ extension VocabularyViewController: UICollectionViewDataSource, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueRegisteredCell(VocabularyCollectionViewTagCell.self, for: indexPath)
-        cell.reload(with: sortedTags[indexPath.row])
+        cell.reload(tagName: sortedCurrentTags[indexPath.row])
         return cell
     }
 }

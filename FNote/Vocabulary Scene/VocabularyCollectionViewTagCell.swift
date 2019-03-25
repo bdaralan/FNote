@@ -34,8 +34,8 @@ class VocabularyCollectionViewTagCell: UICollectionViewCell {
     }
     
     
-    func reload(with tag: Tag) {
-        tagLabel.text = tag.name
+    func reload(tagName: String) {
+        tagLabel.text = tagName
     }
 }
 

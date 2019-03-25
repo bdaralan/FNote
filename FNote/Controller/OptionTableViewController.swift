@@ -55,19 +55,17 @@ class OptionTableViewController: UITableViewController {
     /// A completion block that get called when a new option is added.
     /// The block passing in the new option `String` and its index.
     /// - note: Return `true` to tell the controller to add the option.
-    var addNewOptionCompletion: ((String, Int) -> Bool)?
+    var addNewOptionCompletion: ((_ newTag: String, _ index: Int) -> Void)?
     
     /// A completion block tag get called when an option is deleted.
     /// The block passing in the deleted option `String` and its index.
-    var deleteOptionCompletion: ((String, Int) -> Void)?
+    var deleteOptionCompletion: ((Option) -> Void)?
     
     var doneCompletion: (() -> Void)?
     var cancelCompletion: (() -> Void)?
     
-    /// Set to `false` to remove the cancel navigation item.
-    var useNavCancelItem: Bool = true {
-        didSet { setupNavCancelItem(enabled: useNavCancelItem) }
-    }
+    lazy var navCancelItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelSelecting))
+    lazy var navDoneItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneSelecting))
     
     private var addNewOptionIndexPath: IndexPath {
         return .init(row: 0, section: 1)
@@ -81,8 +79,7 @@ class OptionTableViewController: UITableViewController {
         self.options = options
         super.init(style: .grouped)
         navigationItem.title = title
-        setupNavDoneItem(mode: selectMode)
-        setupNavCancelItem(enabled: useNavCancelItem)
+        setupNavItems(showCancel: true, showDone: true, animated: false)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -98,7 +95,7 @@ class OptionTableViewController: UITableViewController {
     func sortOptions(reloaded: Bool) {
         options.sort(by: { $0.name < $1.name })
         guard reloaded else { return }
-        tableView.reloadVisibleRows(animation: .none)
+        tableView.reloadData()
     }
 }
 
@@ -173,7 +170,7 @@ extension OptionTableViewController {
             let option = self.options.remove(at: index)
             let indexPath = IndexPath(row: index, section: self.optionSection)
             tableView.deleteRows(at: [indexPath], with: .automatic)
-            self.deleteOptionCompletion?(option.name, index)
+            self.deleteOptionCompletion?(option)
         }
         return [delete]
     }
@@ -192,10 +189,14 @@ extension OptionTableViewController: UserProfileTextFieldCellDelegate {
             let newOption = Option(name: newTag, isSelected: true)
             options.append(newOption)
             sortOptions(reloaded: false)
-            guard let newIndex = options.firstIndex(of: newOption), addNewOptionCompletion?(newTag, newIndex) == true else { return }
-            let indexPath = IndexPath(row: newIndex, section: self.optionSection)
-            tableView.insertRows(at: [indexPath], with: .automatic)
-            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
+            let newIndex = options.firstIndex(of: newOption)! // unwrapped because just appended
+            let newIndexPath = IndexPath(row: newIndex, section: optionSection)
+            tableView.performBatchUpdates({
+                tableView.insertRows(at: [newIndexPath], with: .automatic)
+            }) { [weak self] (finished) in
+                self?.tableView.selectRow(at: newIndexPath, animated: true, scrollPosition: .middle)
+            }
+            addNewOptionCompletion?(newTag, newIndex)
         case .duplicate:
             let alert = UIAlertController(title: "Duplicate", message: nil, preferredStyle: .alert)
             alert.addAction(.init(title: "Dismiss", style: .default, handler: nil))
@@ -215,23 +216,11 @@ extension OptionTableViewController {
         tableView.rowHeight = 44
     }
     
-    private func setupNavDoneItem(mode: SelectMode) {
-        switch mode {
-        case .single:
-            navigationItem.rightBarButtonItem = nil
-        case .singleOrNone, .multiple:
-            let done = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneSelecting))
-            navigationItem.rightBarButtonItem = done
-        }
-    }
-    
-    private func setupNavCancelItem(enabled: Bool) {
-        if enabled {
-            let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelSelecting))
-            navigationItem.leftBarButtonItem = cancel
-        } else {
-            navigationItem.leftBarButtonItem = nil
-        }
+    func setupNavItems(showCancel: Bool, showDone: Bool, animated: Bool) {
+        let leftItem = showCancel ? navCancelItem : nil
+        let rightItem = showDone ? navDoneItem : nil
+        navigationItem.setLeftBarButton(leftItem, animated: animated)
+        navigationItem.setRightBarButton(rightItem, animated: animated)
     }
     
     @objc private func doneSelecting() {
