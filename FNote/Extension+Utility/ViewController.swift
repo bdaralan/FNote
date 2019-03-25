@@ -15,4 +15,15 @@ extension UIViewController {
     func withNavController() -> UINavigationController {
         return UINavigationController(rootViewController: self)
     }
+    
+    static func defaultPreferredContentSize() -> CGSize {
+        return .init(width: 540, height: 620)
+    }
+    
+    static func preferredContentSizeWidth() -> CGFloat {
+        let preferredWidth = defaultPreferredContentSize().width
+        let screenSize = UIScreen.main.bounds.size
+        guard preferredWidth >= screenSize.width else { return preferredWidth }
+        return min(screenSize.width, screenSize.height) / 2
+    }
 }

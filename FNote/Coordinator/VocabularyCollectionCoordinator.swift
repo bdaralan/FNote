@@ -89,8 +89,8 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
             }
 
             if UIDevice.current.userInterfaceIdiom == .pad {
-                let width = UIScreen.main.bounds.width / 2
-                let height = CGFloat(options.count) * optionVC.tableView.rowHeight + 70
+                let width = UIViewController.preferredContentSizeWidth()
+                let height = optionVC.tableView.rowHeight * CGFloat(options.count) + 70
                 optionNavController.preferredContentSize = CGSize(width: width, height: height)
                 optionNavController.modalPresentationStyle = .formSheet
             }

@@ -184,8 +184,8 @@ class VocabularyViewController: UITableViewController {
     
     private func computeEstimatedTagCellSizes() -> [CGSize] {
         let label = UILabel()
-        return vocabulary.tags.map {
-            let width = label.estimatedWidth(for: $0.name) + 16
+        return sortedCurrentTags.map {
+            let width = label.estimatedWidth(for: $0) + 16
             let size = CGSize(width: width < 45 ? 45 : width, height: 30)
             return size
         }
