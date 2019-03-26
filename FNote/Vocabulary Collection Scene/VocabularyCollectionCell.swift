@@ -19,14 +19,11 @@ class VocabularyCollectionCell: UICollectionViewCell {
     
     weak var delegate: VocabularyCollectionCellDelegate?
     
+    private var politeness: Vocabulary.Politeness?
+    
     let nativeLabel: UILabel = {
         let lbl = UILabel()
-        let font = UIFont.preferredFont(forTextStyle: .title1)
-        lbl.font = font
-        var traits = font.fontDescriptor.symbolicTraits
-        traits.insert(.traitBold)
-        guard let fontDescriptor = font.fontDescriptor.withSymbolicTraits(traits) else { return lbl }
-        lbl.font = UIFont(descriptor: fontDescriptor, size: 0)
+        lbl.font = UIFont.preferredFont(forTextStyle: .title1).withSymbolicTraits(.traitBold)
         return lbl
     }()
     
@@ -42,14 +39,13 @@ class VocabularyCollectionCell: UICollectionViewCell {
         return btn
     }()
     
-    let relationButton: UIButton = createStackViewButton(image: .relation)
-    let alternativeButton: UIButton = createStackViewButton(image: .alternative)
+    let connectionButton: UIButton = createStackViewButton(image: .connection)
     let politenessButton: UIButton = createStackViewButton(image: .politeness)
     let deleteButton: UIButton = createStackViewButton(image: .trashCan)
     let tagButton: UIButton = createStackViewButton(image: .tag)
     
     var stackViewButtons: [UIButton] { // leading to trailing order
-        return [politenessButton, tagButton, alternativeButton, relationButton, deleteButton]
+        return [politenessButton, tagButton, connectionButton, deleteButton]
     }
     
     let buttonStackView: UIStackView = {
@@ -65,6 +61,7 @@ class VocabularyCollectionCell: UICollectionViewCell {
         return view
     }()
     
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupCell()
@@ -74,14 +71,26 @@ class VocabularyCollectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        guard let politeness = politeness else { return }
+        reloadPolitenessButton(with: politeness)
+    }
+    
+    
     func reloadCell(with vocabulary: Vocabulary) {
         nativeLabel.text = vocabulary.native
         translationLabel.text = vocabulary.translation
         favoriteButton.tintColor = UIColor(named: "favorite-vocab-\(vocabulary.isFavorited ? "true" : "false")")
-        relationButton.setTitle("\(vocabulary.relations.count)", for: .normal)
-        alternativeButton.setTitle("\(vocabulary.alternatives.count)", for: .normal)
-        politenessButton.setTitle(vocabulary.politeness.string, for: .normal)
+        connectionButton.setTitle("\(vocabulary.connections.count)", for: .normal)
         tagButton.setTitle("\(vocabulary.tags.count)", for: .normal)
+        reloadPolitenessButton(with: vocabulary.politeness)
+    }
+    
+    func reloadPolitenessButton(with politeness: Vocabulary.Politeness) {
+        self.politeness = politeness
+        let title = bounds.width > 320 ? politeness.string : politeness.abbreviation
+        politenessButton.setTitle(title, for: .normal)
     }
 }
 

@@ -60,6 +60,7 @@
 		B4F03CEA21F62ADC004C4225 /* VocabularyCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F03CE821F62ADC004C4225 /* VocabularyCollection.swift */; };
 		B4F5C82C21F7B910007E8108 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4F5C82B21F7B910007E8108 /* CloudKit.framework */; };
 		B4F5C82E21F7BF67007E8108 /* CloudKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F5C82D21F7BF67007E8108 /* CloudKitService.swift */; };
+		B4FD2D96224AB595003274A3 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FD2D95224AB595003274A3 /* Font.swift */; };
 		B4FE95A6224177F0002285BC /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FE95A4224177F0002285BC /* Tag.swift */; };
 /* End PBXBuildFile section */
 
@@ -132,6 +133,7 @@
 		B4F5C82921F7B8CA007E8108 /* FNote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FNote.entitlements; sourceTree = "<group>"; };
 		B4F5C82B21F7B910007E8108 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B4F5C82D21F7BF67007E8108 /* CloudKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitService.swift; sourceTree = "<group>"; };
+		B4FD2D95224AB595003274A3 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		B4FE95A4224177F0002285BC /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -253,6 +255,7 @@
 				B47A07442217E41200EE8856 /* ManagedObjectContext.swift */,
 				B4419DFD223C4F3200F0F3AB /* String.swift */,
 				B4B1DC222245754A00297572 /* Label.swift */,
+				B4FD2D95224AB595003274A3 /* Font.swift */,
 			);
 			path = "Extension+Utility";
 			sourceTree = "<group>";
@@ -512,6 +515,7 @@
 				B4D83D55222B350500CBE6FE /* VocabularyRemover.swift in Sources */,
 				B40F58B122337C35008E0241 /* RecordMetadata.swift in Sources */,
 				B49B72AA223AE77D0083C1DE /* DescriptionGuideView.swift in Sources */,
+				B4FD2D96224AB595003274A3 /* Font.swift in Sources */,
 				B437BDC221F1B80C00A1B016 /* VocabularyCollectionViewController.swift in Sources */,
 				B4419DFE223C4F3200F0F3AB /* String.swift in Sources */,
 				B4B1DC212244BC8400297572 /* VocabularyCollectionViewTagCell.swift in Sources */,

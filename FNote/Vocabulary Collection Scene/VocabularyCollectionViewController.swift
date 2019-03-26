@@ -93,12 +93,7 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         }
     }
     
-    private func cellRelationButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
-        #warning("TODO: implement")
-        CustomAlert.showFeatureNotAvailable(presenter: self)
-    }
-    
-    private func cellAlternativeButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+    private func cellConnectionButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         #warning("TODO: implement")
         CustomAlert.showFeatureNotAvailable(presenter: self)
     }
@@ -177,8 +172,7 @@ extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         switch button {
         case cell.favoriteButton: cellFavoriteButtonTapped(cell: cell, indexPath: indexPath)
-        case cell.relationButton: cellRelationButtonTapped(cell: cell, indexPath: indexPath)
-        case cell.alternativeButton: cellAlternativeButtonTapped(cell: cell, indexPath: indexPath)
+        case cell.connectionButton: cellConnectionButtonTapped(cell: cell, indexPath: indexPath)
         case cell.politenessButton: cellPolitenessButtonTapped(cell: cell, indexPath: indexPath)
         case cell.deleteButton: cellDeleteButtonTapped(cell: cell, indexPath: indexPath)
         case cell.tagButton: cellTagButtonTapped(cell: cell, indexPath: indexPath)

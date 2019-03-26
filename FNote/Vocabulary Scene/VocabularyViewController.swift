@@ -37,8 +37,7 @@ extension VocabularyViewController {
     enum Row: Int {
         case native
         case translation
-        case relations
-        case alternatives
+        case connection
         case politeness
         case favorite
         case tag
@@ -82,7 +81,7 @@ class VocabularyViewController: UITableViewController {
     let indexPathSections: IndexPathSections<Section, Row> = {
         var sections = IndexPathSections<Section, Row>()
         sections.addSection(type: .vocabulary, items: [.native, .translation])
-        sections.addSection(type: .relation, items: [.favorite, .relations, .alternatives, .politeness, .tag])
+        sections.addSection(type: .relation, items: [.favorite, .connection, .politeness, .tag])
         sections.addSection(type: .note, items: [.note])
         return sections
     }()
@@ -234,14 +233,9 @@ extension VocabularyViewController {
             cell.textField.tag = input.rawValue
             cell.textField.addTarget(self, action: #selector(inputTextFieldTextChanged), for: .editingChanged)
             return cell
-        case .relations:
+        case .connection:
             let cell = tableView.dequeueRegisteredCell(VocabularySelectionCell.self, for: indexPath)
-            cell.reloadCell(text: "Related Vocabularies", detail: "\(vocabulary.relations.count)", image: .relation)
-            cell.accessoryType = .disclosureIndicator
-            return cell
-        case .alternatives:
-            let cell = tableView.dequeueRegisteredCell(VocabularySelectionCell.self, for: indexPath)
-            cell.reloadCell(text: "Alternative Vocabularies", detail: "\(vocabulary.alternatives.count)", image: .alternative)
+            cell.reloadCell(text: "Connections", detail: "\(vocabulary.connections.count)", image: .connection)
             cell.accessoryType = .disclosureIndicator
             return cell
         case .politeness:
@@ -292,7 +286,7 @@ extension VocabularyViewController {
         case .tag:
             view.endEditing(true)
             coordinator?.selectTags(for: self, allTags: userAllTags, current: sortedCurrentTags)
-        case .relations, .alternatives:
+        case .connection:
             #warning("TODO: implement add relations and alternatives")
             CustomAlert.showFeatureNotAvailable(presenter: self)
         case .favorite, .note: ()

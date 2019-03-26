@@ -98,6 +98,15 @@ extension Vocabulary {
             case .formal: return "Formal"
             }
         }
+        
+        var abbreviation: String {
+            switch self {
+            case .undecided: return "U"
+            case .informal: return "I"
+            case .neutral: return "N"
+            case .formal: return "F"
+            }
+        }
     }
 }
 

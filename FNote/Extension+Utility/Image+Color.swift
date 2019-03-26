@@ -12,8 +12,7 @@ import UIKit
 extension UIImage {
     
     // MARK: - Button
-    static var alternative: UIImage { return UIImage(named: "alternative")! }
-    static var relation: UIImage { return UIImage(named: "relation")! }
+    static var connection: UIImage { return UIImage(named: "connection")! }
     static var politeness: UIImage { return UIImage(named: "politeness")! }
     static var favorite: UIImage { return UIImage(named: "favorite")! }
     static var tag: UIImage { return UIImage(named: "tag")! }
