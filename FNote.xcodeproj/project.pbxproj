@@ -405,6 +405,7 @@
 				TargetAttributes = {
 					B437BD9C21F1972600A1B016 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -416,6 +417,7 @@
 					};
 					B450E81E22384C72002EDC04 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 						TestTargetID = B437BD9C21F1972600A1B016;
 					};
 				};
@@ -684,7 +686,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bdaralan.FNote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -703,7 +705,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bdaralan.FNote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -722,7 +724,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bdaralan.FNoteTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FNote.app/FNote";
 			};
@@ -742,7 +744,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bdaralan.FNoteTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FNote.app/FNote";
 			};

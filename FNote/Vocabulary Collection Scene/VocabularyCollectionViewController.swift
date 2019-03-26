@@ -94,13 +94,13 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     }
     
     private func cellRelationButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
-        guard let vocabulary = fetchController?.object(at: indexPath) else { return }
-        print("relation button tapped \(vocabulary.relations.count)")
+        #warning("TODO: implement")
+        CustomAlert.showFeatureNotAvailable(presenter: self)
     }
     
     private func cellAlternativeButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
-        guard let vocabulary = fetchController?.object(at: indexPath) else { return }
-        print("alternative button tapped \(vocabulary.relations.count)")
+        #warning("TODO: implement")
+        CustomAlert.showFeatureNotAvailable(presenter: self)
     }
     
     private func cellPolitenessButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
@@ -112,6 +112,11 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     private func cellDeleteButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         guard let collection = collection, let vocabulary = fetchController?.object(at: indexPath) else { return }
         coordinator?.removeVocabulary(vocabulary, from: collection, sender: cell.deleteButton)
+    }
+    
+    private func cellTagButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+        #warning("TODO: implement")
+        CustomAlert.showFeatureNotAvailable(presenter: self)
     }
 }
 
@@ -151,6 +156,7 @@ extension VocabularyCollectionViewController: NSFetchedResultsControllerDelegate
         case .update: collectionView.reloadItems(at: [indexPath!])
         case .delete: collectionView.deleteItems(at: [indexPath!])
         case .move: collectionView.moveItem(at: indexPath!, to: newIndexPath!)
+        @unknown default: ()
         }
     }
     
@@ -175,6 +181,7 @@ extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
         case cell.alternativeButton: cellAlternativeButtonTapped(cell: cell, indexPath: indexPath)
         case cell.politenessButton: cellPolitenessButtonTapped(cell: cell, indexPath: indexPath)
         case cell.deleteButton: cellDeleteButtonTapped(cell: cell, indexPath: indexPath)
+        case cell.tagButton: cellTagButtonTapped(cell: cell, indexPath: indexPath)
         default: ()
         }
     }

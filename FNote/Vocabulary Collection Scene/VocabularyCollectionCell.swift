@@ -21,7 +21,12 @@ class VocabularyCollectionCell: UICollectionViewCell {
     
     let nativeLabel: UILabel = {
         let lbl = UILabel()
-        lbl.font = UIFont.preferredFont(forTextStyle: .title1)
+        let font = UIFont.preferredFont(forTextStyle: .title1)
+        lbl.font = font
+        var traits = font.fontDescriptor.symbolicTraits
+        traits.insert(.traitBold)
+        guard let fontDescriptor = font.fontDescriptor.withSymbolicTraits(traits) else { return lbl }
+        lbl.font = UIFont(descriptor: fontDescriptor, size: 0)
         return lbl
     }()
     
@@ -41,9 +46,10 @@ class VocabularyCollectionCell: UICollectionViewCell {
     let alternativeButton: UIButton = createStackViewButton(image: .alternative)
     let politenessButton: UIButton = createStackViewButton(image: .politeness)
     let deleteButton: UIButton = createStackViewButton(image: .trashCan)
+    let tagButton: UIButton = createStackViewButton(image: .tag)
     
     var stackViewButtons: [UIButton] { // leading to trailing order
-        return [politenessButton, alternativeButton, relationButton, deleteButton]
+        return [politenessButton, tagButton, alternativeButton, relationButton, deleteButton]
     }
     
     let buttonStackView: UIStackView = {
@@ -75,6 +81,7 @@ class VocabularyCollectionCell: UICollectionViewCell {
         relationButton.setTitle("\(vocabulary.relations.count)", for: .normal)
         alternativeButton.setTitle("\(vocabulary.alternatives.count)", for: .normal)
         politenessButton.setTitle(vocabulary.politeness.string, for: .normal)
+        tagButton.setTitle("\(vocabulary.tags.count)", for: .normal)
     }
 }
 

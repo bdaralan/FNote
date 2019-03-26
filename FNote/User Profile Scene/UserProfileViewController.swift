@@ -223,7 +223,8 @@ extension UserProfileViewController: NSFetchedResultsControllerDelegate {
         case .insert: tableView.insertRows(at: [newIndexPath!], with: .automatic)
         case .update: tableView.reloadRows(at: [indexPath!], with: .automatic)
         case .delete: tableView.deleteRows(at: [indexPath!], with: .automatic)
-        case .move: ()
+        case .move: tableView.moveRow(at: indexPath!, to: newIndexPath!)
+        @unknown default: ()
         }
     }
     
