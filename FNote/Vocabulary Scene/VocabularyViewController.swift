@@ -123,7 +123,7 @@ class VocabularyViewController: UITableViewController {
             vocabulary.native = textField.text ?? ""
         case .translation:
             vocabulary.translation = textField.text ?? ""
-        default:
+        case .connection, .politeness, .favorite, .tag, .note:
             fatalError("unknown text field text changed!!!")
         }
         toggleSaveButtonEnableStateIfNeeded()
