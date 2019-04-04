@@ -9,29 +9,6 @@
 import UIKit
 
 
-extension OptionTableViewController {
-    
-    struct Option: Equatable {
-        let name: String
-        var isSelected: Bool
-
-        static func == (lhs: Option, rhs: Option) -> Bool {
-            return lhs.name == rhs.name
-        }
-    }
-    
-    enum SelectMode {
-        /// Must select an option
-        case single
-        
-        /// Select an option or none
-        case singleOrNone
-        
-        /// Select many options or none
-        case multiple
-    }
-}
-
 
 class OptionTableViewController: UITableViewController {
     
@@ -50,21 +27,30 @@ class OptionTableViewController: UITableViewController {
     var deselectCompletion: ((_ index: Int) -> Void)?
     
     /// Set to `true` to allow adding new options which will display a text field.
-    var allowAddNewOption: Bool = false
+    var allowAddNewOption = false
     
     /// The max number of characters a new option can have.
-    var newOptionMaxCharacterCount: Int = 40
+    var newOptionMaxCharacterCount = 40
     
     /// Placeholder text for the new option text field.
-    var newOptionPlaceholder: String = "Add New"
+    var newOptionPlaceholder = "Add New"
     
     /// A completion block that get called when a new option is added.
     /// The block passing in the new option `String` and its index.
     /// - note: Return `true` to tell the controller to add the option.
     var addNewOptionCompletion: ((_ newTag: String, _ index: Int) -> Void)?
     
+    /// Set to `true` to allow renaming options.
+    var allowRenameOption = false
+    
+    /// A completion block get called when an option is renamed.
+    /// The block passing in the old and the updated options.
+    var renameOptionCompletion: ((Option, Option) -> Void)?
+    
+    /// Set to `true` to allow deleting options.
+    var allowDeleteOption = false
+    
     /// A completion block tag get called when an option is deleted.
-    /// The block passing in the deleted option `String` and its index.
     var deleteOptionCompletion: ((Option) -> Void)?
     
     var doneCompletion: (() -> Void)?
@@ -103,6 +89,27 @@ class OptionTableViewController: UITableViewController {
         guard reloaded else { return }
         tableView.reloadData()
     }
+    
+    private func addNewOption(name: String) {
+        let newOption = Option(name: name, isSelected: true)
+        options.append(newOption)
+        sortOptions(reloaded: false)
+        let newIndex = options.firstIndex(of: newOption)! // unwrapped because just appended
+        let newIndexPath = IndexPath(row: newIndex, section: optionSection)
+        tableView.performBatchUpdates({
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+        }) { [weak self] (finished) in
+            self?.tableView.selectRow(at: newIndexPath, animated: true, scrollPosition: .middle)
+        }
+        addNewOptionCompletion?(name, newIndex)
+    }
+    
+    private func renameOption(at index: Int, newName: String) {
+        let currentOption = options[index]
+        let updatedOption = Option(name: newName, isSelected: options[index].isSelected)
+        options[index] = updatedOption
+        renameOptionCompletion?(currentOption, updatedOption)
+    }
 }
 
 
@@ -117,20 +124,20 @@ extension OptionTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueRegisteredCell(TextFieldCell.self, for: indexPath)
+        cell.delegate = self
+        cell.maxCharacterCount = newOptionMaxCharacterCount
         if indexPath == addNewOptionIndexPath {
-            let cell = tableView.dequeueRegisteredCell(TextFieldCell.self, for: indexPath)
-            cell.delegate = self
             cell.allowsEditing = true
             cell.setTextField(placeholder: newOptionPlaceholder)
-            cell.maxCharacterCount = newOptionMaxCharacterCount
-            return cell
+            cell.accessoryType = .none
         } else {
-            let cell = tableView.dequeueRegisteredCell(UITableViewCell.self, for: indexPath)
             let option = options[indexPath.row]
-            cell.textLabel?.text = option.name
+            cell.allowsEditing = false
+            cell.setTextField(text: option.name)
             cell.accessoryType = option.isSelected ? .checkmark : .none
-            return cell
         }
+        return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -167,19 +174,34 @@ extension OptionTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        guard indexPath != addNewOptionIndexPath else { return [] }
-        let delete = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] (action, indexPath) in
-            guard let self = self else { return }
-            let index = indexPath.row
-            if self.options[index].isSelected {
-                self.deselectCompletion?(index)
+        var editingActions = [UITableViewRowAction]()
+        guard indexPath != addNewOptionIndexPath else { return editingActions }
+        if allowDeleteOption {
+            let delete = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] (action, indexPath) in
+                guard let self = self else { return }
+                let index = indexPath.row
+                if self.options[index].isSelected {
+                    self.deselectCompletion?(index)
+                }
+                let option = self.options.remove(at: index)
+                let indexPath = IndexPath(row: index, section: self.optionSection)
+                tableView.deleteRows(at: [indexPath], with: .automatic)
+                self.deleteOptionCompletion?(option)
             }
-            let option = self.options.remove(at: index)
-            let indexPath = IndexPath(row: index, section: self.optionSection)
-            tableView.deleteRows(at: [indexPath], with: .automatic)
-            self.deleteOptionCompletion?(option)
+            editingActions.append(delete)
         }
-        return [delete]
+        
+        if allowRenameOption {
+            let rename = UITableViewRowAction(style: .default, title: "Rename") { (action, indexPath) in
+                let cell = tableView.cellForRow(at: indexPath) as! TextFieldCell
+                cell.allowsEditing = true
+                cell.beginEditing()
+            }
+            rename.backgroundColor = .uiControlTint
+            editingActions.append(rename)
+        }
+        
+        return editingActions
     }
 }
 
@@ -187,33 +209,35 @@ extension OptionTableViewController {
 extension OptionTableViewController: TextFieldCellDelegate {
     
     func textFieldCellDidEndEditing(_ cell: TextFieldCell, text: String) {
-        cell.setTextField(text: "")
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        cell.allowsEditing = indexPath == addNewOptionIndexPath
+        
         let validator = StringValidator()
-        let newTag = text.trimmingCharacters(in: .whitespaces)
-        let existingTags = options.map({ $0.name })
-        switch validator.validateNewName(newTag, existingNames: existingTags) {
+        let optionName = text.trimmingCharacters(in: .whitespaces)
+        
+        switch validator.validateNewName(optionName, existingNames: options.map({ $0.name })) {
         case .unique:
-            let newOption = Option(name: newTag, isSelected: true)
-            options.append(newOption)
-            sortOptions(reloaded: false)
-            let newIndex = options.firstIndex(of: newOption)! // unwrapped because just appended
-            let newIndexPath = IndexPath(row: newIndex, section: optionSection)
-            tableView.performBatchUpdates({
-                tableView.insertRows(at: [newIndexPath], with: .automatic)
-            }) { [weak self] (finished) in
-                self?.tableView.selectRow(at: newIndexPath, animated: true, scrollPosition: .middle)
+            if addNewOptionIndexPath == indexPath {
+                cell.setTextField(text: "")
+                addNewOption(name: optionName)
+            } else {
+                cell.setTextField(text: optionName)
+                renameOption(at: indexPath.row, newName: optionName)
             }
-            addNewOptionCompletion?(newTag, newIndex)
         case .duplicate:
-            let alert = UIAlertController(title: "Duplicate", message: nil, preferredStyle: .alert)
-            alert.addAction(.init(title: "Dismiss", style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
+            let isAddNewOption = addNewOptionIndexPath == indexPath
+            let isOptionRenamed = options[indexPath.row].name != optionName
+            if isAddNewOption || isOptionRenamed {
+                let alert = UIAlertController(title: "Duplicate", message: nil, preferredStyle: .alert)
+                let dismiss = UIAlertAction(title: "Dismiss", style: .default) { [weak self] (action) in
+                    guard let self = self, isAddNewOption == false else { return }
+                    cell.setTextField(text: self.options[indexPath.row].name)
+                }
+                alert.addAction(dismiss)
+                present(alert, animated: true, completion: nil)
+            }
         case .empty: ()
         }
-    }
-    
-    func textFieldCell(_ cell: TextFieldCell, replacementTextFor overMaxCharacterCountText: String) -> String {
-        return "\(overMaxCharacterCountText.prefix(newOptionMaxCharacterCount))"
     }
 }
 
@@ -222,7 +246,6 @@ extension OptionTableViewController {
 
     private func setupController() {
         tableView.backgroundColor = .offWhiteBackground
-        tableView.registerCell(UITableViewCell.self)
         tableView.registerCell(TextFieldCell.self)
         tableView.rowHeight = 44
     }
@@ -240,5 +263,29 @@ extension OptionTableViewController {
     
     @objc private func cancelSelecting() {
         cancelCompletion?()
+    }
+}
+
+
+extension OptionTableViewController {
+    
+    struct Option: Equatable {
+        let name: String
+        var isSelected: Bool
+        
+        static func == (lhs: Option, rhs: Option) -> Bool {
+            return lhs.name == rhs.name
+        }
+    }
+    
+    enum SelectMode {
+        /// Must select an option
+        case single
+        
+        /// Select an option or none
+        case singleOrNone
+        
+        /// Select many options or none
+        case multiple
     }
 }

@@ -56,6 +56,7 @@ class TextFieldCell: UITableViewCell, UITextFieldDelegate {
         detailTextLabel?.text = text
     }
     
+    /// Make text field become first responder if `allowsEditing` is set to `true`.
     func beginEditing() {
         textField.becomeFirstResponder()
     }

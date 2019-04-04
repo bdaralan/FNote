@@ -192,7 +192,7 @@ extension UserProfileViewController {
             cell.allowsEditing = true
             cell.beginEditing()
         }
-        rename.backgroundColor = UISegmentedControl().tintColor
+        rename.backgroundColor = .uiControlTint
         return [delete, rename]
     }
     

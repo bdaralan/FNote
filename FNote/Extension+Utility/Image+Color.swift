@@ -34,4 +34,5 @@ extension UIImage {
 extension UIColor {
     
     static let offWhiteBackground = UIColor(named: "off-white-background")
+    static let uiControlTint = UISegmentedControl().tintColor
 }

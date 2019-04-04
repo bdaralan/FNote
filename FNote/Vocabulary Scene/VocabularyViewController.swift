@@ -155,11 +155,8 @@ class VocabularyViewController: UITableViewController {
     ///   - create: Pass `true` to create a new tag if it does not exist.
     func addTag(name: String, create: Bool) {
         guard sortedCurrentTags.contains(name) == false else { return }
-        if let existingTag = user.tags.first(where: { $0.name == name }) {
-            vocabulary.addTag(existingTag)
-        } else if create {
-            let newTag = Tag(name: name, colorHex: nil, user: user)
-            vocabulary.addTag(newTag)
+        if vocabulary.addTag(existingName: name) == nil, create {
+            vocabulary.addTag(newName: name, colorHex: nil)
         }
         toggleSaveButtonEnableStateIfNeeded()
         estimatedTagCellSizes.removeAll()
@@ -171,11 +168,17 @@ class VocabularyViewController: UITableViewController {
     ///   - name: The name of the tag to be removed.
     ///   - delete: Pass `true` to remove and delete the tag.
     func removeTag(name: String, delete: Bool) {
-        if delete, let tagToDelete = user.tags.first(where: { $0.name == name }) {
-            context.delete(tagToDelete)
-        } else if let tagToRemove = vocabulary.tags.first(where: { $0.name == name }) {
-            vocabulary.removeTag(tagToRemove)
-        }
+        vocabulary.removeTag(name: name)
+        toggleSaveButtonEnableStateIfNeeded()
+        estimatedTagCellSizes.removeAll()
+        tableView.reloadData()
+        guard delete, let tagToDelete = user.tags.first(where: { $0.name == name }) else { return }
+        context.delete(tagToDelete)
+    }
+    
+    func renameTag(current: String, newName: String) {
+        guard let tagToRename = user.tags.first(where: { $0.name == current }) else { return }
+        tagToRename.rename(newName)
         toggleSaveButtonEnableStateIfNeeded()
         estimatedTagCellSizes.removeAll()
         tableView.reloadData()

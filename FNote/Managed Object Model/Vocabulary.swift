@@ -151,17 +151,30 @@ extension Vocabulary {
         }
     }
     
+    /// Create and add the new tag to the vocabulary's tags.
+    /// If the given new name already exists in user's tags, no tag is created.
+    /// - returns: The added tag if the tag is added. Otherwise, `nil`.
     @discardableResult
-    func addTag(_ tag: Tag) -> Bool {
-        guard tags.contains(tag) == false else { return false }
-        tags.insert(tag)
-        return true
+    func addTag(newName: String, colorHex: String?) -> Tag? {
+        guard collection.user.tags.contains(where: { $0.name == newName }) == false else { return nil }
+        let newTag = Tag(name: newName, colorHex: colorHex, user: collection.user)
+        tags.insert(newTag)
+        return newTag
+    }
+    
+    /// Add an existing tag to the vocabulary's tags.
+    /// - returns: The added tag if exists. Otherwise, `nil`.
+    @discardableResult
+    func addTag(existingName: String) -> Tag? {
+        guard let existingTag = collection.user.tags.first(where: { $0.name == existingName }) else { return nil }
+        tags.insert(existingTag)
+        return existingTag
     }
     
     @discardableResult
-    func removeTag(_ tag: Tag) -> Bool {
-        guard tags.contains(tag) else { return false }
+    func removeTag(name: String) -> Tag? {
+        guard let tag = tags.first(where: { $0.name == name }) else { return nil }
         tags.remove(tag)
-        return true
+        return tag
     }
 }

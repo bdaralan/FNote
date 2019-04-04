@@ -23,7 +23,7 @@ class VocabularyCollectionCell: UICollectionViewCell {
     
     let nativeLabel: UILabel = {
         let lbl = UILabel()
-        lbl.font = UIFont.preferredFont(forTextStyle: .title1).withSymbolicTraits(.traitBold)
+        lbl.font = UIFont.preferredFont(forTextStyle: .title1)
         return lbl
     }()
     
