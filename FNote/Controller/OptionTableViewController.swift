@@ -52,6 +52,12 @@ class OptionTableViewController: UITableViewController {
     /// Set to `true` to allow adding new options which will display a text field.
     var allowAddNewOption: Bool = false
     
+    /// The max number of characters a new option can have.
+    var newOptionMaxCharacterCount: Int = 40
+    
+    /// Placeholder text for the new option text field.
+    var newOptionPlaceholder: String = "Add New"
+    
     /// A completion block that get called when a new option is added.
     /// The block passing in the new option `String` and its index.
     /// - note: Return `true` to tell the controller to add the option.
@@ -115,7 +121,8 @@ extension OptionTableViewController {
             let cell = tableView.dequeueRegisteredCell(UserProfileTextFieldCell.self, for: indexPath)
             cell.delegate = self
             cell.allowsEditing = true
-            cell.setTextField(placeholder: "Add New Tag")
+            cell.setTextField(placeholder: newOptionPlaceholder)
+            cell.maxCharacterCount = newOptionMaxCharacterCount
             return cell
         } else {
             let cell = tableView.dequeueRegisteredCell(UITableViewCell.self, for: indexPath)
@@ -203,6 +210,10 @@ extension OptionTableViewController: UserProfileTextFieldCellDelegate {
             present(alert, animated: true, completion: nil)
         case .empty: ()
         }
+    }
+    
+    func textFieldCell(_ cell: UserProfileTextFieldCell, replacementTextFor overMaxCharacterCountText: String) -> String {
+        return "\(overMaxCharacterCountText.prefix(newOptionMaxCharacterCount))"
     }
 }
 

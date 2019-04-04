@@ -9,9 +9,11 @@
 import UIKit
 
 
-protocol UserProfileTextFieldCellDelegate: AnyObject {
+@objc protocol UserProfileTextFieldCellDelegate: AnyObject {
     
     func textFieldCellDidEndEditing(_ cell: UserProfileTextFieldCell, text: String)
+    
+    @objc optional func textFieldCell(_ cell: UserProfileTextFieldCell, replacementTextFor overMaxCharacterCountText: String) -> String
 }
 
 
@@ -19,13 +21,16 @@ class UserProfileTextFieldCell: UITableViewCell, UITextFieldDelegate {
     
     weak var delegate: UserProfileTextFieldCellDelegate?
     
+    var maxCharacterCount = Int.max
+    
     private let textField: UITextField = {
         let tf = UITextField()
         tf.returnKeyType = .done
+        tf.clearButtonMode = .whileEditing
         return tf
     }()
     
-    var allowsEditing: Bool = false {
+    var allowsEditing = false {
         didSet { textField.isEnabled = allowsEditing }
     }
     
@@ -34,6 +39,7 @@ class UserProfileTextFieldCell: UITableViewCell, UITextFieldDelegate {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         setupCell()
         textField.delegate = self
+        textField.addTarget(self, action: #selector(textFieldTextChanged), for: .editingChanged)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -50,6 +56,13 @@ class UserProfileTextFieldCell: UITableViewCell, UITextFieldDelegate {
     
     func beginEditing() {
         textField.becomeFirstResponder()
+    }
+    
+    @objc private func textFieldTextChanged(_ sender: UITextField) {
+        let text = sender.text ?? ""
+        if text.count > maxCharacterCount, let replacement = delegate?.textFieldCell?(self, replacementTextFor: text) {
+            textField.text = replacement
+        }
     }
 }
 

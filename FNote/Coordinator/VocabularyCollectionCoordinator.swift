@@ -101,6 +101,11 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
     func selectTags(for vocabularyVC: VocabularyViewController, allTags: [String], current: [String]) {
         let options = allTags.map({ OptionTableViewController.Option(name: $0, isSelected: current.contains($0)) })
         let optionVC = OptionTableViewController(selectMode: .multiple, options: options, title: "Tags")
+        optionVC.allowAddNewOption = true
+        optionVC.newOptionMaxCharacterCount = Tag.nameMaxCharacterCount
+        optionVC.newOptionPlaceholder = "Add New Tag"
+        optionVC.sortOptions(reloaded: false)
+        
         optionVC.selectCompletion = { (index) in
             vocabularyVC.addTag(name: optionVC.options[index].name, create: false)
         }
@@ -120,9 +125,6 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
                 user.managedObjectContext?.quickSave()
             }
         }
-        
-        optionVC.allowAddNewOption = true
-        optionVC.sortOptions(reloaded: false)
         
         if let navController = vocabularyVC.navigationController {
             optionVC.setupNavItems(showCancel: false, showDone: false, animated: false)

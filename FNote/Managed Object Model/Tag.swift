@@ -46,6 +46,8 @@ public class Tag: NSManagedObject, LocalRecord {
 
 extension Tag {
     
+    static let nameMaxCharacterCount: Int = 30
+    
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Tag> {
         return NSFetchRequest<Tag>(entityName: "Tag")
     }
