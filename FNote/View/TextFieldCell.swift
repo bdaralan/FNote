@@ -1,5 +1,5 @@
 //
-//  UserProfileTextFieldCell.swift
+//  TextFieldCell.swift
 //  FNote
 //
 //  Created by Dara Beng on 3/13/19.
@@ -9,24 +9,23 @@
 import UIKit
 
 
-@objc protocol UserProfileTextFieldCellDelegate: AnyObject {
+@objc protocol TextFieldCellDelegate: AnyObject {
     
-    func textFieldCellDidEndEditing(_ cell: UserProfileTextFieldCell, text: String)
+    func textFieldCellDidEndEditing(_ cell: TextFieldCell, text: String)
     
-    @objc optional func textFieldCell(_ cell: UserProfileTextFieldCell, replacementTextFor overMaxCharacterCountText: String) -> String
+    @objc optional func textFieldCell(_ cell: TextFieldCell, replacementTextFor overMaxCharacterCountText: String) -> String
 }
 
 
-class UserProfileTextFieldCell: UITableViewCell, UITextFieldDelegate {
+class TextFieldCell: UITableViewCell, UITextFieldDelegate {
     
-    weak var delegate: UserProfileTextFieldCellDelegate?
+    weak var delegate: TextFieldCellDelegate?
     
     var maxCharacterCount = Int.max
     
     private let textField: UITextField = {
         let tf = UITextField()
         tf.returnKeyType = .done
-        tf.clearButtonMode = .whileEditing
         return tf
     }()
     
@@ -36,15 +35,14 @@ class UserProfileTextFieldCell: UITableViewCell, UITextFieldDelegate {
     
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
+        super.init(style: .value1, reuseIdentifier: reuseIdentifier)
         setupCell()
-        textField.delegate = self
-        textField.addTarget(self, action: #selector(textFieldTextChanged), for: .editingChanged)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
     
     func setTextField(text: String) {
         textField.text = text
@@ -52,6 +50,10 @@ class UserProfileTextFieldCell: UITableViewCell, UITextFieldDelegate {
     
     func setTextField(placeholder: String) {
         textField.placeholder = placeholder
+    }
+    
+    func setDetail(text: String) {
+        detailTextLabel?.text = text
     }
     
     func beginEditing() {
@@ -67,7 +69,7 @@ class UserProfileTextFieldCell: UITableViewCell, UITextFieldDelegate {
 }
 
 
-extension UserProfileTextFieldCell {
+extension TextFieldCell {
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         return allowsEditing
@@ -81,9 +83,12 @@ extension UserProfileTextFieldCell {
 }
 
 
-extension UserProfileTextFieldCell {
+extension TextFieldCell {
     
     private func setupCell() {
+        textField.delegate = self
+        textField.addTarget(self, action: #selector(textFieldTextChanged), for: .editingChanged)
+        
         contentView.addSubviews([textField])
         let safeArea = contentView.safeAreaLayoutGuide
         let constraints = [

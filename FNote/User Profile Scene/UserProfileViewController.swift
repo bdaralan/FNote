@@ -62,7 +62,7 @@ class UserProfileViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    private func cellAddNewVocabularyCollection(_ cell: UserProfileTextFieldCell, name: String) {
+    private func cellAddNewVocabularyCollection(_ cell: TextFieldCell, name: String) {
         let validator = StringValidator()
         let name = name.trimmingCharacters(in: .whitespaces)
         switch validator.validateNewName(name, existingNames: collections.map({ $0.name })) {
@@ -82,7 +82,7 @@ class UserProfileViewController: UITableViewController {
         }
     }
     
-    private func cellRenameVocabularyCollection(_ cell: UserProfileTextFieldCell, collection: VocabularyCollection, newName: String) {
+    private func cellRenameVocabularyCollection(_ cell: TextFieldCell, collection: VocabularyCollection, newName: String) {
         let validator = StringValidator()
         let newName = newName.trimmingCharacters(in: .whitespaces)
         switch validator.validateNewName(newName, existingNames: collections.map({ $0.name })) {
@@ -162,7 +162,7 @@ extension UserProfileViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueRegisteredCell(UserProfileTextFieldCell.self, for: indexPath)
+        let cell = tableView.dequeueRegisteredCell(TextFieldCell.self, for: indexPath)
         cell.delegate = self
         if addNewCollectionIndexPath == indexPath {
             cell.setTextField(text: "")
@@ -188,7 +188,7 @@ extension UserProfileViewController {
             self.cellDeleteVocabularyCollection(collection)
         }
         let rename = UITableViewRowAction(style: .normal, title: "Rename") { (action, indexPath) in
-            let cell = tableView.cellForRow(at: indexPath) as! UserProfileTextFieldCell
+            let cell = tableView.cellForRow(at: indexPath) as! TextFieldCell
             cell.allowsEditing = true
             cell.beginEditing()
         }
@@ -199,7 +199,7 @@ extension UserProfileViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if addNewCollectionIndexPath == indexPath {
-            let cell = tableView.cellForRow(at: indexPath) as! UserProfileTextFieldCell
+            let cell = tableView.cellForRow(at: indexPath) as! TextFieldCell
             cell.beginEditing()
         } else {
             selectedCollection = collections[indexPath.row]
@@ -234,9 +234,9 @@ extension UserProfileViewController: NSFetchedResultsControllerDelegate {
 }
 
 
-extension UserProfileViewController: UserProfileTextFieldCellDelegate {
+extension UserProfileViewController: TextFieldCellDelegate {
     
-    func textFieldCellDidEndEditing(_ cell: UserProfileTextFieldCell, text: String) {
+    func textFieldCellDidEndEditing(_ cell: TextFieldCell, text: String) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         if addNewCollectionIndexPath == indexPath {
             cellAddNewVocabularyCollection(cell, name: text)
@@ -254,7 +254,7 @@ extension UserProfileViewController {
     private func setupController() {
         navigationItem.title = "Profile"
         tableView.backgroundColor = .offWhiteBackground
-        tableView.registerCell(UserProfileTextFieldCell.self)
+        tableView.registerCell(TextFieldCell.self)
         tableView.tableHeaderView = UserProfileHeaderView(frame: CGRect(x: 0, y: 0, width: 0, height: 150))
     }
     

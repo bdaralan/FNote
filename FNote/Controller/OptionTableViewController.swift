@@ -118,7 +118,7 @@ extension OptionTableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath == addNewOptionIndexPath {
-            let cell = tableView.dequeueRegisteredCell(UserProfileTextFieldCell.self, for: indexPath)
+            let cell = tableView.dequeueRegisteredCell(TextFieldCell.self, for: indexPath)
             cell.delegate = self
             cell.allowsEditing = true
             cell.setTextField(placeholder: newOptionPlaceholder)
@@ -184,9 +184,9 @@ extension OptionTableViewController {
 }
 
 
-extension OptionTableViewController: UserProfileTextFieldCellDelegate {
+extension OptionTableViewController: TextFieldCellDelegate {
     
-    func textFieldCellDidEndEditing(_ cell: UserProfileTextFieldCell, text: String) {
+    func textFieldCellDidEndEditing(_ cell: TextFieldCell, text: String) {
         cell.setTextField(text: "")
         let validator = StringValidator()
         let newTag = text.trimmingCharacters(in: .whitespaces)
@@ -212,7 +212,7 @@ extension OptionTableViewController: UserProfileTextFieldCellDelegate {
         }
     }
     
-    func textFieldCell(_ cell: UserProfileTextFieldCell, replacementTextFor overMaxCharacterCountText: String) -> String {
+    func textFieldCell(_ cell: TextFieldCell, replacementTextFor overMaxCharacterCountText: String) -> String {
         return "\(overMaxCharacterCountText.prefix(newOptionMaxCharacterCount))"
     }
 }
@@ -223,7 +223,7 @@ extension OptionTableViewController {
     private func setupController() {
         tableView.backgroundColor = .offWhiteBackground
         tableView.registerCell(UITableViewCell.self)
-        tableView.registerCell(UserProfileTextFieldCell.self)
+        tableView.registerCell(TextFieldCell.self)
         tableView.rowHeight = 44
     }
     
