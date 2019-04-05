@@ -126,7 +126,6 @@ extension OptionTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueRegisteredCell(TextFieldCell.self, for: indexPath)
         cell.delegate = self
-        cell.maxCharacterCount = newOptionMaxCharacterCount
         if indexPath == addNewOptionIndexPath {
             cell.allowsEditing = true
             cell.setTextField(placeholder: newOptionPlaceholder)
@@ -238,6 +237,11 @@ extension OptionTableViewController: TextFieldCellDelegate {
             }
         case .empty: ()
         }
+    }
+    
+    func textFieldCell(_ cell: TextFieldCell, didChangeText text: String) {
+        guard text.count > newOptionMaxCharacterCount else { return }
+        cell.setTextField(text: "\(text.prefix(newOptionMaxCharacterCount))")
     }
 }
 

@@ -13,15 +13,13 @@ import UIKit
     
     func textFieldCellDidEndEditing(_ cell: TextFieldCell, text: String)
     
-    @objc optional func textFieldCell(_ cell: TextFieldCell, replacementTextFor overMaxCharacterCountText: String) -> String
+    @objc optional func textFieldCell(_ cell: TextFieldCell, didChangeText text: String)
 }
 
 
 class TextFieldCell: UITableViewCell, UITextFieldDelegate {
     
     weak var delegate: TextFieldCellDelegate?
-    
-    var maxCharacterCount = Int.max
     
     private let textField: UITextField = {
         let tf = UITextField()
@@ -43,6 +41,12 @@ class TextFieldCell: UITableViewCell, UITextFieldDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        textField.text = nil
+        textField.placeholder = nil
+    }
+    
     
     func setTextField(text: String) {
         textField.text = text
@@ -62,10 +66,7 @@ class TextFieldCell: UITableViewCell, UITextFieldDelegate {
     }
     
     @objc private func textFieldTextChanged(_ sender: UITextField) {
-        let text = sender.text ?? ""
-        if text.count > maxCharacterCount, let replacement = delegate?.textFieldCell?(self, replacementTextFor: text) {
-            textField.text = replacement
-        }
+        delegate?.textFieldCell?(self, didChangeText: sender.text ?? "")
     }
 }
 
