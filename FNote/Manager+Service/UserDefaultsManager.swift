@@ -1,5 +1,5 @@
 //
-//  UserDefaultsManager.swift
+//  AppDefaults.swift
 //  FNote
 //
 //  Created by Dara Beng on 3/12/19.
@@ -9,28 +9,40 @@
 import Foundation
 
 
-struct UserDefaultsManager {
+class AppDefaults: Codable {
     
-    enum Key: String {
-        case selectedVocabularyCollection
-        
-        var string: String {
-            return "fnote.UserDefaultsManager.Key.\(rawValue)"
+    var selectedCollectionRecordName: String?
+    
+    
+    private init() {}
+    
+    
+    /// Save changes.
+    func saveChanges(qos: DispatchQoS.QoSClass = .utility) {
+        DispatchQueue.global(qos: qos).async {
+            let defaults = UserDefaults.standard
+            let encoder = JSONEncoder()
+            let encodedSelf = try? encoder.encode(self)
+            defaults.setValue(encodedSelf, forKey: AppDefaults.key)
         }
     }
+}
+
+
+extension AppDefaults {
     
+    static let standard = AppDefaults.load()
     
-    static var userDefaults: UserDefaults {
-        return UserDefaults.standard
-    }
+    static let key = "\(AppDefaults.self)"
     
-    
-    static var selectedVocabularyCollectionRecordName: String? {
-        return userDefaults.string(forKey: Key.selectedVocabularyCollection.string)
-    }
-    
-    
-    static func rememberSelectedVocabularyCollection(recordName: String?) {
-        userDefaults.setValue(recordName, forKey: Key.selectedVocabularyCollection.string)
+    static private func load() -> AppDefaults {
+        let defaults = UserDefaults.standard
+        let decoder = JSONDecoder()
+        if let data = defaults.data(forKey: key), let appDefaults = try? decoder.decode(AppDefaults.self, from: data) {
+            return appDefaults
+        }
+        let appDefaults = AppDefaults()
+        appDefaults.saveChanges()
+        return appDefaults
     }
 }

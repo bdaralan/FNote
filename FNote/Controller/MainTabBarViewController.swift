@@ -43,7 +43,7 @@ extension MainTabBarViewController {
         DispatchQueue.main.async { [unowned self] in
             self.selectedViewController = self.vocabularyCollectionCoordinator.navigationController
             let coreData = CoreDataStack.current
-            let recordName = UserDefaultsManager.selectedVocabularyCollectionRecordName ?? ""
+            let recordName = AppDefaults.standard.selectedCollectionRecordName ?? ""
             let collection = coreData.fetchVocabularyCollection(recordName: recordName, context: coreData.mainContext)
             self.vocabularyCollectionCoordinator.vocabularyCollectionVC.setCollection(collection)
         }

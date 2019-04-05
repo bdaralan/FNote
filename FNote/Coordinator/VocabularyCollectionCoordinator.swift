@@ -31,7 +31,7 @@ class VocabularyCollectionCoordinator: Coordinator {
     
     func start() {
         let coreData = CoreDataStack.current
-        let recordName = UserDefaultsManager.selectedVocabularyCollectionRecordName ?? ""
+        let recordName = AppDefaults.standard.selectedCollectionRecordName ?? ""
         let collection = coreData.fetchVocabularyCollection(recordName: recordName, context: coreData.mainContext)
         vocabularyCollectionVC = VocabularyCollectionViewController(collection: collection)
         vocabularyCollectionVC.coordinator = self

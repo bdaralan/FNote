@@ -39,7 +39,7 @@ class UserProfileViewController: UITableViewController {
         try? fetchController.performFetch()
         super.init(style: .grouped)
         fetchController.delegate = self
-        let recordName = UserDefaultsManager.selectedVocabularyCollectionRecordName
+        let recordName = AppDefaults.standard.selectedCollectionRecordName
         selectedCollection = collections.first(where: { $0.recordMetadata.recordName == recordName })
     }
 
@@ -76,7 +76,9 @@ class UserProfileViewController: UITableViewController {
             let collection = VocabularyCollection(user: user, name: name)
             if collections.isEmpty {
                 selectedCollection = collection
-                UserDefaultsManager.rememberSelectedVocabularyCollection(recordName: collection.recordMetadata.recordName)
+                let appDefaults = AppDefaults.standard
+                appDefaults.selectedCollectionRecordName = collection.recordMetadata.recordName
+                appDefaults.saveChanges()
             }
             context.quickSave()
         }
@@ -119,8 +121,9 @@ class UserProfileViewController: UITableViewController {
         let collectionRecordName = collection.recordMetadata.recordName
         self.context.delete(collection)
         self.context.quickSave()
-        if collectionRecordName == UserDefaultsManager.selectedVocabularyCollectionRecordName {
-            UserDefaultsManager.rememberSelectedVocabularyCollection(recordName: nil)
+        let appDefaults = AppDefaults.standard
+        if collectionRecordName == appDefaults.selectedCollectionRecordName {
+            appDefaults.selectedCollectionRecordName = nil
             self.selectedCollection = nil
         }
     }
@@ -203,10 +206,12 @@ extension UserProfileViewController {
             cell.beginEditing()
         } else {
             selectedCollection = collections[indexPath.row]
-            UserDefaultsManager.rememberSelectedVocabularyCollection(recordName: selectedCollection!.recordMetadata.recordName)
             let visibleIndexPaths = tableView.indexPathsForVisibleRows ?? []
             tableView.reloadRows(at: visibleIndexPaths, with: .none)
             view.endEditing(true)
+            let appDefaults = AppDefaults.standard
+            appDefaults.selectedCollectionRecordName = selectedCollection!.recordMetadata.recordName
+            appDefaults.saveChanges()
         }
     }
 }
