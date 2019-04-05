@@ -25,7 +25,7 @@ public class VocabularyConnection: NSManagedObject, LocalRecord {
     
     var type: ConnectionType {
         set { connectionTypeValue = Int64(newValue.rawValue) }
-        get { return ConnectionType(rawValue: Int(connectionTypeValue)) ?? .unknown }
+        get { return ConnectionType(rawValue: Int(connectionTypeValue))! }
     }
     
     
@@ -68,7 +68,6 @@ extension VocabularyConnection {
     
     /// - warning: These values should not be changed because they must be matched with the database.
     enum ConnectionType: LocalRecord.DatabaseIntegerEnum, CaseIterable {
-        case unknown
         case related
         case alternative
     }

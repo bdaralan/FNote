@@ -123,7 +123,6 @@ extension Vocabulary {
         case .alternative:
             self.alternatives.insert(vocabulary)
             vocabulary.alternatives.insert(self)
-        case .unknown: ()
         }
         
         let connection = VocabularyConnection(type: type, source: self, target: vocabulary, context: managedObjectContext!)
@@ -146,8 +145,6 @@ extension Vocabulary {
             vocabulary.alternatives.remove(self)
             managedObjectContext?.delete(connection)
             return connection
-        case .unknown:
-            return nil
         }
     }
     
