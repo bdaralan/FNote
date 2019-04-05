@@ -28,7 +28,7 @@
 		B43FDF7E223A0AD500191392 /* UserProfileViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43FDF7D223A0AD500191392 /* UserProfileViewer.swift */; };
 		B4419DFE223C4F3200F0F3AB /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4419DFD223C4F3200F0F3AB /* String.swift */; };
 		B44CA61522485D010001177A /* CustomAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44CA61422485D010001177A /* CustomAlert.swift */; };
-		B450E81A22383016002EDC04 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E81922383016002EDC04 /* UserDefaultsManager.swift */; };
+		B450E81A22383016002EDC04 /* AppDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E81922383016002EDC04 /* AppDefaults.swift */; };
 		B450E82222384C72002EDC04 /* FNoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E82122384C72002EDC04 /* FNoteTests.swift */; };
 		B45AB9B12219C724009D337C /* VocabularyCollectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B02219C724009D337C /* VocabularyCollectionCoordinator.swift */; };
 		B45AB9B32219C780009D337C /* VocbularyAdder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B22219C780009D337C /* VocbularyAdder.swift */; };
@@ -98,7 +98,7 @@
 		B43FDF7D223A0AD500191392 /* UserProfileViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewer.swift; sourceTree = "<group>"; };
 		B4419DFD223C4F3200F0F3AB /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		B44CA61422485D010001177A /* CustomAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlert.swift; sourceTree = "<group>"; };
-		B450E81922383016002EDC04 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
+		B450E81922383016002EDC04 /* AppDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDefaults.swift; sourceTree = "<group>"; };
 		B450E81F22384C72002EDC04 /* FNoteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FNoteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B450E82122384C72002EDC04 /* FNoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FNoteTests.swift; sourceTree = "<group>"; };
 		B450E82322384C72002EDC04 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -298,7 +298,7 @@
 			children = (
 				B40A803021F59C9100DCDF11 /* CoreDataStack.swift */,
 				B4F5C82D21F7BF67007E8108 /* CloudKitService.swift */,
-				B450E81922383016002EDC04 /* UserDefaultsManager.swift */,
+				B450E81922383016002EDC04 /* AppDefaults.swift */,
 			);
 			path = "Manager+Service";
 			sourceTree = "<group>";
@@ -503,7 +503,7 @@
 				B4B1DC1F2244B85300297572 /* VocabularyTagCell.swift in Sources */,
 				B48A620621F2875100C75A8C /* IndexPathSections.swift in Sources */,
 				B43FDF7C2239D22900191392 /* TextFieldCell.swift in Sources */,
-				B450E81A22383016002EDC04 /* UserDefaultsManager.swift in Sources */,
+				B450E81A22383016002EDC04 /* AppDefaults.swift in Sources */,
 				B4AD1A632225E30C00459D46 /* Animation.swift in Sources */,
 				B45AB9B12219C724009D337C /* VocabularyCollectionCoordinator.swift in Sources */,
 				B4B1DC232245754A00297572 /* Label.swift in Sources */,
