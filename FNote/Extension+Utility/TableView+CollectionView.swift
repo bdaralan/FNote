@@ -62,4 +62,12 @@ extension UICollectionView {
     func dequeueRegisteredCell<T>(_ cellType: T.Type, for indexPath: IndexPath) -> T where T: UICollectionViewCell {
         return dequeueReusableCell(withReuseIdentifier: cellType.className, for: indexPath) as! T
     }
+    
+    func registerSupplementaryView<T>(_ viewType: T.Type, kind: String) where T: UIView {
+        register(viewType.self, forSupplementaryViewOfKind: kind, withReuseIdentifier: viewType.className)
+    }
+    
+    func dequeueRegisteredSupplementaryView<T>(_ viewType: T.Type, kind: String, indexPath: IndexPath) -> T where T: UIView {
+        return dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: viewType.className, for: indexPath) as! T
+    }
 }
