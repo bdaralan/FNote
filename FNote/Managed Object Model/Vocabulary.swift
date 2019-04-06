@@ -175,3 +175,17 @@ extension Vocabulary {
         return tag
     }
 }
+
+
+extension Vocabulary {
+    
+    static func hasChanges(before: Vocabulary, after: Vocabulary) -> Bool {
+        return after.isFavorited != before.isFavorited
+            || after.politeness != before.politeness
+            || after.translation != before.translation
+            || after.native != before.native
+            || after.note != before.note
+            || after.tags.count != before.tags.count
+            || Set(after.tagNames()).isSubset(of: before.tagNames()) != true
+    }
+}
