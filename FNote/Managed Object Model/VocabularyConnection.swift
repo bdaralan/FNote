@@ -40,8 +40,8 @@ public class VocabularyConnection: NSManagedObject, LocalRecord {
     }
     
     
-    func isConnection(of vocabularies: (Vocabulary, Vocabulary)) -> Bool {
-        return self.vocabularies.contains(vocabularies.0) && self.vocabularies.contains(vocabularies.1)
+    func isConnection(of v1: Vocabulary, and v2: Vocabulary) -> Bool {
+        return vocabularies.contains(v1) && vocabularies.contains(v2)
     }
 }
 
