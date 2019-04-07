@@ -10,49 +10,13 @@ import UIKit
 import CoreData
 
 
-extension VocabularyViewController {
-    
-    /// View controlelr mode.
-    enum Mode {
-        /// View vocabulary mode.
-        case view(Vocabulary)
-        
-        /// Create vocabulary mode. Requires a collection for the vocabulary.
-        case create(VocabularyCollection)
-    }
-    
-    enum CompletionAction {
-        case save
-        case cancel
-    }
-    
-    /// Controller's table view section type.
-    enum Section: Int {
-        case vocabulary
-        case relation
-        case note
-    }
-    
-    /// Controller's table view row type in section.
-    enum Row: Int {
-        case native
-        case translation
-        case connection
-        case politeness
-        case favorite
-        case tag
-        case note
-    }
-}
-
-
 /// A view controller to view or create vocabulary.
 /// - note: This controller creates and manipulates its own context.
 ///         Its parent context is the context of the vocabulary or collection passed into the initializer.
-///         Any data manipulation must be save on the parent context.
+///         Any data manipulation must be saved to the parent context to persist changes, see `saveChanges()`.
 class VocabularyViewController: UITableViewController {
     
-    weak var coordinator: VocabularyViewer?
+    weak var coordinator: (VocabularyViewer & VocabularyConnectionViewer)?
     
     private let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     private let vocabulary: Vocabulary
@@ -61,11 +25,11 @@ class VocabularyViewController: UITableViewController {
         return vocabulary.collection.user
     }
     
-    private var userAllTags: [String] {
+    var userAllTags: [String] {
         return user.tags.map({ $0.name })
     }
     
-    private var sortedCurrentTags: [String] {
+    var sortedCurrentTags: [String] {
         return vocabulary.tags.map({ $0.name }).sorted()
     }
     
@@ -76,7 +40,8 @@ class VocabularyViewController: UITableViewController {
     private var beforeChangeContext: NSManagedObjectContext?
     private var saveChangesBarButton: UIBarButtonItem?
     
-    var completion: ((CompletionAction) -> Void)?
+    /// The completion block that gets called after `saveChanges()`.
+    var saveCompletion: ((SaveResult) -> Void)?
     
     let indexPathSections: IndexPathSections<Section, Row> = {
         var sections = IndexPathSections<Section, Row>()
@@ -109,12 +74,42 @@ class VocabularyViewController: UITableViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupController()
     }
     
+    
+    /// Check if the vocabulary values has changed. In create mode, this always return `true`.
+    private func hasChanges() -> Bool  {
+        guard let before = beforeChangeVocabulary else { return true } // create mode
+        return Vocabulary.hasChanges(before: before, after: vocabulary)
+    }
+    
+    /// Save changes all changes in its own context.
+    @objc func saveChanges() {
+        vocabulary.native = vocabulary.native.trimmingCharacters(in: .whitespaces)
+        vocabulary.translation = vocabulary.translation.trimmingCharacters(in: .whitespaces)
+        vocabulary.note = vocabulary.note.trimmingCharacters(in: .whitespacesAndNewlines)
+        view.endEditing(true)
+        
+        if vocabulary.native.isEmpty {
+            animateTextFieldCelldInvalidInput(.native)
+            return
+        }
+        if vocabulary.translation.isEmpty {
+            animateTextFieldCelldInvalidInput(.translation)
+            return
+        }
+        
+        if hasChanges() {
+            context.quickSave()
+            context.parent?.quickSave()
+            saveCompletion?(.saved)
+        } else {
+            saveCompletion?(.ignored)
+        }
+    }
     
     @objc private func inputTextFieldTextChanged(_ textField: UITextField) {
         guard let input = Row(rawValue: textField.tag) else { return }
@@ -127,18 +122,6 @@ class VocabularyViewController: UITableViewController {
             fatalError("unknown text field text changed!!!")
         }
         toggleSaveButtonEnableStateIfNeeded()
-    }
-    
-    /// Check if the vocabulary values has changed. In create mode, this always return `true`.
-    private func hasChanges() -> Bool  {
-        guard let before = beforeChangeVocabulary else { return true } // create mode
-        return vocabulary.isFavorited != before.isFavorited
-            || vocabulary.politeness != before.politeness
-            || vocabulary.translation != before.translation
-            || vocabulary.native != before.native
-            || vocabulary.note != before.note
-            || vocabulary.tags.count != before.tags.count
-            || Set(vocabulary.tagNames()).isSubset(of: before.tagNames()) != true
     }
     
     func setPoliteness(_ politeness: Vocabulary.Politeness) {
@@ -290,8 +273,8 @@ extension VocabularyViewController {
             view.endEditing(true)
             coordinator?.selectTags(for: self, allTags: userAllTags, current: sortedCurrentTags)
         case .connection:
-            #warning("TODO: implement add relations and alternatives")
-            CustomAlert.showFeatureNotAvailable(presenter: self)
+            #warning("TODO: implement add connection")
+            coordinator?.viewVocabularyConnections(of: vocabulary)
         case .favorite, .note: ()
         }
     }
@@ -344,30 +327,7 @@ extension VocabularyViewController {
     }
     
     @objc private func cancelAction() {
-        completion?(.cancel)
-    }
-    
-    @objc func saveChanges() {
-        vocabulary.native = vocabulary.native.trimmingCharacters(in: .whitespaces)
-        vocabulary.translation = vocabulary.translation.trimmingCharacters(in: .whitespaces)
-        vocabulary.note = vocabulary.note.trimmingCharacters(in: .whitespacesAndNewlines)
-        view.endEditing(true)
-        
-        if vocabulary.native.isEmpty {
-            animateTextFieldCelldInvalidInput(.native)
-            return
-        }
-        if vocabulary.translation.isEmpty {
-            animateTextFieldCelldInvalidInput(.translation)
-            return
-        }
-        
-        if hasChanges() {
-            context.quickSave()
-            completion?(.save)
-        } else {
-            completion?(.cancel)
-        }
+        saveCompletion?(.ignored)
     }
 }
 
@@ -406,5 +366,41 @@ extension VocabularyViewController {
             default: ()
             }
         }
+    }
+}
+
+
+extension VocabularyViewController {
+    
+    /// View controlelr mode.
+    enum Mode {
+        /// View vocabulary mode.
+        case view(Vocabulary)
+        
+        /// Create vocabulary mode. Requires a collection for the vocabulary.
+        case create(VocabularyCollection)
+    }
+    
+    enum SaveResult {
+        case saved
+        case ignored
+    }
+    
+    /// Controller's table view section type.
+    enum Section: Int {
+        case vocabulary
+        case relation
+        case note
+    }
+    
+    /// Controller's table view row type in section.
+    enum Row: Int {
+        case native
+        case translation
+        case connection
+        case politeness
+        case favorite
+        case tag
+        case note
     }
 }
