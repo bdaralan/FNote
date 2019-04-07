@@ -28,8 +28,8 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     @NSManaged private(set) var connections: Set<VocabularyConnection>
     @NSManaged private(set) var tags: Set<Tag>
     
-    @NSManaged private(set) var sourceOf: VocabularyConnection?
-    @NSManaged private(set) var targetOf: VocabularyConnection?
+    @NSManaged private(set) var sourceOf: Set<VocabularyConnection>
+    @NSManaged private(set) var targetOf: Set<VocabularyConnection>
     
     var politeness: Politeness {
         set { politenessValue = Int64(newValue.rawValue) }
@@ -133,7 +133,7 @@ extension Vocabulary {
     /// Remove the connection between the given vocabulary and delete the connection object.
     /// - returns: The deleted `VocabularyConnection` if the connections was removed. Otherwise, `nil`.
     func removeConnection(with vocabulary: Vocabulary, type: VocabularyConnection.ConnectionType) -> VocabularyConnection? {
-        guard let connection = connections.first(where: { $0.type == type && $0.isConnection(of: (self, vocabulary)) }) else { return nil }
+        guard let connection = connections.first(where: { $0.type == type && $0.isConnection(of: self, and: vocabulary) }) else { return nil }
         switch type {
         case .related:
             self.relations.remove(vocabulary)
