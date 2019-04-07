@@ -13,11 +13,24 @@ class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
     
     let vocabularyCollectionCoordinator = VocabularyCollectionCoordinator(navigationController: .init())
     
+    var isTabBarHidden: Bool {
+        return tabBar.transform != .identity
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewControllers()
         setupUserAccountTokenChangedNotification()
+    }
+    
+    
+    func toggleTabBar(hide: Bool) {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else { return }
+            let tranform = hide ? CGAffineTransform(translationX: 0, y: self.tabBar.bounds.height) : .identity
+            self.tabBar.transform = tranform
+        }
     }
 }
 
