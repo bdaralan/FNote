@@ -10,12 +10,17 @@ import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+    static var `default`: AppDelegate? {
+        return UIApplication.shared.delegate as? AppDelegate
+    }
 
     var window: UIWindow?
+    let mainTabBarViewController = MainTabBarViewController()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = MainTabBarViewController()
+        window?.rootViewController = mainTabBarViewController
         window?.makeKeyAndVisible()
         CloudKitService.current.checkAccountStatus()
         return true
