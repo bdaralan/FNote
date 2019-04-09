@@ -13,8 +13,16 @@ class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
     
     let vocabularyCollectionCoordinator = VocabularyCollectionCoordinator(navigationController: .init())
     
-    var isTabBarHidden: Bool {
-        return tabBar.transform != .identity
+    var isTabBarVisible: Bool {
+        return tabBar.frame.origin.y < view.bounds.height
+    }
+    
+    private var tabBarOnScreenY: CGFloat {
+        return view.bounds.height - tabBar.bounds.height
+    }
+    
+    private var tabBarOffScreenY: CGFloat {
+        return view.bounds.height
     }
     
     
@@ -25,11 +33,11 @@ class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
     }
     
     
-    func toggleTabBar(hide: Bool) {
-        UIView.animate(withDuration: 0.3) { [weak self] in
+    func toggleTabBar(visible: Bool) {
+        guard visible != isTabBarVisible else { return }
+        UIView.animate(withDuration: 0.15) { [weak self] in
             guard let self = self else { return }
-            let tranform = hide ? CGAffineTransform(translationX: 0, y: self.tabBar.bounds.height) : .identity
-            self.tabBar.transform = tranform
+            self.tabBar.frame.origin.y = visible ? self.tabBarOnScreenY : self.tabBarOffScreenY
         }
     }
 }
