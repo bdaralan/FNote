@@ -28,13 +28,14 @@ public class Tag: NSManagedObject, LocalRecord {
     ///   - name: The name of the tag.
     ///   - colorHex: The color of the tag in hex. Must be 6 characters without # symbol.
     convenience init(name: String, colorHex: String?, user: User) {
-        self.init(context: user.managedObjectContext!)
+        let context = user.managedObjectContext!
+        self.init(context: context)
         self.user = user
         self.name = name
         self.colorHex = colorHex?.count == 6 ? colorHex! : "FFFFFF"
         vocabularies = []
         vocabularyCollections = []
-        recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
+        recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: context)
     }
     
     #warning("TODO: impelement check for duplicate before rename")

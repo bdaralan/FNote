@@ -37,7 +37,8 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     }
     
     
-    convenience init(collection: VocabularyCollection, context: NSManagedObjectContext) {
+    convenience init(collection: VocabularyCollection) {
+        let context = collection.managedObjectContext!
         self.init(context: context)
         self.collection = collection
         native = ""
@@ -48,7 +49,7 @@ public class Vocabulary: NSManagedObject, LocalRecord {
         alternatives = []
         tags = []
         connections = []
-        recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
+        recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: context)
         #warning("TODO: set collection and reconfigure its CKRecord")
     }
     
@@ -125,7 +126,7 @@ extension Vocabulary {
             vocabulary.alternatives.insert(self)
         }
         
-        let connection = VocabularyConnection(type: type, source: self, target: vocabulary, context: managedObjectContext!)
+        let connection = VocabularyConnection(type: type, source: self, target: vocabulary)
         connections.insert(connection)
         return connection
     }

@@ -29,7 +29,8 @@ public class VocabularyConnection: NSManagedObject, LocalRecord {
     }
     
     
-    convenience init(type: ConnectionType, source: Vocabulary, target: Vocabulary, context: NSManagedObjectContext) {
+    convenience init(type: ConnectionType, source: Vocabulary, target: Vocabulary) {
+        let context = source.managedObjectContext!
         self.init(context: context)
         self.type = type
         self.source = source

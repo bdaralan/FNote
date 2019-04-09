@@ -24,12 +24,13 @@ public class VocabularyCollection: NSManagedObject, LocalRecord {
     
     
     convenience init(user: User, name: String) {
-        self.init(context: user.managedObjectContext!)
+        let context = user.managedObjectContext!
+        self.init(context: context)
         self.user = user
         self.name = name
         vocabularies = []
         tags = []
-        recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: managedObjectContext!)
+        recordMetadata = RecordMetadata(recordType: recordType, recordName: nil, zone: recordZone, context: context)
     }
     
     #warning("TODO: impelement check for duplicate before rename")
