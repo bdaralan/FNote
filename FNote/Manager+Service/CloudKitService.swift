@@ -39,13 +39,11 @@ extension CloudKitService {
     static let ckVocabularyCollectionZone = CKRecordZone(zoneName: "VocabularyCollectionZone")
     
     /// The account token indicated that there is no account.
-    static var noAccountToken: String { return "00000-00000-00000-00000-00000" }
+    static var noAccountToken: String { return "<00000 00000 00000 00000 00000>" }
     
     /// The current account token. Return a `noAccountToken` if account is not available.
     static var accountToken: String {
-        var token = FileManager.default.ubiquityIdentityToken?.description ?? noAccountToken
-        token = token.trimmingCharacters(in: .symbols)
-        token = token.replacingOccurrences(of: " ", with: "-")
+        let token = FileManager.default.ubiquityIdentityToken?.description ?? noAccountToken
         return token
     }
 }
