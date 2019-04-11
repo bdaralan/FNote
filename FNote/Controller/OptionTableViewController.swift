@@ -10,7 +10,7 @@ import UIKit
 
 
 
-class OptionTableViewController: UITableViewController {
+class OptionTableViewController: UITableViewController, NavigationItemTogglable {
     
     let selectMode: SelectMode
     
@@ -56,9 +56,6 @@ class OptionTableViewController: UITableViewController {
     var doneCompletion: (() -> Void)?
     var cancelCompletion: (() -> Void)?
     
-    lazy var navCancelItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelSelecting))
-    lazy var navDoneItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneSelecting))
-    
     private var addNewOptionIndexPath: IndexPath {
         return .init(row: 0, section: 1)
     }
@@ -71,7 +68,6 @@ class OptionTableViewController: UITableViewController {
         self.options = options
         super.init(style: .grouped)
         navigationItem.title = title
-        setupNavItems(showCancel: true, showDone: true, animated: false)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -109,6 +105,14 @@ class OptionTableViewController: UITableViewController {
         let updatedOption = Option(name: newName, isSelected: options[index].isSelected)
         options[index] = updatedOption
         renameOptionCompletion?(currentOption, updatedOption)
+    }
+    
+    func doneBarItemTapped() {
+        doneCompletion?()
+    }
+    
+    func cancelBarItemTapped() {
+        cancelCompletion?()
     }
 }
 
@@ -252,21 +256,6 @@ extension OptionTableViewController {
         tableView.backgroundColor = .offWhiteBackground
         tableView.registerCell(TextFieldCell.self)
         tableView.rowHeight = 44
-    }
-    
-    func setupNavItems(showCancel: Bool, showDone: Bool, animated: Bool) {
-        let leftItem = showCancel ? navCancelItem : nil
-        let rightItem = showDone ? navDoneItem : nil
-        navigationItem.setLeftBarButton(leftItem, animated: animated)
-        navigationItem.setRightBarButton(rightItem, animated: animated)
-    }
-    
-    @objc private func doneSelecting() {
-        doneCompletion?()
-    }
-    
-    @objc private func cancelSelecting() {
-        cancelCompletion?()
     }
 }
 

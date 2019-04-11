@@ -12,7 +12,7 @@ import CoreData
 
 class VocabularyCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-    weak var coordinator: (VocabularyViewer & UserProfileViewer & VocabularyConnectionViewer)?
+    weak var coordinator: (VocabularyViewer & UserProfileViewer)?
     
     private(set) var collection: VocabularyCollection?
     private(set) var fetchController: NSFetchedResultsController<Vocabulary>?
@@ -36,12 +36,6 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         super.viewDidLoad()
         setupController()
         setupNavItems()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        guard let mainTabBar = AppDelegate.default?.mainTabBarViewController, mainTabBar.isTabBarHidden else { return }
-        mainTabBar.toggleTabBar(hide: false)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -102,7 +96,8 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     private func cellConnectionButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         #warning("TODO: implement")
         guard let vocabulary = fetchController?.object(at: indexPath) else { return }
-        coordinator?.viewVocabularyConnections(of: vocabulary)
+        let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
+        coordinator?.selectVocabularyConnection(for: vocabularyVC)
     }
     
     private func cellPolitenessButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
@@ -120,7 +115,16 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         #warning("TODO: implement")
         guard let vocabulary = fetchController?.object(at: indexPath) else { return }
         let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
-        coordinator?.selectTags(for: vocabularyVC, allTags: vocabularyVC.userAllTags, current: vocabularyVC.sortedCurrentTags)
+        coordinator?.selectTags(for: vocabularyVC, current: vocabularyVC.currentTags, existingTags: vocabularyVC.existingTags)
+    }
+    
+    @objc private func userProfileButtonTapped() {
+        coordinator?.viewUserProfile()
+    }
+    
+    @objc private func addVocabularyButtonTapped() {
+        guard let collection = collection else { return }
+        coordinator?.addNewVocabulary(to: collection)
     }
 }
 
@@ -147,7 +151,6 @@ extension VocabularyCollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let vocabluary = fetchController?.object(at: indexPath) else { return }
-        AppDelegate.default?.mainTabBarViewController.toggleTabBar(hide: true)
         coordinator?.viewVocabulary(vocabluary)
     }
 }
@@ -205,14 +208,5 @@ extension VocabularyCollectionViewController {
         let addVocab = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addVocabularyButtonTapped))
         navigationItem.leftBarButtonItem = userProfile
         navigationItem.rightBarButtonItems = [addVocab]
-    }
-    
-    @objc private func userProfileButtonTapped() {
-        coordinator?.viewUserProfile()
-    }
-    
-    @objc private func addVocabularyButtonTapped() {
-        guard let collection = collection else { return }
-        coordinator?.addNewVocabulary(to: collection)
     }
 }

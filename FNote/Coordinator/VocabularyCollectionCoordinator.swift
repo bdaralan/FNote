@@ -10,17 +10,13 @@ import UIKit
 import CoreData
 
 
-class VocabularyCollectionCoordinator: Coordinator {
+class VocabularyCollectionCoordinator: NSObject, Coordinator, UINavigationControllerDelegate {
     
     var children: [Coordinator] = []
     
     var navigationController: UINavigationController
     
     var vocabularyCollectionVC: VocabularyCollectionViewController!
-    
-    var collectionContext: NSManagedObjectContext? {
-        return vocabularyCollectionVC.collection?.managedObjectContext
-    }
     
     
     init(navigationController: UINavigationController) {
@@ -35,22 +31,42 @@ class VocabularyCollectionCoordinator: Coordinator {
         let collection = coreData.fetchVocabularyCollection(recordName: recordName, context: coreData.mainContext)
         vocabularyCollectionVC = VocabularyCollectionViewController(collection: collection)
         vocabularyCollectionVC.coordinator = self
+        navigationController.delegate = self
         navigationController.tabBarItem = UITabBarItem(title: "Collection", image: .tabBarVocabCollection, tag: 0)
         navigationController.pushViewController(vocabularyCollectionVC, animated: false)
+    }
+    
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        guard viewController !== vocabularyCollectionVC, navigationController.viewControllers.contains(viewController) else { return }
+        AppDelegate.default?.mainTabBarViewController.toggleTabBar(visible: false)
+    }
+    
+    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        guard viewController === vocabularyCollectionVC else { return }
+        AppDelegate.default?.mainTabBarViewController.toggleTabBar(visible: true)
     }
 }
 
 
+// MARK: - Vocabulary Viewer
 extension VocabularyCollectionCoordinator: VocabularyViewer {
+    
+    func addNewVocabulary(to collection: VocabularyCollection) {
+        let vocabularyVC = VocabularyViewController(mode: .create(collection))
+        let embedNavController = vocabularyVC.embedNavigationController()
+        vocabularyVC.coordinator = self
+        vocabularyVC.navigationItem.title = "New Vocabulary"
+        vocabularyVC.saveCompletion = { (result) in
+            embedNavController.dismiss(animated: true, completion: nil)
+        }
+        navigationController.present(embedNavController, animated: true, completion: nil)
+    }
     
     func viewVocabulary(_ vocabulary: Vocabulary) {
         let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
         vocabularyVC.coordinator = self
         vocabularyVC.navigationItem.title = "Vocabulary"
-        vocabularyVC.completion = { [weak self] (action) in
-            if action == .save {
-                self?.collectionContext?.quickSave()
-            }
+        vocabularyVC.saveCompletion = { [weak self] (result) in
             self?.navigationController.popViewController(animated: true)
         }
         navigationController.pushViewController(vocabularyVC, animated: true)
@@ -59,55 +75,49 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
     func selectPoliteness(for vocabularyVC: VocabularyViewController, current: Vocabulary.Politeness) {
         let politenesses = Vocabulary.Politeness.allCases
         let options = politenesses.map({ OptionTableViewController.Option(name: $0.string, isSelected: $0 == current) })
+        
         let optionVC = OptionTableViewController(selectMode: .single, options: options, title: "Politeness")
         
-        if let navController = vocabularyVC.navigationController {
-            optionVC.setupNavItems(showCancel: false, showDone: false, animated: false)
+        if let embedNavController = vocabularyVC.navigationController {
             optionVC.selectCompletion = { (index) in
                 vocabularyVC.setPoliteness(politenesses[index])
-                navController.popViewController(animated: true)
+                embedNavController.popViewController(animated: true)
             }
             optionVC.cancelCompletion = {
-                navController.popViewController(animated: true)
+                embedNavController.popViewController(animated: true)
             }
-            navController.pushViewController(optionVC, animated: true)
+            embedNavController.pushViewController(optionVC, animated: true)
             
         } else {
-            let optionNavController = optionVC.withNavController()
-            optionVC.setupNavItems(showCancel: true, showDone: false, animated: false)
+            let embedNavController = optionVC.embedNavigationController()
+            optionVC.toggleNavigationItems(showCancel: true, showDone: false, animated: false)
+            optionVC.cancelCompletion = {
+                embedNavController.dismiss(animated: true, completion: nil)
+            }
             optionVC.selectCompletion = { (index) in
-                vocabularyVC.completion = { [weak self] (result) in
-                    guard result == .save else { return }
-                    self?.collectionContext?.quickSave()
-                }
                 vocabularyVC.setPoliteness(politenesses[index])
                 vocabularyVC.saveChanges()
-                optionNavController.dismiss(animated: true, completion: nil)
-            }
-            optionVC.cancelCompletion = {
-                optionNavController.dismiss(animated: true, completion: nil)
+                embedNavController.dismiss(animated: true, completion: nil)
             }
 
             if UIDevice.current.userInterfaceIdiom == .pad {
                 let width = UIViewController.preferredContentSizeWidth()
                 let height = optionVC.tableView.rowHeight * CGFloat(options.count) + 70
-                optionNavController.preferredContentSize = CGSize(width: width, height: height)
-                optionNavController.modalPresentationStyle = .formSheet
+                embedNavController.preferredContentSize = CGSize(width: width, height: height)
+                embedNavController.modalPresentationStyle = .formSheet
             }
-            navigationController.present(optionNavController, animated: true, completion: nil)
+            navigationController.present(embedNavController, animated: true, completion: nil)
         }
     }
     
-    func selectTags(for vocabularyVC: VocabularyViewController, allTags: [String], current: [String]) {
-        let options = allTags.map({ OptionTableViewController.Option(name: $0, isSelected: current.contains($0)) })
+    func selectTags(for vocabularyVC: VocabularyViewController, current: [String], existingTags: [String]) {
+        let options = existingTags.map({ OptionTableViewController.Option(name: $0, isSelected: current.contains($0)) })
         let optionVC = OptionTableViewController(selectMode: .multiple, options: options, title: "Tags")
         optionVC.allowDeleteOption = true
         optionVC.allowRenameOption = true
         optionVC.allowAddNewOption = true
         optionVC.newOptionMaxCharacterCount = Tag.nameMaxCharacterCount
         optionVC.newOptionPlaceholder = "Add New Tag"
-        
-        optionVC.sortOptions(reloaded: false)
         
         optionVC.selectCompletion = { (index) in
             vocabularyVC.addTag(name: optionVC.options[index].name, create: false)
@@ -132,43 +142,25 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
             }
         }
         
-        if let navController = vocabularyVC.navigationController {
-            optionVC.setupNavItems(showCancel: false, showDone: false, animated: false)
-            navController.pushViewController(optionVC, animated: true)
+        if let embedNavController = vocabularyVC.navigationController {
+            embedNavController.pushViewController(optionVC, animated: true)
         } else {
-            let optionVCNavController = optionVC.withNavController()
-            optionVC.setupNavItems(showCancel: false, showDone: true, animated: false)
-            optionVC.doneCompletion = {
-                optionVCNavController.dismiss(animated: true, completion: nil)
+            let embebNavController = optionVC.embedNavigationController()
+            optionVC.toggleNavigationItems(showCancel: true, showDone: true, animated: false)
+            optionVC.cancelCompletion = {
+                embebNavController.dismiss(animated: true, completion: nil)
+            }
+            optionVC.doneCompletion = { 
+                vocabularyVC.saveChanges()
+                embebNavController.dismiss(animated: true, completion: nil)
             }
             
             if UIDevice.current.userInterfaceIdiom == .pad {
-                optionVCNavController.modalPresentationStyle = .formSheet
+                embebNavController.modalPresentationStyle = .formSheet
             }
-            navigationController.present(optionVCNavController, animated: true, completion: nil)
+            navigationController.present(embebNavController, animated: true, completion: nil)
         }
     }
-}
-
-
-extension VocabularyCollectionCoordinator: VocabularyAdder {
-    
-    func addNewVocabulary(to collection: VocabularyCollection) {
-        let vocabularyVC = VocabularyViewController(mode: .create(collection))
-        vocabularyVC.coordinator = self
-        vocabularyVC.navigationItem.title = "New Vocabulary"
-        vocabularyVC.completion = { [weak self] (action) in
-            if action == .save {
-                self?.collectionContext?.quickSave()
-            }
-            vocabularyVC.dismiss(animated: true, completion: nil)
-        }
-        navigationController.present(vocabularyVC.withNavController(), animated: true, completion: nil)
-    }
-}
-
-
-extension VocabularyCollectionCoordinator: VocabularyRemover {
     
     func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, sender: UIView) {
         guard collection.vocabularies.contains(vocabulary) else { return }
@@ -188,21 +180,41 @@ extension VocabularyCollectionCoordinator: VocabularyRemover {
         }
         navigationController.present(alert, animated: true, completion: nil)
     }
+    
+    func selectVocabularyConnection(for vocabularyVC: VocabularyViewController) {
+        let connectionVC = VocabularyConnectionViewController(sourceVocabularyID: vocabularyVC.vocabularyObjectID, context: vocabularyVC.context)
+        
+        if navigationController.topViewController is VocabularyViewController {
+            navigationController.pushViewController(connectionVC, animated: true)
+        } else {
+            let embedNavController = connectionVC.embedNavigationController()
+            connectionVC.toggleNavigationItems(showCancel: true, showDone: true, animated: false)
+            connectionVC.cancelCompletion = {
+                embedNavController.dismiss(animated: true, completion: nil)
+            }
+            connectionVC.doneCompletion = {
+                embedNavController.dismiss(animated: true, completion: nil)
+            }
+            navigationController.present(embedNavController, animated: true, completion: nil)
+        }
+    }
 }
 
 
+// MARK: - User Profile Viewer
 extension VocabularyCollectionCoordinator: UserProfileViewer {
     
     func viewUserProfile() {
-        let collectionListVC = UserProfileViewController(user: CoreDataStack.current.user())
+        let user = CoreDataStack.current.user()
+        let collectionListVC = UserProfileViewController(user: user)
         collectionListVC.doneTappedHandler = { [weak self] in
             self?.vocabularyCollectionVC.setCollection(collectionListVC.selectedCollection)
             collectionListVC.dismiss(animated: true, completion: nil)
         }
-        let collectionListVCWithNav = collectionListVC.withNavController()
+        let embedNavController = collectionListVC.embedNavigationController()
         if UIDevice.current.userInterfaceIdiom == .pad {
-            collectionListVCWithNav.modalPresentationStyle = .formSheet
+            embedNavController.modalPresentationStyle = .formSheet
         }
-        navigationController.present(collectionListVCWithNav, animated: true, completion: nil)
+        navigationController.present(embedNavController, animated: true, completion: nil)
     }
 }

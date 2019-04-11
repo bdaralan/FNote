@@ -36,7 +36,7 @@ public class VocabularyConnection: NSManagedObject, LocalRecord {
         self.source = source
         self.target = target
         self.vocabularies = [source, target]
-        let recordName = "\(source.recordMetadata.recordName)+\(target.recordMetadata.recordName)"
+        let recordName = "\(source.recordMetadata.recordName)+\(target.recordMetadata.recordName)=\(type.rawValue)"
         recordMetadata = RecordMetadata(recordType: recordType, recordName: recordName, zone: recordZone, context: context)
     }
     
@@ -68,26 +68,15 @@ extension VocabularyConnection {
     }
     
     /// - warning: These values should not be changed because they must be matched with the database.
-    enum ConnectionType: LocalRecord.DatabaseIntegerEnum, CaseIterable {
+    enum ConnectionType: LocalRecord.DatabaseIntegerEnum, CaseIterable, TextDisplayable {
         case related
         case alternative
-    }
-}
-
-
-extension VocabularyConnection {
-    
-    /// Fetch `VocabularConnection` from the given context.
-    /// - parameters:
-    ///   - context: The context to fetch from.
-    ///   - type: The connection type.
-    ///   - vocabularies: The source and target of the connection.
-    /// - returns: Array of matched connections or empty.
-    static func fetch(from context: NSManagedObjectContext, type: VocabularyConnection.ConnectionType, vocabularies: (Vocabulary, Vocabulary)) -> [VocabularyConnection] {
-        let request: NSFetchRequest<VocabularyConnection> = VocabularyConnection.fetchRequest()
-        let format = "connectionType == %@ AND vocabularies contains[c] AND vocabularies contains[c]"
-        request.predicate = NSPredicate(format: format, vocabularies.0, vocabularies.1, type.rawValue)
-        let connections = try? context.fetch(request)
-        return connections ?? []
+        
+        var displayText: String {
+            switch self {
+            case .alternative: return "Alternative"
+            case .related: return "Related"
+            }
+        }
     }
 }

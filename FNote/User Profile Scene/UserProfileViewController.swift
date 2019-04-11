@@ -73,7 +73,7 @@ class UserProfileViewController: UITableViewController {
             showDuplicateNameAlert(name: name)
         case .unique:
             cell.setTextField(text: "")
-            let collection = VocabularyCollection(user: user, name: name)
+            let collection = VocabularyCollection(name: name, user: user)
             if collections.isEmpty {
                 selectedCollection = collection
                 let appDefaults = AppDefaults.standard

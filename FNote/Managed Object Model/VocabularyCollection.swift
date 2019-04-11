@@ -23,7 +23,7 @@ public class VocabularyCollection: NSManagedObject, LocalRecord {
     @NSManaged private(set) var tags: Set<Tag>
     
     
-    convenience init(user: User, name: String) {
+    convenience init(name: String, user: User) {
         let context = user.managedObjectContext!
         self.init(context: context)
         self.user = user
