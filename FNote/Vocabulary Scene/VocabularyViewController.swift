@@ -16,20 +16,30 @@ import CoreData
 ///         Any data manipulation must be saved to the parent context to persist changes, see `saveChanges()`.
 class VocabularyViewController: UITableViewController {
     
-    weak var coordinator: (VocabularyViewer & VocabularyConnectionViewer)?
+    weak var coordinator: VocabularyViewer?
     
-    private let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+    /// The parent context that any changes should save to.
+    let parentContext: NSManagedObjectContext
+    
+    /// The context that controller is working on.
+    let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+    
+    /// The vocabulary to work on. This vocabulary is in the controller context.
     private let vocabulary: Vocabulary
     
     private var user: User {
         return vocabulary.collection.user
     }
     
-    var userAllTags: [String] {
-        return user.tags.map({ $0.name })
+    var vocabularyObjectID: NSManagedObjectID {
+        return vocabulary.objectID
     }
     
-    var sortedCurrentTags: [String] {
+    var existingTags: [String] {
+        return user.tags.map({ $0.name }).sorted()
+    }
+    
+    var currentTags: [String] {
         return vocabulary.tags.map({ $0.name }).sorted()
     }
     
@@ -37,7 +47,6 @@ class VocabularyViewController: UITableViewController {
     
     /// The vocabulary values before changed. In create mode, this value is always `nil`.
     private var beforeChangeVocabulary: Vocabulary?
-    private var beforeChangeContext: NSManagedObjectContext?
     private var saveChangesBarButton: UIBarButtonItem?
     
     /// The completion block that gets called after `saveChanges()`.
@@ -46,26 +55,31 @@ class VocabularyViewController: UITableViewController {
     let indexPathSections: IndexPathSections<Section, Row> = {
         var sections = IndexPathSections<Section, Row>()
         sections.addSection(type: .vocabulary, items: [.native, .translation])
-        sections.addSection(type: .relation, items: [.favorite, .connection, .politeness, .tag])
+        sections.addSection(type: .relation, items: [.favorite, .politeness, .connection, .tag])
         sections.addSection(type: .note, items: [.note])
         return sections
     }()
     
     
     /// Construct a vocabulary viewer or adder based on the specified mode.
+    /// - note: The controller will create a new context to work on so that changes will not affect the original context until save.
+    ///         If need to pass around the vocabulary, make sure to use an appropriate context.
+    ///         Access the `vocabulary` from the controller for the same context.
     init(mode: Mode) {
         switch mode {
         case .view(let vocabulary):
-            context.parent = vocabulary.managedObjectContext!
+            parentContext = vocabulary.managedObjectContext!
+            context.parent = parentContext
             self.vocabulary = context.object(with: vocabulary.objectID) as! Vocabulary
-            beforeChangeContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-            beforeChangeContext?.parent = context.parent
-            beforeChangeVocabulary = beforeChangeContext?.object(with: vocabulary.objectID) as? Vocabulary
+            beforeChangeVocabulary = vocabulary
+        
         case .create(let collection):
-            context.parent = collection.managedObjectContext!
+            parentContext = collection.managedObjectContext!
+            context.parent = parentContext
             let collection = context.object(with: collection.objectID) as! VocabularyCollection
-            vocabulary = Vocabulary(collection: collection, context: context)
+            vocabulary = Vocabulary(collection: collection)
         }
+        
         super.init(style: .grouped)
         setupNavItems(mode: mode)
     }
@@ -77,51 +91,6 @@ class VocabularyViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupController()
-    }
-    
-    
-    /// Check if the vocabulary values has changed. In create mode, this always return `true`.
-    private func hasChanges() -> Bool  {
-        guard let before = beforeChangeVocabulary else { return true } // create mode
-        return Vocabulary.hasChanges(before: before, after: vocabulary)
-    }
-    
-    /// Save changes all changes in its own context.
-    @objc func saveChanges() {
-        vocabulary.native = vocabulary.native.trimmingCharacters(in: .whitespaces)
-        vocabulary.translation = vocabulary.translation.trimmingCharacters(in: .whitespaces)
-        vocabulary.note = vocabulary.note.trimmingCharacters(in: .whitespacesAndNewlines)
-        view.endEditing(true)
-        
-        if vocabulary.native.isEmpty {
-            animateTextFieldCelldInvalidInput(.native)
-            return
-        }
-        if vocabulary.translation.isEmpty {
-            animateTextFieldCelldInvalidInput(.translation)
-            return
-        }
-        
-        if hasChanges() {
-            context.quickSave()
-            context.parent?.quickSave()
-            saveCompletion?(.saved)
-        } else {
-            saveCompletion?(.ignored)
-        }
-    }
-    
-    @objc private func inputTextFieldTextChanged(_ textField: UITextField) {
-        guard let input = Row(rawValue: textField.tag) else { return }
-        switch input {
-        case .native:
-            vocabulary.native = textField.text ?? ""
-        case .translation:
-            vocabulary.translation = textField.text ?? ""
-        case .connection, .politeness, .favorite, .tag, .note:
-            fatalError("unknown text field text changed!!!")
-        }
-        toggleSaveButtonEnableStateIfNeeded()
     }
     
     func setPoliteness(_ politeness: Vocabulary.Politeness) {
@@ -137,7 +106,7 @@ class VocabularyViewController: UITableViewController {
     ///   - name: The name of the tag to be added.
     ///   - create: Pass `true` to create a new tag if it does not exist.
     func addTag(name: String, create: Bool) {
-        guard sortedCurrentTags.contains(name) == false else { return }
+        guard currentTags.contains(name) == false else { return }
         if vocabulary.addTag(existingName: name) == nil, create {
             vocabulary.addTag(newName: name, colorHex: nil)
         }
@@ -169,11 +138,59 @@ class VocabularyViewController: UITableViewController {
     
     private func computeEstimatedTagCellSizes() -> [CGSize] {
         let label = UILabel()
-        return sortedCurrentTags.map {
+        return currentTags.map {
             let width = label.estimatedWidth(for: $0) + 16
             let size = CGSize(width: width < 45 ? 45 : width, height: 30)
             return size
         }
+    }
+    
+    /// Check if the vocabulary values has changed. In create mode, this always return `true`.
+    private func hasChanges() -> Bool  {
+        guard let before = beforeChangeVocabulary else { return true } // create mode
+        return Vocabulary.hasChanges(before: before, after: vocabulary)
+    }
+    
+    /// Save changes all changes in its own context.
+    @objc func saveChanges() {
+        vocabulary.native = vocabulary.native.trimmingCharacters(in: .whitespaces)
+        vocabulary.translation = vocabulary.translation.trimmingCharacters(in: .whitespaces)
+        vocabulary.note = vocabulary.note.trimmingCharacters(in: .whitespacesAndNewlines)
+        view.endEditing(true)
+        
+        if vocabulary.native.isEmpty {
+            animateTextFieldCelldInvalidInput(.native)
+            return
+        }
+        if vocabulary.translation.isEmpty {
+            animateTextFieldCelldInvalidInput(.translation)
+            return
+        }
+        
+        if hasChanges() {
+            context.quickSave()
+            parentContext.quickSave()
+            saveCompletion?(.saved)
+        } else {
+            saveCompletion?(.ignored)
+        }
+    }
+    
+    @objc private func cancelAction() {
+        saveCompletion?(.ignored)
+    }
+    
+    @objc private func inputTextFieldTextChanged(_ textField: UITextField) {
+        guard let input = Row(rawValue: textField.tag) else { return }
+        switch input {
+        case .native:
+            vocabulary.native = textField.text ?? ""
+        case .translation:
+            vocabulary.translation = textField.text ?? ""
+        case .connection, .politeness, .favorite, .tag, .note:
+            fatalError("unknown text field text changed!!!")
+        }
+        toggleSaveButtonEnableStateIfNeeded()
     }
 }
 
@@ -244,7 +261,7 @@ extension VocabularyViewController {
             cell.collectionViewTappedHandler = { [weak self] in
                 guard let self = self else { return }
                 tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
-                self.coordinator?.selectTags(for: self, allTags: self.userAllTags, current: self.sortedCurrentTags)
+                self.coordinator?.selectTags(for: self, current: self.currentTags, existingTags: self.existingTags)
             }
             cell.accessoryType = .disclosureIndicator
             return cell
@@ -271,10 +288,10 @@ extension VocabularyViewController {
             coordinator?.selectPoliteness(for: self, current: vocabulary.politeness)
         case .tag:
             view.endEditing(true)
-            coordinator?.selectTags(for: self, allTags: userAllTags, current: sortedCurrentTags)
+            coordinator?.selectTags(for: self, current: currentTags, existingTags: existingTags)
         case .connection:
-            #warning("TODO: implement add connection")
-            coordinator?.viewVocabularyConnections(of: vocabulary)
+            view.endEditing(true)
+            coordinator?.selectVocabularyConnection(for: self)
         case .favorite, .note: ()
         }
     }
@@ -296,7 +313,7 @@ extension VocabularyViewController: UICollectionViewDataSource, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueRegisteredCell(VocabularyCollectionViewTagCell.self, for: indexPath)
-        cell.reload(tagName: sortedCurrentTags[indexPath.row])
+        cell.reload(tagName: currentTags[indexPath.row])
         return cell
     }
 }
@@ -324,10 +341,6 @@ extension VocabularyViewController {
             navigationItem.rightBarButtonItem = add
         }
         navigationItem.largeTitleDisplayMode = .never
-    }
-    
-    @objc private func cancelAction() {
-        saveCompletion?(.ignored)
     }
 }
 
@@ -372,7 +385,7 @@ extension VocabularyViewController {
 
 extension VocabularyViewController {
     
-    /// View controlelr mode.
+    /// View controller mode.
     enum Mode {
         /// View vocabulary mode.
         case view(Vocabulary)
