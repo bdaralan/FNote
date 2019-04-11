@@ -12,7 +12,7 @@ import UIKit
 extension UIViewController {
     
     /// Create a navigation controller and set the view controller as its root view controller.
-    func withNavController() -> UINavigationController {
+    func embedNavigationController() -> UINavigationController {
         return UINavigationController(rootViewController: self)
     }
     
