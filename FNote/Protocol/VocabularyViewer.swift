@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 
 /// A protocol with a set of methods to create, update, and delete vocabluary.
@@ -16,9 +17,11 @@ protocol VocabularyViewer: AnyObject {
     
     func viewVocabulary(_ vocabulary: Vocabulary)
     
+    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, sender: UIView)
+    
     func selectPoliteness(for vocabularyVC: VocabularyViewController, current: Vocabulary.Politeness)
     
-    func selectTags(for vocabularyVC: VocabularyViewController, allTags: [String], current: [String])
+    func selectTags(for vocabularyVC: VocabularyViewController, current: [String], existingTags: [String])
     
-    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, sender: UIView)
+    func selectVocabularyConnection(for vocabularyVC: VocabularyViewController)
 }
