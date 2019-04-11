@@ -184,8 +184,8 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
     func selectVocabularyConnection(for vocabularyVC: VocabularyViewController) {
         let connectionVC = VocabularyConnectionViewController(sourceVocabularyID: vocabularyVC.vocabularyObjectID, context: vocabularyVC.context)
         
-        if navigationController.topViewController is VocabularyViewController {
-            navigationController.pushViewController(connectionVC, animated: true)
+        if let embedNavController = vocabularyVC.navigationController {
+            embedNavController.pushViewController(connectionVC, animated: true)
         } else {
             let embedNavController = connectionVC.embedNavigationController()
             connectionVC.toggleNavigationItems(showCancel: true, showDone: true, animated: false)
