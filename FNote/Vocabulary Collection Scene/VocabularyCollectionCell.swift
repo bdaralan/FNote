@@ -24,12 +24,14 @@ class VocabularyCollectionCell: UICollectionViewCell {
     let nativeLabel: UILabel = {
         let lbl = UILabel()
         lbl.font = UIFont.preferredFont(forTextStyle: .title1)
+        lbl.text = "<native>"
         return lbl
     }()
     
     let translationLabel: UILabel = {
         let lbl = UILabel()
         lbl.font = UIFont.preferredFont(forTextStyle: .title1)
+        lbl.text = "<translation>"
         return lbl
     }()
     
