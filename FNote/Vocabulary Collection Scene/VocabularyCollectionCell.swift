@@ -44,8 +44,13 @@ class VocabularyCollectionCell: UICollectionViewCell {
     let deleteButton: UIButton = createStackViewButton(image: .trashCan)
     let tagButton: UIButton = createStackViewButton(image: .tag)
     
+    /// All vocabluary's attribute buttons.
+    var allButtons: [UIButton] {
+        return [favoriteButton] + stackViewButtons
+    }
+    
     var stackViewButtons: [UIButton] { // leading to trailing order
-        return [politenessButton, tagButton, connectionButton, deleteButton]
+        return [politenessButton, connectionButton, tagButton, deleteButton]
     }
     
     let buttonStackView: UIStackView = {
