@@ -56,6 +56,14 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     func tagNames() -> [String] {
         return tags.map({ $0.name })
     }
+    
+    /// Connected vocabularies for the connection type.
+    func connectedVocabularies(for connectionType: VocabularyConnection.ConnectionType? = nil) -> [Vocabulary] {
+        return connections.compactMap { (connection) -> Vocabulary? in
+            guard connection.type == connectionType else { return nil }
+            return connection.source === self ? connection.target : connection.source
+        }
+    }
 }
 
 
@@ -127,7 +135,8 @@ extension Vocabulary {
         }
         
         let connection = VocabularyConnection(type: type, source: self, target: vocabulary)
-        connections.insert(connection)
+        self.connections.insert(connection)
+        vocabulary.connections.insert(connection)
         return connection
     }
     
