@@ -1,5 +1,5 @@
 //
-//  UserProfileViewer.swift
+//  UserProfileViewable.swift
 //  FNote
 //
 //  Created by Dara Beng on 3/13/19.
@@ -9,7 +9,7 @@
 import Foundation
 
 
-protocol UserProfileViewer: AnyObject {
+protocol UserProfileViewable: AnyObject {
     
     func viewUserProfile()
 }

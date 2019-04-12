@@ -1,5 +1,5 @@
 //
-//  VocabularyViewer.swift
+//  VocabularyViewable.swift
 //  FNote
 //
 //  Created by Dara Beng on 2/17/19.
@@ -11,7 +11,7 @@ import CoreData
 
 
 /// A protocol with a set of methods to create, update, and delete vocabluary.
-protocol VocabularyViewer: AnyObject {
+protocol VocabularyViewable: AnyObject {
     
     func addNewVocabulary(to collection: VocabularyCollection)
     
