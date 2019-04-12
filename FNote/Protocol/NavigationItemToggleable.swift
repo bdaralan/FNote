@@ -1,5 +1,5 @@
 //
-//  NavigationItemTogglable.swift
+//  NavigationItemToggleable.swift
 //  FNote
 //
 //  Created by Dara Beng on 4/7/19.
@@ -10,7 +10,7 @@ import UIKit
 
 
 /// Provide methods to show or hide a cancel and a done navigation bar item.
-@objc protocol NavigationItemTogglable: AnyObject {
+@objc protocol NavigationItemToggleable: AnyObject {
 
     var navigationItem: UINavigationItem { get }
     
@@ -25,7 +25,7 @@ import UIKit
 }
 
 
-extension NavigationItemTogglable {
+extension NavigationItemToggleable {
     
     /// Show or hide cancel and done navigation items.
     /// The left and right navigation items will be configured to cancel and done.
