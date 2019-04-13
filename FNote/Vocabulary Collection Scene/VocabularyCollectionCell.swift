@@ -24,14 +24,14 @@ class VocabularyCollectionCell: UICollectionViewCell {
     let nativeLabel: UILabel = {
         let lbl = UILabel()
         lbl.font = UIFont.preferredFont(forTextStyle: .title1)
-        lbl.text = "<native>"
+        lbl.text = " "
         return lbl
     }()
     
     let translationLabel: UILabel = {
         let lbl = UILabel()
         lbl.font = UIFont.preferredFont(forTextStyle: .title1)
-        lbl.text = "<translation>"
+        lbl.text = " "
         return lbl
     }()
     
@@ -86,9 +86,9 @@ class VocabularyCollectionCell: UICollectionViewCell {
     
     
     func reloadCell(with vocabulary: Vocabulary) {
-        nativeLabel.text = vocabulary.native
-        translationLabel.text = vocabulary.translation
-        favoriteButton.tintColor = UIColor(named: "favorite-vocab-\(vocabulary.isFavorited ? "true" : "false")")
+        nativeLabel.text = vocabulary.native.isEmpty ? " " : vocabulary.native
+        translationLabel.text = vocabulary.translation.isEmpty ? " " : vocabulary.translation
+        favoriteButton.tintColor = vocabulary.isFavorited ? .vocabularyFavoriteStarTrue : .vocabularyFavoriteStarFalse
         connectionButton.setTitle("\(vocabulary.connections.count)", for: .normal)
         tagButton.setTitle("\(vocabulary.tags.count)", for: .normal)
         reloadPolitenessButton(with: vocabulary.politeness)
