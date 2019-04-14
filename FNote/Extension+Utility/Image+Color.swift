@@ -17,6 +17,7 @@ extension UIImage {
     static var favorite: UIImage { return UIImage(named: "favorite")! }
     static var tag: UIImage { return UIImage(named: "tag")! }
     static var trashCan: UIImage { return UIImage(named: "trash-can")! }
+    static var more: UIImage { return UIImage(named: "more")! }
     
     // MARK: - Nav Item
     static var profileNavImagePlaceholder: UIImage { return UIImage(named: "nav-profile-img-placeholder")! }
@@ -35,4 +36,7 @@ extension UIColor {
     
     static let offWhiteBackground = UIColor(named: "off-white-background")
     static let uiControlTint = UISegmentedControl().tintColor
+    
+    static let vocabularyFavoriteStarTrue = UIColor(named: "favorite-vocab-true")
+    static let vocabularyFavoriteStarFalse = UIColor(named: "favorite-vocab-false")
 }
