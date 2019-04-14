@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 
-class VocabularyConnectionViewController: UICollectionViewController, NavigationItemTogglable {
+class VocabularyConnectionViewController: UICollectionViewController, NavigationItemToggleable {
     
     /// The source vocabulary's context.
     private let context: NSManagedObjectContext

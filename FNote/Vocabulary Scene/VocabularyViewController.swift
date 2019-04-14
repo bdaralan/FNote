@@ -16,7 +16,7 @@ import CoreData
 ///         Any data manipulation must be saved to the parent context to persist changes, see `saveChanges()`.
 class VocabularyViewController: UITableViewController {
     
-    weak var coordinator: VocabularyViewer?
+    weak var coordinator: VocabularyViewable?
     
     /// The parent context that any changes should save to.
     let parentContext: NSManagedObjectContext
@@ -98,7 +98,7 @@ class VocabularyViewController: UITableViewController {
         toggleSaveButtonEnableStateIfNeeded()
         let indexPath = indexPathSections.firstIndexPath(of: .politeness)!
         let cell = tableView.cellForRow(at: indexPath) as? VocabularySelectionCell
-        cell?.reloadCell(detail: politeness.string)
+        cell?.reloadCell(detail: politeness.displayText)
     }
     
     /// Add tag to the vocabulary.
@@ -153,19 +153,15 @@ class VocabularyViewController: UITableViewController {
     
     /// Save changes all changes in its own context.
     @objc func saveChanges() {
+        view.endEditing(true)
+        
         vocabulary.native = vocabulary.native.trimmingCharacters(in: .whitespaces)
         vocabulary.translation = vocabulary.translation.trimmingCharacters(in: .whitespaces)
         vocabulary.note = vocabulary.note.trimmingCharacters(in: .whitespacesAndNewlines)
-        view.endEditing(true)
         
-        if vocabulary.native.isEmpty {
-            animateTextFieldCelldInvalidInput(.native)
-            return
-        }
-        if vocabulary.translation.isEmpty {
-            animateTextFieldCelldInvalidInput(.translation)
-            return
-        }
+        animateTextFieldCelldInvalidInput(navtive: vocabulary.native.isEmpty, translation: vocabulary.translation.isEmpty)
+        
+        guard vocabulary.native.isEmpty == false, vocabulary.translation.isEmpty == false else { return }
         
         if hasChanges() {
             context.quickSave()
@@ -243,7 +239,7 @@ extension VocabularyViewController {
             return cell
         case .politeness:
             let cell = tableView.dequeueRegisteredCell(VocabularySelectionCell.self, for: indexPath)
-            cell.reloadCell(text: "Politeness", detail: vocabulary.politeness.string, image: .politeness)
+            cell.reloadCell(text: "Politeness", detail: vocabulary.politeness.displayText, image: .politeness)
             cell.accessoryType = .disclosureIndicator
             return cell
         case .favorite:
@@ -347,21 +343,21 @@ extension VocabularyViewController {
 
 extension VocabularyViewController {
     
-    private func animateTextFieldCelldInvalidInput(_ input: VocabularyViewController.Row) {
-        guard input == .native || input == .translation else { return }
-        guard let indexPath = indexPathSections.firstIndexPath(of: input) else { return }
-        let hapticFeedback = UINotificationFeedbackGenerator()
-        if let cell = tableView.cellForRow(at: indexPath) {
-            cell.contentView.shakeHorizontally()
+    private func animateTextFieldCelldInvalidInput(navtive: Bool, translation: Bool) {
+        let nativeIndexPath = indexPathSections.firstIndexPath(of: .native)!
+        let translationIndexPath = indexPathSections.firstIndexPath(of: .translation)!
+        
+        UIView.animate(withDuration: 0.2, animations: { [weak self] in
+            guard let self = self else { return }
+            self.tableView.scrollToRow(at: nativeIndexPath, at: .top, animated: false)
+        }) { [weak self] (finished) in
+            guard let self = self else { return }
+            let hapticFeedback = UINotificationFeedbackGenerator()
+            let nativeCell = self.tableView.cellForRow(at: nativeIndexPath) as? VocabularyTextFieldCell
+            let translationCell = self.tableView.cellForRow(at: translationIndexPath) as? VocabularyTextFieldCell
+            nativeCell?.markError(navtive, animated: navtive)
+            translationCell?.markError(translation, animated: translation)
             hapticFeedback.notificationOccurred(.error)
-        } else {
-            UIView.animate(withDuration: 0.2) { [weak self] in
-                guard let self = self else { return }
-                self.tableView.scrollToRow(at: indexPath, at: .top, animated: false)
-                let cell = self.tableView.cellForRow(at: indexPath)
-                cell?.contentView.shakeHorizontally()
-                hapticFeedback.notificationOccurred(.error)
-            }
         }
     }
     

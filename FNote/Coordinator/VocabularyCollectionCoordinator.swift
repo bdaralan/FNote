@@ -49,7 +49,7 @@ class VocabularyCollectionCoordinator: NSObject, Coordinator, UINavigationContro
 
 
 // MARK: - Vocabulary Viewer
-extension VocabularyCollectionCoordinator: VocabularyViewer {
+extension VocabularyCollectionCoordinator: VocabularyViewable {
     
     func addNewVocabulary(to collection: VocabularyCollection) {
         let vocabularyVC = VocabularyViewController(mode: .create(collection))
@@ -74,7 +74,7 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
     
     func selectPoliteness(for vocabularyVC: VocabularyViewController, current: Vocabulary.Politeness) {
         let politenesses = Vocabulary.Politeness.allCases
-        let options = politenesses.map({ OptionTableViewController.Option(name: $0.string, isSelected: $0 == current) })
+        let options = politenesses.map({ OptionTableViewController.Option(name: $0.displayText, isSelected: $0 == current) })
         
         let optionVC = OptionTableViewController(selectMode: .single, options: options, title: "Politeness")
         
@@ -162,9 +162,9 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
         }
     }
     
-    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, sender: UIView) {
+    func selectMoreActions(for vocabulary: Vocabulary, in collection: VocabularyCollection, sender: UIView) {
         guard collection.vocabularies.contains(vocabulary) else { return }
-        let alert = UIAlertController(title: "Delete Vocabulary", message: nil, preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "Actions", message: nil, preferredStyle: .actionSheet)
         let delete = UIAlertAction(title: "Delete", style: .destructive) { (action) in
             collection.managedObjectContext?.perform {
                 collection.managedObjectContext?.delete(vocabulary)
@@ -202,7 +202,7 @@ extension VocabularyCollectionCoordinator: VocabularyViewer {
 
 
 // MARK: - User Profile Viewer
-extension VocabularyCollectionCoordinator: UserProfileViewer {
+extension VocabularyCollectionCoordinator: UserProfileViewable {
     
     func viewUserProfile() {
         let user = CoreDataStack.current.user()
