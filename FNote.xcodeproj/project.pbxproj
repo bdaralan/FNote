@@ -28,13 +28,13 @@
 		B43FDF782239BF0100191392 /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43FDF772239BF0100191392 /* UserProfileViewController.swift */; };
 		B43FDF7A2239C69000191392 /* UserProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43FDF792239C69000191392 /* UserProfileHeaderView.swift */; };
 		B43FDF7C2239D22900191392 /* TextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43FDF7B2239D22900191392 /* TextFieldCell.swift */; };
-		B43FDF7E223A0AD500191392 /* UserProfileViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43FDF7D223A0AD500191392 /* UserProfileViewer.swift */; };
+		B43FDF7E223A0AD500191392 /* UserProfileViewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43FDF7D223A0AD500191392 /* UserProfileViewable.swift */; };
 		B4419DFE223C4F3200F0F3AB /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4419DFD223C4F3200F0F3AB /* String.swift */; };
 		B44CA61522485D010001177A /* CustomAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44CA61422485D010001177A /* CustomAlert.swift */; };
 		B450E81A22383016002EDC04 /* AppDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E81922383016002EDC04 /* AppDefaults.swift */; };
 		B450E82222384C72002EDC04 /* FNoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E82122384C72002EDC04 /* FNoteTests.swift */; };
 		B45AB9B12219C724009D337C /* VocabularyCollectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B02219C724009D337C /* VocabularyCollectionCoordinator.swift */; };
-		B45AB9B52219C7C1009D337C /* VocabularyViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B42219C7C1009D337C /* VocabularyViewer.swift */; };
+		B45AB9B52219C7C1009D337C /* VocabularyViewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B42219C7C1009D337C /* VocabularyViewable.swift */; };
 		B460297C21F3F0C1009C11DE /* OptionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B460297B21F3F0C1009C11DE /* OptionTableViewController.swift */; };
 		B464F663223B06A9007F906B /* UserGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = B464F662223B06A9007F906B /* UserGuide.swift */; };
 		B464F666223B0E6B007F906B /* add-collection-guide.json in Resources */ = {isa = PBXBuildFile; fileRef = B464F665223B0E6B007F906B /* add-collection-guide.json */; };
@@ -50,6 +50,7 @@
 		B48A620A21F2931E00C75A8C /* VocabularyTextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620921F2931E00C75A8C /* VocabularyTextFieldCell.swift */; };
 		B48A620C21F2B33000C75A8C /* VocabularySelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620B21F2B33000C75A8C /* VocabularySelectionCell.swift */; };
 		B48A620E21F2F4CF00C75A8C /* VocabularyNoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48A620D21F2F4CF00C75A8C /* VocabularyNoteCell.swift */; };
+		B4985AA62262B0D500E1EB2B /* AttributeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4985AA52262B0D500E1EB2B /* AttributeView.swift */; };
 		B49B72AA223AE77D0083C1DE /* DescriptionGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49B72A9223AE77D0083C1DE /* DescriptionGuideView.swift */; };
 		B4AD1A632225E30C00459D46 /* Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AD1A622225E30C00459D46 /* Animation.swift */; };
 		B4B1DC1F2244B85300297572 /* VocabularyTagCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B1DC1E2244B85300297572 /* VocabularyTagCell.swift */; };
@@ -57,7 +58,7 @@
 		B4B1DC232245754A00297572 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B1DC222245754A00297572 /* Label.swift */; };
 		B4B95FFE22441D0500B9560D /* add-vocabulary-guide.json in Resources */ = {isa = PBXBuildFile; fileRef = B4B95FFD22441D0500B9560D /* add-vocabulary-guide.json */; };
 		B4D5E69E222A2E33000C2DB3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D5E69D222A2E33000C2DB3 /* ViewController.swift */; };
-		B4DAC889225A668400536E65 /* NavigationItemTogglable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DAC888225A668400536E65 /* NavigationItemTogglable.swift */; };
+		B4DAC889225A668400536E65 /* NavigationItemToggleable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DAC888225A668400536E65 /* NavigationItemToggleable.swift */; };
 		B4EA7755223493CB00D5AD2C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EA7753223493CB00D5AD2C /* User.swift */; };
 		B4F03CEA21F62ADC004C4225 /* VocabularyCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F03CE821F62ADC004C4225 /* VocabularyCollection.swift */; };
 		B4F5C82C21F7B910007E8108 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4F5C82B21F7B910007E8108 /* CloudKit.framework */; };
@@ -101,7 +102,7 @@
 		B43FDF772239BF0100191392 /* UserProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
 		B43FDF792239C69000191392 /* UserProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileHeaderView.swift; sourceTree = "<group>"; };
 		B43FDF7B2239D22900191392 /* TextFieldCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldCell.swift; sourceTree = "<group>"; };
-		B43FDF7D223A0AD500191392 /* UserProfileViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewer.swift; sourceTree = "<group>"; };
+		B43FDF7D223A0AD500191392 /* UserProfileViewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewable.swift; sourceTree = "<group>"; };
 		B4419DFD223C4F3200F0F3AB /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		B44CA61422485D010001177A /* CustomAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlert.swift; sourceTree = "<group>"; };
 		B450E81922383016002EDC04 /* AppDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDefaults.swift; sourceTree = "<group>"; };
@@ -109,7 +110,7 @@
 		B450E82122384C72002EDC04 /* FNoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FNoteTests.swift; sourceTree = "<group>"; };
 		B450E82322384C72002EDC04 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B45AB9B02219C724009D337C /* VocabularyCollectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionCoordinator.swift; sourceTree = "<group>"; };
-		B45AB9B42219C7C1009D337C /* VocabularyViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyViewer.swift; sourceTree = "<group>"; };
+		B45AB9B42219C7C1009D337C /* VocabularyViewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyViewable.swift; sourceTree = "<group>"; };
 		B460297B21F3F0C1009C11DE /* OptionTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionTableViewController.swift; sourceTree = "<group>"; };
 		B464F662223B06A9007F906B /* UserGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGuide.swift; sourceTree = "<group>"; };
 		B464F665223B0E6B007F906B /* add-collection-guide.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "add-collection-guide.json"; sourceTree = "<group>"; };
@@ -125,6 +126,7 @@
 		B48A620921F2931E00C75A8C /* VocabularyTextFieldCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyTextFieldCell.swift; sourceTree = "<group>"; };
 		B48A620B21F2B33000C75A8C /* VocabularySelectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularySelectionCell.swift; sourceTree = "<group>"; };
 		B48A620D21F2F4CF00C75A8C /* VocabularyNoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyNoteCell.swift; sourceTree = "<group>"; };
+		B4985AA52262B0D500E1EB2B /* AttributeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributeView.swift; sourceTree = "<group>"; };
 		B49B72A9223AE77D0083C1DE /* DescriptionGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionGuideView.swift; sourceTree = "<group>"; };
 		B4AD1A622225E30C00459D46 /* Animation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animation.swift; sourceTree = "<group>"; };
 		B4B1DC1E2244B85300297572 /* VocabularyTagCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyTagCell.swift; sourceTree = "<group>"; };
@@ -132,7 +134,7 @@
 		B4B1DC222245754A00297572 /* Label.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		B4B95FFD22441D0500B9560D /* add-vocabulary-guide.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "add-vocabulary-guide.json"; sourceTree = "<group>"; };
 		B4D5E69D222A2E33000C2DB3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		B4DAC888225A668400536E65 /* NavigationItemTogglable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationItemTogglable.swift; sourceTree = "<group>"; };
+		B4DAC888225A668400536E65 /* NavigationItemToggleable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationItemToggleable.swift; sourceTree = "<group>"; };
 		B4EA7753223493CB00D5AD2C /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		B4F03CE821F62ADC004C4225 /* VocabularyCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollection.swift; sourceTree = "<group>"; };
 		B4F5C82921F7B8CA007E8108 /* FNote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FNote.entitlements; sourceTree = "<group>"; };
@@ -287,6 +289,7 @@
 				B48A620D21F2F4CF00C75A8C /* VocabularyNoteCell.swift */,
 				B4B1DC1E2244B85300297572 /* VocabularyTagCell.swift */,
 				B4B1DC202244BC8400297572 /* VocabularyCollectionViewTagCell.swift */,
+				B4985AA52262B0D500E1EB2B /* AttributeView.swift */,
 			);
 			path = "Vocabulary Scene";
 			sourceTree = "<group>";
@@ -332,10 +335,10 @@
 		B45AB9B62219C7F0009D337C /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
-				B45AB9B42219C7C1009D337C /* VocabularyViewer.swift */,
-				B43FDF7D223A0AD500191392 /* UserProfileViewer.swift */,
+				B45AB9B42219C7C1009D337C /* VocabularyViewable.swift */,
+				B43FDF7D223A0AD500191392 /* UserProfileViewable.swift */,
 				B464F66A223B689B007F906B /* GuideView.swift */,
-				B4DAC888225A668400536E65 /* NavigationItemTogglable.swift */,
+				B4DAC888225A668400536E65 /* NavigationItemToggleable.swift */,
 				B4FE5956225FC95E006A2E6E /* TextDisplayable.swift */,
 			);
 			path = Protocol;
@@ -493,11 +496,12 @@
 				B472F74222073EBF00761939 /* LocalRecord.swift in Sources */,
 				B472F74422076AE200761939 /* Coordinator.swift in Sources */,
 				B44CA61522485D010001177A /* CustomAlert.swift in Sources */,
+				B4985AA62262B0D500E1EB2B /* AttributeView.swift in Sources */,
 				B48A620E21F2F4CF00C75A8C /* VocabularyNoteCell.swift in Sources */,
 				B437BDB721F197E900A1B016 /* MainTabBarViewController.swift in Sources */,
 				B460297C21F3F0C1009C11DE /* OptionTableViewController.swift in Sources */,
 				B47A07412217D59500EE8856 /* Typealias.swift in Sources */,
-				B43FDF7E223A0AD500191392 /* UserProfileViewer.swift in Sources */,
+				B43FDF7E223A0AD500191392 /* UserProfileViewable.swift in Sources */,
 				B48A620221F23D2500C75A8C /* Image+Color.swift in Sources */,
 				B464F669223B4F34007F906B /* StringValidator.swift in Sources */,
 				B43FDF7A2239C69000191392 /* UserProfileHeaderView.swift in Sources */,
@@ -530,9 +534,9 @@
 				B4B1DC232245754A00297572 /* Label.swift in Sources */,
 				B4FE95A6224177F0002285BC /* Tag.swift in Sources */,
 				B40A802A21F595B500DCDF11 /* Vocabulary.swift in Sources */,
-				B45AB9B52219C7C1009D337C /* VocabularyViewer.swift in Sources */,
+				B45AB9B52219C7C1009D337C /* VocabularyViewable.swift in Sources */,
 				B48A620C21F2B33000C75A8C /* VocabularySelectionCell.swift in Sources */,
-				B4DAC889225A668400536E65 /* NavigationItemTogglable.swift in Sources */,
+				B4DAC889225A668400536E65 /* NavigationItemToggleable.swift in Sources */,
 				B40F58B122337C35008E0241 /* RecordMetadata.swift in Sources */,
 				B49B72AA223AE77D0083C1DE /* DescriptionGuideView.swift in Sources */,
 				B4FD2D96224AB595003274A3 /* Font.swift in Sources */,

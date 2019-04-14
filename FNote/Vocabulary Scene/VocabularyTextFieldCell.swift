@@ -26,6 +26,9 @@ class VocabularyTextFieldCell: UITableViewCell, UITextFieldDelegate {
         return lbl
     }()
     
+    let labelDefaultColor = UIColor.gray
+    let labelErrorColor = UIColor.red
+    
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -48,6 +51,12 @@ class VocabularyTextFieldCell: UITableViewCell, UITextFieldDelegate {
         textField.text = text
         textField.placeholder = placeholder
         label.text = placeholder
+    }
+    
+    func markError(_ error: Bool, animated: Bool) {
+        label.textColor = error ? labelErrorColor : labelDefaultColor
+        guard animated else { return }
+        contentView.shakeHorizontally()
     }
 }
 

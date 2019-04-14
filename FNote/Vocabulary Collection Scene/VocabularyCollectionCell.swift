@@ -11,15 +11,13 @@ import UIKit
 
 protocol VocabularyCollectionCellDelegate: AnyObject {
     
-    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapButton button: UIButton)
+    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapAttribute view: UIView)
 }
 
 
 class VocabularyCollectionCell: UICollectionViewCell {
     
     weak var delegate: VocabularyCollectionCellDelegate?
-    
-    private var politeness: Vocabulary.Politeness?
     
     let nativeLabel: UILabel = {
         let lbl = UILabel()
@@ -35,32 +33,17 @@ class VocabularyCollectionCell: UICollectionViewCell {
         return lbl
     }()
     
-    let favoriteButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setImage(.favorite, for: .normal)
-        return btn
-    }()
-    
-    let connectionButton: UIButton = createStackViewButton(image: .connection)
-    let politenessButton: UIButton = createStackViewButton(image: .politeness)
-    let deleteButton: UIButton = createStackViewButton(image: .trashCan)
-    let tagButton: UIButton = createStackViewButton(image: .tag)
+    let attributeStackView = UIStackView()
+    let tagView = AttributeView(image: .tag, label: nil)
+    let moreView = AttributeView(image: .more, label: nil)
+    let favoriteView = AttributeView(image: .favorite, label: nil)
+    let connectionView = AttributeView(image: .connection, label: nil)
+    let politenessView = AttributeView(image: .politeness, label: nil)
     
     /// All vocabluary's attribute buttons.
     var allButtons: [UIButton] {
-        return [favoriteButton] + stackViewButtons
+        return [favoriteView.button, politenessView.button, connectionView.button, tagView.button, favoriteView.button]
     }
-    
-    var stackViewButtons: [UIButton] { // leading to trailing order
-        return [politenessButton, connectionButton, tagButton, deleteButton]
-    }
-    
-    let buttonStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.spacing = 30
-        stack.tintColor = .black
-        return stack
-    }()
     
     let seperatorView: UIView = {
         let view = UIView()
@@ -72,6 +55,8 @@ class VocabularyCollectionCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupCell()
+        setupConstraints()
+        setupAttributeStackView()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -80,24 +65,24 @@ class VocabularyCollectionCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        guard let politeness = politeness else { return }
-        reloadPolitenessButton(with: politeness)
     }
     
     
     func reloadCell(with vocabulary: Vocabulary) {
         nativeLabel.text = vocabulary.native.isEmpty ? " " : vocabulary.native
         translationLabel.text = vocabulary.translation.isEmpty ? " " : vocabulary.translation
-        favoriteButton.tintColor = vocabulary.isFavorited ? .vocabularyFavoriteStarTrue : .vocabularyFavoriteStarFalse
-        connectionButton.setTitle("\(vocabulary.connections.count)", for: .normal)
-        tagButton.setTitle("\(vocabulary.tags.count)", for: .normal)
-        reloadPolitenessButton(with: vocabulary.politeness)
+        tagView.label.text = "\(vocabulary.tags.count)"
+        connectionView.label.text = "\(vocabulary.connections.count)"
+        politenessView.label.text = UIDevice.current.userInterfaceIdiom == .pad ? vocabulary.politeness.displayText : vocabulary.politeness.abbreviation
+        favoriteView.button.tintColor = vocabulary.isFavorited ? .vocabularyFavoriteStarTrue : .vocabularyFavoriteStarFalse
     }
     
-    func reloadPolitenessButton(with politeness: Vocabulary.Politeness) {
-        self.politeness = politeness
-        let title = bounds.width > 320 ? politeness.string : politeness.abbreviation
-        politenessButton.setTitle(title, for: .normal)
+    @objc private func buttonTapped(_ sender: AnyObject) {
+        if let button = sender as? UIButton {
+            delegate?.vocabularyCollectionCell(self, didTapAttribute: button)
+        } else if let gesture = sender as? UITapGestureRecognizer, let label = gesture.view {
+            delegate?.vocabularyCollectionCell(self, didTapAttribute: label)
+        }
     }
 }
 
@@ -105,8 +90,6 @@ class VocabularyCollectionCell: UICollectionViewCell {
 extension VocabularyCollectionCell {
     
     private func setupCell() {
-        setupConstraints()
-        setupButtonTapHandler()
         contentView.backgroundColor = .white
         contentView.layer.cornerRadius = 15
         contentView.layer.shadowOpacity = 0.1
@@ -115,55 +98,56 @@ extension VocabularyCollectionCell {
     }
     
     private func setupConstraints() {
-        contentView.addSubviews([politenessButton, translationLabel, nativeLabel, favoriteButton, buttonStackView, seperatorView])
+        contentView.addSubviews([translationLabel, nativeLabel, moreView, attributeStackView, seperatorView])
         
         let margin: CGFloat = 16
         let safeArea = contentView.safeAreaLayoutGuide
         let constraints = [
-            favoriteButton.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -margin),
-            favoriteButton.centerYAnchor.constraint(equalTo: nativeLabel.centerYAnchor),
-            favoriteButton.heightAnchor.constraint(equalToConstant: 30),
-            favoriteButton.widthAnchor.constraint(equalTo: favoriteButton.heightAnchor),
+            moreView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -margin),
+            moreView.centerYAnchor.constraint(equalTo: nativeLabel.centerYAnchor),
+            moreView.heightAnchor.constraint(equalToConstant: 30),
+            moreView.widthAnchor.constraint(equalTo: moreView.heightAnchor),
             
             nativeLabel.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: margin),
-            nativeLabel.trailingAnchor.constraint(equalTo: favoriteButton.leadingAnchor, constant: -8),
+            nativeLabel.trailingAnchor.constraint(equalTo: moreView.leadingAnchor, constant: -8),
             nativeLabel.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 8),
             
-            seperatorView.topAnchor.constraint(equalTo: nativeLabel.bottomAnchor, constant: 8), //4
+            seperatorView.topAnchor.constraint(equalTo: nativeLabel.bottomAnchor, constant: 8), // 4
             seperatorView.leadingAnchor.constraint(equalTo: nativeLabel.leadingAnchor),
-            seperatorView.trailingAnchor.constraint(equalTo: favoriteButton.trailingAnchor),
+            seperatorView.trailingAnchor.constraint(equalTo: moreView.trailingAnchor),
             seperatorView.heightAnchor.constraint(equalToConstant: 0.5),
             
             translationLabel.topAnchor.constraint(equalTo: seperatorView.bottomAnchor, constant: 8),
             translationLabel.leadingAnchor.constraint(equalTo: nativeLabel.leadingAnchor),
-            translationLabel.trailingAnchor.constraint(equalTo: nativeLabel.trailingAnchor),
-            
-            buttonStackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8),
-            buttonStackView.trailingAnchor.constraint(equalTo: favoriteButton.trailingAnchor),
-            buttonStackView.heightAnchor.constraint(equalToConstant: 30)
+            translationLabel.trailingAnchor.constraint(equalTo: nativeLabel.trailingAnchor)
         ]
         NSLayoutConstraint.activate(constraints)
-    }
-    
-    private func setupButtonTapHandler() {
-        let tapAction = #selector(buttonTapped(_:))
-        favoriteButton.addTarget(self, action: tapAction, for: .touchUpInside)
-        for button in stackViewButtons {
-            buttonStackView.addArrangedSubview(button)
-            button.addTarget(self, action: tapAction, for: .touchUpInside)
+        
+        // stack view constraints
+        attributeStackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8).isActive = true
+        attributeStackView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            attributeStackView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            attributeStackView.widthAnchor.constraint(equalToConstant: 600).isActive = true
+        } else {
+            attributeStackView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor).isActive = true
+            attributeStackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor).isActive = true
         }
     }
     
-    @objc private func buttonTapped(_ sender: UIButton) {
-        delegate?.vocabularyCollectionCell(self, didTapButton: sender)
-    }
-    
-    private static func createStackViewButton(image: UIImage) -> UIButton {
-        let button = UIButton(type: .system)
-        button.setImage(image, for: .normal)
-        button.contentHorizontalAlignment = .trailing
-        button.semanticContentAttribute = .forceRightToLeft
-        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 4)
-        return button
+    private func setupAttributeStackView() {
+        attributeStackView.distribution = .fillEqually
+        attributeStackView.tintColor = .black
+        
+        let attributeTappedAction = #selector(buttonTapped(_:))
+        moreView.button.addTarget(self, action: attributeTappedAction, for: .touchUpInside)
+        
+        for attributeView in [tagView, connectionView, politenessView, favoriteView] {
+            attributeStackView.addArrangedSubview(attributeView)
+            attributeView.button.addTarget(self, action: attributeTappedAction, for: .touchUpInside)
+            let tapGesture = UITapGestureRecognizer(target: self, action: attributeTappedAction)
+            attributeView.label.addGestureRecognizer(tapGesture)
+            attributeView.label.isUserInteractionEnabled = true
+        }
     }
 }

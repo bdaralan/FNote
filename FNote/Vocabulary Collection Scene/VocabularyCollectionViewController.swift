@@ -12,7 +12,7 @@ import CoreData
 
 class VocabularyCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-    weak var coordinator: (VocabularyViewer & UserProfileViewer)?
+    weak var coordinator: (VocabularyViewable & UserProfileViewable)?
     
     private(set) var collection: VocabularyCollection?
     private(set) var fetchController: NSFetchedResultsController<Vocabulary>?
@@ -84,7 +84,7 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         self.collection = collection
     }
     
-    private func cellFavoriteButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+    private func cellFavoriteAttributeTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         guard let vocabulary = fetchController?.object(at: indexPath) else { return }
         vocabulary.managedObjectContext?.perform {
             vocabulary.isFavorited.toggle()
@@ -93,25 +93,25 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         }
     }
     
-    private func cellConnectionButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+    private func cellConnectionAttributeTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         #warning("TODO: implement")
         guard let vocabulary = fetchController?.object(at: indexPath) else { return }
         let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
         coordinator?.selectVocabularyConnection(for: vocabularyVC)
     }
     
-    private func cellPolitenessButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+    private func cellPolitenessAttributeTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         guard let vocabulary = fetchController?.object(at: indexPath) else { return }
         let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
         coordinator?.selectPoliteness(for: vocabularyVC, current: vocabulary.politeness)
     }
     
-    private func cellDeleteButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+    private func cellMoreAttibuteTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         guard let collection = collection, let vocabulary = fetchController?.object(at: indexPath) else { return }
-        coordinator?.removeVocabulary(vocabulary, from: collection, sender: cell.deleteButton)
+        coordinator?.selectMoreActions(for: vocabulary, in: collection, sender: cell.moreView)
     }
     
-    private func cellTagButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+    private func cellTagAttributeTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         #warning("TODO: implement")
         guard let vocabulary = fetchController?.object(at: indexPath) else { return }
         let vocabularyVC = VocabularyViewController(mode: .view(vocabulary))
@@ -181,14 +181,19 @@ extension VocabularyCollectionViewController: NSFetchedResultsControllerDelegate
 
 extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
     
-    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapButton button: UIButton) {
+    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapAttribute view: UIView) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
-        switch button {
-        case cell.favoriteButton: cellFavoriteButtonTapped(cell: cell, indexPath: indexPath)
-        case cell.connectionButton: cellConnectionButtonTapped(cell: cell, indexPath: indexPath)
-        case cell.politenessButton: cellPolitenessButtonTapped(cell: cell, indexPath: indexPath)
-        case cell.deleteButton: cellDeleteButtonTapped(cell: cell, indexPath: indexPath)
-        case cell.tagButton: cellTagButtonTapped(cell: cell, indexPath: indexPath)
+        switch view {
+        case cell.favoriteView.button, cell.favoriteView.label:
+            cellFavoriteAttributeTapped(cell: cell, indexPath: indexPath)
+        case cell.connectionView.button, cell.connectionView.label:
+            cellConnectionAttributeTapped(cell: cell, indexPath: indexPath)
+        case cell.politenessView.button, cell.politenessView.label:
+            cellPolitenessAttributeTapped(cell: cell, indexPath: indexPath)
+        case cell.moreView.button, cell.moreView.label:
+            cellMoreAttibuteTapped(cell: cell, indexPath: indexPath)
+        case cell.tagView.button, cell.tagView.label:
+            cellTagAttributeTapped(cell: cell, indexPath: indexPath)
         default: ()
         }
     }
