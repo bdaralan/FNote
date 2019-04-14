@@ -159,9 +159,10 @@ class VocabularyViewController: UITableViewController {
         vocabulary.translation = vocabulary.translation.trimmingCharacters(in: .whitespaces)
         vocabulary.note = vocabulary.note.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        animateTextFieldCelldInvalidInput(navtive: vocabulary.native.isEmpty, translation: vocabulary.translation.isEmpty)
-        
-        guard vocabulary.native.isEmpty == false, vocabulary.translation.isEmpty == false else { return }
+        if vocabulary.native.isEmpty || vocabulary.translation.isEmpty {
+            animateTextFieldCelldInvalidInput(navtive: vocabulary.native.isEmpty, translation: vocabulary.translation.isEmpty)
+            return
+        }
         
         if hasChanges() {
             context.quickSave()

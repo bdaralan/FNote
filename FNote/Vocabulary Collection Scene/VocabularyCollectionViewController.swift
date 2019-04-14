@@ -160,10 +160,15 @@ extension VocabularyCollectionViewController: NSFetchedResultsControllerDelegate
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         switch type {
-        case .insert: collectionView.insertItems(at: [newIndexPath!])
-        case .update: collectionView.reloadItems(at: [indexPath!])
-        case .delete: collectionView.deleteItems(at: [indexPath!])
-        case .move: collectionView.moveItem(at: indexPath!, to: newIndexPath!)
+        case .insert:
+            collectionView.insertItems(at: [newIndexPath!])
+        case .update:
+            collectionView.reloadItems(at: [indexPath!])
+        case .delete:
+            collectionView.deleteItems(at: [indexPath!])
+        case .move:
+            collectionView.moveItem(at: indexPath!, to: newIndexPath!)
+            collectionView.reloadItems(at: [indexPath!, newIndexPath!])
         @unknown default: ()
         }
     }
