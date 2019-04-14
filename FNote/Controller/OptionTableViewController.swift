@@ -10,7 +10,7 @@ import UIKit
 
 
 
-class OptionTableViewController: UITableViewController, NavigationItemTogglable {
+class OptionTableViewController: UITableViewController, NavigationItemToggleable {
     
     let selectMode: SelectMode
     

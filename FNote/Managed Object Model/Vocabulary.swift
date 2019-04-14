@@ -93,13 +93,13 @@ extension Vocabulary {
     
     /// Vocabulary politeness value.
     /// - warning: These values should not be changed because they must be matched with the database.
-    enum Politeness: LocalRecord.DatabaseIntegerEnum, CaseIterable {
+    enum Politeness: LocalRecord.DatabaseIntegerEnum, CaseIterable, TextDisplayable {
         case undecided
         case informal
         case neutral
         case formal
         
-        var string: String {
+        var displayText: String {
             switch self {
             case .undecided: return "Undecided"
             case .informal: return "Informal"
