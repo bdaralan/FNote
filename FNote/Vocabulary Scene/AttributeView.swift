@@ -42,7 +42,8 @@ class AttributeView: UIView {
             button.widthAnchor.constraint(equalTo: button.heightAnchor),
             
             label.leadingAnchor.constraint(equalTo: button.trailingAnchor, constant: 8),
-            label.centerYAnchor.constraint(equalTo: button.centerYAnchor)
+            label.centerYAnchor.constraint(equalTo: button.centerYAnchor),
+            label.heightAnchor.constraint(equalTo: safeArea.heightAnchor)
         ]
         NSLayoutConstraint.activate(constraints)
     }
