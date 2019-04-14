@@ -17,11 +17,11 @@ protocol VocabularyViewable: AnyObject {
     
     func viewVocabulary(_ vocabulary: Vocabulary)
     
-    func removeVocabulary(_ vocabulary: Vocabulary, from collection: VocabularyCollection, sender: UIView)
-    
     func selectPoliteness(for vocabularyVC: VocabularyViewController, current: Vocabulary.Politeness)
     
     func selectTags(for vocabularyVC: VocabularyViewController, current: [String], existingTags: [String])
     
     func selectVocabularyConnection(for vocabularyVC: VocabularyViewController)
+    
+    func selectMoreActions(for vocabulary: Vocabulary, in collection: VocabularyCollection, sender: UIView)
 }
