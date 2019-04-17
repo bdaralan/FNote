@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="18D109" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14490.98" systemVersion="18E226" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="RecordMetadata" representedClassName=".RecordMetadata" syncable="YES">
         <attribute name="recordName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="recordType" optional="YES" attributeType="String" syncable="YES"/>
@@ -30,7 +30,7 @@
         <attribute name="politenessValue" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="translation" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="alternatives" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="alternatives" inverseEntity="Vocabulary" syncable="YES"/>
-        <relationship name="collection" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VocabularyCollection" inverseName="vocabularies" inverseEntity="VocabularyCollection" syncable="YES"/>
+        <relationship name="collection" maxCount="1" deletionRule="Nullify" destinationEntity="VocabularyCollection" inverseName="vocabularies" inverseEntity="VocabularyCollection" syncable="YES"/>
         <relationship name="connections" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="VocabularyConnection" inverseName="vocabularies" inverseEntity="VocabularyConnection" syncable="YES"/>
         <relationship name="recordMetadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RecordMetadata" inverseName="vocabulary" inverseEntity="RecordMetadata" syncable="YES"/>
         <relationship name="relations" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="relations" inverseEntity="Vocabulary" syncable="YES"/>
