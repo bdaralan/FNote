@@ -57,7 +57,9 @@ public class Vocabulary: NSManagedObject, LocalRecord {
         return tags.map({ $0.name })
     }
     
-    /// Connected vocabularies for the connection type.
+    /// Get all connected vocabularies for the specified connection type.
+    /// - parameter connectionType: The desired connection type. The default value is `nil` which means get all connection types.
+    /// - returns: Array of connected vocabularies or empty if there are no matches.
     func connectedVocabularies(for connectionType: VocabularyConnection.ConnectionType? = nil) -> [Vocabulary] {
         return connections.compactMap { (connection) -> Vocabulary? in
             guard connection.type == connectionType else { return nil }
@@ -122,21 +124,31 @@ extension Vocabulary {
 
 extension Vocabulary {
     
-    /// Add connection between the given vocabulary and create a connection object.
-    /// - returns: The `VocabularyConnection` created.
-    func addConnection(with vocabulary: Vocabulary, type: VocabularyConnection.ConnectionType) -> VocabularyConnection {
+    /// Add a connection with the given vocabulary.
+    ///
+    /// The connection will not be added if it already exists or the vocabularies are from different collections.
+    /// - returns: The added connection. Otherwise, `nil`.
+    func addConnection(with vocabulary: Vocabulary, type: VocabularyConnection.ConnectionType) -> VocabularyConnection? {
+        // if from different collection, ignore and return nil
+        guard collection.objectID == vocabulary.collection.objectID else { return nil }
+        
+        // if the source and target already connected, ignore and return nil. otherwise, add the connection
         switch type {
         case .related:
+            guard relations.contains(vocabulary) == false else { return nil }
             self.relations.insert(vocabulary)
             vocabulary.relations.insert(self)
         case .alternative:
+            guard alternatives.contains(vocabulary) == false else { return nil }
             self.alternatives.insert(vocabulary)
             vocabulary.alternatives.insert(self)
         }
         
+        // create the connection object
         let connection = VocabularyConnection(type: type, source: self, target: vocabulary)
         self.connections.insert(connection)
         vocabulary.connections.insert(connection)
+        
         return connection
     }
     
@@ -149,16 +161,16 @@ extension Vocabulary {
             self.relations.remove(vocabulary)
             vocabulary.relations.remove(self)
             managedObjectContext?.delete(connection)
-            return connection
         case .alternative:
             self.alternatives.remove(vocabulary)
             vocabulary.alternatives.remove(self)
             managedObjectContext?.delete(connection)
-            return connection
         }
+        return connection
     }
     
     /// Create and add the new tag to the vocabulary's tags.
+    ///
     /// If the given new name already exists in user's tags, no tag is created.
     /// - returns: The added tag if the tag is added. Otherwise, `nil`.
     @discardableResult

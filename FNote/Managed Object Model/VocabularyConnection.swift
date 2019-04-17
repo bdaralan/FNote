@@ -41,6 +41,7 @@ public class VocabularyConnection: NSManagedObject, LocalRecord {
     }
     
     
+    /// Check if the connection is a connection of the given vocabularies.
     func isConnection(of v1: Vocabulary, and v2: Vocabulary) -> Bool {
         return vocabularies.contains(v1) && vocabularies.contains(v2)
     }

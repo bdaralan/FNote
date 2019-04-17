@@ -20,6 +20,7 @@ class CoreDataStack {
     }()
     
     let persistentContainer: NSPersistentContainer
+    let persistentStoreUrl: URL
     
     var mainContext: NSManagedObjectContext {
         return persistentContainer.viewContext
@@ -31,7 +32,7 @@ class CoreDataStack {
     init(userAccountToken: String) {
         self.userAccountToken = userAccountToken
 
-        let persistentStoreUrl = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("\(userAccountToken).sqlite")
+        persistentStoreUrl = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("\(userAccountToken).sqlite")
         let options = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
         let isPersistentStoreExisted = FileManager.default.fileExists(atPath: persistentStoreUrl.path)
         
@@ -58,8 +59,9 @@ extension CoreDataStack {
         user.managedObjectContext?.quickSave()
     }
     
-    /// Fetch the current user from the given context.
-    /// The main context is used, if the given context is `nil`.
+    /// Get the current user from the given context.
+    ///
+    /// The main context is used, if the given context is `nil`. The defualt value is `nil`.
     func user(context: NSManagedObjectContext? = nil) -> User {
         let context = context ?? mainContext
         let request: NSFetchRequest<User> = User.fetchRequest()
@@ -68,7 +70,9 @@ extension CoreDataStack {
         return results.first!
     }
 
-    /// Fetch vocabulary collections from the given context. If `nil`, the default main context is used.
+    /// Fetch all vocabulary collections from the given context.
+    ///
+    /// The main context is used, if the given context is `nil`. The defualt value is `nil`.
     func fetchVocabularyCollections(from context: NSManagedObjectContext? = nil) -> [VocabularyCollection] {
         let context = context ?? mainContext
         let request: NSFetchRequest<VocabularyCollection> = VocabularyCollection.fetchRequest()
@@ -77,6 +81,11 @@ extension CoreDataStack {
         return results ?? []
     }
     
+    /// Fetch vocabulary collection with the given record name from the given context.
+    /// - parameters:
+    ///   - recordName: The collection's record name to fetch.
+    ///   - context: The context to fetch from.
+    /// - returns: The matched collection or `nil` if not found.
     func fetchVocabularyCollection(recordName: String, context: NSManagedObjectContext) -> VocabularyCollection? {
         let request: NSFetchRequest<VocabularyCollection> = VocabularyCollection.fetchRequest()
         request.predicate = NSPredicate(format: "recordMetadata.recordName == %@", recordName)

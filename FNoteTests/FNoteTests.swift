@@ -12,10 +12,18 @@ import CoreData
 
 
 class FNoteTests: XCTestCase {
+    
+    var coreData: CoreDataStack!
+    var mainContext: NSManagedObjectContext!
 
     override func setUp() {
+        coreData = CoreDataStack(userAccountToken: "user-test-account-token")
+        mainContext = coreData.mainContext
     }
 
     override func tearDown() {
+        try! FileManager.default.removeItem(at: coreData.persistentStoreUrl)
+        coreData = nil
+        mainContext = nil
     }
 }
