@@ -53,6 +53,7 @@ public class Vocabulary: NSManagedObject, LocalRecord {
         #warning("TODO: set collection and reconfigure its CKRecord")
     }
     
+    
     func tagNames() -> [String] {
         return tags.map({ $0.name })
     }
@@ -66,63 +67,6 @@ public class Vocabulary: NSManagedObject, LocalRecord {
             return connection.source === self ? connection.target : connection.source
         }
     }
-}
-
-
-extension Vocabulary {
-    
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Vocabulary> {
-        return NSFetchRequest<Vocabulary>(entityName: "Vocabulary")
-    }
-    
-    func recordValuesForServerKeys() -> [String : Any] {
-        return [
-            Key.native.stringValue: native,
-            Key.translation.stringValue: translation,
-            Key.note.stringValue: note,
-            Key.politeness.stringValue: politeness
-        ]
-    }
-    
-    enum Key: LocalRecord.DatabaseKey {
-        case native
-        case translation
-        case note
-        case politeness
-        case relations
-        case alternatives
-    }
-    
-    /// Vocabulary politeness value.
-    /// - warning: These values should not be changed because they must be matched with the database.
-    enum Politeness: LocalRecord.DatabaseIntegerEnum, CaseIterable, TextDisplayable {
-        case undecided
-        case informal
-        case neutral
-        case formal
-        
-        var displayText: String {
-            switch self {
-            case .undecided: return "Undecided"
-            case .informal: return "Informal"
-            case .neutral: return "Neutral"
-            case .formal: return "Formal"
-            }
-        }
-        
-        var abbreviation: String {
-            switch self {
-            case .undecided: return "U"
-            case .informal: return "I"
-            case .neutral: return "N"
-            case .formal: return "F"
-            }
-        }
-    }
-}
-
-
-extension Vocabulary {
     
     /// Add a connection with the given vocabulary.
     ///
@@ -195,6 +139,59 @@ extension Vocabulary {
         guard let tag = tags.first(where: { $0.name == name }) else { return nil }
         tags.remove(tag)
         return tag
+    }
+}
+
+
+extension Vocabulary {
+    
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Vocabulary> {
+        return NSFetchRequest<Vocabulary>(entityName: "Vocabulary")
+    }
+    
+    func recordValuesForServerKeys() -> [String : Any] {
+        return [
+            Key.native.stringValue: native,
+            Key.translation.stringValue: translation,
+            Key.note.stringValue: note,
+            Key.politeness.stringValue: politeness
+        ]
+    }
+    
+    enum Key: LocalRecord.DatabaseKey {
+        case native
+        case translation
+        case note
+        case politeness
+        case relations
+        case alternatives
+    }
+    
+    /// Vocabulary politeness value.
+    /// - warning: These values should not be changed because they must be matched with the database.
+    enum Politeness: LocalRecord.DatabaseIntegerEnum, CaseIterable, TextDisplayable {
+        case undecided
+        case informal
+        case neutral
+        case formal
+        
+        var displayText: String {
+            switch self {
+            case .undecided: return "Undecided"
+            case .informal: return "Informal"
+            case .neutral: return "Neutral"
+            case .formal: return "Formal"
+            }
+        }
+        
+        var abbreviation: String {
+            switch self {
+            case .undecided: return "U"
+            case .informal: return "I"
+            case .neutral: return "N"
+            case .formal: return "F"
+            }
+        }
     }
 }
 
