@@ -78,9 +78,6 @@ class VocabularyCollectionCell: UICollectionViewCell {
         connectionView.label.text = "\(vocabulary.connections.count)"
         politenessView.label.text = UIDevice.current.userInterfaceIdiom == .pad ? vocabulary.politeness.displayText : vocabulary.politeness.abbreviation
         favoriteView.button.tintColor = vocabulary.isFavorited ? .vocabularyFavoriteStarTrue : .vocabularyFavoriteStarFalse
-        
-        #warning("TESTCODE: remove this")
-        setHighlight(Bool.random(), color: nil)
     }
     
     /// Set cell highlighted state and color.
