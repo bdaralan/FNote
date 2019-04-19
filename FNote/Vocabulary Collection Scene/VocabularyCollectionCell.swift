@@ -45,11 +45,18 @@ class VocabularyCollectionCell: UICollectionViewCell {
         return [favoriteView.button, politenessView.button, connectionView.button, tagView.button, favoriteView.button]
     }
     
-    let seperatorView: UIView = {
+    let seperatorLine: UIView = {
         let view = UIView()
         view.backgroundColor = .lightGray
         return view
     }()
+    
+    private let highlightView: UIView = {
+        let view = UIView()
+        return view
+    }()
+    
+    let defaultHighlightColor = UIColor(colorHex: "DBFF98")
     
     
     override init(frame: CGRect) {
@@ -63,10 +70,6 @@ class VocabularyCollectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-    }
-    
     
     func reloadCell(with vocabulary: Vocabulary) {
         nativeLabel.text = vocabulary.native.isEmpty ? " " : vocabulary.native
@@ -75,6 +78,19 @@ class VocabularyCollectionCell: UICollectionViewCell {
         connectionView.label.text = "\(vocabulary.connections.count)"
         politenessView.label.text = UIDevice.current.userInterfaceIdiom == .pad ? vocabulary.politeness.displayText : vocabulary.politeness.abbreviation
         favoriteView.button.tintColor = vocabulary.isFavorited ? .vocabularyFavoriteStarTrue : .vocabularyFavoriteStarFalse
+        
+        #warning("TESTCODE: remove this")
+        setHighlight(Bool.random(), color: nil)
+    }
+    
+    /// Set cell highlighted state and color.
+    /// - parameters:
+    ///   - highlighted: Set `true` to highlight the cell.
+    ///   - color: The highlight color. Set `nil` to keep the current color.
+    func setHighlight(_ highlighted: Bool, color: UIColor?) {
+        highlightView.isHidden = !highlighted
+        guard let color = color else { return }
+        highlightView.backgroundColor = color
     }
     
     @objc private func buttonTapped(_ sender: AnyObject) {
@@ -95,14 +111,21 @@ extension VocabularyCollectionCell {
         contentView.layer.shadowOpacity = 0.1
         contentView.layer.shadowOffset = .zero
         contentView.layer.shadowColor = UIColor.black.cgColor
+        highlightView.layer.cornerRadius = contentView.layer.cornerRadius
+        highlightView.backgroundColor = defaultHighlightColor
     }
     
     private func setupConstraints() {
-        contentView.addSubviews([translationLabel, nativeLabel, moreView, attributeStackView, seperatorView])
+        contentView.addSubviews([highlightView, translationLabel, nativeLabel, moreView, attributeStackView, seperatorLine])
         
         let margin: CGFloat = 16
         let safeArea = contentView.safeAreaLayoutGuide
         let constraints = [
+            highlightView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            highlightView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            highlightView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            highlightView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
             moreView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -margin),
             moreView.centerYAnchor.constraint(equalTo: nativeLabel.centerYAnchor),
             moreView.heightAnchor.constraint(equalToConstant: 30),
@@ -112,12 +135,12 @@ extension VocabularyCollectionCell {
             nativeLabel.trailingAnchor.constraint(equalTo: moreView.leadingAnchor, constant: -8),
             nativeLabel.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 8),
             
-            seperatorView.topAnchor.constraint(equalTo: nativeLabel.bottomAnchor, constant: 8), // 4
-            seperatorView.leadingAnchor.constraint(equalTo: nativeLabel.leadingAnchor),
-            seperatorView.trailingAnchor.constraint(equalTo: moreView.trailingAnchor),
-            seperatorView.heightAnchor.constraint(equalToConstant: 0.5),
+            seperatorLine.topAnchor.constraint(equalTo: nativeLabel.bottomAnchor, constant: 8), // 4
+            seperatorLine.leadingAnchor.constraint(equalTo: nativeLabel.leadingAnchor),
+            seperatorLine.trailingAnchor.constraint(equalTo: moreView.trailingAnchor),
+            seperatorLine.heightAnchor.constraint(equalToConstant: 0.5),
             
-            translationLabel.topAnchor.constraint(equalTo: seperatorView.bottomAnchor, constant: 8),
+            translationLabel.topAnchor.constraint(equalTo: seperatorLine.bottomAnchor, constant: 8),
             translationLabel.leadingAnchor.constraint(equalTo: nativeLabel.leadingAnchor),
             translationLabel.trailingAnchor.constraint(equalTo: nativeLabel.trailingAnchor)
         ]
@@ -142,6 +165,7 @@ extension VocabularyCollectionCell {
         let attributeTappedAction = #selector(buttonTapped(_:))
         moreView.button.addTarget(self, action: attributeTappedAction, for: .touchUpInside)
         
+        // These view are in order that they will appear from leading to trailing
         for attributeView in [tagView, connectionView, politenessView, favoriteView] {
             attributeStackView.addArrangedSubview(attributeView)
             attributeView.button.addTarget(self, action: attributeTappedAction, for: .touchUpInside)
