@@ -332,8 +332,8 @@
 			children = (
 				B450E82122384C72002EDC04 /* FNoteTests.swift */,
 				6535DB5C2267C5E300BBE1D7 /* VocabularyTests.swift */,
-				B450E82322384C72002EDC04 /* Info.plist */,
 				664FD0FB226A5452009E1C72 /* VocabularyConnectionTests.swift */,
+				B450E82322384C72002EDC04 /* Info.plist */,
 			);
 			path = FNoteTests;
 			sourceTree = "<group>";
