@@ -12,6 +12,9 @@ import CoreData
 
 class VocabularyConnectionViewController: UICollectionViewController, NavigationItemToggleable {
     
+    /*
+     keep a reference to the context
+     */
     /// The source vocabulary's context.
     private let context: NSManagedObjectContext
     
@@ -21,6 +24,11 @@ class VocabularyConnectionViewController: UICollectionViewController, Navigation
     /// All vocabularies in the collection excluding the `sourceVocabulary`.
     private let selectableVocabularies: [Vocabulary]
     
+    /*
+     parameters:
+       - VocabularyConnection.ConnectionType: either .related or .alternative
+       - [Vocabulary]: an array of the selected vocab
+     */
     /// A dictionary of selected vocabularies based on the connection type.
     private(set) var selectedVocabulariesByType = [VocabularyConnection.ConnectionType: [Vocabulary]]()
     
@@ -29,6 +37,7 @@ class VocabularyConnectionViewController: UICollectionViewController, Navigation
     var doneCompletion: (() -> Void)?
     var cancelCompletion: (() -> Void)?
     
+    
     private let sourceVocabularyIndexPath = IndexPath(item: 0, section: 0)
     
     
@@ -36,15 +45,23 @@ class VocabularyConnectionViewController: UICollectionViewController, Navigation
     ///   - sourceVocabularyID: The `objectID` of the source vocabulary.
     ///   - context: The context to work on.
     init(sourceVocabularyID: NSManagedObjectID, context: NSManagedObjectContext) {
+        // create new context to work on
         self.context = context
+        
+        // fetching the source vocabulary using the ID and casting it to a Vocabulary
         self.sourceVocabulary = context.object(with: sourceVocabularyID) as! Vocabulary
         
+        // instantiate the controller
+        // iterate
         for connectionType in segmentView.connectionTypes {
             selectedVocabulariesByType[connectionType] = sourceVocabulary.connectedVocabularies(for: connectionType)
         }
+        
+        // make all vocabularies selectable except for the sourceVocabulary
         let allVocabualries = sourceVocabulary.collection.vocabularies
         selectableVocabularies = allVocabualries.subtracting([sourceVocabulary]).sorted(by: { $0.translation < $1.translation })
         
+        // for the layout and how the scene is displayed
         let layout = VocabularyCollectionViewFlowLayout()
         layout.headerReferenceSize = CGSize(width: 0, height: 35)
         layout.sectionHeadersPinToVisibleBounds = true
@@ -75,7 +92,9 @@ class VocabularyConnectionViewController: UICollectionViewController, Navigation
     }
 }
 
-
+/*
+ displaying all the cells
+ */
 extension VocabularyConnectionViewController {
     
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -97,10 +116,22 @@ extension VocabularyConnectionViewController {
         return header
     }
     
+    /*
+     item and row are interchangeable
+     populating the cell data
+     similar to vocabcollectionviewcontroller
+     */
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueRegisteredCell(VocabularyCollectionCell.self, for: indexPath)
         #warning("TODO: disable user interaction for vocabulary attribute buttons")
+        
+        
+        // reload sourceVocabulary
+        // use indexpath.item
         #warning("TODO: implement highlight cell")
+        
+        // reload cell
+        
         return cell
     }
     
