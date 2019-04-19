@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6535DB5D2267C5E300BBE1D7 /* VocabularyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6535DB5C2267C5E300BBE1D7 /* VocabularyTests.swift */; };
+		664FD0FC226A5452009E1C72 /* VocabularyConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664FD0FB226A5452009E1C72 /* VocabularyConnectionTests.swift */; };
 		B408105A223329130081919B /* VocabularyConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4081058223329130081919B /* VocabularyConnection.swift */; };
 		B40A802621F5917300DCDF11 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B40A802421F5917300DCDF11 /* DataModel.xcdatamodeld */; };
 		B40A802A21F595B500DCDF11 /* Vocabulary.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40A802821F595B500DCDF11 /* Vocabulary.swift */; };
@@ -81,6 +82,7 @@
 
 /* Begin PBXFileReference section */
 		6535DB5C2267C5E300BBE1D7 /* VocabularyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyTests.swift; sourceTree = "<group>"; };
+		664FD0FB226A5452009E1C72 /* VocabularyConnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyConnectionTests.swift; sourceTree = "<group>"; };
 		B4081058223329130081919B /* VocabularyConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyConnection.swift; sourceTree = "<group>"; };
 		B40A802521F5917300DCDF11 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		B40A802821F595B500DCDF11 /* Vocabulary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vocabulary.swift; sourceTree = "<group>"; };
@@ -331,6 +333,7 @@
 				B450E82122384C72002EDC04 /* FNoteTests.swift */,
 				6535DB5C2267C5E300BBE1D7 /* VocabularyTests.swift */,
 				B450E82322384C72002EDC04 /* Info.plist */,
+				664FD0FB226A5452009E1C72 /* VocabularyConnectionTests.swift */,
 			);
 			path = FNoteTests;
 			sourceTree = "<group>";
@@ -555,6 +558,7 @@
 			files = (
 				B450E82222384C72002EDC04 /* FNoteTests.swift in Sources */,
 				6535DB5D2267C5E300BBE1D7 /* VocabularyTests.swift in Sources */,
+				664FD0FC226A5452009E1C72 /* VocabularyConnectionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
