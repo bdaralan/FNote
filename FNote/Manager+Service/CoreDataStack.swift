@@ -19,17 +19,17 @@ class CoreDataStack {
         return model
     }()
     
-    let persistentContainer: NSPersistentContainer
     let persistentStoreUrl: URL
+    let persistentContainer: NSPersistentContainer
+    
+    private(set) var userAccountToken: String
     
     var mainContext: NSManagedObjectContext {
         return persistentContainer.viewContext
     }
     
-    private(set) var userAccountToken: String
     
-    
-    init(userAccountToken: String) {
+    private init(userAccountToken: String) {
         self.userAccountToken = userAccountToken
 
         persistentStoreUrl = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("\(userAccountToken).sqlite")
@@ -42,22 +42,10 @@ class CoreDataStack {
         guard isPersistentStoreExisted == false else { return }
         setupUserProfile(accountToken: userAccountToken)
     }
-    
-    func setPersistentStore(userAccountToken: String) {
-        guard self.userAccountToken != userAccountToken else { return }
-        CoreDataStack.current = CoreDataStack(userAccountToken: userAccountToken)
-    }
 }
 
 
 extension CoreDataStack {
-    
-    /// Create user profile on first time load.
-    func setupUserProfile(accountToken: String) {
-        let context = mainContext
-        let user = User(accountToken: accountToken, context: context)
-        user.managedObjectContext?.quickSave()
-    }
     
     /// Get the current user from the given context.
     ///
@@ -69,7 +57,7 @@ extension CoreDataStack {
         let results = try! context.fetch(request)
         return results.first!
     }
-
+    
     /// Fetch all vocabulary collections from the given context.
     ///
     /// The main context is used, if the given context is `nil`. The defualt value is `nil`.
@@ -91,5 +79,18 @@ extension CoreDataStack {
         request.predicate = NSPredicate(format: "recordMetadata.recordName == %@", recordName)
         let collections = try? context.fetch(request)
         return collections?.first
+    }
+    
+    /// Create user profile on first time load.
+    private func setupUserProfile(accountToken: String) {
+        let context = mainContext
+        let user = User(accountToken: accountToken, context: context)
+        user.managedObjectContext?.quickSave()
+    }
+    
+    /// Switch from the current user's core data to the given user's core data.
+    static func setPersistentStore(userAccountToken: String) {
+        guard current.userAccountToken != userAccountToken else { return }
+        CoreDataStack.current = CoreDataStack(userAccountToken: userAccountToken)
     }
 }
