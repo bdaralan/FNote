@@ -1,12 +1,13 @@
 # Developer Guideline
 
-An iOS application that makes note-taking process easier when learning languages.
+Welcome to FNote Project. The goal of the project is to build an iOS application that makes note-taking process easier when learning new languages.
 
-## Features
+## Core Features
 
-- Create
-- Save
-- Upload/Sync
+- Create/Update/Delete vocabulary collection, vocabulary, and tags.
+- Save data locally.
+- Upload data to the cloud.
+- Sync data across devices.
 
 ## Component Libraries
 
@@ -25,18 +26,19 @@ An iOS application that makes note-taking process easier when learning languages
 2. Clone the repository from [GitHub](https://github.com/iDara09/FNote)
    - Open up Terminal
    - `git clone https://github.com/iDara09/FNote.git`
+3. Navigate to the project directory and open `FNote.xcodeproj` to start developing.
 
 ## Project Organization
 
 The project organizes files and classes in a folder by their category and scene.
 
-For example, in a vocabulary collection scene folder will consist of all specific classes used to create the scene.
+For example, the Vocabulary Collection Scene folder will consist of all specific classes used to create the scene.
 
 On the other hand, for other classes that are not specific to a particular scene and are reusable elsewhere will be in their respective folders such as *Model*, *View*, or *Controller* folder.
 
 ### Project File Structure
 
-The following structure illustrates how the folders are organized where the bolded lists are folders and the inner lists are files.
+The following structure illustrates how the folders are organized. The bolded lists are folders and the inner lists are files.
 
 - **Vocabulary Collection Scene**
   - VocabularyCollectionViewController.swift
@@ -76,16 +78,14 @@ The following structure illustrates how the folders are organized where the bold
     - add-collection-guide.json
     - add-vocabulary-guide.json
 - **UnitTest**
-  - VocabularyCollectionTests.swift
   - VocabularyTests.swift
   - VocabularyConnectionTests.swift
-  - TagTests.swift
 
 ## FAQ
 
 ### How do I contribute?
 
-The repository is private at the moment.
+Contribution is not available at the moment.
 
 ## Support
 
