@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # User Manual <!-- omit in toc -->
 
 ## Contents <!-- omit in toc -->
