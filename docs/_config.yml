@@ -1,5 +1,5 @@
 theme: jekyll-theme-cayman
 github:
-  homepage: .index
+  homepage: ./index
   developer-guideline: ./DEVELOPERGUIDELINE
   user-manual: ./USERMANUAL
