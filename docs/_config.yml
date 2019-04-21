@@ -1,4 +1,4 @@
-theme: jekyll-theme-cayman
+theme: jekyll-theme-slate
 github:
   developer-guideline: ./DEVELOPERGUIDELINE
   user-manual: ./USERMANUAL
