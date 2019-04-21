@@ -1,3 +1,9 @@
+---
+layout: default
+title: User Manual
+description:
+---
+
 # User Manual <!-- omit in toc -->
 
 ## Contents <!-- omit in toc -->
@@ -50,12 +56,16 @@ With FNote, users can continue adding more vocabularies to their collections, an
 2. Under Vocabulary Collection section, tap the text field to name the collection.
 3. Tap 'Done' on the keyboard.
 
+![Create Vocabulary Collection](assets/usermanual/create-collection.png)
+
 ### Update Vocabulary Collection
 
 1. Navigate to user profile.
 2. Swipe left on the desired collection to be renamed.
 3. Tap the rename button.
 4. Rename the collection and tap 'Done' on the keyboard.
+
+![Update Vocabulary Collection](assets/usermanual/update-delete-collection.png)
 
 ### Delete Vocabulary Collection
 
@@ -65,6 +75,8 @@ With FNote, users can continue adding more vocabularies to their collections, an
 
 *Note*: Deleting a collection will also delete all vocabularies inside of it.
 
+![Delete Vocabulary Collection](assets/usermanual/update-delete-collection.png)
+
 ### Create Vocabulary
 
 1. Choose a collection.
@@ -72,11 +84,15 @@ With FNote, users can continue adding more vocabularies to their collections, an
 3. Fill in required fields.
 4. Tap the 'Add' button to add the vocabulary to the collection.
 
+![Create Vocabulary](assets/usermanual/create-vocabulary.png)
+
 ### Update Vocabulary
 
 1. Choose a vocabulary to update.
 2. Update the desired fields.
 3. Tap the 'Save' button to save changes.
+
+![Update Vocabulary](assets/usermanual/update-vocabulary.png)
 
 ### Delete Vocabulary
 
@@ -84,18 +100,22 @@ With FNote, users can continue adding more vocabularies to their collections, an
 2. Tap the more button represented by '•••'.
 3. Select 'Delete'.
 
+![Delete Vocabulary](assets/usermanual/delete-vocabulary.png)
+
 ### Create Tag
-
-#### While Adding or View Vocabulary <!-- omit in toc -->
-
-1. While adding or viewing vocabulary, tap the tag icon.
-2. Tap the text field to name the tag.
-3. Tap 'Done' on the keyboard.
 
 #### In User Profile <!-- omit in toc -->
 
 1. Navigate to user profile.
 2. Tap the text field under Tag section to name a new tag.
+3. Tap 'Done' on the keyboard.
+
+![Create Tag](assets/usermanual/create-tag.png)
+
+#### While Adding or View Vocabulary <!-- omit in toc -->
+
+1. While adding or viewing vocabulary, tap the tag icon.
+2. Tap the text field to name the tag.
 3. Tap 'Done' on the keyboard.
 
 ### Update Tag
@@ -105,11 +125,15 @@ With FNote, users can continue adding more vocabularies to their collections, an
 3. Tap the rename button.
 4. Rename the tag and tap 'Done' on the keyboard.
 
+![Update Tag](assets/usermanual/update-delete-tag.png)
+
 ### Delete Tag
 
 1. Find a tag to delete.
 2. Swipe left on the tag to be deleted.
 3. Tap the delete button.
+
+![Delete Tag](assets/usermanual/update-delete-tag.png)
 
 ### Connect Vocabulary
 
@@ -117,11 +141,19 @@ With FNote, users can continue adding more vocabularies to their collections, an
 2. Choose a connection type.
 3. Select one or more vocabularies to be connected.
 
+*Note*: The selected vocabulary is highlighted to indicate that the vocabulary is connected.
+
+![Connect Vocabulary](assets/usermanual/add-remove-connection.png)
+
 ### Disconnect Vocabulary
 
 1. While adding or viewing, tap the connection icon.
 2. Choose a connection type.
 3. Select one or more vocabularies to be disconnected.
+
+*Note*: The highlight of the selected vocabulary will be removed to indicate that the vocabulary is disconnected.
+
+![Disconnect Vocabulary](assets/usermanual/add-remove-connection.png)
 
 ### Sync Data Across Devices
 

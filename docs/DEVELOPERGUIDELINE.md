@@ -1,3 +1,9 @@
+---
+layout: default
+title: Developer Guideline
+description:
+---
+
 # Developer Guideline
 
 Welcome to FNote Project. The goal of the project is to build an iOS application that makes note-taking process easier when learning new languages.
