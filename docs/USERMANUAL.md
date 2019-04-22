@@ -1,7 +1,7 @@
 ---
 layout: default
 title: User Manual
-description:
+description: ""
 ---
 
 # User Manual <!-- omit in toc -->
@@ -30,11 +30,11 @@ description:
 
 Learning a new language is fun, but can also be very challenging. Usually, note-taking is involved in the process of learning new vocabulary or common phrases.
 
-Taking notes with a notebook or on an electronic device is one of many good ways to get started. However, as the collection of vocabularies or phrases grow larger, it can be harder to try to track down which vocabularies are related to which because they are either on different pages or there is no more space to insert another definition.
+Taking notes with a notebook or on an electronic device is one of many good ways to get started. However, as the collection of vocabularies or phrases grow larger, it can be hard to track down which vocabularies are related to which because they are either on different pages or there is no more space to insert another definition.
 
 Introducing **Foreign Note** (FNote), a mobile application with the ultimate goal to improve the experience of learning a new language. That is, to make note taking more convenient and easier than before. The core functionality allows users to write down phrases or words along with their corresponding definitions and save them into once place, called Collection where user can create as many as they needed. The user then can place a tag on a word or define whether a word is related to or an alternative of another word within their entire list of collections.
 
-With FNote, users can continue adding more vocabularies to their collections, and quickly search and filter through them as they please. Therefore, users will no longer need to fumble through unorganized notes or worry about running out of paper in the middle of their note-taking process.
+With FNote, users can continue adding more vocabularies to their collections, and quickly search and filter through them as they please. Therefore, users will no longer need to fumble through unorganized notes or worry about running out of paper in the middle of their note-taking process. In addition, all data are automatically synced across user's devices.
 
 ## Requirements
 
