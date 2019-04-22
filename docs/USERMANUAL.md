@@ -1,7 +1,7 @@
 ---
 layout: default
 title: User Manual
-description: ""
+description: " "
 ---
 
 # User Manual <!-- omit in toc -->

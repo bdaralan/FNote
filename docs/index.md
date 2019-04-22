@@ -4,7 +4,7 @@ title: CSULB CS Senior Project
 description: Introducing FNote, an iOS application that makes note-taking process easier when learning a language.
 ---
 
-# About Project
+# About FNote Project
 
 ## Developer
 
