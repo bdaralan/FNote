@@ -42,6 +42,7 @@
 		B464F666223B0E6B007F906B /* add-collection-guide.json in Resources */ = {isa = PBXBuildFile; fileRef = B464F665223B0E6B007F906B /* add-collection-guide.json */; };
 		B464F669223B4F34007F906B /* StringValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B464F668223B4F34007F906B /* StringValidator.swift */; };
 		B464F66B223B689B007F906B /* GuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B464F66A223B689B007F906B /* GuideView.swift */; };
+		B46D0078226FA16200C3E36B /* VocabularyConnectionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46D0077226FA16200C3E36B /* VocabularyConnectionTracker.swift */; };
 		B472F74222073EBF00761939 /* LocalRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B472F74122073EBF00761939 /* LocalRecord.swift */; };
 		B472F74422076AE200761939 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B472F74322076AE200761939 /* Coordinator.swift */; };
 		B47A07412217D59500EE8856 /* Typealias.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47A07402217D59500EE8856 /* Typealias.swift */; };
@@ -120,6 +121,7 @@
 		B464F665223B0E6B007F906B /* add-collection-guide.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "add-collection-guide.json"; sourceTree = "<group>"; };
 		B464F668223B4F34007F906B /* StringValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringValidator.swift; sourceTree = "<group>"; };
 		B464F66A223B689B007F906B /* GuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideView.swift; sourceTree = "<group>"; };
+		B46D0077226FA16200C3E36B /* VocabularyConnectionTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyConnectionTracker.swift; sourceTree = "<group>"; };
 		B472F74122073EBF00761939 /* LocalRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalRecord.swift; sourceTree = "<group>"; };
 		B472F74322076AE200761939 /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		B47A07402217D59500EE8856 /* Typealias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typealias.swift; sourceTree = "<group>"; };
@@ -262,6 +264,7 @@
 				B472F74122073EBF00761939 /* LocalRecord.swift */,
 				B464F662223B06A9007F906B /* UserGuide.swift */,
 				B464F668223B4F34007F906B /* StringValidator.swift */,
+				B46D0077226FA16200C3E36B /* VocabularyConnectionTracker.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -499,6 +502,7 @@
 			files = (
 				B4F5C82E21F7BF67007E8108 /* CloudKitService.swift in Sources */,
 				B4EA7755223493CB00D5AD2C /* User.swift in Sources */,
+				B46D0078226FA16200C3E36B /* VocabularyConnectionTracker.swift in Sources */,
 				B472F74222073EBF00761939 /* LocalRecord.swift in Sources */,
 				B472F74422076AE200761939 /* Coordinator.swift in Sources */,
 				B44CA61522485D010001177A /* CustomAlert.swift in Sources */,
