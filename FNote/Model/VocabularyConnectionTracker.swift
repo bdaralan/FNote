@@ -63,11 +63,12 @@ class VocabularyConnectionTracker {
         return trackerDictionary[connectionType] ?? []
     }
     
-    /// Check if a vocabulary is already tracked by the tracker.
+    /// Check if a vocabulary is tracked by the tracker.
     /// - Parameters:
     ///   - vocabulary: The vocabulary to check.
     ///   - connectionType: The connection type to check.
-    func hasTrackedVocabulary(_ vocabulary: Vocabulary, for connectionType: VocabularyConnection.ConnectionType) -> Bool {
+    /// - Complexity: O(1)
+    func contains(_ vocabulary: Vocabulary, for connectionType: VocabularyConnection.ConnectionType) -> Bool {
         return trackerDictionary[connectionType]?.contains(vocabulary) ?? false
     }
 }
