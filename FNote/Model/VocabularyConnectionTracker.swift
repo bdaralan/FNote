@@ -9,6 +9,7 @@
 import Foundation
 
 
+/// A tracker object used to keep track of vocabularies that should be connected with a source vocabulary.
 class VocabularyConnectionTracker {
     
     /// The source vocabulary that the tracker is tracking all connections for.
