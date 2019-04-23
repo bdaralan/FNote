@@ -22,15 +22,16 @@ class VocabularyConnectionTracker {
     private(set) var trackerDictionary = [VocabularyConnection.ConnectionType: Set<Vocabulary>]()
     
     
+    /// - Parameter vocabulary: The vocabulary that the tracker will track.
     init(vocabulary: Vocabulary) {
         self.vocabulary = vocabulary
         
-        // assign an empty set as the initial value
+        // initialize trackerDictionary with an empty set
         for connectionType in VocabularyConnection.ConnectionType.allCases {
             trackerDictionary[connectionType] = []
         }
         
-        // fill in the tracker with already connected vocabularies if any
+        // fill in the trackerDictionary with already connected vocabularies if any
         for connection in vocabulary.connections {
             let connectedVocabualry = connection.source == vocabulary ? connection.target : connection.source
             trackVocabulary(connectedVocabualry, connectionType: connection.type)
