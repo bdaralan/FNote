@@ -131,7 +131,19 @@ extension VocabularyConnectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard indexPath != sourceVocabularyIndexPath else { return }
+
         #warning("TODO: implement toggle connection")
+
+        // Get the selected vocab
+        let selectedVocab = selectableVocabularies[indexPath.item]
+        
+        // Checking to see if the selected vocab is in the tracker.
+        // If the user selected a vocab, track it. If the user selects it again, untrack it.
+        if connectionTracker.contains(selectedVocab, for: segmentView.selectedConnectionType) {
+            connectionTracker.removeTrackedVocabulary(selectedVocab, connectionType: segmentView.selectedConnectionType)
+        } else {
+            connectionTracker.trackVocabulary(selectedVocab, connectionType: segmentView.selectedConnectionType)
+        }
     }
 }
 
