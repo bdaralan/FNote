@@ -53,7 +53,7 @@ class CoreDataStack {
 extension CoreDataStack {
     
     /// Create user profile on first time load.
-    func setupUserProfile(accountToken: String) {
+    private func setupUserProfile(accountToken: String) {
         let context = mainContext
         let user = User(accountToken: accountToken, context: context)
         user.managedObjectContext?.quickSave()

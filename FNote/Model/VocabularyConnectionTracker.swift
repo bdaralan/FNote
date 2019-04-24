@@ -44,7 +44,9 @@ class VocabularyConnectionTracker {
     /// - Parameters:
     ///   - vocabulary: The vocabulary to be tracked.
     ///   - connectionType: The connection type for vocabulary to be tracked.
+    /// - Note: The vocabulary must be in the same collection.
     func trackVocabulary(_ vocabulary: Vocabulary, connectionType: VocabularyConnection.ConnectionType) {
+        guard self.vocabulary.collection.objectID == vocabulary.collection.objectID else { return }
         trackerDictionary[connectionType]?.insert(vocabulary)
     }
     
@@ -53,7 +55,9 @@ class VocabularyConnectionTracker {
     /// - Parameters:
     ///   - vocabulary: The vocabulary to be removed.
     ///   - connectionType: The connection type for the tracked vocabulary.
+    /// - Note: The vocabulary must be in the same collection.
     func removeTrackedVocabulary(_ vocabulary: Vocabulary, connectionType: VocabularyConnection.ConnectionType) {
+        guard self.vocabulary.collection.objectID == vocabulary.collection.objectID else { return }
         trackerDictionary[connectionType]?.remove(vocabulary)
     }
     
@@ -70,6 +74,7 @@ class VocabularyConnectionTracker {
     ///   - connectionType: The connection type to check.
     /// - Complexity: O(1)
     func contains(_ vocabulary: Vocabulary, for connectionType: VocabularyConnection.ConnectionType) -> Bool {
+        guard self.vocabulary.collection.objectID == vocabulary.collection.objectID else { return false }
         return trackerDictionary[connectionType]?.contains(vocabulary) ?? false
     }
 }
