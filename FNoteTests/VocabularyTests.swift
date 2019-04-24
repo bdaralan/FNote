@@ -3,15 +3,13 @@
 //  FNoteTests
 //
 //  Created by Brittney Witts on 4/15/19.
-//  Copyright © 2019 Dara Beng. All rights reserved.
+//  Copyright © 2019 Brittney Witts. All rights reserved.
 //
 
 import XCTest
 @testable import FNote
 import CoreData
 
-
-#warning("TODO: fix cannot run all test at once")
 class VocabularyTests: XCTestCase {
     
     var coreData: CoreDataStack {
@@ -21,7 +19,6 @@ class VocabularyTests: XCTestCase {
     var mainContext: NSManagedObjectContext {
         return CoreDataStack.current.mainContext
     }
-    
     
     override func setUp() {
         let testAccountToken = UUID().uuidString // a random-unique string
@@ -38,10 +35,12 @@ class VocabularyTests: XCTestCase {
     
     // Testing to make sure the Vocab is initializing with empty attributes
     func testVocabInitialization() {
-        // 1. Create a new vocab
-        let v1 = Vocabulary(context: mainContext)
+        //1. Create a Collection
+        let testCollection = VocabularyCollection(name: "Testing", user: coreData.user())
         
-        // 2. Print the starting attributes
+        // 2. Create a new vocab inside that collection
+        let v1 = Vocabulary(collection: testCollection)
+        
         // Testing Native
         XCTAssertEqual(v1.native, "", "Expected to be empty.")
         
@@ -52,7 +51,7 @@ class VocabularyTests: XCTestCase {
         XCTAssertEqual(v1.note, "", "Expected to be empty.")
         
         // Testing Politeness
-        XCTAssertEqual(v1.politeness, .undecided, "Expected to be empty.")
+        XCTAssertEqual(v1.politeness, .undecided, "Expected to be undecided.")
         
         // Testing Relations
         XCTAssertEqual(v1.relations.isEmpty, true, "Expected to be empty.")
@@ -76,8 +75,8 @@ class VocabularyTests: XCTestCase {
         XCTAssertThrowsError(try mainContext.save())
     }
     
-    // Testing cascade delete of a collection
-    func testCascadeDeleteofCollection() {
+    // Testing cascade delete of vocabulary
+    func testVocabularyCascadeDelete() {
         // 1. Create 1 Collection
         let testCollection = VocabularyCollection(name: "Testing", user: coreData.user())
         
