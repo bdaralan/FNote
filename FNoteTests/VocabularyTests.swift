@@ -14,18 +14,26 @@ import CoreData
 #warning("TODO: fix cannot run all test at once")
 class VocabularyTests: XCTestCase {
     
-    var coreData: CoreDataStack!
-    var mainContext: NSManagedObjectContext!
+    var coreData: CoreDataStack {
+        return CoreDataStack.current
+    }
+    
+    var mainContext: NSManagedObjectContext {
+        return CoreDataStack.current.mainContext
+    }
+    
     
     override func setUp() {
-        coreData = CoreDataStack(userAccountToken: "user-test-account-token")
-        mainContext = coreData.mainContext
+        let testAccountToken = UUID().uuidString // a random-unique string
+        CoreDataStack.setPersistentStore(userAccountToken: testAccountToken)
     }
     
     override func tearDown() {
-        try! FileManager.default.removeItem(at: coreData.persistentStoreUrl)
-        coreData = nil
-        mainContext = nil
+        do {
+            try FileManager.default.removeItem(at: coreData.persistentStoreUrl)
+        } catch {
+            fatalError("failed to delete core data test file with error \(error)")
+        }
     }
     
     // Testing to make sure the Vocab is initializing with empty attributes
