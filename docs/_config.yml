@@ -1,0 +1,5 @@
+theme: jekyll-theme-cayman
+github:
+  homepage: ./index
+  developer-guideline: ./DEVELOPERGUIDELINE
+  user-manual: ./USERMANUAL

@@ -32,9 +32,9 @@
 		B43FDF7C2239D22900191392 /* TextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43FDF7B2239D22900191392 /* TextFieldCell.swift */; };
 		B43FDF7E223A0AD500191392 /* UserProfileViewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43FDF7D223A0AD500191392 /* UserProfileViewable.swift */; };
 		B4419DFE223C4F3200F0F3AB /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4419DFD223C4F3200F0F3AB /* String.swift */; };
+		B4431423226FD58900C34E09 /* VocabularyConnectionTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4431422226FD58900C34E09 /* VocabularyConnectionTrackerTests.swift */; };
 		B44CA61522485D010001177A /* CustomAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44CA61422485D010001177A /* CustomAlert.swift */; };
 		B450E81A22383016002EDC04 /* AppDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E81922383016002EDC04 /* AppDefaults.swift */; };
-		B450E82222384C72002EDC04 /* FNoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B450E82122384C72002EDC04 /* FNoteTests.swift */; };
 		B45AB9B12219C724009D337C /* VocabularyCollectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B02219C724009D337C /* VocabularyCollectionCoordinator.swift */; };
 		B45AB9B52219C7C1009D337C /* VocabularyViewable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45AB9B42219C7C1009D337C /* VocabularyViewable.swift */; };
 		B460297C21F3F0C1009C11DE /* OptionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B460297B21F3F0C1009C11DE /* OptionTableViewController.swift */; };
@@ -42,6 +42,7 @@
 		B464F666223B0E6B007F906B /* add-collection-guide.json in Resources */ = {isa = PBXBuildFile; fileRef = B464F665223B0E6B007F906B /* add-collection-guide.json */; };
 		B464F669223B4F34007F906B /* StringValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B464F668223B4F34007F906B /* StringValidator.swift */; };
 		B464F66B223B689B007F906B /* GuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B464F66A223B689B007F906B /* GuideView.swift */; };
+		B46D0078226FA16200C3E36B /* VocabularyConnectionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46D0077226FA16200C3E36B /* VocabularyConnectionTracker.swift */; };
 		B472F74222073EBF00761939 /* LocalRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B472F74122073EBF00761939 /* LocalRecord.swift */; };
 		B472F74422076AE200761939 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B472F74322076AE200761939 /* Coordinator.swift */; };
 		B47A07412217D59500EE8856 /* Typealias.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47A07402217D59500EE8856 /* Typealias.swift */; };
@@ -108,10 +109,10 @@
 		B43FDF7B2239D22900191392 /* TextFieldCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldCell.swift; sourceTree = "<group>"; };
 		B43FDF7D223A0AD500191392 /* UserProfileViewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewable.swift; sourceTree = "<group>"; };
 		B4419DFD223C4F3200F0F3AB /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		B4431422226FD58900C34E09 /* VocabularyConnectionTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyConnectionTrackerTests.swift; sourceTree = "<group>"; };
 		B44CA61422485D010001177A /* CustomAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlert.swift; sourceTree = "<group>"; };
 		B450E81922383016002EDC04 /* AppDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDefaults.swift; sourceTree = "<group>"; };
 		B450E81F22384C72002EDC04 /* FNoteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FNoteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B450E82122384C72002EDC04 /* FNoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FNoteTests.swift; sourceTree = "<group>"; };
 		B450E82322384C72002EDC04 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B45AB9B02219C724009D337C /* VocabularyCollectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyCollectionCoordinator.swift; sourceTree = "<group>"; };
 		B45AB9B42219C7C1009D337C /* VocabularyViewable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyViewable.swift; sourceTree = "<group>"; };
@@ -120,6 +121,7 @@
 		B464F665223B0E6B007F906B /* add-collection-guide.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "add-collection-guide.json"; sourceTree = "<group>"; };
 		B464F668223B4F34007F906B /* StringValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringValidator.swift; sourceTree = "<group>"; };
 		B464F66A223B689B007F906B /* GuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideView.swift; sourceTree = "<group>"; };
+		B46D0077226FA16200C3E36B /* VocabularyConnectionTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyConnectionTracker.swift; sourceTree = "<group>"; };
 		B472F74122073EBF00761939 /* LocalRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalRecord.swift; sourceTree = "<group>"; };
 		B472F74322076AE200761939 /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		B47A07402217D59500EE8856 /* Typealias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typealias.swift; sourceTree = "<group>"; };
@@ -262,6 +264,7 @@
 				B472F74122073EBF00761939 /* LocalRecord.swift */,
 				B464F662223B06A9007F906B /* UserGuide.swift */,
 				B464F668223B4F34007F906B /* StringValidator.swift */,
+				B46D0077226FA16200C3E36B /* VocabularyConnectionTracker.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -330,10 +333,10 @@
 		B450E82022384C72002EDC04 /* FNoteTests */ = {
 			isa = PBXGroup;
 			children = (
-				B450E82122384C72002EDC04 /* FNoteTests.swift */,
+				B450E82322384C72002EDC04 /* Info.plist */,
 				6535DB5C2267C5E300BBE1D7 /* VocabularyTests.swift */,
 				664FD0FB226A5452009E1C72 /* VocabularyConnectionTests.swift */,
-				B450E82322384C72002EDC04 /* Info.plist */,
+				B4431422226FD58900C34E09 /* VocabularyConnectionTrackerTests.swift */,
 			);
 			path = FNoteTests;
 			sourceTree = "<group>";
@@ -499,6 +502,7 @@
 			files = (
 				B4F5C82E21F7BF67007E8108 /* CloudKitService.swift in Sources */,
 				B4EA7755223493CB00D5AD2C /* User.swift in Sources */,
+				B46D0078226FA16200C3E36B /* VocabularyConnectionTracker.swift in Sources */,
 				B472F74222073EBF00761939 /* LocalRecord.swift in Sources */,
 				B472F74422076AE200761939 /* Coordinator.swift in Sources */,
 				B44CA61522485D010001177A /* CustomAlert.swift in Sources */,
@@ -556,9 +560,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B450E82222384C72002EDC04 /* FNoteTests.swift in Sources */,
 				6535DB5D2267C5E300BBE1D7 /* VocabularyTests.swift in Sources */,
 				664FD0FC226A5452009E1C72 /* VocabularyConnectionTests.swift in Sources */,
+				B4431423226FD58900C34E09 /* VocabularyConnectionTrackerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

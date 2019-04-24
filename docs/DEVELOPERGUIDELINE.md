@@ -1,3 +1,9 @@
+---
+layout: default
+title: Developer Guideline
+description: " "
+---
+
 # Developer Guideline
 
 Welcome to FNote Project. The goal of the project is to build an iOS application that makes note-taking process easier when learning new languages.
@@ -30,15 +36,15 @@ Welcome to FNote Project. The goal of the project is to build an iOS application
 
 ## Project Organization
 
-The project organizes files and classes in a folder by their category and scene.
+The project organizes files and classes in folders separated by their categories and scenes.
 
-For example, the Vocabulary Collection Scene folder will consist of all specific classes used to create the scene.
+For example, the Vocabulary Collection Scene folder will consist of all classes used to create the scene.
 
 On the other hand, for other classes that are not specific to a particular scene and are reusable elsewhere will be in their respective folders such as *Model*, *View*, or *Controller* folder.
 
 ### Project File Structure
 
-The following structure illustrates how the folders are organized. The bolded lists are folders and the inner lists are files.
+The hierarchical structure below illustrates how the folders are organized. The bolded lists are folders and the inner lists are files.
 
 - **Vocabulary Collection Scene**
   - VocabularyCollectionViewController.swift
