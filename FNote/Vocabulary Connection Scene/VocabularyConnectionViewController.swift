@@ -24,13 +24,8 @@ class VocabularyConnectionViewController: UICollectionViewController, Navigation
     /// All vocabularies in the collection excluding the `sourceVocabulary`.
     private let selectableVocabularies: [Vocabulary]
     
-    /*
-     parameters:
-       - VocabularyConnection.ConnectionType: either .related or .alternative
-       - [Vocabulary]: an array of the selected vocab
-     */
-    /// A dictionary of selected vocabularies based on the connection type.
-    private(set) var selectedVocabulariesByType = [VocabularyConnection.ConnectionType: [Vocabulary]]()
+    /// A tracker used to keep track of previous or new connections.
+    private(set) var connectionTracker: VocabularyConnectionTracker
     
     private let segmentView = VocabularyConnectionTypeSegmentView(types: VocabularyConnection.ConnectionType.allCases)
     
@@ -51,15 +46,14 @@ class VocabularyConnectionViewController: UICollectionViewController, Navigation
         // fetching the source vocabulary using the ID and casting it to a Vocabulary
         self.sourceVocabulary = context.object(with: sourceVocabularyID) as! Vocabulary
         
-        // instantiate the controller
-        // iterate
-        for connectionType in segmentView.connectionTypes {
-            selectedVocabulariesByType[connectionType] = sourceVocabulary.connectedVocabularies(for: connectionType)
-        }
+        // instantiate the tracker
+        connectionTracker = VocabularyConnectionTracker(vocabulary: sourceVocabulary)
         
         // make all vocabularies selectable except for the sourceVocabulary
         let allVocabualries = sourceVocabulary.collection.vocabularies
         selectableVocabularies = allVocabualries.subtracting([sourceVocabulary]).sorted(by: { $0.translation < $1.translation })
+        
+        
         
         // for the layout and how the scene is displayed
         let layout = VocabularyCollectionViewFlowLayout()
