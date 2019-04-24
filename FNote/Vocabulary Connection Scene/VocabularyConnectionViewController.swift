@@ -139,7 +139,7 @@ extension VocabularyConnectionViewController {
         guard indexPath != sourceVocabularyIndexPath else { return }
         #warning("TODO: implement toggle connection")
         
-        // CODING STARTS HERE
+        // coding starts here
     }
 }
 
