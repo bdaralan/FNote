@@ -75,6 +75,9 @@ class VocabularyConnectionViewController: UICollectionViewController, Navigation
     
     @objc private func segmentControlValueChanged(_ sender: VocabularyConnectionTypeSegmentView) {
         #warning("TODO: update UI to highlighted appropriate vocabularies")
+        // We want to reload the visible vocabulary cells
+        let visibleCellIndexPath = collectionView.indexPathsForVisibleItems
+        collectionView.reloadItems(at: visibleCellIndexPath) // reload visible accordingly
     }
     
     func doneBarItemTapped() {
@@ -144,6 +147,9 @@ extension VocabularyConnectionViewController {
         } else {
             connectionTracker.trackVocabulary(selectedVocab, connectionType: segmentView.selectedConnectionType)
         }
+        
+        // Reload the selected cell content based on tracker logic
+        collectionView.reloadItems(at: [indexPath])
     }
 }
 
