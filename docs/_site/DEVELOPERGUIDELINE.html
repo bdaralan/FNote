@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+
+    
+    <meta charset="UTF-8">
+
+<!-- Begin Jekyll SEO tag v2.6.0 -->
+<title>Developer Guideline</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Developer Guideline" />
+<meta property="og:locale" content="en_US" />
+<link rel="canonical" href="http://localhost:4000/DEVELOPERGUIDELINE.html" />
+<meta property="og:url" content="http://localhost:4000/DEVELOPERGUIDELINE.html" />
+<script type="application/ld+json">
+{"@type":"WebPage","url":"http://localhost:4000/DEVELOPERGUIDELINE.html","headline":"Developer Guideline","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+  </head>
+  <body>
+    <a id="skip-to-content" href="#content">Skip to the content.</a>
+
+    <header class="page-header" role="banner">
+      <h1 class="project-name">Developer Guideline</h1>
+      <h2 class="project-tagline"> </h2>
+      <figure><img src="/assets/images/fnote-web-icon.png" width="25%" alt="FNote"/></figure>
+      
+      <!--  -->
+    </header>
+
+    <main id="content" class="main-content" role="main">
+      <h1 id="developer-guideline">Developer Guideline</h1>
+
+<p>Welcome to FNote Project. The goal of the project is to build an iOS application that makes note-taking process easier when learning new languages.</p>
+
+<h2 id="core-features">Core Features</h2>
+
+<ul>
+  <li>Create/Update/Delete vocabulary collection, vocabulary, and tags.</li>
+  <li>Save data locally.</li>
+  <li>Upload data to the cloud.</li>
+  <li>Sync data across devices.</li>
+</ul>
+
+<h2 id="component-libraries">Component Libraries</h2>
+
+<ul>
+  <li><a href="https://developer.apple.com/documentation/coredata">CoreData</a> - A framework that provides object graph management and persistence.</li>
+  <li><a href="https://developer.apple.com/documentation/cloudkit">CloudKit</a> - A framework that provides interfaces for moving data between user’s devices and user’s iCloud.</li>
+</ul>
+
+<h2 id="requirements">Requirements</h2>
+
+<ul>
+  <li>iOS 10.0+ / macOS 10.12+</li>
+  <li>Xcode 10.2</li>
+  <li>Swift 5.0+</li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+
+<ol>
+  <li>Download Xcode 10.2 from Mac App Store or Apple’s developer website.</li>
+  <li>Clone the repository from <a href="https://github.com/iDara09/FNote">GitHub</a>
+    <ul>
+      <li>Open up Terminal</li>
+      <li><code class="highlighter-rouge">git clone https://github.com/iDara09/FNote.git</code></li>
+    </ul>
+  </li>
+  <li>Navigate to the project directory and open <code class="highlighter-rouge">FNote.xcodeproj</code> to start developing.</li>
+</ol>
+
+<h2 id="project-organization">Project Organization</h2>
+
+<p>The project organizes files and classes in folders separated by their categories and scenes.</p>
+
+<p>For example, the Vocabulary Collection Scene folder will consist of all classes used to create the scene.</p>
+
+<p>On the other hand, for other classes that are not specific to a particular scene and are reusable elsewhere will be in their respective folders such as <em>Model</em>, <em>View</em>, or <em>Controller</em> folder.</p>
+
+<h3 id="project-file-structure">Project File Structure</h3>
+
+<p>The hierarchical structure below illustrates how the folders are organized. The bolded lists are folders and the inner lists are files.</p>
+
+<ul>
+  <li><strong>Vocabulary Collection Scene</strong>
+    <ul>
+      <li>VocabularyCollectionViewController.swift</li>
+      <li>VocabularyCollectionViewFlowLayout.swift</li>
+      <li>VocabularyCollectionCell.swift</li>
+    </ul>
+  </li>
+  <li><strong>Managed Object Model</strong>
+    <ul>
+      <li>VocabularyCollection.swift</li>
+      <li>Vocabulary.swift</li>
+      <li>VocabularyConnection.swift</li>
+      <li>Tag.swift</li>
+    </ul>
+  </li>
+  <li><strong>Model</strong>
+    <ul>
+      <li>LocalRecord.swift</li>
+      <li>UserGuide.swift</li>
+    </ul>
+  </li>
+  <li><strong>View</strong>
+    <ul>
+      <li>DescriptionGuideView.swift</li>
+      <li>TextFieldCell.swift</li>
+    </ul>
+  </li>
+  <li><strong>Controller</strong>
+    <ul>
+      <li>MainTabBarViewController.swift</li>
+      <li>OptionTableViewController.swift</li>
+    </ul>
+  </li>
+  <li><strong>Protocol</strong>
+    <ul>
+      <li>VocabularyViewable.swift</li>
+      <li>UserProfileViewable.swift</li>
+      <li>NavigationItemToggleable.swift</li>
+      <li>TextDisplayable.swift</li>
+    </ul>
+  </li>
+  <li><strong>Coordinator</strong>
+    <ul>
+      <li>Coordinator.swift</li>
+      <li>VocabularyCollectionCoordinator.swift</li>
+    </ul>
+  </li>
+  <li><strong>Manager+Service</strong>
+    <ul>
+      <li>CoreDataStack.swift</li>
+      <li>CloudKitService.swift</li>
+    </ul>
+  </li>
+  <li><strong>Extension+Utility</strong>
+    <ul>
+      <li>Animation.swift</li>
+      <li>Image+Color.swift</li>
+      <li>Label.swift</li>
+    </ul>
+  </li>
+  <li><strong>Resource</strong>
+    <ul>
+      <li><strong>User Guide</strong>
+        <ul>
+          <li>add-collection-guide.json</li>
+          <li>add-vocabulary-guide.json</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><strong>UnitTest</strong>
+    <ul>
+      <li>VocabularyTests.swift</li>
+      <li>VocabularyConnectionTests.swift</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="faq">FAQ</h2>
+
+<h3 id="how-do-i-contribute">How do I contribute?</h3>
+
+<p>Contribution is not available at the moment.</p>
+
+<h2 id="support">Support</h2>
+
+<ul>
+  <li><a href="mailto:bdaradev@gmail.com">Bug Reporting</a></li>
+  <li><a href="mailto:bdaradev@gmail.com">Contact Us</a></li>
+</ul>
+
+
+
+      <footer class="site-footer">
+        
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.</span>
+      </footer>
+    </main>
+  </body>
+</html>
