@@ -73,7 +73,7 @@ class VocabularyConnectionViewController: UICollectionViewController, Navigation
     }
     
     
-    @objc private func segmentControlValueChanged(_ sender: VocabularyConnectionTypeSegmentView) {
+    @objc private func segmentControlValueChanged(_ sender: UISegmentedControl) {
         #warning("TODO: update UI to highlighted appropriate vocabularies")
     }
     
