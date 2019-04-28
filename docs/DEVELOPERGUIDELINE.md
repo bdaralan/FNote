@@ -12,10 +12,11 @@ Welcome to FNote Project. The goal of the project is to build an iOS application
 - [Component Libraries](#component-libraries)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Project Organization](#project-organization)
 - [Project Convention](#project-convention)
+  - [File Structure](#file-structure)
   - [Code Documentation](#code-documentation)
   - [Git Commit Message](#git-commit-message)
+  - [Handle Enum Case](#handle-enum-case)
 - [FAQ](#faq)
   - [How do I contribute?](#how-do-i-contribute)
 - [Support](#support)
@@ -46,7 +47,7 @@ Welcome to FNote Project. The goal of the project is to build an iOS application
    - `git clone https://github.com/iDara09/FNote.git`
 3. Navigate to the project directory and open `FNote.xcodeproj` to start developing.
 
-## Project Organization
+## Project Convention
 
 The project organizes files and classes in folders separated by their categories and scenes.
 
@@ -54,19 +55,16 @@ For example, the Vocabulary Collection Scene folder will consist of all classes 
 
 On the other hand, for other classes that are not specific to a particular scene and are reusable elsewhere will be in their respective folders such as *Model*, *View*, or *Controller* folder.
 
-### Project File Structure <!-- omit in toc -->
+### File Structure
 
 The hierarchical structure below illustrates how the folders are organized. The bolded lists are folders and the inner lists are files.
 
 - **Vocabulary Collection Scene**
   - VocabularyCollectionViewController.swift
-  - VocabularyCollectionViewFlowLayout.swift
   - VocabularyCollectionCell.swift
 - **Managed Object Model**
   - VocabularyCollection.swift
   - Vocabulary.swift
-  - VocabularyConnection.swift
-  - Tag.swift
 - **Model**
   - LocalRecord.swift
   - UserGuide.swift
@@ -78,8 +76,6 @@ The hierarchical structure below illustrates how the folders are organized. The 
   - OptionTableViewController.swift
 - **Protocol**
   - VocabularyViewable.swift
-  - UserProfileViewable.swift
-  - NavigationItemToggleable.swift
   - TextDisplayable.swift
 - **Coordinator**
   - Coordinator.swift
@@ -90,7 +86,6 @@ The hierarchical structure below illustrates how the folders are organized. The 
 - **Extension+Utility**
   - Animation.swift
   - Image+Color.swift
-  - Label.swift
 - **Resource**
   - **User Guide**
     - add-collection-guide.json
@@ -98,8 +93,6 @@ The hierarchical structure below illustrates how the folders are organized. The 
 - **UnitTest**
   - VocabularyTests.swift
   - VocabularyConnectionTests.swift
-
-## Project Convention
 
 ### Code Documentation
 
@@ -165,6 +158,10 @@ Adjust controllers to better handle add and remove Tag
 - VocabularyViewController
   - add methods to add and remove tag
 ```
+
+### Handle Enum Case
+
+When using `switch` with `enum`, avoid using `default`. List out all cases is preferred so that we can catch potential bugs at compile time.
 
 ## FAQ
 
