@@ -53,6 +53,7 @@ class VocabularyCollectionCell: UICollectionViewCell {
     
     private let highlightView: UIView = {
         let view = UIView()
+        view.isHidden = true
         return view
     }()
     
