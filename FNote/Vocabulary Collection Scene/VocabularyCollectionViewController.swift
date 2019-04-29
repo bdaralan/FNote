@@ -46,9 +46,29 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
     }
     
     
+    func setCollection(_ collection: VocabularyCollection?) {
+        self.collection = collection
+        configureFetchController(collection: collection)
+        
+        if collection == nil {
+            guideView.guide = welcomeGuide
+            guideView.show(in: view)
+        } else if collection!.vocabularies.isEmpty {
+            guideView.guide = addVocabularyGuide
+            guideView.show(in: view)
+        } else {
+            guideView.remove()
+        }
+        
+        navigationItem.title = collection?.name ?? guideView.guide?.name
+        navigationItem.rightBarButtonItems?.forEach({ $0.isEnabled = collection != nil })
+    }
+    
     private func configureFetchController(collection: VocabularyCollection?) {
-        guard let collection = collection, let context = collection.managedObjectContext else {
+        guard let collection = collection, let context = collection.managedObjectContext, collection.isDeleted == false else {
+            fetchController?.delegate = nil
             fetchController = nil
+            collectionView.reloadData()
             return
         }
         
@@ -59,29 +79,10 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         do {
             try fetchController?.performFetch()
             fetchController?.delegate = self
+            collectionView.reloadData()
         } catch {
             fatalError("failed to fetch vocabulary with error: \(error)")
         }
-    }
-    
-    func setCollection(_ collection: VocabularyCollection?) {
-        if collection == nil {
-            guideView.guide = welcomeGuide
-            guideView.show(in: view)
-        } else if collection?.vocabularies.isEmpty == true {
-            guideView.guide = addVocabularyGuide
-            guideView.show(in: view)
-        } else {
-            guideView.remove()
-        }
-        navigationItem.title = collection?.name ?? guideView.guide?.name
-        navigationItem.rightBarButtonItems?.forEach({ $0.isEnabled = collection != nil })
-        
-        if self.collection == nil || self.collection != collection {
-            configureFetchController(collection: collection)
-            collectionView.reloadData()
-        }
-        self.collection = collection
     }
     
     private func cellFavoriteAttributeTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
@@ -157,6 +158,11 @@ extension VocabularyCollectionViewController {
 
 
 extension VocabularyCollectionViewController: NSFetchedResultsControllerDelegate {
+    
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        guard let collection = collection, collection.isDeleted else { return }
+        setCollection(nil)
+    }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         switch type {
