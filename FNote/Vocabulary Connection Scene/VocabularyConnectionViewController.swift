@@ -110,36 +110,30 @@ extension VocabularyConnectionViewController {
         return header
     }
     
-    /*
-     populating the cell data
-     similar to vocabcollectionviewcontroller
-     */
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueRegisteredCell(VocabularyCollectionCell.self, for: indexPath)
         
         // if the index path is 0, reload with the source vocab. else reload with all other vocabulary
         if indexPath == sourceVocabularyIndexPath {
             cell.reloadCell(with: sourceVocabulary)
+            cell.setHighlight(false, color: nil)
         } else {
             let selectableVocab = selectableVocabularies[indexPath.item]
             cell.reloadCell(with: selectableVocab)
         }
         
-        //disabling the attribute buttons
+        // setting the highlight when a user taps for connection
+        if connectionTracker.contains(selectableVocabularies[indexPath.item], for: segmentView.selectedConnectionType) {
+            cell.setHighlight(true, color: nil)
+        } else {
+            cell.setHighlight(false, color: nil)
+        }
+        
+        // disabling the attribute buttons
         guard cell.moreView.button.isUserInteractionEnabled else { return cell }
         for button in cell.allButtons {
             button.isUserInteractionEnabled = false
-            #warning("Future Feature: give user a message that they cannot use these buttons")
         }
-        
-        #warning("TODO: implement highlight cell.")
-        //if vocab(isTapped = true) {
-            //vocab.isHighlighted = true
-        //} else {
-            //vocab.isHighlighted = false
-        //}
-        // reload cell
-        
         return cell
     }
     
