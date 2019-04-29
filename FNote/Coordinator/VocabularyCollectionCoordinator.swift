@@ -208,7 +208,10 @@ extension VocabularyCollectionCoordinator: UserProfileViewable {
         let user = CoreDataStack.current.user()
         let collectionListVC = UserProfileViewController(user: user)
         collectionListVC.doneTappedHandler = { [weak self] in
-            self?.vocabularyCollectionVC.setCollection(collectionListVC.selectedCollection)
+            guard let self = self else { return }
+            if self.vocabularyCollectionVC.collection != collectionListVC.selectedCollection {
+                self.vocabularyCollectionVC.setCollection(collectionListVC.selectedCollection)
+            }
             collectionListVC.dismiss(animated: true, completion: nil)
         }
         let embedNavController = collectionListVC.embedNavigationController()
