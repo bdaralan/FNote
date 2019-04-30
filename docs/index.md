@@ -19,3 +19,7 @@ Computer Science
 ## Academic Year
 
 2018-2019
+
+## Contact
+
+[Email Us](mailto:bdaradev@gmail.com)
