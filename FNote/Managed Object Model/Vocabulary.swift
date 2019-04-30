@@ -54,8 +54,14 @@ public class Vocabulary: NSManagedObject, LocalRecord {
     }
     
     
+    /// Get all the tag names that the vocabulary has.
     func tagNames() -> [String] {
         return tags.map({ $0.name })
+    }
+    
+    /// Get all record names of the vocabulary's connections.
+    func connectionRecordNames() -> [String] {
+        return connections.map({ $0.recordMetadata.recordName })
     }
     
     /// Get all connected vocabularies for the specified connection type.
@@ -198,13 +204,25 @@ extension Vocabulary {
 
 extension Vocabulary {
     
+    /// Check if a vocabulary values has changes by providing it before and after values.
+    ///
+    /// The purpose of this method is to compare the values of the given vocabularies to see if they are different.
+    /// That is, even if the given vocabularies are not the same vocabulary, the comparison will still be made.
+    /// - Parameters:
+    ///   - before: The vocabulary with its before-changed values.
+    ///   - after: The vocabulary with its after-changed values.
+    /// - Warning: This method is intended to be used on the same vocabulary
+    ///         that is used in different `NSManagedObjectContext`, but needed to check if its values have changed.
     static func hasChanges(before: Vocabulary, after: Vocabulary) -> Bool {
+        // NOTE: the comparison is made from the most to the least efficient
         return after.isFavorited != before.isFavorited
             || after.politeness != before.politeness
             || after.translation != before.translation
             || after.native != before.native
             || after.note != before.note
             || after.tags.count != before.tags.count
-            || Set(after.tagNames()).isSubset(of: before.tagNames()) != true
+            || after.connections.count != before.connections.count
+            || Set(after.tagNames()).isSubset(of: before.tagNames()) == false
+            || Set(after.connectionRecordNames()).isSubset(of: before.connectionRecordNames()) == false
     }
 }
