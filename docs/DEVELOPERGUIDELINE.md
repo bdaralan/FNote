@@ -19,6 +19,7 @@ Welcome to FNote Project. The goal of the project is to build an iOS application
   - [Handle Enum Case](#handle-enum-case)
 - [FAQ](#faq)
   - [How do I contribute?](#how-do-i-contribute)
+  - [Is there a beta testing?](#is-there-a-beta-testing)
 - [Support](#support)
 
 ## Core Features
@@ -177,6 +178,10 @@ Make a pull request. :]
 6. Push your branch to GitHub (if there is no conflict).
 7. On GitHub website select your branch and click the green pull-request button.
 
+### Is there a beta testing?
+
+Please checkout public beta testing with TestFlight. [Public Beta Link][testflightlink].
+
 ## Support
 
 - [Bug Reporting][emailto]
@@ -184,4 +189,5 @@ Make a pull request. :]
 
 [coredatalink]: https://developer.apple.com/documentation/coredata
 [cloudkitlink]: https://developer.apple.com/documentation/cloudkit
+[testflightlink]: https://testflight.apple.com/join/2kZ9H8L1
 [emailto]: mailto:bdaradev@gmail.com
