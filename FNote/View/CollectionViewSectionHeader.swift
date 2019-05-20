@@ -30,14 +30,14 @@ class CollectionViewSectionHeader: UICollectionReusableView {
 extension CollectionViewSectionHeader {
     
     private func setupView() {
-        addSubviews([titleLabel])
+        addSubviews(titleLabel)
+        
         let safeArea = safeAreaLayoutGuide
-        let constraints = [
+        NSLayoutConstraint.activate(
             titleLabel.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 20),
             titleLabel.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: 20),
             titleLabel.topAnchor.constraint(equalTo: safeArea.topAnchor),
             titleLabel.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
-        ]
-        NSLayoutConstraint.activate(constraints)
+        )
     }
 }

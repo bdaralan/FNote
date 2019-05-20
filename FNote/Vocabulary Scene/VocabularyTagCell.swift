@@ -54,15 +54,15 @@ extension VocabularyTagCell {
         collectionView.addGestureRecognizer(tap)
         imageView?.image = .tag
         
-        contentView.addSubviews([collectionView])
+        contentView.addSubviews(collectionView)
+        
         let safeArea = contentView.safeAreaLayoutGuide
-        let constraints = [
+        NSLayoutConstraint.activate(
             collectionView.leadingAnchor.constraint(equalTo: imageView!.trailingAnchor, constant: 15),
             collectionView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
             collectionView.topAnchor.constraint(equalTo: safeArea.topAnchor),
             collectionView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
-        ]
-        NSLayoutConstraint.activate(constraints)
+        )
     }
     
     @objc private func collectionViewTapped() {

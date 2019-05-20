@@ -170,7 +170,7 @@ extension VocabularyConnectionViewController {
         segmentView.backgroundColor = collectionView.backgroundColor
         segmentView.segmentControl.addTarget(self, action: #selector(segmentControlValueChanged), for: .valueChanged)
         
-        view.addSubviews([segmentView])
+        view.addSubviews(segmentView)
         let safeArea = view.safeAreaLayoutGuide
         let constaints = [
             segmentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),

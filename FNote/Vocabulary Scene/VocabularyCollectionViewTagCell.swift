@@ -45,7 +45,7 @@ extension VocabularyCollectionViewTagCell {
     private func setupCell() {
         contentView.layer.borderWidth = 1
         contentView.layer.borderColor = UIColor.lightGray.cgColor
-        contentView.addSubviews([tagLabel])
+        contentView.addSubviews(tagLabel)
         let safeArea = contentView.safeAreaLayoutGuide
         tagLabel.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 8).isActive = true
         tagLabel.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -8).isActive = true

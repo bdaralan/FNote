@@ -68,12 +68,12 @@ extension VocabularyNoteCell {
     
     private func setupCell() {
         selectionStyle = .none
-        contentView.addSubviews([textView, placeholderLabel])
+        contentView.addSubviews(textView, placeholderLabel)
         
         let safeArea = contentView.safeAreaLayoutGuide
         let margin: CGFloat = 20
         let padding: CGFloat = 8
-        let constraints = [
+        NSLayoutConstraint.activate(
             textView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: margin),
             textView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -margin),
             textView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: padding),
@@ -82,8 +82,8 @@ extension VocabularyNoteCell {
             placeholderLabel.topAnchor.constraint(equalTo: textView.topAnchor, constant: 8),
             placeholderLabel.leadingAnchor.constraint(equalTo: textView.leadingAnchor, constant: 4),
             placeholderLabel.trailingAnchor.constraint(equalTo: textView.trailingAnchor)
-        ]
-        NSLayoutConstraint.activate(constraints)
+        )
+        
         setupTextViewInputAccessoryView()
     }
     

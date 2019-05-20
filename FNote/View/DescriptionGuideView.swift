@@ -56,7 +56,7 @@ class DescriptionGuideView: UIView, GuideView {
     }
     
     func show(in superview: UIView) {
-        superview.addSubviews([self])
+        superview.addSubviews(self)
         let safeArea = superview.safeAreaLayoutGuide
         centerXAnchor.constraint(equalTo: safeArea.centerXAnchor).isActive = true
         centerYAnchor.constraint(equalTo: safeArea.centerYAnchor).isActive = true
@@ -73,9 +73,10 @@ class DescriptionGuideView: UIView, GuideView {
 extension DescriptionGuideView {
     
     private func setupView() {
-        addSubviews([imageView, guideTitle, guideDescription])
+        addSubviews(imageView, guideTitle, guideDescription)
+        
         let safeArea = safeAreaLayoutGuide
-        let constraints = [
+        NSLayoutConstraint.activate(
             guideTitle.centerXAnchor.constraint(equalTo: safeArea.centerXAnchor),
             guideTitle.centerYAnchor.constraint(equalTo: safeArea.centerYAnchor),
             guideTitle.widthAnchor.constraint(equalTo: safeArea.widthAnchor),
@@ -90,7 +91,6 @@ extension DescriptionGuideView {
             imageView.bottomAnchor.constraint(equalTo: guideTitle.topAnchor, constant: -8),
             imageView.heightAnchor.constraint(lessThanOrEqualToConstant: 100),
             imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor)
-        ]
-        NSLayoutConstraint.activate(constraints)
+        )
     }
 }

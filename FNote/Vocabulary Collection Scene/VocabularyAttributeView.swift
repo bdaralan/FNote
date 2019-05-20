@@ -76,7 +76,7 @@ extension VocabularyAttributeView {
     
     private func setupControl() {
         tintColor = .vocabularyAttributeTint
-        addSubviews([stackView, favoriteButton])
+        addSubviews(stackView, favoriteButton)
         stackView.addArrangedSubview(tagView)
         stackView.addArrangedSubview(connectionView)
         stackView.addArrangedSubview(politenessView)

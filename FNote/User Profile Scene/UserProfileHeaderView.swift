@@ -41,9 +41,10 @@ class UserProfileHeaderView: UIView {
     
     
     private func setupView() {
-        addSubviews([profile, usernameLabel])
+        addSubviews(profile, usernameLabel)
+        
         let safeArea = safeAreaLayoutGuide
-        let constraints = [
+        NSLayoutConstraint.activate(
             profile.centerXAnchor.constraint(equalTo: safeArea.centerXAnchor),
             profile.centerYAnchor.constraint(equalTo: safeArea.centerYAnchor),
             profile.widthAnchor.constraint(equalTo: profile.heightAnchor),
@@ -51,7 +52,6 @@ class UserProfileHeaderView: UIView {
             
             usernameLabel.topAnchor.constraint(equalTo: profile.bottomAnchor),
             usernameLabel.centerXAnchor.constraint(equalTo: safeArea.centerXAnchor)
-        ]
-        NSLayoutConstraint.activate(constraints)
+        )
     }
 }

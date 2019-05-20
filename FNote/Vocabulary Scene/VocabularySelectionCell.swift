@@ -66,14 +66,15 @@ extension VocabularySelectionCell {
     
     private func setupCell() {
         detailTextLabel?.textColor = .gray
-        contentView.addSubviews([switcher])
+        
+        contentView.addSubviews(switcher)
+        
         let safeArea = contentView.safeAreaLayoutGuide
-        let constraints = [
+        NSLayoutConstraint.activate(
             switcher.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -22),
             switcher.centerYAnchor.constraint(equalTo: safeArea.centerYAnchor),
             switcher.heightAnchor.constraint(equalToConstant: 31),
             switcher.widthAnchor.constraint(equalToConstant: 49)
-        ]
-        NSLayoutConstraint.activate(constraints)
+        )
     }
 }

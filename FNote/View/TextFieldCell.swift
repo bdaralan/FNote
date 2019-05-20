@@ -91,14 +91,14 @@ extension TextFieldCell {
         textField.delegate = self
         textField.addTarget(self, action: #selector(textFieldTextChanged), for: .editingChanged)
         
-        contentView.addSubviews([textField])
+        contentView.addSubviews(textField)
+        
         let safeArea = contentView.safeAreaLayoutGuide
-        let constraints = [
+        NSLayoutConstraint.activate(
             textField.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 15),
             textField.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -15),
             textField.topAnchor.constraint(equalTo: safeArea.topAnchor),
             textField.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
-        ]
-        NSLayoutConstraint.activate(constraints)
+        )
     }
 }

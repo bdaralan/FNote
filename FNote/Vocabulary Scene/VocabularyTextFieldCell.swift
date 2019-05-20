@@ -66,10 +66,12 @@ extension VocabularyTextFieldCell {
     private func setupCel() {
         selectionStyle = .none
         textField.delegate = self
-        contentView.addSubviews([textField, label])
+        
+        contentView.addSubviews(textField, label)
+        
         let safeArea = contentView.safeAreaLayoutGuide
         let margin: CGFloat = 16
-        let constraints = [
+        NSLayoutConstraint.activate(
             textField.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: margin),
             textField.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -margin),
             textField.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 8),
@@ -78,7 +80,6 @@ extension VocabularyTextFieldCell {
             label.trailingAnchor.constraint(equalTo: textField.trailingAnchor),
             label.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 4),
             label.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8)
-        ]
-        NSLayoutConstraint.activate(constraints)
+        )
     }
 }

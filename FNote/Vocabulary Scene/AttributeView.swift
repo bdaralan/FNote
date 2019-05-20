@@ -32,7 +32,7 @@ class AttributeView: UIView {
     }
     
     private func setupView() {
-        addSubviews([button, label])
+        addSubviews(button, label)
         let safeArea = safeAreaLayoutGuide
         NSLayoutConstraint.activate(
             button.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),

@@ -36,15 +36,15 @@ class VocabularyConnectionTypeSegmentView: UIView {
 extension VocabularyConnectionTypeSegmentView {
     
     private func setupView() {
-        addSubviews([segmentControl])
+        addSubviews(segmentControl)
+        
         let safeArea = safeAreaLayoutGuide
-        let constraints = [
+        NSLayoutConstraint.activate(
             segmentControl.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 16),
             segmentControl.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -16),
             segmentControl.centerYAnchor.constraint(equalTo: safeArea.centerYAnchor),
             segmentControl.heightAnchor.constraint(equalToConstant: 28)
-        ]
-        NSLayoutConstraint.activate(constraints)
+        )
     }
     
     private func setupSegmentControl() {
