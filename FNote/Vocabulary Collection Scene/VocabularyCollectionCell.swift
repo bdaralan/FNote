@@ -11,11 +11,11 @@ import UIKit
 
 protocol VocabularyCollectionCellDelegate: AnyObject {
     
-    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapAttribute view: UIView)
+    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapButton button: UIButton)
 }
 
 
-class VocabularyCollectionCell: UICollectionViewCell {
+class VocabularyCollectionCell: UICollectionViewCell, SizeClassable {
     
     weak var delegate: VocabularyCollectionCellDelegate?
     
@@ -33,17 +33,14 @@ class VocabularyCollectionCell: UICollectionViewCell {
         return lbl
     }()
     
-    let attributeStackView = UIStackView()
-    let tagView = AttributeView(image: .tag, label: nil)
-    let moreView = AttributeView(image: .more, label: nil)
-    let favoriteView = AttributeView(image: .favorite, label: nil)
-    let connectionView = AttributeView(image: .connection, label: nil)
-    let politenessView = AttributeView(image: .politeness, label: nil)
+    let moreButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(.more, for: .normal)
+        button.tintColor = .vocabularyAttributeTint
+        return button
+    }()
     
-    /// All vocabluary's attribute buttons.
-    var allButtons: [UIButton] {
-        return [favoriteView.button, politenessView.button, connectionView.button, tagView.button, favoriteView.button]
-    }
+    let attributeView = VocabularyAttributeView()
     
     let seperatorLine: UIView = {
         let view = UIView()
@@ -57,6 +54,8 @@ class VocabularyCollectionCell: UICollectionViewCell {
         return view
     }()
     
+    var currentSizeClassConstraints: [NSLayoutConstraint] = []
+    
     let defaultHighlightColor = UIColor(colorHex: "DBFF98")
     
     
@@ -64,21 +63,24 @@ class VocabularyCollectionCell: UICollectionViewCell {
         super.init(frame: frame)
         setupCell()
         setupConstraints()
-        setupAttributeStackView()
+        setupTappedActions()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        NSLayoutConstraint.deactivate(currentSizeClassConstraints)
+        currentSizeClassConstraints = configureSizeClassConstraints(for: traitCollection, interfaceIdiom: UIDevice.current.userInterfaceIdiom)
+        NSLayoutConstraint.activate(currentSizeClassConstraints)
+    }
+    
     
     func reloadCell(with vocabulary: Vocabulary) {
         nativeLabel.text = vocabulary.native.isEmpty ? " " : vocabulary.native
         translationLabel.text = vocabulary.translation.isEmpty ? " " : vocabulary.translation
-        tagView.label.text = "\(vocabulary.tags.count)"
-        connectionView.label.text = "\(vocabulary.connections.count)"
-        politenessView.label.text = UIDevice.current.userInterfaceIdiom == .pad ? vocabulary.politeness.displayText : vocabulary.politeness.abbreviation
-        favoriteView.button.tintColor = vocabulary.isFavorited ? .vocabularyFavoriteStarTrue : .vocabularyFavoriteStarFalse
+        attributeView.update(with: vocabulary)
     }
     
     /// Set cell highlighted state and color.
@@ -91,12 +93,23 @@ class VocabularyCollectionCell: UICollectionViewCell {
         highlightView.backgroundColor = color
     }
     
-    @objc private func buttonTapped(_ sender: AnyObject) {
-        if let button = sender as? UIButton {
-            delegate?.vocabularyCollectionCell(self, didTapAttribute: button)
-        } else if let gesture = sender as? UITapGestureRecognizer, let label = gesture.view {
-            delegate?.vocabularyCollectionCell(self, didTapAttribute: label)
+    @objc private func buttonTapped(_ sender: UIButton) {
+        delegate?.vocabularyCollectionCell(self, didTapButton: sender)
+    }
+    
+    @objc private func attributeLabelTapped(_ sender: UITapGestureRecognizer) {
+        guard let label = sender.view as? UILabel else { return }
+        let correspondingButton: UIButton
+        switch label {
+        case attributeView.tagView.label:
+            correspondingButton = attributeView.tagView.button
+        case attributeView.connectionView.label:
+            correspondingButton = attributeView.connectionView.button
+        case attributeView.politenessView.label:
+            correspondingButton = attributeView.politenessView.button
+        default: return
         }
+        delegate?.vocabularyCollectionCell(self, didTapButton: correspondingButton)
     }
 }
 
@@ -114,62 +127,74 @@ extension VocabularyCollectionCell {
     }
     
     private func setupConstraints() {
-        contentView.addSubviews([highlightView, translationLabel, nativeLabel, moreView, attributeStackView, seperatorLine])
+        contentView.addSubviews(highlightView, seperatorLine, translationLabel, nativeLabel, moreButton, attributeView)
         
         let margin: CGFloat = 16
         let safeArea = contentView.safeAreaLayoutGuide
-        let constraints = [
+        NSLayoutConstraint.activate(
             highlightView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             highlightView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             highlightView.topAnchor.constraint(equalTo: contentView.topAnchor),
             highlightView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            moreView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -margin),
-            moreView.centerYAnchor.constraint(equalTo: nativeLabel.centerYAnchor),
-            moreView.heightAnchor.constraint(equalToConstant: 30),
-            moreView.widthAnchor.constraint(equalTo: moreView.heightAnchor),
+            moreButton.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -margin),
+            moreButton.centerYAnchor.constraint(equalTo: nativeLabel.centerYAnchor),
+            moreButton.heightAnchor.constraint(equalToConstant: 30),
+            moreButton.widthAnchor.constraint(equalTo: moreButton.heightAnchor),
             
             nativeLabel.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: margin),
-            nativeLabel.trailingAnchor.constraint(equalTo: moreView.leadingAnchor, constant: -8),
+            nativeLabel.trailingAnchor.constraint(equalTo: moreButton.leadingAnchor, constant: -8),
             nativeLabel.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 8),
             
             seperatorLine.topAnchor.constraint(equalTo: nativeLabel.bottomAnchor, constant: 8), // 4
             seperatorLine.leadingAnchor.constraint(equalTo: nativeLabel.leadingAnchor),
-            seperatorLine.trailingAnchor.constraint(equalTo: moreView.trailingAnchor),
+            seperatorLine.trailingAnchor.constraint(equalTo: moreButton.trailingAnchor),
             seperatorLine.heightAnchor.constraint(equalToConstant: 0.5),
             
             translationLabel.topAnchor.constraint(equalTo: seperatorLine.bottomAnchor, constant: 8),
             translationLabel.leadingAnchor.constraint(equalTo: nativeLabel.leadingAnchor),
-            translationLabel.trailingAnchor.constraint(equalTo: nativeLabel.trailingAnchor)
-        ]
-        NSLayoutConstraint.activate(constraints)
+            translationLabel.trailingAnchor.constraint(equalTo: nativeLabel.trailingAnchor),
+            
+            attributeView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8),
+            attributeView.heightAnchor.constraint(equalToConstant: 30)
+        )
         
-        // stack view constraints
-        attributeStackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8).isActive = true
-        attributeStackView.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            attributeStackView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-            attributeStackView.widthAnchor.constraint(equalToConstant: 600).isActive = true
-        } else {
-            attributeStackView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor).isActive = true
-            attributeStackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor).isActive = true
-        }
+        currentSizeClassConstraints = configureSizeClassConstraints(for: traitCollection, interfaceIdiom: UIDevice.current.userInterfaceIdiom)
+        NSLayoutConstraint.activate(currentSizeClassConstraints)
     }
     
-    private func setupAttributeStackView() {
-        attributeStackView.distribution = .fillEqually
-        attributeStackView.tintColor = .black
+    func configureSizeClassConstraints(for trait: UITraitCollection, interfaceIdiom: UIUserInterfaceIdiom) -> [NSLayoutConstraint] {
+        var constraints = [NSLayoutConstraint]()
         
-        let attributeTappedAction = #selector(buttonTapped(_:))
-        moreView.button.addTarget(self, action: attributeTappedAction, for: .touchUpInside)
+        let safeArea = contentView.safeAreaLayoutGuide
+        let margin: CGFloat = 16
         
-        // These view are in order that they will appear from leading to trailing
-        for attributeView in [tagView, connectionView, politenessView, favoriteView] {
-            attributeStackView.addArrangedSubview(attributeView)
-            attributeView.button.addTarget(self, action: attributeTappedAction, for: .touchUpInside)
-            let tapGesture = UITapGestureRecognizer(target: self, action: attributeTappedAction)
-            attributeView.label.addGestureRecognizer(tapGesture)
-            attributeView.label.isUserInteractionEnabled = true
+        switch interfaceIdiom {
+        case .pad where traitCollection.horizontalSizeClass == .compact, .phone:
+            constraints = [
+                attributeView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: margin),
+                attributeView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -margin)
+            ]
+        case .pad where traitCollection.horizontalSizeClass == .regular:
+            constraints = [
+                attributeView.centerXAnchor.constraint(equalTo: safeArea.centerXAnchor),
+                attributeView.widthAnchor.constraint(equalTo: safeArea.widthAnchor, multiplier: 0.75)
+            ]
+        default: break
+        }
+        
+        return constraints
+    }
+    
+    private func setupTappedActions() {
+        moreButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        
+        attributeView.allButtons.forEach({ $0.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside) })
+        
+        attributeView.allLabels.forEach { (label) in
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(attributeLabelTapped))
+            label.addGestureRecognizer(tapGesture)
+            label.isUserInteractionEnabled = true
         }
     }
 }

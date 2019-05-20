@@ -12,7 +12,6 @@ class AttributeView: UIView {
     
     let button: UIButton = {
         let btn = UIButton(type: .system)
-        btn.tintColor = .black
         return btn
     }()
     
@@ -35,16 +34,16 @@ class AttributeView: UIView {
     private func setupView() {
         addSubviews([button, label])
         let safeArea = safeAreaLayoutGuide
-        let constraints = [
-            button.centerXAnchor.constraint(equalTo: safeArea.centerXAnchor),
+        NSLayoutConstraint.activate(
+            button.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
             button.centerYAnchor.constraint(equalTo: safeArea.centerYAnchor),
             button.heightAnchor.constraint(equalTo: safeArea.heightAnchor),
             button.widthAnchor.constraint(equalTo: button.heightAnchor),
             
-            label.leadingAnchor.constraint(equalTo: button.trailingAnchor, constant: 8),
+            label.leadingAnchor.constraint(equalTo: button.trailingAnchor, constant: 4),
+            label.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
             label.centerYAnchor.constraint(equalTo: button.centerYAnchor),
             label.heightAnchor.constraint(equalTo: safeArea.heightAnchor)
-        ]
-        NSLayoutConstraint.activate(constraints)
+        )
     }
 }

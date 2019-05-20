@@ -11,7 +11,15 @@ import UIKit
 
 extension UIView {
     
+    #warning("REMOVE THIS")
     func addSubviews(_ subviews: [UIView]) {
+        for view in subviews {
+            view.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(view)
+        }
+    }
+    
+    func addSubviews(_ subviews: UIView...) {
         for view in subviews {
             view.translatesAutoresizingMaskIntoConstraints = false
             addSubview(view)

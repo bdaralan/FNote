@@ -127,11 +127,12 @@ extension VocabularyConnectionViewController {
         }
         cell.setHighlight(isHighlighted, color: nil)
 
-        // disabling the attribute buttons
-        guard cell.moreView.button.isUserInteractionEnabled else { return cell }
-        for button in cell.allButtons {
-            button.isUserInteractionEnabled = false
+        // disabling the more button and attribute buttons
+        if cell.moreButton.isUserInteractionEnabled {
+            cell.moreButton.isUserInteractionEnabled = false
+            cell.attributeView.allButtons.forEach({ $0.isUserInteractionEnabled = false })
         }
+        
         return cell
     }
     

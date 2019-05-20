@@ -9,15 +9,7 @@
 import UIKit
 
 
-protocol VocabularyAttributeViewDelegate: AnyObject {
-    
-    func vocabularyAttributeView(_ control: VocabularyAttributeView, didTapButton button: UIButton)
-}
-
-
 class VocabularyAttributeView: UIView {
-    
-    weak var delegate: VocabularyAttributeViewDelegate?
 
     let tagView = AttributeView(image: .tag, label: "?")
     let connectionView = AttributeView(image: .connection, label: "?")
@@ -37,19 +29,45 @@ class VocabularyAttributeView: UIView {
         return stack
     }()
     
-    var attributeButtons: [UIButton] {
+    /// All attribute buttons.
+    var allButtons: [UIButton] {
         return [tagView.button, connectionView.button, politenessView.button, favoriteButton]
     }
+    
+    /// All attribute labels.
+    var allLabels: [UILabel] {
+        return [tagView.label, connectionView.label, politenessView.label]
+    }
+    
+    private var politeness = Vocabulary.Politeness.undecided
 
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupControl()
-        setupActions()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updatePolitenessText(with: politeness)
+    }
+    
+    
+    func update(with vocabulary: Vocabulary) {
+        tagView.label.text = "\(vocabulary.tags.count)"
+        connectionView.label.text = "\(vocabulary.connections.count)"
+        favoriteButton.tintColor = vocabulary.isFavorited ? .vocabularyFavoriteStarTrue : .vocabularyFavoriteStarFalse
+        updatePolitenessText(with: vocabulary.politeness)
+    }
+    
+    private func updatePolitenessText(with politeness: Vocabulary.Politeness) {
+        self.politeness = politeness
+        let shouldUseAbbreviation = bounds.width < 475 // 475 is from iPad 12.9 inch simulator's 1/3 split view mode
+        politenessView.label.text = shouldUseAbbreviation ? politeness.abbreviation : politeness.displayText
     }
 }
 
@@ -57,6 +75,7 @@ class VocabularyAttributeView: UIView {
 extension VocabularyAttributeView {
     
     private func setupControl() {
+        tintColor = .vocabularyAttributeTint
         addSubviews([stackView, favoriteButton])
         stackView.addArrangedSubview(tagView)
         stackView.addArrangedSubview(connectionView)
@@ -74,13 +93,5 @@ extension VocabularyAttributeView {
             favoriteButton.widthAnchor.constraint(equalTo: stackView.heightAnchor),
             favoriteButton.centerYAnchor.constraint(equalTo: safeArea.centerYAnchor)
         )
-    }
-    
-    private func setupActions() {
-        attributeButtons.forEach({ $0.addTarget(self, action: #selector(attributeButtonTapped), for: .touchUpInside) })
-    }
-    
-    @objc private func attributeButtonTapped(_ sender: UIButton) {
-        delegate?.vocabularyAttributeView(self, didTapButton: sender)
     }
 }

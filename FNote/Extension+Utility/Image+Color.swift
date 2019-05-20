@@ -36,9 +36,10 @@ extension UIColor {
     
     static let offWhiteBackground = UIColor(named: "off-white-background")
     static let uiControlTint = UISegmentedControl().tintColor
+    static let vocabularyAttributeTint = UIColor.darkGray
     
-    static let vocabularyFavoriteStarTrue = UIColor(named: "favorite-vocab-true")
-    static let vocabularyFavoriteStarFalse = UIColor(named: "favorite-vocab-false")
+    static let vocabularyFavoriteStarTrue = UIColor(colorHex: "FF1452")
+    static let vocabularyFavoriteStarFalse = vocabularyAttributeTint
 }
 
 

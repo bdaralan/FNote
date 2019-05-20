@@ -1,5 +1,5 @@
 //
-//  Sizeclassable.swift
+//  SizeClassable.swift
 //  FNote
 //
 //  Created by Dara Beng on 5/19/19.
@@ -9,7 +9,9 @@
 import UIKit
 
 
-protocol Sizeclassable: UIView {
+protocol SizeClassable: UIView {
     
-    func configureConstraints(for trait: UITraitCollection, interfaceIdiom: UIUserInterfaceIdiom)
+    var currentSizeClassConstraints: [NSLayoutConstraint] { set get }
+    
+    func configureSizeClassConstraints(for trait: UITraitCollection, interfaceIdiom: UIUserInterfaceIdiom) -> [NSLayoutConstraint]
 }

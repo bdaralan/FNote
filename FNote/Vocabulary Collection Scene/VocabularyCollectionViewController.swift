@@ -107,9 +107,9 @@ class VocabularyCollectionViewController: UICollectionViewController, UICollecti
         coordinator?.selectPoliteness(for: vocabularyVC, current: vocabulary.politeness)
     }
     
-    private func cellMoreAttibuteTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
+    private func cellMoreButtonTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
         guard let collection = collection, let vocabulary = fetchController?.object(at: indexPath) else { return }
-        coordinator?.selectMoreActions(for: vocabulary, in: collection, sender: cell.moreView)
+        coordinator?.selectMoreActions(for: vocabulary, in: collection, sender: cell.moreButton)
     }
     
     private func cellTagAttributeTapped(cell: VocabularyCollectionCell, indexPath: IndexPath) {
@@ -192,20 +192,26 @@ extension VocabularyCollectionViewController: NSFetchedResultsControllerDelegate
 
 extension VocabularyCollectionViewController: VocabularyCollectionCellDelegate {
     
-    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapAttribute view: UIView) {
+    func vocabularyCollectionCell(_ cell: VocabularyCollectionCell, didTapButton button: UIButton) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
-        switch view {
-        case cell.favoriteView.button, cell.favoriteView.label:
+        
+        switch button {
+        case cell.moreButton:
+            cellMoreButtonTapped(cell: cell, indexPath: indexPath)
+        
+        case cell.attributeView.favoriteButton:
             cellFavoriteAttributeTapped(cell: cell, indexPath: indexPath)
-        case cell.connectionView.button, cell.connectionView.label:
+        
+        case cell.attributeView.connectionView.button, cell.attributeView.connectionView.label:
             cellConnectionAttributeTapped(cell: cell, indexPath: indexPath)
-        case cell.politenessView.button, cell.politenessView.label:
+        
+        case cell.attributeView.politenessView.button, cell.attributeView.politenessView.label:
             cellPolitenessAttributeTapped(cell: cell, indexPath: indexPath)
-        case cell.moreView.button, cell.moreView.label:
-            cellMoreAttibuteTapped(cell: cell, indexPath: indexPath)
-        case cell.tagView.button, cell.tagView.label:
+        
+        case cell.attributeView.tagView.button, cell.attributeView.tagView.label:
             cellTagAttributeTapped(cell: cell, indexPath: indexPath)
-        default: ()
+        
+        default: break
         }
     }
 }
