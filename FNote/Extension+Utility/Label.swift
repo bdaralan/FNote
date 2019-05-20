@@ -11,9 +11,10 @@ import UIKit
 
 extension UILabel {
     
-    func estimatedWidth(for string: String) -> CGFloat {
-        text = string
-        sizeToFit()
-        return bounds.width
+    static func estimatedWidth(for string: String) -> CGFloat {
+        let label = UILabel()
+        label.text = string
+        label.sizeToFit()
+        return label.bounds.width
     }
 }
