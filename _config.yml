@@ -1,0 +1,6 @@
+theme: jekyll-theme-cayman
+github:
+  homepage: ./index
+  developer-guideline: ./DEVELOPERGUIDELINE
+  user-manual: ./USERMANUAL
+  fnote-web-icon: ./assets/images/fnote-web-icon.png
