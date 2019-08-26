@@ -5,3 +5,4 @@ FNote is an iOS App that makes note-taking process easier when learning a langua
 Staring a new master branch
 
 - Dara
+- Veronica
