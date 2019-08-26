@@ -6,3 +6,4 @@ Staring a new master branch
 
 - Dara
 - Veronica
+- Brittney
