@@ -11,24 +11,53 @@ import Foundation
 import CoreData
 
 
-public class NoteCard: NSManagedObject {
+class NoteCard: NSManagedObject, ObjectValidatable {
     
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<NoteCard> {
-        return NSFetchRequest<NoteCard>(entityName: "NoteCard")
+    @NSManaged var navtive: String
+    @NSManaged var translation: String
+    @NSManaged var isFavorited: Bool
+    @NSManaged var note: String
+    @NSManaged var collection: NoteCardCollection?
+    @NSManaged var relationships: Set<NoteCard>
+    @NSManaged var tags: Set<Tag>
+    
+    @NSManaged private var formalityValue: Int64
+    
+    var formality: Formality {
+        set { formalityValue = newValue.rawValue }
+        get { Formality(rawValue: formalityValue)! }
     }
     
-    @NSManaged public var formalityValue: Int64
-    @NSManaged public var isFavorited: Bool
-    @NSManaged public var navtive: String
-    @NSManaged public var note: String
-    @NSManaged public var translation: String
-    @NSManaged public var collection: NoteCardCollection?
-    @NSManaged public var relationships: Set<NoteCard>
-    @NSManaged public var tags: Set<Tag>
+    enum Formality: Int64 {
+        case unknown
+        case informal
+        case neutral
+        case formal
+    }
 }
 
 
 extension NoteCard {
+    
+    func isValid() -> Bool {
+        hasValidInputs() && collection != nil
+    }
+    
+    func hasValidInputs() -> Bool {
+        !navtive.trimmed().isEmpty && !translation.trimmed().isEmpty
+    }
+    
+    func hasChangedValues() -> Bool {
+        hasPersistentChangedValues
+    }
+}
+
+
+extension NoteCard {
+    
+    @nonobjc class func fetchRequest() -> NSFetchRequest<NoteCard> {
+        return NSFetchRequest<NoteCard>(entityName: "NoteCard")
+    }
     
     @objc(addRelationshipsObject:)
     @NSManaged public func addToRelationships(_ value: NoteCard)

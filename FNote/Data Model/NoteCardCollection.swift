@@ -11,29 +11,45 @@ import Foundation
 import CoreData
 
 
-public class NoteCardCollection: NSManagedObject {
+class NoteCardCollection: NSManagedObject, ObjectValidatable {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<NoteCardCollection> {
-        return NSFetchRequest<NoteCardCollection>(entityName: "NoteCardCollection")
-    }
-
-    @NSManaged public var name: String
-    @NSManaged public var noteCards: Set<NoteCard>
+    @NSManaged var name: String
+    @NSManaged var noteCards: Set<NoteCard>
 }
 
 
 extension NoteCardCollection {
+    
+    func isValid() -> Bool {
+        hasValidInputs()
+    }
+    
+    func hasValidInputs() -> Bool {
+        !name.trimmed().isEmpty
+    }
+    
+    func hasChangedValues() -> Bool {
+        hasPersistentChangedValues
+    }
+}
+
+
+extension NoteCardCollection {
+    
+    @nonobjc class func fetchRequest() -> NSFetchRequest<NoteCardCollection> {
+        return NSFetchRequest<NoteCardCollection>(entityName: "NoteCardCollection")
+    }
 
     @objc(addNoteCardsObject:)
-    @NSManaged public func addToNoteCards(_ value: NoteCard)
+    @NSManaged func addToNoteCards(_ value: NoteCard)
 
     @objc(removeNoteCardsObject:)
-    @NSManaged public func removeFromNoteCards(_ value: NoteCard)
+    @NSManaged func removeFromNoteCards(_ value: NoteCard)
 
     @objc(addNoteCards:)
-    @NSManaged public func addToNoteCards(_ values: NSSet)
+    @NSManaged func addToNoteCards(_ values: NSSet)
 
     @objc(removeNoteCards:)
-    @NSManaged public func removeFromNoteCards(_ values: NSSet)
+    @NSManaged func removeFromNoteCards(_ values: NSSet)
 
 }

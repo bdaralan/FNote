@@ -7,11 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B4BAC52423203F83007EAF15 /* Extension+ManagedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52323203F83007EAF15 /* Extension+ManagedObject.swift */; };
+		B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */; };
 		B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */; };
 		B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5342320405B007EAF15 /* NoteCard.swift */; };
 		B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */; };
 		B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5382320405B007EAF15 /* Tag.swift */; };
+		B4BAC541232041FE007EAF15 /* ObjectValidatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC540232041FE007EAF15 /* ObjectValidatable.swift */; };
+		B4BAC54323205022007EAF15 /* NoteCardDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC54223205022007EAF15 /* NoteCardDataSource.swift */; };
+		B4BAC54523206B28007EAF15 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC54423206B28007EAF15 /* String.swift */; };
 		B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BB117023145DC400A380AA /* AppDelegate.swift */; };
 		B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BB117223145DC400A380AA /* SceneDelegate.swift */; };
 		B4BB117623145DC400A380AA /* FNote.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B4BB117423145DC400A380AA /* FNote.xcdatamodeld */; };
@@ -33,11 +36,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B4BAC52323203F83007EAF15 /* Extension+ManagedObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+ManagedObject.swift"; sourceTree = "<group>"; };
+		B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedObjectContext.swift; sourceTree = "<group>"; };
 		B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
 		B4BAC5342320405B007EAF15 /* NoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCard.swift; sourceTree = "<group>"; };
 		B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollection.swift; sourceTree = "<group>"; };
 		B4BAC5382320405B007EAF15 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
+		B4BAC540232041FE007EAF15 /* ObjectValidatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectValidatable.swift; sourceTree = "<group>"; };
+		B4BAC54223205022007EAF15 /* NoteCardDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardDataSource.swift; sourceTree = "<group>"; };
+		B4BAC54423206B28007EAF15 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		B4BB116D23145DC400A380AA /* FNote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FNote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4BB117023145DC400A380AA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B4BB117223145DC400A380AA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -74,6 +80,8 @@
 			isa = PBXGroup;
 			children = (
 				B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */,
+				B4BAC540232041FE007EAF15 /* ObjectValidatable.swift */,
+				B4BAC54223205022007EAF15 /* NoteCardDataSource.swift */,
 			);
 			path = DataSource;
 			sourceTree = "<group>";
@@ -81,7 +89,8 @@
 		B4BAC52223203F60007EAF15 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
-				B4BAC52323203F83007EAF15 /* Extension+ManagedObject.swift */,
+				B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */,
+				B4BAC54423206B28007EAF15 /* String.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -118,8 +127,8 @@
 			isa = PBXGroup;
 			children = (
 				B4BAC5272320400A007EAF15 /* Data Model */,
-				B4BAC52223203F60007EAF15 /* Extension */,
 				B4BAC52123203F58007EAF15 /* DataSource */,
+				B4BAC52223203F60007EAF15 /* Extension */,
 				B4BB117023145DC400A380AA /* AppDelegate.swift */,
 				B4BB117223145DC400A380AA /* SceneDelegate.swift */,
 				B4BB117723145DC400A380AA /* ContentView.swift */,
@@ -251,9 +260,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */,
-				B4BAC52423203F83007EAF15 /* Extension+ManagedObject.swift in Sources */,
+				B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */,
 				B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */,
 				B4BB117623145DC400A380AA /* FNote.xcdatamodeld in Sources */,
+				B4BAC54323205022007EAF15 /* NoteCardDataSource.swift in Sources */,
+				B4BAC541232041FE007EAF15 /* ObjectValidatable.swift in Sources */,
+				B4BAC54523206B28007EAF15 /* String.swift in Sources */,
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,
 				B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */,
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
