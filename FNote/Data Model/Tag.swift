@@ -31,6 +31,10 @@ extension Tag {
     func hasChangedValues() -> Bool {
         hasPersistentChangedValues
     }
+    
+    func validateData() {
+        name = name.trimmed()
+    }
 }
 
 

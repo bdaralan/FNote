@@ -85,7 +85,10 @@ extension ObjectDataSource {
     func saveNewObject() -> ObjectSaveResult {
         guard let object = newObject, object.isValid() else { return .failed }
         
+        object.objectWillChange.send() // tell UI to update
+        
         if object.hasChangedValues() {
+            object.validateData()
             saveCreateContext()
             return .saved
         } else {
@@ -97,7 +100,10 @@ extension ObjectDataSource {
     func saveUpdateObject() -> ObjectSaveResult {
         guard let object = updateObject, object.isValid() else { return .failed }
         
+        object.objectWillChange.send() // tell UI to update
+        
         if object.hasChangedValues() {
+            object.validateData()
             saveUpdateContext()
             return .saved
         } else {

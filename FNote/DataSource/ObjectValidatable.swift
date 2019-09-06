@@ -20,4 +20,9 @@ protocol ObjectValidatable {
     
     /// Check if the object has changed values and should be saved.
     func hasChangedValues() -> Bool
+    
+    /// Correcting data into a valid format.
+    ///
+    /// Ideally, call this method before save.
+    func validateData()
 }

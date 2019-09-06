@@ -31,6 +31,10 @@ extension NoteCardCollection {
     func hasChangedValues() -> Bool {
         hasPersistentChangedValues
     }
+    
+    func validateData() {
+        name = name.trimmed()
+    }
 }
 
 

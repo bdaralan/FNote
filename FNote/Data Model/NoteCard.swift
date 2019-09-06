@@ -28,7 +28,7 @@ class NoteCard: NSManagedObject, ObjectValidatable {
         get { Formality(rawValue: formalityValue)! }
     }
     
-    enum Formality: Int64 {
+    enum Formality: Int64, CaseIterable {
         case unknown
         case informal
         case neutral
@@ -49,6 +49,16 @@ extension NoteCard {
     
     func hasChangedValues() -> Bool {
         hasPersistentChangedValues
+    }
+    
+    func validateData() {
+        navtive = navtive.trimmed()
+        translation = translation.trimmed()
+        note = note.trimmed()
+        
+        let validFormatilies = Formality.allCases.map({ $0.rawValue })
+        guard !validFormatilies.contains(formalityValue) else { return }
+        formality = .unknown
     }
 }
 
