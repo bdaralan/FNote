@@ -10,10 +10,12 @@ import SwiftUI
 
 struct NoteCardCollectionView: View {
     
+    var collection: NoteCardCollection = NoteCardCollection.sampleCollections(count: 1, cardCount: -1)[0]
+    
     var body: some View {
         ScrollView(.vertical, showsIndicators: true) {
             VStack {
-                ForEach(1...10, id: \.self) { index in
+                ForEach(Array(collection.noteCards), id: \.self) { index in
                     Rectangle()
                         .foregroundColor(.red)
                         .frame(width: UIScreen.main.bounds.width * 0.8, height: 100, alignment: .center)

@@ -57,3 +57,27 @@ extension NoteCardCollection {
     @NSManaged func removeFromNoteCards(_ values: NSSet)
 
 }
+
+
+extension NoteCardCollection {
+    
+    static func sampleCollections(count: Int, cardCount: Int) -> [NoteCardCollection] {
+        let sampleContext = CoreDataStack.sampleContext
+        
+        var collections = [NoteCardCollection]()
+        for name in 1...count {
+            let collection = NoteCardCollection(context: sampleContext)
+            collection.name = "Collection \(name)"
+            
+            for noteName in 1...cardCount {
+                let note = NoteCard(context: sampleContext)
+                note.navtive = "Navitve \(noteName)"
+                note.translation = "Translation: \(noteName)"
+                note.collection = collection
+            }
+            
+            collections.append(collection)
+        }
+        return collections
+    }
+}
