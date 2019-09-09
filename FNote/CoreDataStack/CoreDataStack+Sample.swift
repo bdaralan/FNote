@@ -1,5 +1,5 @@
 //
-//  CoreDataStack+Test.swift
+//  CoreDataStack+Sample.swift
 //  FNote
 //
 //  Created by Dara Beng on 9/9/19.
