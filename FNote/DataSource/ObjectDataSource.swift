@@ -31,7 +31,7 @@ protocol ObjectDataSource: ObservableObject, NSFetchedResultsControllerDelegate 
     /// The context used to read and update existing object.
     var updateContext: NSManagedObjectContext { get }
     
-    /// A fetch result controller used to fetch objects from the `parentContext`
+    /// A fetch result controller used to fetch objects from the `updateContext`
     var fetchedResult: NSFetchedResultsController<Object> { get }
     
     /// A new object to be created.
