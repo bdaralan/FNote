@@ -46,7 +46,7 @@ class TagDataSource: NSObject, ObjectDataSource {
         
         fetchedResult = .init(
             fetchRequest: request,
-            managedObjectContext: parentContext,
+            managedObjectContext: updateContext,
             sectionNameKeyPath: nil,
             cacheName: nil
         )
