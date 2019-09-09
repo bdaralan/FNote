@@ -22,7 +22,7 @@ struct MainTabView: View {
     
     var body: some View {
         TabView(selection: currentTabItemTag) {
-            Text("Home").tabItem {
+            NoteCardCollectionView().tabItem {
                 createTabItem(name: "Notes", image: Image(systemName: "rectangle.fill.on.rectangle.angled.fill"))
             }
             .tag(Tab.home.rawValue)
