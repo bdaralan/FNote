@@ -10,7 +10,7 @@ import SwiftUI
 
 struct NoteCardCollectionView: View {
     
-    var collection: NoteCardCollection = NoteCardCollection.sampleCollections(count: 1, cardCount: -1)[0]
+    var collection: NoteCardCollection = NoteCardCollection.sampleCollections(count: 1, noteCount: 5)[0]
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: true) {

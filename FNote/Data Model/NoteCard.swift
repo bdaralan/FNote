@@ -99,3 +99,21 @@ extension NoteCard {
     @NSManaged public func removeFromTags(_ values: NSSet)
     
 }
+
+
+extension NoteCard {
+    
+    static func sampleNoteCards(count: Int) -> [NoteCard] {
+        let sampleContext = CoreDataStack.sampleContext
+        
+        var notes = [NoteCard]()
+        for note in 1...count {
+            let noteCard = NoteCard(context: sampleContext)
+            noteCard.navtive = "Native \(note)"
+            noteCard.translation = "Translation \(note)"
+            notes.append(noteCard)
+        }
+        
+        return notes
+    }
+}

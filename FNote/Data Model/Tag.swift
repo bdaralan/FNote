@@ -57,3 +57,20 @@ extension Tag {
     @NSManaged func removeFromNoteCards(_ values: NSSet)
 
 }
+
+
+extension Tag {
+    
+    static func sampleTags(count: Int) -> [Tag] {
+        let sampleContext = CoreDataStack.sampleContext
+        
+        var tags = [Tag]()
+        for name in 1...count {
+            let tag = Tag(context: sampleContext)
+            tag.name = "Tag \(name)"
+            tags.append(tag)
+        }
+        
+        return tags
+    }
+}
