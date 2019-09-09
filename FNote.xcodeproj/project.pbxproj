@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		665C7EB923209B4D000BFD9F /* TagDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C7EB823209B4D000BFD9F /* TagDataSource.swift */; };
+		B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35B2326D988002D16A0 /* CoreDataStack.swift */; };
+		B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35D2326D9A7002D16A0 /* AppCache.swift */; };
 		B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */; };
 		B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */; };
 		B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5342320405B007EAF15 /* NoteCard.swift */; };
@@ -38,6 +40,8 @@
 
 /* Begin PBXFileReference section */
 		665C7EB823209B4D000BFD9F /* TagDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDataSource.swift; sourceTree = "<group>"; };
+		B499A35B2326D988002D16A0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		B499A35D2326D9A7002D16A0 /* AppCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCache.swift; sourceTree = "<group>"; };
 		B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedObjectContext.swift; sourceTree = "<group>"; };
 		B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
 		B4BAC5342320405B007EAF15 /* NoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCard.swift; sourceTree = "<group>"; };
@@ -78,6 +82,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B499A3572326D932002D16A0 /* CoreDataStack */ = {
+			isa = PBXGroup;
+			children = (
+				B499A35B2326D988002D16A0 /* CoreDataStack.swift */,
+				B499A35D2326D9A7002D16A0 /* AppCache.swift */,
+			);
+			path = CoreDataStack;
+			sourceTree = "<group>";
+		};
+		B499A35A2326D972002D16A0 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		B4BAC52123203F58007EAF15 /* DataSource */ = {
 			isa = PBXGroup;
 			children = (
@@ -131,7 +151,9 @@
 			children = (
 				B4BAC5272320400A007EAF15 /* Data Model */,
 				B4BAC52123203F58007EAF15 /* DataSource */,
+				B499A35A2326D972002D16A0 /* View */,
 				B4BAC52223203F60007EAF15 /* Extension */,
+				B499A3572326D932002D16A0 /* CoreDataStack */,
 				B4BB117023145DC400A380AA /* AppDelegate.swift */,
 				B4BB117223145DC400A380AA /* SceneDelegate.swift */,
 				B4BB117723145DC400A380AA /* ContentView.swift */,
@@ -267,8 +289,10 @@
 				B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */,
 				B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */,
 				B4BB117623145DC400A380AA /* FNote.xcdatamodeld in Sources */,
+				B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */,
 				B4BAC54323205022007EAF15 /* NoteCardDataSource.swift in Sources */,
 				B4BAC541232041FE007EAF15 /* ObjectValidatable.swift in Sources */,
+				B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */,
 				B4BAC54523206B28007EAF15 /* String.swift in Sources */,
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,
 				B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */,
