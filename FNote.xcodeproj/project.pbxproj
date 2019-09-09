@@ -10,6 +10,7 @@
 		665C7EB923209B4D000BFD9F /* TagDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C7EB823209B4D000BFD9F /* TagDataSource.swift */; };
 		B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35B2326D988002D16A0 /* CoreDataStack.swift */; };
 		B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35D2326D9A7002D16A0 /* AppCache.swift */; };
+		B499A3602326DA27002D16A0 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35F2326DA27002D16A0 /* MainTabView.swift */; };
 		B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */; };
 		B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */; };
 		B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5342320405B007EAF15 /* NoteCard.swift */; };
@@ -21,7 +22,6 @@
 		B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BB117023145DC400A380AA /* AppDelegate.swift */; };
 		B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BB117223145DC400A380AA /* SceneDelegate.swift */; };
 		B4BB117623145DC400A380AA /* FNote.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B4BB117423145DC400A380AA /* FNote.xcdatamodeld */; };
-		B4BB117823145DC400A380AA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BB117723145DC400A380AA /* ContentView.swift */; };
 		B4BB117A23145DC600A380AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B4BB117923145DC600A380AA /* Assets.xcassets */; };
 		B4BB117D23145DC600A380AA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B4BB117C23145DC600A380AA /* Preview Assets.xcassets */; };
 		B4BB118023145DC600A380AA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B4BB117E23145DC600A380AA /* LaunchScreen.storyboard */; };
@@ -42,6 +42,7 @@
 		665C7EB823209B4D000BFD9F /* TagDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDataSource.swift; sourceTree = "<group>"; };
 		B499A35B2326D988002D16A0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		B499A35D2326D9A7002D16A0 /* AppCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCache.swift; sourceTree = "<group>"; };
+		B499A35F2326DA27002D16A0 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedObjectContext.swift; sourceTree = "<group>"; };
 		B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
 		B4BAC5342320405B007EAF15 /* NoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCard.swift; sourceTree = "<group>"; };
@@ -54,7 +55,6 @@
 		B4BB117023145DC400A380AA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B4BB117223145DC400A380AA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		B4BB117523145DC400A380AA /* FNote.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FNote.xcdatamodel; sourceTree = "<group>"; };
-		B4BB117723145DC400A380AA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B4BB117923145DC600A380AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B4BB117C23145DC600A380AA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B4BB117F23145DC600A380AA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -94,6 +94,7 @@
 		B499A35A2326D972002D16A0 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				B499A35F2326DA27002D16A0 /* MainTabView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -156,7 +157,6 @@
 				B499A3572326D932002D16A0 /* CoreDataStack */,
 				B4BB117023145DC400A380AA /* AppDelegate.swift */,
 				B4BB117223145DC400A380AA /* SceneDelegate.swift */,
-				B4BB117723145DC400A380AA /* ContentView.swift */,
 				B4BB117923145DC600A380AA /* Assets.xcassets */,
 				B4BB117E23145DC600A380AA /* LaunchScreen.storyboard */,
 				B4BB118123145DC600A380AA /* Info.plist */,
@@ -287,6 +287,7 @@
 				B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */,
 				665C7EB923209B4D000BFD9F /* TagDataSource.swift in Sources */,
 				B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */,
+				B499A3602326DA27002D16A0 /* MainTabView.swift in Sources */,
 				B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */,
 				B4BB117623145DC400A380AA /* FNote.xcdatamodeld in Sources */,
 				B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */,
@@ -297,7 +298,6 @@
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,
 				B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */,
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
-				B4BB117823145DC400A380AA /* ContentView.swift in Sources */,
 				B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
