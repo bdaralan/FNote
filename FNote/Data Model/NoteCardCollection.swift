@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 
 
-class NoteCardCollection: NSManagedObject, ObjectValidatable {
+class NoteCardCollection: NSManagedObject, ObjectValidatable, CoreDataStackCurrentManagedObject {
 
     @NSManaged var name: String
     @NSManaged var noteCards: Set<NoteCard>
