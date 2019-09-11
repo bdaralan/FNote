@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 
 
-class NoteCardCollection: NSManagedObject, ObjectValidatable {
+class NoteCardCollection: NSManagedObject, ObjectValidatable, CoreDataStackCurrentManagedObject {
 
     @NSManaged var name: String
     @NSManaged var noteCards: Set<NoteCard>
@@ -56,4 +56,28 @@ extension NoteCardCollection {
     @objc(removeNoteCards:)
     @NSManaged func removeFromNoteCards(_ values: NSSet)
 
+}
+
+
+extension NoteCardCollection {
+    
+    static func sampleCollections(count: Int, noteCount: Int) -> [NoteCardCollection] {
+        let sampleContext = CoreDataStack.sampleContext
+        
+        var collections = [NoteCardCollection]()
+        for name in 1...count {
+            let collection = NoteCardCollection(context: sampleContext)
+            collection.name = "Collection \(name)"
+            
+            for noteName in 1...noteCount {
+                let note = NoteCard(context: sampleContext)
+                note.navtive = "Navitve \(noteName)"
+                note.translation = "Translation: \(noteName)"
+                note.collection = collection
+            }
+            
+            collections.append(collection)
+        }
+        return collections
+    }
 }

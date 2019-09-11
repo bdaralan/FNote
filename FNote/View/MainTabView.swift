@@ -13,6 +13,8 @@ struct MainTabView: View {
     
     @State private var currentTabItem = Tab.home
     
+    var collection = NoteCardCollection.sampleCollections(count: 1, noteCount: 20)[0]
+    
     var currentTabItemTag: Binding<Int> {
         .init(
             get: { self.currentTabItem.rawValue },
@@ -22,7 +24,7 @@ struct MainTabView: View {
     
     var body: some View {
         TabView(selection: currentTabItemTag) {
-            NoteCardCollectionView().tabItem {
+            NoteCardCollectionView(collection: collection).tabItem {
                 createTabItem(name: "Notes", image: Image(systemName: "rectangle.fill.on.rectangle.angled.fill"))
             }
             .tag(Tab.home.rawValue)
