@@ -1,18 +1,18 @@
 //
-//  TagDataSource.swift
+//  NoteCardCollectionDataSource.swift
 //  FNote
 //
-//  Created by Veronica Sumariyanto on 9/4/19.
+//  Created by Brittney Witts on 9/10/19.
 //  Copyright © 2019 Dara Beng. All rights reserved.
 //
 
 import CoreData
 
-// An object data source that manages 'Tag'
-class TagDataSource: NSObject, ObjectDataSource {
-    
+// An object data source that manages "NoteCard Collection"
+class NoteCardCollectionDataSource: NSObject, ObjectDataSource {
+
     // The type of object that the data source will manage
-    typealias Object = Tag
+    typealias Object = NoteCardCollection
     
     // Parent context that can send changes to the database
     var parentContext: NSManagedObjectContext
@@ -23,25 +23,24 @@ class TagDataSource: NSObject, ObjectDataSource {
     // Context to read/update existing object
     var updateContext: NSManagedObjectContext
     
-    // Fetch result controller that fetches objects from 'parentContext'
-    var fetchedResult: NSFetchedResultsController<Tag>
+    // Fetch result controller that fethces objects from 'parentContext'
+    var fetchedResult: NSFetchedResultsController<NoteCardCollection>
     
-    // A new tag object
-    var newObject: Tag?
+    // New NoteCardCollection object
+    var newObject: NoteCardCollection?
     
-    // A updated tag object
-    var updateObject: Tag?
+    // Updated tag object
+    var updateObject: NoteCardCollection?
     
     // Initializing the data source with the given context
-    // what it needs to conform to the objectdatasource
     required init(parentContext: NSManagedObjectContext) {
         self.parentContext = parentContext
         createContext = parentContext.newChildContext()
         updateContext = parentContext.newChildContext()
         
-        let request = Tag.fetchRequest() as NSFetchRequest<Tag>
-        // how to sort, no sort, just grab
-        // make sure that fetchedResult is initialized
+        let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
+        
+        // how to sort, no sort, or just fetch
         request.sortDescriptors = []
         
         fetchedResult = .init(
@@ -50,10 +49,11 @@ class TagDataSource: NSObject, ObjectDataSource {
             sectionNameKeyPath: nil,
             cacheName: nil
         )
-      }
+    }
     
-    // func deals with the UI, to reflect the changes made to the object
+    // Function deals with the UI to reflect the changes made to the object
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         objectWillChange.send();
     }
+    
 }
