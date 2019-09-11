@@ -11,6 +11,11 @@ import SwiftUI
 
 struct MainTabView: View {
     
+    @ObservedObject var noteCardCollectionDataSource: NoteCardCollectionDataSource = {
+        let dataSource = NoteCardCollectionDataSource.init(parentContext: CoreDataStack.current.mainContext)
+        return dataSource
+    }()
+    
     @State private var currentTabItem = Tab.home
     
     var collection = NoteCardCollection.sampleCollections(count: 1, noteCount: 20)[0]
@@ -27,6 +32,7 @@ struct MainTabView: View {
             NoteCardCollectionView(collection: collection).tabItem {
                 createTabItem(name: "Notes", image: Image(systemName: "rectangle.fill.on.rectangle.angled.fill"))
             }
+            .environmentObject(noteCardCollectionDataSource)
             .tag(Tab.home.rawValue)
             
             Text("Collections").tabItem {

@@ -10,6 +10,8 @@ import SwiftUI
 
 struct NoteCardCollectionView: View {
     
+    @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
+    
     @ObservedObject var collection: NoteCardCollection
     
     var body: some View {
