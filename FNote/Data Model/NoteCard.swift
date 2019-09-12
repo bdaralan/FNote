@@ -28,11 +28,27 @@ class NoteCard: NSManagedObject, ObjectValidatable {
         get { Formality(rawValue: formalityValue)! }
     }
     
+    
+    override func willChangeValue(forKey key: String) {
+        super.willChangeValue(forKey: key)
+        objectWillChange.send()
+    }
+    
+    
     enum Formality: Int64, CaseIterable {
         case unknown
         case informal
         case neutral
         case formal
+        
+        var title: String {
+            switch self {
+            case .unknown: return "No Set"
+            case .informal: return "Informal"
+            case .neutral: return "Neutral"
+            case .formal: return "Formal"
+            }
+        }
     }
 }
 
