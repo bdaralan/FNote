@@ -19,11 +19,13 @@ struct NoteCardCollectionView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 16) {
                     ForEach(Array(collection.noteCards), id: \.self) { index in
-                        Rectangle()
+                        NavigationLink(destination: NoteCardView().navigationBarTitle("Note Card", displayMode: .inline)) {
+                            Rectangle()
                             .frame(width: UIScreen.main.bounds.width * 0.9, height: 120, alignment: .center)
                             .foregroundColor(.red)
                             .cornerRadius(10)
                             .shadow(color: Color.black.opacity(0.2), radius: 3, x: 1, y: 1)
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
@@ -33,6 +35,7 @@ struct NoteCardCollectionView: View {
         }
     }
 }
+
 
 struct NoteCardCollectionView_Previews: PreviewProvider {
     static var previews: some View {
