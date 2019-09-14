@@ -66,8 +66,9 @@ struct NoteCardView: View {
                 text: self.$noteCard.navtive,
                 prompt: "Prompt",
                 placeholder: "Placeholder",
-                tip: "This is a tip text",
-                onCommit: { self.isEditingNote = false })
+                description: "This is a tip text",
+                onCommit: { self.isEditingNote = false }
+            )
         }
     }
 }

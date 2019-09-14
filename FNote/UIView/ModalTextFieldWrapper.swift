@@ -44,7 +44,7 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
         
         let coordinator = context.coordinator
         coordinator.isActive = isActive
-        coordinator.handleKeyboard(for: uiView)
+        coordinator.handleFirstResponder(for: uiView)
     }
     
     
@@ -73,7 +73,7 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
             return true
         }
         
-        func handleKeyboard(for textField: UITextField) {
+        func handleFirstResponder(for textField: UITextField) {
             let textFieldWillAppear = textField.window == nil
             let textFieldDidAppear = textField.window != nil
             

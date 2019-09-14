@@ -18,7 +18,9 @@ struct ModalTextField: View {
     
     var placeholder: String
     
-    var tip = ""
+    var description = ""
+    
+    var descriptionColor = Color.secondary
     
     var onCommit: (() -> Void)?
     
@@ -31,12 +33,21 @@ struct ModalTextField: View {
             ModalTextFieldWrapper(isActive: $isActive, text: $text, placeholder: placeholder, onCommit: onCommit)
                 .fixedSize(horizontal: false, vertical: true)
             Divider()
-            Text(tip)
-                .foregroundColor(.secondary)
+            Text(description)
+                .foregroundColor(descriptionColor)
                 .padding(.vertical)
                 .padding(.vertical)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .padding(.vertical, 20)
+        .padding(.horizontal)
+        .overlay(dragHandle, alignment: .top)
+    }
+    
+    var dragHandle: some View {
+        RoundedRectangle(cornerRadius: 2, style: .continuous)
+            .frame(width: 40, height: 4, alignment: .center)
+            .foregroundColor(.primary)
+            .padding(.top, 8)
     }
 }
