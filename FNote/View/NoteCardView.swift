@@ -12,6 +12,9 @@ struct NoteCardView: View {
     
     @ObservedObject var noteCard = NoteCard.sampleNoteCards(count: 1)[0]
     
+    @State private var isEditingNote = false
+    
+    
     var body: some View {
         Form {
             Section(header: Text("NATIVE & TRANSLATION").padding(.top, 20)) {
@@ -52,8 +55,19 @@ struct NoteCardView: View {
             }
             
             Section(header: Text("NOTE")) {
-                TextField("note...", text: $noteCard.note)
+                Button(action: { self.isEditingNote = true }) {
+                    TextField("note...", text: $noteCard.note)
+                }
             }
+        }
+        .sheet(isPresented: $isEditingNote, onDismiss: nil) {
+            ModalTextField(
+                isActive: self.$isEditingNote,
+                text: self.$noteCard.navtive,
+                prompt: "Prompt",
+                placeholder: "Placeholder",
+                tip: "This is a tip text",
+                onCommit: { self.isEditingNote = false })
         }
     }
 }
