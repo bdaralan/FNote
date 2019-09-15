@@ -16,21 +16,31 @@ struct ModalTextView: View {
     
     var prompt: String
     
-    var onCommit: (() -> Void)?
+    var onCommit: (() -> Void) = {}
+    
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(prompt)
-                .font(.largeTitle)
-                .bold()
+            HStack(alignment: .firstTextBaseline) {
+                Text(prompt)
+                    .font(.largeTitle)
+                    .bold()
+                Spacer()
+                Button(action: onCommit) {
+                    Text("Done").bold()
+                }
+            }
             ModalTextViewWrapper(text: $text, isActive: $isActive)
-//                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding(.vertical, 20)
         .padding(.horizontal)
         .overlay(dragHandle, alignment: .top)
     }
+}
+
+
+extension ModalTextView {
     
     var dragHandle: some View {
         RoundedRectangle(cornerRadius: 2, style: .continuous)
@@ -40,8 +50,9 @@ struct ModalTextView: View {
     }
 }
 
+
 struct ModalTextView_Previews: PreviewProvider {
     static var previews: some View {
-        ModalTextView(isActive: .constant(true), text: .constant("Hello"), prompt: "Prompt", onCommit: nil)
+        ModalTextView(isActive: .constant(true), text: .constant("Hello"), prompt: "Prompt")
     }
 }

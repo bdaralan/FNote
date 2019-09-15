@@ -68,17 +68,9 @@ struct NoteCardView: View {
 extension NoteCardView {
     
     var noteEditingSheet: some View {
-        ModalTextView(isActive: $isEditingNote, text: $noteCard.note, prompt: "Note") {
+        ModalTextView(isActive: $isEditingNote, text: $noteCard.note, prompt: "Note", onCommit: {
             self.isEditingNote = false
-        }
-//        ModalTextField(
-//            isActive: self.$isEditingNote,
-//            text: self.$noteCard.navtive,
-//            prompt: "Prompt",
-//            placeholder: "Placeholder",
-//            description: "This is a tip text",
-//            onCommit: { self.isEditingNote = false }
-//        )
+        })
     }
     
     var formalityPickerLabel: some View {
