@@ -60,21 +60,26 @@ struct NoteCardView: View {
                 }
             }
         }
-        .sheet(isPresented: $isEditingNote, onDismiss: nil) {
-            ModalTextField(
-                isActive: self.$isEditingNote,
-                text: self.$noteCard.navtive,
-                prompt: "Prompt",
-                placeholder: "Placeholder",
-                description: "This is a tip text",
-                onCommit: { self.isEditingNote = false }
-            )
-        }
+        .sheet(isPresented: $isEditingNote, content: { self.noteEditingSheet })
     }
 }
 
 
 extension NoteCardView {
+    
+    var noteEditingSheet: some View {
+        ModalTextView(isActive: $isEditingNote, text: $noteCard.note, prompt: "Note") {
+            self.isEditingNote = false
+        }
+//        ModalTextField(
+//            isActive: self.$isEditingNote,
+//            text: self.$noteCard.navtive,
+//            prompt: "Prompt",
+//            placeholder: "Placeholder",
+//            description: "This is a tip text",
+//            onCommit: { self.isEditingNote = false }
+//        )
+    }
     
     var formalityPickerLabel: some View {
         ViewBuilder.buildBlock(rowImage(systemName: "hand.raised.fill"), Text("Formality"))

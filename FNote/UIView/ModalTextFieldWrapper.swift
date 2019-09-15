@@ -41,16 +41,13 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
     func updateUIView(_ uiView: UITextField, context: Context) {
         uiView.text = text
         uiView.placeholder = placeholder
-        
-        let coordinator = context.coordinator
-        coordinator.isActive = isActive
-        coordinator.handleFirstResponder(for: uiView)
+        context.coordinator.handleFirstResponse(for: uiView, isActive: isActive)
     }
     
     
     // MARK: Coordiantor
     
-    class Coordinator: NSObject, UITextFieldDelegate {
+    class Coordinator: NSObject, UITextFieldDelegate, FirstTimeResponder {
         
         @Binding var text: String
         
@@ -58,7 +55,7 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
                 
         var onCommit: (() -> Void)?
         
-        private var canBecomeFirstResponder = false
+        var shouldResponse = false
         
         
         init(text: Binding<String>) {
@@ -68,22 +65,8 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
         
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
             onCommit?()
-            textField.resignFirstResponder()
-            canBecomeFirstResponder = true
+            resignResponder(textField, reset: true)
             return true
-        }
-        
-        func handleFirstResponder(for textField: UITextField) {
-            let textFieldWillAppear = textField.window == nil
-            let textFieldDidAppear = textField.window != nil
-            
-            if textFieldWillAppear {
-                canBecomeFirstResponder = true
-            }
-            
-            guard isActive, canBecomeFirstResponder, textFieldDidAppear, !textField.isFirstResponder else { return }
-            textField.becomeFirstResponder()
-            canBecomeFirstResponder = false
         }
         
         func configureTargetAndDelegate(for textField: UITextField) {
