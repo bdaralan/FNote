@@ -29,7 +29,7 @@ struct MainTabView: View {
             }
             .tag(Tab.home.rawValue)
             
-            Text("Collections").tabItem {
+            NoteCardCollectionListView().tabItem {
                 createTabItem(name: "Collections", image: Image(systemName: "rectangle.stack.fill"))
             }
             .tag(Tab.collection.rawValue)
