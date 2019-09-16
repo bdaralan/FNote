@@ -15,6 +15,12 @@ class NoteCardCollection: NSManagedObject, ObjectValidatable, CoreDataStackCurre
 
     @NSManaged var name: String
     @NSManaged var noteCards: Set<NoteCard>
+    
+    
+    override func willChangeValue(forKey key: String) {
+        super.willChangeValue(forKey: key)
+        objectWillChange.send()
+    }
 }
 
 
