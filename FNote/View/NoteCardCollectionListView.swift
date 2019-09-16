@@ -10,7 +10,11 @@ import SwiftUI
 
 struct NoteCardCollectionListView: View {
     
+    @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
     @State var sampleCollection = NoteCardCollection.sampleCollections(count: 10, noteCount: 1)
+    @State var collectionToRename: NoteCardCollection?
+    @State var collectionNewName = ""
+    @State var showRenameSheet = false
     
     var body: some View {
         NavigationView {
@@ -32,6 +36,7 @@ struct NoteCardCollectionListView: View {
                 }
             .navigationBarTitle("Collections")
         }
+    .sheet(isPresented: $showRenameSheet, content: renamev)
     }
 }
 
@@ -39,6 +44,10 @@ extension NoteCardCollectionListView {
 
     func renameCollection(_ collection: NoteCardCollection) {
         // rename the collection to what the user wants
+        collectionNewName = collection.name
+//        noteCardCollectionDataSource.setUpdateObject(collection)
+        collectionToRename = collection
+        showRenameSheet = true
     }
     
     func deleteCollection(_ collection: NoteCardCollection) {
@@ -47,6 +56,14 @@ extension NoteCardCollectionListView {
         sampleCollection.remove(at: index)
     }
     
+    func renamev() -> some View {
+        ModalTextField(isActive: $showRenameSheet, text: $collectionNewName, prompt: "Rename", placeholder: collectionToRename!.name, onCommit: commitRename)
+    }
+    
+    func commitRename() {
+        // validate before we save
+        // save
+    }
 }
 
 struct NoteCardCollectionListView_Previews: PreviewProvider {

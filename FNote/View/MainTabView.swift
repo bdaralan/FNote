@@ -38,6 +38,7 @@ struct MainTabView: View {
             NoteCardCollectionListView().tabItem {
                 createTabItem(name: "Collections", image: Image(systemName: "rectangle.stack.fill"))
             }
+        .environmentObject(noteCardCollectionDataSource)
             .tag(Tab.collection.rawValue)
             
             Text("Tags").tabItem {
