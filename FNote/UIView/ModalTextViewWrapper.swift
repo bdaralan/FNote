@@ -71,7 +71,6 @@ struct ModalTextViewWrapper: UIViewRepresentable {
         }
         
         @objc private func handleKeyboardFrameChanged(_ notification: Notification) {
-            print(notification.userInfo!)
             guard let userInfo = notification.userInfo else { return }
             guard let keyboardFrame = userInfo["UIKeyboardFrameEndUserInfoKey"] as? CGRect else { return }
             textView.contentInset.bottom = keyboardFrame.height

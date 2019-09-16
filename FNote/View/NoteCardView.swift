@@ -12,7 +12,7 @@ struct NoteCardView: View {
     
     @ObservedObject var noteCard = NoteCard.sampleNoteCards(count: 1)[0]
     
-    @State private var isEditingNote = false
+    @State private var showNoteEditingSheet = false
     
     
     var body: some View {
@@ -55,12 +55,14 @@ struct NoteCardView: View {
             }
             
             Section(header: Text("NOTE")) {
-                Button(action: { self.isEditingNote = true }) {
-                    TextField("note...", text: $noteCard.note)
-                }
+                NoteCardNoteTextViewWrapper(text: $noteCard.note)
+                    .frame(minHeight: 250, maxHeight: .infinity, alignment: .center)
+                    .padding(0)
+                    .overlay(noteSectionEmptyNotePlaceholder, alignment: .topLeading)
+                    .onTapGesture { self.showNoteEditingSheet = true }
             }
         }
-        .sheet(isPresented: $isEditingNote, content: { self.noteEditingSheet })
+        .sheet(isPresented: $showNoteEditingSheet, content: { self.noteEditingSheet })
     }
 }
 
@@ -68,9 +70,16 @@ struct NoteCardView: View {
 extension NoteCardView {
     
     var noteEditingSheet: some View {
-        ModalTextView(isActive: $isEditingNote, text: $noteCard.note, prompt: "Note", onCommit: {
-            self.isEditingNote = false
+        ModalTextView(isActive: $showNoteEditingSheet, text: $noteCard.note, prompt: "Note", onCommit: {
+            self.showNoteEditingSheet = false
         })
+    }
+    
+    var noteSectionEmptyNotePlaceholder: some View {
+        Text(noteCard.note.isEmpty ? ". . ." : "")
+            .font(.body)
+            .padding(6)
+            .foregroundColor(.secondary)
     }
     
     var formalityPickerLabel: some View {
