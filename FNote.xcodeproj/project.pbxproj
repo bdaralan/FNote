@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		65F373A023289D4C002CD331 /* NoteCardCollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F3739F23289D4C002CD331 /* NoteCardCollectionDataSource.swift */; };
 		665C7EB923209B4D000BFD9F /* TagDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C7EB823209B4D000BFD9F /* TagDataSource.swift */; };
+		668E537523297FDB0095DD71 /* NoteCollectionViewCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668E537423297FDB0095DD71 /* NoteCollectionViewCardView.swift */; };
 		B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35B2326D988002D16A0 /* CoreDataStack.swift */; };
 		B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35D2326D9A7002D16A0 /* AppCache.swift */; };
 		B499A3602326DA27002D16A0 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35F2326DA27002D16A0 /* MainTabView.swift */; };
@@ -43,6 +44,7 @@
 /* Begin PBXFileReference section */
 		65F3739F23289D4C002CD331 /* NoteCardCollectionDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionDataSource.swift; sourceTree = "<group>"; };
 		665C7EB823209B4D000BFD9F /* TagDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDataSource.swift; sourceTree = "<group>"; };
+		668E537423297FDB0095DD71 /* NoteCollectionViewCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCollectionViewCardView.swift; sourceTree = "<group>"; };
 		B499A35B2326D988002D16A0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		B499A35D2326D9A7002D16A0 /* AppCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCache.swift; sourceTree = "<group>"; };
 		B499A35F2326DA27002D16A0 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 			children = (
 				B499A35F2326DA27002D16A0 /* MainTabView.swift */,
 				B499A3622326E518002D16A0 /* NoteCardCollectionView.swift */,
+				668E537423297FDB0095DD71 /* NoteCollectionViewCardView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 			files = (
 				B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */,
 				665C7EB923209B4D000BFD9F /* TagDataSource.swift in Sources */,
+				668E537523297FDB0095DD71 /* NoteCollectionViewCardView.swift in Sources */,
 				B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */,
 				B499A3602326DA27002D16A0 /* MainTabView.swift in Sources */,
 				B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */,

@@ -14,9 +14,7 @@ struct NoteCardCollectionView: View {
         ScrollView(.vertical, showsIndicators: true) {
             VStack {
                 ForEach(1...10, id: \.self) { index in
-                    Rectangle()
-                        .foregroundColor(.red)
-                        .frame(width: UIScreen.main.bounds.width * 0.8, height: 100, alignment: .center)
+                    NoteCardCollectionViewCard()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
