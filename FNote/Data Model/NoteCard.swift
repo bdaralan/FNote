@@ -28,11 +28,27 @@ class NoteCard: NSManagedObject, ObjectValidatable {
         get { Formality(rawValue: formalityValue)! }
     }
     
+    
+    override func willChangeValue(forKey key: String) {
+        super.willChangeValue(forKey: key)
+        objectWillChange.send()
+    }
+    
+    
     enum Formality: Int64, CaseIterable {
         case unknown
         case informal
         case neutral
         case formal
+        
+        var title: String {
+            switch self {
+            case .unknown: return "No Set"
+            case .informal: return "Informal"
+            case .neutral: return "Neutral"
+            case .formal: return "Formal"
+            }
+        }
     }
 }
 
@@ -98,4 +114,22 @@ extension NoteCard {
     @objc(removeTags:)
     @NSManaged public func removeFromTags(_ values: NSSet)
     
+}
+
+
+extension NoteCard {
+    
+    static func sampleNoteCards(count: Int) -> [NoteCard] {
+        let sampleContext = CoreDataStack.sampleContext
+        
+        var notes = [NoteCard]()
+        for note in 1...count {
+            let noteCard = NoteCard(context: sampleContext)
+            noteCard.navtive = "Native \(note)"
+            noteCard.translation = "Translation \(note)"
+            notes.append(noteCard)
+        }
+        
+        return notes
+    }
 }

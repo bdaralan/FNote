@@ -10,20 +10,35 @@ import SwiftUI
 
 struct NoteCardCollectionView: View {
     
+    @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
+    
+    @ObservedObject var collection: NoteCardCollection
+    
     var body: some View {
-        ScrollView(.vertical, showsIndicators: true) {
-            VStack {
-                ForEach(1...10, id: \.self) { index in
-                    NoteCardCollectionViewCard()
+        NavigationView {
+            ScrollView(.vertical, showsIndicators: true) {
+                VStack(spacing: 16) {
+                    ForEach(Array(collection.noteCards), id: \.self) { index in
+                        NavigationLink(destination: NoteCardView().navigationBarTitle("Note Card", displayMode: .inline)) {
+                            Rectangle()
+                            .frame(width: UIScreen.main.bounds.width * 0.9, height: 120, alignment: .center)
+                            .foregroundColor(.red)
+                            .cornerRadius(10)
+                            .shadow(color: Color.black.opacity(0.2), radius: 3, x: 1, y: 1)
+                        }
+                    }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                .padding(.vertical)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            .navigationBarTitle(collection.name)
         }
     }
 }
 
+
 struct NoteCardCollectionView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionView()
+        NoteCardCollectionView(collection: NoteCardCollection.sampleCollections(count: 1, noteCount: 20)[0])
     }
 }

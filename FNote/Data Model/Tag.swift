@@ -15,6 +15,12 @@ class Tag: NSManagedObject, ObjectValidatable {
     
     @NSManaged var name: String
     @NSManaged var noteCards: Set<NoteCard>
+    
+    
+    override func willChangeValue(forKey key: String) {
+        super.willChangeValue(forKey: key)
+        objectWillChange.send()
+    }
 }
 
 
@@ -56,4 +62,21 @@ extension Tag {
     @objc(removeNoteCards:)
     @NSManaged func removeFromNoteCards(_ values: NSSet)
 
+}
+
+
+extension Tag {
+    
+    static func sampleTags(count: Int) -> [Tag] {
+        let sampleContext = CoreDataStack.sampleContext
+        
+        var tags = [Tag]()
+        for name in 1...count {
+            let tag = Tag(context: sampleContext)
+            tag.name = "Tag \(name)"
+            tags.append(tag)
+        }
+        
+        return tags
+    }
 }
