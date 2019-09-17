@@ -12,6 +12,8 @@ struct NoteCardView: View {
     
     @ObservedObject var noteCard = NoteCard.sampleNoteCards(count: 1)[0]
     
+    @State private var noteCardNote = ""
+    
     @State private var showNoteEditingSheet = false
     
     
@@ -58,8 +60,8 @@ struct NoteCardView: View {
                 NoteCardNoteTextViewWrapper(text: $noteCard.note)
                     .frame(minHeight: 250, maxHeight: .infinity, alignment: .center)
                     .padding(0)
-                    .overlay(noteSectionEmptyNotePlaceholder, alignment: .topLeading)
-                    .onTapGesture { self.showNoteEditingSheet = true }
+                    .overlay(emptyNotePlaceholderText, alignment: .topLeading)
+                    .onTapGesture(perform: beginEditingNoteCardNote)
             }
         }
         .sheet(isPresented: $showNoteEditingSheet, content: { self.noteEditingSheet })
@@ -70,12 +72,15 @@ struct NoteCardView: View {
 extension NoteCardView {
     
     var noteEditingSheet: some View {
-        ModalTextView(isActive: $showNoteEditingSheet, text: $noteCard.note, prompt: "Note", onCommit: {
-            self.showNoteEditingSheet = false
-        })
+        ModalTextView(
+            isActive: $showNoteEditingSheet,
+            text: $noteCardNote,
+            prompt: "Note",
+            onCommit: commitEditingNoteCardNote
+        )
     }
     
-    var noteSectionEmptyNotePlaceholder: some View {
+    var emptyNotePlaceholderText: some View {
         Text(noteCard.note.isEmpty ? ". . ." : "")
             .font(.body)
             .padding(6)
@@ -89,6 +94,16 @@ extension NoteCardView {
     func rowImage(systemName: String) -> some View {
         Image(systemName: systemName)
             .frame(minWidth: 20, maxWidth: 20, alignment: .center)
+    }
+    
+    func beginEditingNoteCardNote() {
+        noteCardNote = noteCard.note
+        showNoteEditingSheet = true
+    }
+    
+    func commitEditingNoteCardNote() {
+        noteCard.note = noteCardNote
+        showNoteEditingSheet = false
     }
 }
 

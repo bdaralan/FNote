@@ -13,7 +13,7 @@ protocol FirstTimeResponder: class {
     
     var isActive: Bool { set get }
     
-    var shouldResponse: Bool { set get }
+    var shouldAutoShowKeyboard: Bool { set get }
     
     func handleFirstResponse(for responder: UIView, isActive: Bool)
     
@@ -26,22 +26,28 @@ extension FirstTimeResponder {
     func handleFirstResponse(for responder: UIView, isActive: Bool) {
         self.isActive = isActive
         
-        let didAppear = responder.window != nil
         let willAppear = responder.window == nil
+        let didAppear = responder.window != nil
         
         if willAppear {
-            shouldResponse = true
+            shouldAutoShowKeyboard = true
         }
         
-        if isActive, shouldResponse, didAppear, !responder.isFirstResponder {
-            responder.becomeFirstResponder()
-            shouldResponse = false
+        if shouldAutoShowKeyboard, isActive, didAppear {
+            shouldAutoShowKeyboard = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // set small a delay
+                responder.becomeFirstResponder()
+            }
+        }
+        
+        if !isActive {
+            shouldAutoShowKeyboard = true
         }
     }
     
     func resignResponder(_ responder: UIView, reset: Bool) {
         responder.resignFirstResponder()
         guard reset else { return }
-        shouldResponse = true
+        shouldAutoShowKeyboard = true
     }
 }

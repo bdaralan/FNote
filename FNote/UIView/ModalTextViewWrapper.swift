@@ -45,7 +45,7 @@ struct ModalTextViewWrapper: UIViewRepresentable {
         
         var isActive = false
         
-        var shouldResponse = false
+        var shouldAutoShowKeyboard = false
         
         init(text: Binding<String>) {
             _text = text
