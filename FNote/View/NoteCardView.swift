@@ -12,7 +12,10 @@ struct NoteCardView: View {
     
     @ObservedObject var noteCard = NoteCard.sampleNoteCards(count: 1)[0]
     
-    @State private var isEditingNote = false
+    /// Used to get new input for `noteCard`'s note.
+    @State private var noteCardNote = ""
+    
+    @State private var showNoteEditingSheet = false
     
     
     var body: some View {
@@ -55,12 +58,14 @@ struct NoteCardView: View {
             }
             
             Section(header: Text("NOTE")) {
-                Button(action: { self.isEditingNote = true }) {
-                    TextField("note...", text: $noteCard.note)
-                }
+                NoteCardNoteTextViewWrapper(text: $noteCard.note)
+                    .frame(minHeight: 250, maxHeight: .infinity, alignment: .center)
+                    .padding(0)
+                    .overlay(emptyNotePlaceholderText, alignment: .topLeading)
+                    .onTapGesture(perform: beginEditingNoteCardNote)
             }
         }
-        .sheet(isPresented: $isEditingNote, content: { self.noteEditingSheet })
+        .sheet(isPresented: $showNoteEditingSheet, content: { self.noteEditingSheet })
     }
 }
 
@@ -68,9 +73,19 @@ struct NoteCardView: View {
 extension NoteCardView {
     
     var noteEditingSheet: some View {
-        ModalTextView(isActive: $isEditingNote, text: $noteCard.note, prompt: "Note", onCommit: {
-            self.isEditingNote = false
-        })
+        ModalTextView(
+            isActive: $showNoteEditingSheet,
+            text: $noteCardNote,
+            prompt: "Note",
+            onCommit: commitEditingNoteCardNote
+        )
+    }
+    
+    var emptyNotePlaceholderText: some View {
+        Text(noteCard.note.isEmpty ? ". . ." : "")
+            .font(.body)
+            .padding(6)
+            .foregroundColor(.secondary)
     }
     
     var formalityPickerLabel: some View {
@@ -80,6 +95,17 @@ extension NoteCardView {
     func rowImage(systemName: String) -> some View {
         Image(systemName: systemName)
             .frame(minWidth: 20, maxWidth: 20, alignment: .center)
+    }
+    
+    func beginEditingNoteCardNote() {
+        noteCardNote = noteCard.note
+        showNoteEditingSheet = true
+    }
+    
+    func commitEditingNoteCardNote() {
+        noteCard.note = noteCardNote
+        noteCardNote = ""
+        showNoteEditingSheet = false
     }
 }
 

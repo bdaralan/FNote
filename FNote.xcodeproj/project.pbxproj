@@ -36,6 +36,7 @@
 		B4BB118023145DC600A380AA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B4BB117E23145DC600A380AA /* LaunchScreen.storyboard */; };
 		B4BB118B23145DC600A380AA /* FNoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BB118A23145DC600A380AA /* FNoteTests.swift */; };
 		B4C76DFB232C0A520033DDEA /* ModalTextFieldWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C76DFA232C0A520033DDEA /* ModalTextFieldWrapper.swift */; };
+		B4DF1AA82330180000F90D13 /* NoteCardNoteTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DF1AA72330180000F90D13 /* NoteCardNoteTextViewWrapper.swift */; };
 		B4EE3ECC2329D86500CC40B7 /* ModalTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +84,7 @@
 		B4BB118A23145DC600A380AA /* FNoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FNoteTests.swift; sourceTree = "<group>"; };
 		B4BB118C23145DC600A380AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B4C76DFA232C0A520033DDEA /* ModalTextFieldWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextFieldWrapper.swift; sourceTree = "<group>"; };
+		B4DF1AA72330180000F90D13 /* NoteCardNoteTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardNoteTextViewWrapper.swift; sourceTree = "<group>"; };
 		B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextField.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -218,6 +220,7 @@
 			isa = PBXGroup;
 			children = (
 				B4C76DFA232C0A520033DDEA /* ModalTextFieldWrapper.swift */,
+				B4DF1AA72330180000F90D13 /* NoteCardNoteTextViewWrapper.swift */,
 				B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */,
 				B46B3406232E8634008B2088 /* FirstTimeResponder.swift */,
 			);
@@ -342,6 +345,7 @@
 				B499A3652326E8B7002D16A0 /* CoreDataStack+Extension.swift in Sources */,
 				B4C76DFB232C0A520033DDEA /* ModalTextFieldWrapper.swift in Sources */,
 				B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */,
+				B4DF1AA82330180000F90D13 /* NoteCardNoteTextViewWrapper.swift in Sources */,
 				B4BAC54523206B28007EAF15 /* String.swift in Sources */,
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,
 				B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */,

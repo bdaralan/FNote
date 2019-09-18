@@ -55,7 +55,7 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
                 
         var onCommit: (() -> Void)?
         
-        var shouldResponse = false
+        var shouldAutoShowKeyboard = false
         
         
         init(text: Binding<String>) {
