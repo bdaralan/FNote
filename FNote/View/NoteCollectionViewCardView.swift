@@ -10,21 +10,26 @@ import SwiftUI
 
 struct NoteCardCollectionViewCard: View {
     
+    @ObservedObject var noteCard = NoteCard.sampleNoteCards(count: 1)[0]
+    
     var body: some View {
-        VStack {
+        ZStack {
             VStack(alignment: .leading) {
                 HStack {
-                    Text("Native")
+                    Text(noteCard.navtive)
                         .font(.title)
                     Spacer()
                     Image(systemName: "ellipsis")
                 }
-                .padding()
+                .padding(.horizontal)
+                .padding(.vertical, 5)
                 
                 Divider()
-                Text("Translation")
+                    .padding(.horizontal)
+                Text(noteCard.translation)
                     .font(.title)
-                    .padding()
+                    .padding(.horizontal)
+                    .padding(.vertical, 5)
                     
                 HStack (alignment: .center) {
                     quickButton(imageName: "tag.fill", label: "0")
@@ -35,11 +40,13 @@ struct NoteCardCollectionViewCard: View {
                     Spacer()
                     quickButton(imageName: "star", label: "0")
                 }
-                .padding()
+                .padding(.horizontal)
+                .padding(.bottom, 10)
             }
             .background(Color.white)
+            .cornerRadius(20)
+       //     .shadow(color: Color.black.opacity(1), radius: 3 , x: 4, y: 1)
         }
-        .cornerRadius(25)
         .padding()
         .background(Color.init(red: 225/255, green: 225/255, blue: 225/255))
     }
@@ -56,7 +63,6 @@ extension NoteCardCollectionViewCard {
         }
     }
 }
-
 
 
 struct NoteCardCollectionViewCard_Previews: PreviewProvider {
