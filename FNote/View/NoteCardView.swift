@@ -12,6 +12,7 @@ struct NoteCardView: View {
     
     @ObservedObject var noteCard = NoteCard.sampleNoteCards(count: 1)[0]
     
+    /// Used to get new input for `noteCard`'s note.
     @State private var noteCardNote = ""
     
     @State private var showNoteEditingSheet = false
@@ -103,6 +104,7 @@ extension NoteCardView {
     
     func commitEditingNoteCardNote() {
         noteCard.note = noteCardNote
+        noteCardNote = ""
         showNoteEditingSheet = false
     }
 }
