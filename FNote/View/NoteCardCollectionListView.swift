@@ -52,19 +52,35 @@ extension NoteCardCollectionListView {
         }
     }
 
+    func beginCreateNewCollection() {
+        collectionNewName = ""
+        createRenameSheet = ModalTextField(isActive: $showSheet, text: $collectionNewName, prompt: "New Collection", placeholder: "Collection Name", onCommit: commitCreateNewCollection).eraseToAnyView()
+        showSheet = true
+    }
+    
+    // commit new collection after creating it
+    // double check to make sure this is correct
+    func commitCreateNewCollection() {
+        // create a new collection object with the createContext
+        let collectionToSave = NoteCardCollection(context: noteCardCollectionDataSource.createContext)
+
+        // assign the name from the binding to the new name
+        collectionToSave.name = collectionNewName
+        
+        // make the sheet go away
+        showSheet = false
+    }
+    
+    // rename sheet
+    func renamev() -> some View {
+        ModalTextField(isActive: $showSheet, text: $collectionNewName, prompt: "Rename", placeholder: collectionToRename!.name, onCommit: commitRename)
+    }
+    
     func beginRenameCollection(_ collection: NoteCardCollection) {
         collectionNewName = collection.name
         noteCardCollectionDataSource.setUpdateObject(collection)
         collectionToRename = collection
         showSheet = true
-    }
-    
-    func deleteCollection(_ collection: NoteCardCollection) {
-        noteCardCollectionDataSource.delete(collection, saveContext: true)
-    }
-    
-    func renamev() -> some View {
-        ModalTextField(isActive: $showSheet, text: $collectionNewName, prompt: "Rename", placeholder: collectionToRename!.name, onCommit: commitRename)
     }
     
     func commitRename() {
@@ -73,19 +89,8 @@ extension NoteCardCollectionListView {
         // data source save
     }
     
-    func commitCreateNewCollection() {
-        // commit new collection
-        // when we commit, create a new collection object
-        // context is createContext
-        // assign the name from the binding to the new name
-        showSheet = false
-    }
-    
-    func beginCreateNewCollection() {
-        collectionNewName = ""
-        createRenameSheet = ModalTextField(isActive: $showSheet, text: $collectionNewName, prompt: "New Collection", placeholder: "Collection Name", onCommit: commitCreateNewCollection).eraseToAnyView()
-        showSheet = true
-        
+    func deleteCollection(_ collection: NoteCardCollection) {
+        noteCardCollectionDataSource.delete(collection, saveContext: true)
     }
 }
 
