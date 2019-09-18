@@ -13,7 +13,7 @@ struct NoteCardCollectionViewCard: View {
     @ObservedObject var noteCard = NoteCard.sampleNoteCards(count: 1)[0]
     
     var body: some View {
-        VStack {
+        ZStack {
             VStack(alignment: .leading) {
                 HStack {
                     Text(noteCard.navtive)
@@ -44,8 +44,9 @@ struct NoteCardCollectionViewCard: View {
                 .padding(.bottom, 10)
             }
             .background(Color.white)
+            .cornerRadius(20)
+       //     .shadow(color: Color.black.opacity(1), radius: 3 , x: 4, y: 1)
         }
-        .cornerRadius(20)
         .padding()
         .background(Color.init(red: 225/255, green: 225/255, blue: 225/255))
     }

@@ -17,7 +17,7 @@ struct NoteCardCollectionView: View {
     var body: some View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
-                VStack(spacing: 16) {
+                VStack (spacing: 0){
                     ForEach(Array(collection.noteCards), id: \.self) { index in
                         NavigationLink(destination: NoteCardView().navigationBarTitle("Note Card", displayMode: .inline)) {
                             NoteCardCollectionViewCard()
