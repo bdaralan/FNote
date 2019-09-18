@@ -17,14 +17,10 @@ struct NoteCardCollectionView: View {
     var body: some View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
-                VStack(spacing: 16) {
+                VStack (spacing: 0){
                     ForEach(Array(collection.noteCards), id: \.self) { index in
                         NavigationLink(destination: NoteCardView().navigationBarTitle("Note Card", displayMode: .inline)) {
-                            Rectangle()
-                            .frame(width: UIScreen.main.bounds.width * 0.9, height: 120, alignment: .center)
-                            .foregroundColor(.red)
-                            .cornerRadius(10)
-                            .shadow(color: Color.black.opacity(0.2), radius: 3, x: 1, y: 1)
+                            NoteCardCollectionViewCard()
                         }
                     }
                 }
