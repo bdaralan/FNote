@@ -28,15 +28,13 @@ struct MainTabView: View {
     
     @State private var currentTabItem = Tab.home
     
-    var collection = NoteCardCollection.sampleCollections(count: 1, noteCount: 20)[0]
-    
     
     var body: some View {
         TabView(selection: $currentTabItem) {
-            NoteCardCollectionView(collection: collection).tabItem {
+            NoteCardCollectionView().tabItem {
                 createTabViewItem(name: "Notes", image: Image(systemName: "rectangle.fill.on.rectangle.angled.fill"))
             }
-            .environmentObject(noteCardCollectionDataSource)
+            .environmentObject(noteCardDataSource)
             .tag(Tab.home)
             
             NoteCardCollectionListView().tabItem {
@@ -50,9 +48,10 @@ struct MainTabView: View {
             }
             .tag(Tab.tag)
             
-            Text("Settings").tabItem {
+            SettingView().tabItem {
                 createTabViewItem(name: "Settings", image: Image(systemName: "gear"))
             }
+            .environmentObject(noteCardCollectionDataSource)
             .tag(Tab.setting)
         }
     }

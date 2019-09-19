@@ -13,9 +13,15 @@ import CoreData
 
 class Tag: NSManagedObject, ObjectValidatable {
     
+    @NSManaged private(set) var uuid: String
     @NSManaged var name: String
     @NSManaged var noteCards: Set<NoteCard>
     
+    
+    override func awakeFromInsert() {
+        super.awakeFromInsert()
+        uuid = UUID().uuidString
+    }
     
     override func willChangeValue(forKey key: String) {
         super.willChangeValue(forKey: key)

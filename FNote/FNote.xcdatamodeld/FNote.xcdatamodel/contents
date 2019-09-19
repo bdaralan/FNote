@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14897.2" systemVersion="18G87" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14903" systemVersion="18G95" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="NoteCard" representedClassName=".NoteCard" syncable="YES">
         <attribute name="formalityValue" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="isFavorited" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="navtive" optional="YES" attributeType="String" defaultValueString=""/>
         <attribute name="note" optional="YES" attributeType="String" defaultValueString=""/>
         <attribute name="translation" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="uuid" optional="YES" attributeType="String"/>
         <relationship name="collection" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NoteCardCollection" inverseName="noteCards" inverseEntity="NoteCardCollection"/>
         <relationship name="relationships" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NoteCard" inverseName="relationships" inverseEntity="NoteCard"/>
         <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tag" inverseName="noteCards" inverseEntity="Tag"/>
     </entity>
     <entity name="NoteCardCollection" representedClassName=".NoteCardCollection" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="uuid" optional="YES" attributeType="String"/>
         <relationship name="noteCards" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="NoteCard" inverseName="collection" inverseEntity="NoteCard"/>
     </entity>
     <entity name="Tag" representedClassName=".Tag" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="uuid" optional="YES" attributeType="String"/>
         <relationship name="noteCards" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NoteCard" inverseName="tags" inverseEntity="NoteCard"/>
     </entity>
     <elements>
-        <element name="NoteCard" positionX="-63" positionY="-18" width="128" height="163"/>
-        <element name="NoteCardCollection" positionX="-54" positionY="27" width="128" height="73"/>
-        <element name="Tag" positionX="-36" positionY="36" width="128" height="73"/>
+        <element name="NoteCard" positionX="-63" positionY="-18" width="128" height="178"/>
+        <element name="NoteCardCollection" positionX="-54" positionY="27" width="128" height="88"/>
+        <element name="Tag" positionX="-36" positionY="36" width="128" height="88"/>
     </elements>
 </model>
