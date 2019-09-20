@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 
 
-class Tag: NSManagedObject, ObjectValidatable {
+class Tag: NSManagedObject, ObjectValidatable, Identifiable {
     
     @NSManaged private(set) var uuid: String
     @NSManaged var name: String

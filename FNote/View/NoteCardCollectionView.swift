@@ -28,17 +28,15 @@ struct NoteCardCollectionView: View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack (spacing: 0){
-                    ForEach(Array(noteCardDataSource.fetchedResult.fetchedObjects ?? []), id: \.self) { noteCard in
-                        NavigationLink(destination: self.noteCardView(for: noteCard)) {
-                            NoteCardCollectionViewCard(noteCard: noteCard)
-                        }
+                    ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? []) { noteCard in
+                        NoteCardViewNavigationLink(noteCard: noteCard)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 .padding(.vertical)
             }
             .onAppear(perform: setupOnAppear)
-            .navigationBarTitle(viewModel.currentCollection?.name ?? "No Collection")
+            .navigationBarTitle(viewModel.currentCollection?.name ?? "???")
             .navigationBarItems(trailing: createNewNoteCardNavItem)
             .sheet(
                 isPresented: $viewModel.showCreateNewNoteCardSheet,
@@ -46,19 +44,6 @@ struct NoteCardCollectionView: View {
                 content: createNewNoteCardSheet
             )
         }
-    }
-}
-
-
-// MARK: - Body Content
-
-extension NoteCardCollectionView {
-    
-    /// A view for view or edit note card.
-    /// - Parameter noteCard: The note card to view or edit.
-    func noteCardView(for noteCard: NoteCard) -> some View {
-        NoteCardView()
-            .navigationBarTitle("Note Card", displayMode: .inline)
     }
 }
 
@@ -83,7 +68,10 @@ extension NoteCardCollectionView {
         let createButton = Button(action: commitCreateNewNoteCard) {
             Text("Create").bold()
         }
-        .disabled(viewModel.currentCollection == nil)
+        .disabled(!noteCardDataSource.newObject!.hasValidInputs())
+        .onReceive(noteCardDataSource.newObject!.objectWillChange) { _ in
+            self.viewReloader.forceReload()
+        }
         
         let sheet = NavigationView {
             NoteCardView(noteCard: noteCardDataSource.newObject!)
