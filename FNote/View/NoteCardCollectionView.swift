@@ -15,11 +15,14 @@ struct NoteCardCollectionView: View {
     /// A data source used to CRUD note card.
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
     
-    /// A view model used to control the flow of the view.
-    @State private var viewModel = ViewModel()
-    
     /// A view reloader used to force reload view.
     @ObservedObject private var viewReloader = ViewForceReloader()
+    
+    /// The current note card collection user's selected.
+    @State private var currentCollection: NoteCardCollection?
+    
+    /// A flag used to show or hide create-new-note-card sheet.
+    @State private var showCreateNewNoteCardSheet = false
     
     
     // MARK: Body
@@ -36,10 +39,10 @@ struct NoteCardCollectionView: View {
                 .padding(.vertical)
             }
             .onAppear(perform: setupOnAppear)
-            .navigationBarTitle(viewModel.currentCollection?.name ?? "???")
+            .navigationBarTitle(currentCollection?.name ?? "???")
             .navigationBarItems(trailing: createNewNoteCardNavItem)
             .sheet(
-                isPresented: $viewModel.showCreateNewNoteCardSheet,
+                isPresented: $showCreateNewNoteCardSheet,
                 onDismiss: cancelCreateNewNoteCard,
                 content: createNewNoteCardSheet
             )
@@ -58,7 +61,7 @@ extension NoteCardCollectionView {
             Image(systemName: "plus")
                 .imageScale(.large)
         }
-        .disabled(viewModel.currentCollection == nil)
+        .disabled(currentCollection == nil)
     }
     
     /// A sheet view for creating new note card.
@@ -85,7 +88,7 @@ extension NoteCardCollectionView {
     /// Start creating new note card.
     func beginCreateNewNoteCard() {
         noteCardDataSource.prepareNewObject()
-        viewModel.showCreateNewNoteCardSheet = true
+        showCreateNewNoteCardSheet = true
     }
     
     /// Save the new note card.
@@ -94,8 +97,7 @@ extension NoteCardCollectionView {
         // then assign it to the new note card's collection
         // will unwrapped optional values because they must exist
         let newNoteCard = noteCardDataSource.newObject!
-        let currentCollection = viewModel.currentCollection!
-        let collectionInCreateContext = currentCollection.get(from: noteCardDataSource.createContext)
+        let collectionInCreateContext = currentCollection?.get(from: noteCardDataSource.createContext)
         newNoteCard.collection = collectionInCreateContext
     
         let saveResult = noteCardDataSource.saveNewObject()
@@ -106,7 +108,7 @@ extension NoteCardCollectionView {
             noteCardDataSource.discardNewObject()
             fetchNoteCards()
             viewReloader.forceReload()
-            viewModel.showCreateNewNoteCardSheet = false
+            showCreateNewNoteCardSheet = false
         
         case .failed: break // TODO: show alert to inform user
         
@@ -118,7 +120,7 @@ extension NoteCardCollectionView {
     func cancelCreateNewNoteCard() {
         noteCardDataSource.discardNewObject()
         noteCardDataSource.discardCreateContext()
-        viewModel.showCreateNewNoteCardSheet = false
+        showCreateNewNoteCardSheet = false
     }
 }
 
@@ -136,37 +138,21 @@ extension NoteCardCollectionView {
     /// Get user's current selected note-card collection.
     func loadCurrentCollection() {
         guard let currentCollectionUUID = AppCache.currentCollectionUUID else {
-            viewModel.currentCollection = nil
+            currentCollection = nil
             return
         }
 
-        guard viewModel.currentCollection?.uuid != AppCache.currentCollectionUUID else { return }
+        guard currentCollection?.uuid != AppCache.currentCollectionUUID else { return }
         let request = NoteCardCollection.requestCollection(withUUID: currentCollectionUUID)
         let context = noteCardDataSource.fetchedResult.managedObjectContext
-        let currentCollection = try? context.fetch(request).first
-        viewModel.currentCollection = currentCollection
+        currentCollection = try? context.fetch(request).first
     }
     
     /// Fetch note cards to displays.
     func fetchNoteCards() {
-        let currentCollectionUUID = viewModel.currentCollection?.uuid
+        let currentCollectionUUID = currentCollection?.uuid
         let request = NoteCard.requestNoteCards(forCollectionUUID: currentCollectionUUID)
         noteCardDataSource.performFetch(request)
-    }
-}
-
-
-// MARK: - Model
-
-extension NoteCardCollectionView {
-    
-    struct ViewModel {
-        
-        /// The current nete card collection user's selected.
-        var currentCollection: NoteCardCollection?
-        
-        /// A flag used to show or hide create-note-card sheet.
-        var showCreateNewNoteCardSheet = false
     }
 }
 
