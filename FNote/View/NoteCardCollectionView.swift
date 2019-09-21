@@ -15,14 +15,17 @@ struct NoteCardCollectionView: View {
     /// A data source used to CRUD note card.
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
     
-    /// A view reloader used to force reload view.
-    @ObservedObject private var viewReloader = ViewForceReloader()
-    
     /// The current note card collection user's selected.
     @State private var currentCollection: NoteCardCollection?
     
     /// A flag used to show or hide create-new-note-card sheet.
     @State private var showCreateNewNoteCardSheet = false
+    
+    /// A view reloader used to force reload view.
+    @ObservedObject private var viewReloader = ViewForceReloader()
+    
+    /// A notification observer that listen to current collection did change notification.
+    @ObservedObject private var currentCollectionObserver = NotificationObserver(name: .appCurrentCollectionDidChange)
     
     
     // MARK: Body
@@ -133,6 +136,7 @@ extension NoteCardCollectionView {
     func setupOnAppear() {
         loadCurrentCollection()
         fetchNoteCards()
+        setupCurrentCollectionObserver()
     }
     
     /// Get user's current selected note-card collection.
@@ -153,6 +157,14 @@ extension NoteCardCollectionView {
         let currentCollectionUUID = currentCollection?.uuid
         let request = NoteCard.requestNoteCards(forCollectionUUID: currentCollectionUUID)
         noteCardDataSource.performFetch(request)
+    }
+    
+    /// Setup current collection observer action.
+    func setupCurrentCollectionObserver() {
+        currentCollectionObserver.onReceived = { notification in
+            self.loadCurrentCollection()
+            self.fetchNoteCards()
+        }
     }
 }
 
