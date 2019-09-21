@@ -33,20 +33,15 @@ extension NoteCardViewNavigationLink {
         NoteCardView(noteCard: noteCard)
             .navigationBarTitle("Note Card", displayMode: .inline)
             .navigationBarItems(trailing: saveNavItem)
-            .onAppear { self.navigationHandler.onPopped = self.discardUnsavedChanges }
+            .onAppear(perform: setupNavigationPopHandler)
     }
     
     var saveNavItem: some View {
-        let button = Button(action: saveChanges) {
+        Button(action: saveChanges) {
             Text("Save").bold()
         }
         .disabled(!noteCard.isValid())
-        
-        if noteCard.hasChangedValues() {
-            return AnyView(button)
-        } else {
-            return AnyView(button.hidden())
-        }
+        .hidden(!noteCard.hasChangedValues())
     }
     
     func discardUnsavedChanges() {
@@ -58,11 +53,23 @@ extension NoteCardViewNavigationLink {
         noteCard.objectWillChange.send() // tell the UI to refresh
         noteCardDataSource.saveUpdateContext()
     }
+    
+    func setupNavigationPopHandler() {
+        navigationHandler.onPopped = discardUnsavedChanges
+    }
 }
 
 
 struct NoteCardViewNavigationLink_Previews: PreviewProvider {
     static var previews: some View {
         NoteCardViewNavigationLink(noteCard: .init())
+    }
+}
+
+
+extension View {
+    
+    func hidden(_ condition: Bool) -> some View {
+        condition ? AnyView(self.hidden()) : AnyView(self)
     }
 }

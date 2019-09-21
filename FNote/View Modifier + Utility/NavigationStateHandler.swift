@@ -15,18 +15,20 @@ import Foundation
 ///
 ///     struct DetailRow: View {
 ///
-///         @ObservedObject var navigationState = NavigationStateHandler()
+///         @ObservedObject var navigationHandler = NavigationStateHandler()
+///
 ///
 ///         var body: some View {
-///             NavigationLink(destination: detailView, isActive: $navigationState.isPushed) {
+///             NavigationLink(destination: detailView, isActive: $navigationHandler.isPushed) {
 ///                 Text("View Detials")
 ///             }
 ///         }
 ///
 ///         var detailView: some View {
-///             navigationState.onPushed = { /* prepare data */ }
-///             navigationState.onPopped = { /* discard unsaved changes */ }
-///             return Text("Details")
+///             Text("Details").onAppear {
+///                 self.navigationHandler.onPushed = { /* prepare data */ }
+///                 self.navigationHandler.onPopped = { /* discard unsaved changes */ }
+///             }
 ///         }
 ///     }
 ///

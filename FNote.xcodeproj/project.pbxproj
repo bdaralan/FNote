@@ -116,12 +116,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B411E04B2332F5FC008D99A0 /* Utility */ = {
+		B40BB6172335B11900E2F98B /* View Modifier + Utility */ = {
 			isa = PBXGroup;
 			children = (
 				B411E04C2332F60F008D99A0 /* ViewForceReloader.swift */,
 				B411E04E2332F672008D99A0 /* NavigationStateHandler.swift */,
 				B411E0502332F6B4008D99A0 /* NotificatonObserver.swift */,
+			);
+			path = "View Modifier + Utility";
+			sourceTree = "<group>";
+		};
+		B411E04B2332F5FC008D99A0 /* Utility */ = {
+			isa = PBXGroup;
+			children = (
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -208,6 +215,7 @@
 				B4BAC52123203F58007EAF15 /* DataSource */,
 				B499A35A2326D972002D16A0 /* View */,
 				B4C76DF9232C0A180033DDEA /* UIView */,
+				B40BB6172335B11900E2F98B /* View Modifier + Utility */,
 				B4BAC52223203F60007EAF15 /* Extension */,
 				B499A3572326D932002D16A0 /* CoreDataStack */,
 				B411E04B2332F5FC008D99A0 /* Utility */,
