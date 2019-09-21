@@ -29,42 +29,34 @@ struct MainTabView: View {
     @State private var currentTabItem = Tab.home
     
     
+    // MARK: - Body
+    
     var body: some View {
         TabView(selection: $currentTabItem) {
-            NoteCardCollectionView().tabItem {
-                createTabViewItem(name: "Notes", image: Image(systemName: "rectangle.fill.on.rectangle.angled.fill"))
-            }
-            .environmentObject(noteCardDataSource)
-            .tag(Tab.home)
+            NoteCardCollectionView()
+                .environmentObject(noteCardDataSource)
+                .tabItem(Tab.home.tabItem)
+                .tag(Tab.home)
             
-            NoteCardCollectionListView().tabItem {
-                createTabViewItem(name: "Collections", image: Image(systemName: "rectangle.stack.fill"))
-            }
-            .environmentObject(noteCardCollectionDataSource)
-            .tag(Tab.collection)
+            NoteCardCollectionListView()
+                .environmentObject(noteCardCollectionDataSource)
+                .tabItem(Tab.collection.tabItem)
+                .tag(Tab.collection)
             
-            Text("Tags").tabItem {
-                createTabViewItem(name: "Tags", image: Image(systemName: "tag.fill"))
-            }
-            .tag(Tab.tag)
+            TagListView()
+                .tabItem(Tab.tag.tabItem)
+                .tag(Tab.tag)
             
-            SettingView().tabItem {
-                createTabViewItem(name: "Settings", image: Image(systemName: "gear"))
-            }
-            .environmentObject(noteCardCollectionDataSource)
-            .tag(Tab.setting)
+            SettingView()
+                .environmentObject(noteCardCollectionDataSource)
+                .tabItem(Tab.setting.tabItem)
+                .tag(Tab.setting)
         }
     }
 }
 
 
-extension MainTabView {
-    
-    func createTabViewItem(name: String, image: Image) -> some View {
-        ViewBuilder.buildBlock(image, Text(name))
-    }
-}
-
+// MARK: - Tab Enum
 
 extension MainTabView {
     
@@ -73,6 +65,24 @@ extension MainTabView {
         case collection
         case tag
         case setting
+        
+        
+        func tabItem() -> some View {
+            switch self {
+            case .home:
+                return createTabViewItem(name: "Notes", systemImage: "rectangle.fill.on.rectangle.angled.fill")
+            case .collection:
+                return createTabViewItem(name: "Collections", systemImage: "rectangle.stack.fill")
+            case .tag:
+                return createTabViewItem(name: "Tags", systemImage: "tag.fill")
+            case .setting:
+                return createTabViewItem(name: "Settings", systemImage: "gear")
+            }
+        }
+        
+        func createTabViewItem(name: String, systemImage: String) -> some View {
+            ViewBuilder.buildBlock(Image(systemName: systemImage), Text(name))
+        }
     }
 }
 
