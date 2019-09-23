@@ -11,11 +11,17 @@ import Foundation
 import CoreData
 
 
-class NoteCardCollection: NSManagedObject, ObjectValidatable, CoreDataStackCurrentManagedObject {
+class NoteCardCollection: NSManagedObject, ObjectValidatable, Identifiable {
 
+    @NSManaged private(set) var uuid: String
     @NSManaged var name: String
     @NSManaged var noteCards: Set<NoteCard>
     
+    
+    override func awakeFromInsert() {
+        super.awakeFromInsert()
+        uuid = UUID().uuidString
+    }
     
     override func willChangeValue(forKey key: String) {
         super.willChangeValue(forKey: key)
@@ -40,6 +46,18 @@ extension NoteCardCollection {
     
     func validateData() {
         name = name.trimmed()
+    }
+}
+
+
+extension NoteCardCollection {
+    
+    static func requestCollection(withUUID uuid: String) -> NSFetchRequest<NoteCardCollection> {
+        let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
+        let collectionUUID = #keyPath(NoteCardCollection.uuid)
+        request.predicate = .init(format: "\(collectionUUID) == %@", uuid)
+        request.sortDescriptors = []
+        return request
     }
 }
 

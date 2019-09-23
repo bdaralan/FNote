@@ -22,6 +22,7 @@ struct NoteCardNoteTextViewWrapper: UIViewRepresentable {
         let textView = UITextView()
         textView.font = .preferredFont(forTextStyle: .body)
         textView.isEditable = false
+        textView.backgroundColor = nil
         return textView
     }
     

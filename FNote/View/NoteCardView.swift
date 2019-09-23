@@ -10,7 +10,7 @@ import SwiftUI
 
 struct NoteCardView: View {
     
-    @ObservedObject var noteCard = NoteCard.sampleNoteCards(count: 1)[0]
+    @ObservedObject var noteCard: NoteCard
     
     /// Used to get new input for `noteCard`'s note.
     @State private var noteCardNote = ""
@@ -112,6 +112,6 @@ extension NoteCardView {
 
 struct NoteCardView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardView()
+        NoteCardView(noteCard: .init())
     }
 }
