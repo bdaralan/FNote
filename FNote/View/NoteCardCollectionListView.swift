@@ -15,30 +15,42 @@ struct NoteCardCollectionListView: View {
     @State var collectionNewName = ""
     @State var showSheet = false
     @State var createRenameSheet = AnyView(EmptyView())
+    @ObservedObject private var viewReloader = ViewForceReloader()
     
     var body: some View {
         NavigationView {
             List {
                 ForEach(noteCardCollectionDataSource.fetchedResult.fetchedObjects ?? [], id: \.self) { collection in
-                    Text(collection.name)
-                    
-                        .contextMenu {
-                            Button(action: { self.beginRenameCollection(collection) }) {
-                                Text("Rename")
-                                Image(systemName: "square.and.pencil")
-                            }
-                            Button(action: { self.deleteCollection(collection) }) {
-                                Text("Delete")
-                                Image(systemName: "trash")
-                            }
+                    Button(action: { self.selectCollection(collection: collection) }) {
+                        HStack {
+                            Text(collection.name)
+                            Spacer()
+                            Text("34564586790984")
+                                .multilineTextAlignment(.trailing)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                            Image(systemName: "checkmark")
+                                .opacity(collection.uuid == AppCache.currentCollectionUUID ? 1 : 0)
+                        }
+                    }
+                    .contextMenu {
+                        Button(action: { self.beginRenameCollection(collection) }) {
+                            Text("Rename")
+                            Image(systemName: "square.and.pencil")
+                        }
+                        Button(action: { self.deleteCollection(collection) }) {
+                            Text("Delete")
+                            Image(systemName: "trash")
                         }
                     }
                 }
+            }
             .navigationBarTitle("Collections")
             // place nav bar item - trailing
             .navigationBarItems(trailing: createCollectionNavItem)
         }
         // place sheet
+        .onAppear(perform: fetchAllCollections)
         .sheet(isPresented: $showSheet, content: { self.createRenameSheet })
     }
 }
@@ -49,48 +61,97 @@ extension NoteCardCollectionListView {
     var createCollectionNavItem: some View {
         Button(action: beginCreateNewCollection) {
             Image(systemName: "plus")
+                .imageScale(.large)
         }
     }
 
     func beginCreateNewCollection() {
+        // create a new object
+        noteCardCollectionDataSource.prepareNewObject()
+        
+        // set the object name to empty
         collectionNewName = ""
+        
+        // show the text field for user to type in. if they remove the entire name, the old name will
+        // appear in grey
         createRenameSheet = ModalTextField(isActive: $showSheet, text: $collectionNewName, prompt: "New Collection", placeholder: "Collection Name", onCommit: commitCreateNewCollection).eraseToAnyView()
         showSheet = true
     }
     
     // commit new collection after creating it
-    // double check to make sure this is correct
     func commitCreateNewCollection() {
-        // create a new collection object with the createContext
-        let collectionToSave = NoteCardCollection(context: noteCardCollectionDataSource.createContext)
+        // assign the new object another variable
+        let collectionToSave = noteCardCollectionDataSource.newObject!
 
         // assign the name from the binding to the new name
         collectionToSave.name = collectionNewName
         
-        // make the sheet go away after user taps "done"
-        showSheet = false
-    }
-    
-    // rename sheet
-    func renamev() -> some View {
-        ModalTextField(isActive: $showSheet, text: $collectionNewName, prompt: "Rename", placeholder: collectionToRename!.name, onCommit: commitRename)
+        //call save on create context on the data source
+        let saveResult = noteCardCollectionDataSource.saveNewObject()
+        
+        //check result if success, call discard new object on the data source
+        switch saveResult {
+        case .saved:
+            fetchAllCollections()
+            showSheet = false
+            
+        case .failed:
+            break
+            
+        case .unchanged:
+            break
+        }
+        noteCardCollectionDataSource.discardNewObject()
     }
     
     func beginRenameCollection(_ collection: NoteCardCollection) {
         collectionNewName = collection.name
         noteCardCollectionDataSource.setUpdateObject(collection)
         collectionToRename = collection
+        createRenameSheet = ModalTextField(isActive: $showSheet, text: $collectionNewName, prompt: "Rename", placeholder: collectionToRename!.name, onCommit: commitRename).eraseToAnyView()
         showSheet = true
     }
     
     func commitRename() {
-        // get the collection
         // assign the new name to the stored collection
+        collectionToRename!.name = collectionNewName
+        
         // data source save
+        let result = noteCardCollectionDataSource.saveUpdateObject()
+        
+        switch result {
+        case .saved:
+            collectionToRename = nil
+            noteCardCollectionDataSource.setUpdateObject(nil)
+            fetchAllCollections()
+            showSheet = false
+            
+        case .failed:
+            break
+            
+        case .unchanged:
+            break
+        }
+        
     }
     
     func deleteCollection(_ collection: NoteCardCollection) {
         noteCardCollectionDataSource.delete(collection, saveContext: true)
+        fetchAllCollections()
+    }
+    
+    func fetchAllCollections() {
+        // create a fetch request
+        let request = NoteCardCollection.requestAllCollections()
+        noteCardCollectionDataSource.performFetch(request)
+        viewReloader.forceReload()
+    }
+    
+    func selectCollection(collection: NoteCardCollection) {
+        // post a notification that a collection is selected
+        AppCache.currentCollectionUUID = collection.uuid
+        viewReloader.forceReload()
+        NotificationCenter.default.post(name: .appCurrentCollectionDidChange, object: collection)
     }
 }
 
