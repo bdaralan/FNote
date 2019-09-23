@@ -59,6 +59,14 @@ extension NoteCardCollection {
         request.sortDescriptors = []
         return request
     }
+    
+    static func requestAllCollections() -> NSFetchRequest<NoteCardCollection> {
+        let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
+        let collectionName = #keyPath(NoteCardCollection.name)
+        request.predicate = .init(value: true)
+        request.sortDescriptors = [.init(key: collectionName, ascending: true)]
+        return request
+    }
 }
 
 
