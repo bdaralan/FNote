@@ -11,8 +11,9 @@ import Foundation
 import CoreData
 
 
-class NoteCard: NSManagedObject, ObjectValidatable {
+class NoteCard: NSManagedObject, ObjectValidatable, Identifiable {
     
+    @NSManaged private(set) var uuid: String
     @NSManaged var navtive: String
     @NSManaged var translation: String
     @NSManaged var isFavorited: Bool
@@ -28,6 +29,11 @@ class NoteCard: NSManagedObject, ObjectValidatable {
         get { Formality(rawValue: formalityValue)! }
     }
     
+    
+    override func awakeFromInsert() {
+        super.awakeFromInsert()
+        uuid = UUID().uuidString
+    }
     
     override func willChangeValue(forKey key: String) {
         super.willChangeValue(forKey: key)
@@ -75,6 +81,25 @@ extension NoteCard {
         let validFormatilies = Formality.allCases.map({ $0.rawValue })
         guard !validFormatilies.contains(formalityValue) else { return }
         formality = .unknown
+    }
+}
+
+
+extension NoteCard {
+    
+    static func requestNoteCards(forCollectionUUID uuid: String?) -> NSFetchRequest<NoteCard> {
+        let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
+        
+        if let uuid = uuid {
+            let collectionUUID = #keyPath(NoteCard.collection.uuid)
+            request.predicate = .init(format: "\(collectionUUID) == %@", uuid)
+            request.sortDescriptors = [.init(key: #keyPath(NoteCard.navtive), ascending: true)]
+        } else {
+            request.predicate = .init(value: false)
+            request.sortDescriptors = []
+        }
+        
+        return request
     }
 }
 

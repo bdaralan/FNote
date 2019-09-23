@@ -18,6 +18,9 @@ struct AppCache {
     
     @UserDefaultsOptionalValue(forKey: "AppCache.kUbiquityIdentityToken", default: nil)
     static var ubiquityIdentityToken: UbiquityIdentityToken?
+    
+    @UserDefaultsOptionalValue(forKey: "AppCache.kCurrentCollectionUUID", default: nil)
+    static var currentCollectionUUID: String?
 }
 
 
