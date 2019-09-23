@@ -67,7 +67,7 @@ extension NoteCardCollectionListView {
         // assign the name from the binding to the new name
         collectionToSave.name = collectionNewName
         
-        // make the sheet go away
+        // make the sheet go away after user taps "done"
         showSheet = false
     }
     
