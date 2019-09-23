@@ -36,9 +36,9 @@ struct NoteCardCollectionViewCard: View {
                     Spacer()
                     quickButton(imageName: "circle.grid.hex.fill", label: "0")
                     Spacer()
-                    quickButton(imageName: "hand.raised.fill", label: "U")
+                    formalButton()
                     Spacer()
-                    quickButton(imageName: "star", label: "0")
+                    starButton()
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 10)
@@ -59,6 +59,40 @@ extension NoteCardCollectionViewCard {
         Group {
             Image(systemName: imageName)
             Text(label)
+                .font(.caption)
+        }
+    }
+    
+    func starButton() -> some View {
+        var starImage: String
+          
+        if noteCard.isFavorited {
+            starImage = "star.fill"
+        }
+        else {
+            starImage = "star"
+        }
+        
+        return Image(systemName: starImage)
+    }
+    
+    func formalButton() -> some View {
+        let formal: String
+        
+        switch noteCard.formality {
+        case .unknown:
+            formal = "?"
+        case .informal:
+            formal = "I"
+        case .neutral:
+            formal = "N"
+        case .formal:
+            formal = "F"
+        }
+        
+        return Group {
+            Image(systemName: "hand.raised.fill")
+            Text(formal)
                 .font(.caption)
         }
     }
