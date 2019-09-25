@@ -12,4 +12,10 @@ import Foundation
 extension Notification.Name {
     
     static let appCurrentCollectionDidChange = Notification.Name("Notification.Name.appCurrentCollectionDidChange")
+    
+    // set notification name for deleting
+    static let appCollectionDidDelete =
+        Notification.Name("Notification.Name.appCollectionDidDelete")
 }
+
+
