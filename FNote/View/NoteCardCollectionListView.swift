@@ -11,10 +11,10 @@ import SwiftUI
 struct NoteCardCollectionListView: View {
     
     @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
-    @State var collectionToRename: NoteCardCollection?
-    @State var collectionNewName = ""
-    @State var showSheet = false
-    @State var createRenameSheet = AnyView(EmptyView())
+    @State private var collectionToRename: NoteCardCollection?
+    @State private var collectionNewName = ""
+    @State private var showSheet = false
+    @State private var createRenameSheet = AnyView(EmptyView())
     @ObservedObject private var viewReloader = ViewForceReloader()
     
     var body: some View {
@@ -95,6 +95,12 @@ extension NoteCardCollectionListView {
             fetchAllCollections()
             showSheet = false
             
+            // when user creates a new collection for the first time, that collection will
+            // automatically be selected
+            if noteCardCollectionDataSource.fetchedResult.fetchedObjects?.count == 1 {
+                selectCollection(collection: collectionToSave)
+            }
+            
         case .failed:
             break
             
@@ -132,12 +138,21 @@ extension NoteCardCollectionListView {
         case .unchanged:
             break
         }
-        
     }
     
     func deleteCollection(_ collection: NoteCardCollection) {
+        // check UUID for NoteCard view
+        if collection.uuid == AppCache.currentCollectionUUID {
+            AppCache.currentCollectionUUID = nil
+        }
+        // delete
         noteCardCollectionDataSource.delete(collection, saveContext: true)
+        
+        // update UI
         fetchAllCollections()
+        
+        // post delete notification
+        NotificationCenter.default.post(name: .appCollectionDidDelete, object: collection)
     }
     
     func fetchAllCollections() {

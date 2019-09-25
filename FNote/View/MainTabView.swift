@@ -45,6 +45,7 @@ struct MainTabView: View {
                 .tag(Tab.collection)
             
             TagListView()
+            .environmentObject(tagDataSource)
                 .tabItem(Tab.tag.tabItem)
                 .tag(Tab.tag)
             
