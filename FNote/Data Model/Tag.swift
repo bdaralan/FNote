@@ -49,6 +49,16 @@ extension Tag {
     }
 }
 
+extension Tag {
+    static func requestAllTags() -> NSFetchRequest<Tag> {
+        let request = Tag.fetchRequest() as NSFetchRequest<Tag>
+        let tagName = #keyPath(Tag.name)
+        request.predicate = .init(value: true)
+        request.sortDescriptors = [.init(key: tagName, ascending: true)]
+        return request
+    }
+}
+
 
 extension Tag {
     
