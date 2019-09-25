@@ -15,12 +15,8 @@ struct NoteCardCollectionViewCard: View {
     var body: some View {
         ZStack {
             VStack(alignment: .leading) {
-                HStack {
-                    Text(noteCard.navtive)
-                        .font(.title)
-                    Spacer()
-                    Image(systemName: "ellipsis")
-                }
+                Text(noteCard.navtive)
+                    .font(.title)
                 .padding(.horizontal)
                 .padding(.vertical, 5)
                 
@@ -45,13 +41,11 @@ struct NoteCardCollectionViewCard: View {
             }
             .background(Color.white)
             .cornerRadius(20)
-       //     .shadow(color: Color.black.opacity(1), radius: 3 , x: 4, y: 1)
         }
         .padding()
         .background(Color.init(red: 225/255, green: 225/255, blue: 225/255))
     }
 }
-
 
 extension NoteCardCollectionViewCard {
     

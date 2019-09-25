@@ -36,7 +36,18 @@ struct NoteCardCollectionView: View {
                 VStack (spacing: 0){
                     ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? []) { noteCard in
                         NoteCardViewNavigationLink(noteCard: noteCard)
+                        .contextMenu{
+                            Button(action: self.testContextButtonPrint) {
+                                Text("Move")
+                                Image(systemName: "folder.circle")
+                                }
+                                Button(action: {self.deleteCard(noteCard)} ) {
+                                    Text("Delete")
+                                    Image(systemName: "trash")
+                                }
+                            }
                     }
+                    
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 .padding(.vertical)
@@ -125,6 +136,18 @@ extension NoteCardCollectionView {
         noteCardDataSource.discardCreateContext()
         showCreateNewNoteCardSheet = false
     }
+    
+    func deleteCard(_ notecard: NoteCard)
+    {
+        noteCardDataSource.delete(notecard, saveContext: true)
+        fetchNoteCards()
+    }
+    
+    // Placeholder function for move
+    func testContextButtonPrint()
+    {
+        print("test")
+    }
 }
 
 
@@ -157,6 +180,7 @@ extension NoteCardCollectionView {
         let currentCollectionUUID = currentCollection?.uuid
         let request = NoteCard.requestNoteCards(forCollectionUUID: currentCollectionUUID)
         noteCardDataSource.performFetch(request)
+        viewReloader.forceReload()
     }
     
     /// Setup current collection observer action.
