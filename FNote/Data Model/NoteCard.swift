@@ -61,6 +61,24 @@ class NoteCard: NSManagedObject, ObjectValidatable, Identifiable {
 
 extension NoteCard {
     
+    func hasTag(_ tag: Tag) -> Bool {
+        tags.contains(where: { $0.uuid == tag.uuid })
+    }
+    
+    func removeTag(_ tag: Tag) {
+        let tag = tag.get(from: managedObjectContext!)
+        tags.remove(tag)
+    }
+    
+    func addTag(_ tag: Tag) {
+        let tag = tag.get(from: managedObjectContext!)
+        tags.insert(tag)
+    }
+}
+
+
+extension NoteCard {
+    
     func isValid() -> Bool {
         hasValidInputs() && collection != nil
     }

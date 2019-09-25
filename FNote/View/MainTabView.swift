@@ -35,6 +35,7 @@ struct MainTabView: View {
         TabView(selection: $currentTabItem) {
             NoteCardCollectionView()
                 .environmentObject(noteCardDataSource)
+                .environmentObject(tagDataSource)
                 .tabItem(Tab.home.tabItem)
                 .tag(Tab.home)
             
@@ -49,6 +50,7 @@ struct MainTabView: View {
             
             SettingView()
                 .environmentObject(noteCardCollectionDataSource)
+                .environmentObject(tagDataSource)
                 .tabItem(Tab.setting.tabItem)
                 .tag(Tab.setting)
         }
