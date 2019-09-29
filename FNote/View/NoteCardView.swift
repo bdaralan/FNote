@@ -10,12 +10,18 @@ import SwiftUI
 
 struct NoteCardView: View {
     
+    @EnvironmentObject var tagDataSource: TagDataSource
+    
     @ObservedObject var noteCard: NoteCard
     
     /// Used to get new input for `noteCard`'s note.
     @State private var noteCardNote = ""
     
     @State private var showNoteEditingSheet = false
+    
+    @State private var addedTags = [TagViewModel]()
+    
+    @State private var availableTags = [TagViewModel]()
     
     
     var body: some View {
@@ -51,7 +57,7 @@ struct NoteCardView: View {
                     rowImage(systemName: "link.circle.fill")
                     Text("Relationship")
                 }
-                NavigationLink(destination: Text("Tag")) {
+                NavigationLink(destination: addTagView) {
                     rowImage(systemName: "tag.fill")
                     Text("Tag")
                 }
@@ -110,8 +116,80 @@ extension NoteCardView {
 }
 
 
+extension NoteCardView {
+    
+    var addTagView: some View {
+        NoteCardAddTagView(
+            addedTags: $addedTags,
+            addableTags: $availableTags,
+            onTagAdd: addTagToNoteCard,
+            onTagRemove: removeTagFromNoteCard,
+            onTagCreate: addNewTagToNoteCard
+        )
+            .onAppear {
+                let allTags = self.tagDataSource.fetchedResult.fetchedObjects ?? []
+                let addedTags = self.noteCard.tags.map({ TagViewModel(tag: $0) })
+                let availableTags = allTags.compactMap { tag -> TagViewModel? in
+                    let tagModel = TagViewModel(tag: tag)
+                    guard !addedTags.contains(tagModel) else { return nil }
+                    return tagModel
+                }
+                
+                self.addedTags = addedTags
+                self.availableTags = availableTags
+        }
+    }
+    
+    func addTagToNoteCard(_ tag: TagViewModel) {
+        guard !addedTags.contains(tag), let index = availableTags.firstIndex(of: tag) else { return }
+        // update UI property
+        addedTags.append(tag)
+        addedTags.sortByName()
+        availableTags.remove(at: index)
+        
+        // add tag to note card
+        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
+        guard let tagToAdd = allTags.first(where: { $0.uuid == tag.uuid }) else { return }
+        let tagToAddFromSameContext = tagToAdd.get(from: noteCard.managedObjectContext!)
+        noteCard.tags.insert(tagToAddFromSameContext)
+    }
+    
+    func removeTagFromNoteCard(_ tag: TagViewModel) {
+        guard !availableTags.contains(tag), let index = addedTags.firstIndex(of: tag) else { return }
+        availableTags.append(tag)
+        availableTags.sortByName()
+        addedTags.remove(at: index)
+        
+        guard let tagToRemove = noteCard.tags.first(where: { $0.uuid == tag.uuid }) else { return }
+        let tagToRemoveFromSameContext = tagToRemove.get(from: noteCard.managedObjectContext!)
+        noteCard.tags.remove(tagToRemoveFromSameContext)
+    }
+    
+    func addNewTagToNoteCard(_ tag: TagViewModel) {
+        let newTag = Tag(context: noteCard.managedObjectContext!)
+        newTag.name = tag.name
+        noteCard.tags.insert(newTag)
+        
+        let tagModel = TagViewModel(tag: newTag)
+        availableTags.append(tagModel)
+        availableTags.sortByName()
+    }
+}
+
+
 struct NoteCardView_Previews: PreviewProvider {
     static var previews: some View {
         NoteCardView(noteCard: .init())
     }
+}
+
+
+func addToSelectedTags(_ tag: TagViewModel) {
+    
+    
+}
+
+func removeFromSelectedTags(_ tag: TagViewModel) {
+    
+    
 }

@@ -49,6 +49,7 @@ extension SettingView {
         tagDataSource.prepareNewObject()
         let tag = tagDataSource.newObject!
         tag.name = "Tag \(tagDataSource.fetchedResult.fetchedObjects!.count + 1)"
+        tagDataSource.objectWillChange.send()
         let result = tagDataSource.saveNewObject()
         print("created Tag \(result)")
         tagDataSource.discardNewObject()

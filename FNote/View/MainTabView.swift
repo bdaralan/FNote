@@ -23,6 +23,7 @@ struct MainTabView: View {
     
     @ObservedObject var tagDataSource: TagDataSource = {
         let dataSource = TagDataSource(parentContext: CoreDataStack.current.mainContext)
+        dataSource.performFetch(Tag.requestAllTags())
         return dataSource
     }()
     

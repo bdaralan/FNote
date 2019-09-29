@@ -14,6 +14,8 @@ struct NoteCardViewNavigationLink: View {
     
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
     
+    @EnvironmentObject var tagDataSource: TagDataSource
+    
     @ObservedObject var noteCard: NoteCard
     
     @ObservedObject private var navigationHandler = NavigationStateHandler()

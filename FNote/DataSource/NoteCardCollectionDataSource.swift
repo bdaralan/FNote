@@ -49,6 +49,9 @@ class NoteCardCollectionDataSource: NSObject, ObjectDataSource {
             sectionNameKeyPath: nil,
             cacheName: nil
         )
+        
+        super.init()
+        fetchedResult.delegate = self
     }
     
     // Function deals with the UI to reflect the changes made to the object

@@ -41,6 +41,9 @@ class NoteCardDataSource: NSObject, ObjectDataSource {
             sectionNameKeyPath: nil,
             cacheName: nil
         )
+        
+        super.init()
+        fetchedResult.delegate = self
     }
     
     
