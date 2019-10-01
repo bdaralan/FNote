@@ -56,7 +56,6 @@ class NoteCardCollectionDataSource: NSObject, ObjectDataSource {
     
     // Function deals with the UI to reflect the changes made to the object
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        objectWillChange.send();
+        objectWillChange.send()
     }
-    
 }

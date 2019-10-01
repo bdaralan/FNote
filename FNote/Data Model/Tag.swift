@@ -11,12 +11,17 @@ import Foundation
 import CoreData
 
 
-class Tag: NSManagedObject, ObjectValidatable, Identifiable {
+class Tag: NSManagedObject, ObjectValidatable {
     
     @NSManaged private(set) var uuid: String
     @NSManaged var name: String
     @NSManaged var noteCards: Set<NoteCard>
     
+    
+    convenience init(uuid: String, context: NSManagedObjectContext) {
+        self.init(context: context)
+        self.uuid = uuid
+    }
     
     override func awakeFromInsert() {
         super.awakeFromInsert()
@@ -50,6 +55,7 @@ extension Tag {
 }
 
 extension Tag {
+    
     static func requestAllTags() -> NSFetchRequest<Tag> {
         let request = Tag.fetchRequest() as NSFetchRequest<Tag>
         let tagName = #keyPath(Tag.name)
