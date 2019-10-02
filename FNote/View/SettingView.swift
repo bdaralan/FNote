@@ -12,11 +12,15 @@ struct SettingView: View {
     
     @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
     
+    @EnvironmentObject var tagDataSource: TagDataSource
+    
+    
     var body: some View {
         NavigationView {
             List {
                 Button("Create New Collection & Set Current", action: createNewCollectionAndSetCurrent)
                 Button("Deselect Current Collection", action: deselectCurrentCollection)
+                Button("Creat New Tag", action: createNewTag)
             }
             .navigationBarTitle("Settings")
         }
@@ -39,6 +43,16 @@ extension SettingView {
     
     func deselectCurrentCollection() {
         AppCache.currentCollectionUUID = nil
+    }
+    
+    func createNewTag() {
+        tagDataSource.prepareNewObject()
+        let tag = tagDataSource.newObject!
+        tag.name = "Tag \(tagDataSource.fetchedResult.fetchedObjects!.count + 1)"
+        tagDataSource.objectWillChange.send()
+        let result = tagDataSource.saveNewObject()
+        print("created Tag \(result)")
+        tagDataSource.discardNewObject()
     }
 }
 

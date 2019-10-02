@@ -23,6 +23,7 @@ struct MainTabView: View {
     
     @ObservedObject var tagDataSource: TagDataSource = {
         let dataSource = TagDataSource(parentContext: CoreDataStack.current.mainContext)
+        dataSource.performFetch(Tag.requestAllTags())
         return dataSource
     }()
     
@@ -35,6 +36,7 @@ struct MainTabView: View {
         TabView(selection: $currentTabItem) {
             NoteCardCollectionView()
                 .environmentObject(noteCardDataSource)
+                .environmentObject(tagDataSource)
                 .tabItem(Tab.home.tabItem)
                 .tag(Tab.home)
             
@@ -50,6 +52,7 @@ struct MainTabView: View {
             
             SettingView()
                 .environmentObject(noteCardCollectionDataSource)
+                .environmentObject(tagDataSource)
                 .tabItem(Tab.setting.tabItem)
                 .tag(Tab.setting)
         }

@@ -15,4 +15,8 @@ extension String {
     func trimmed() -> String {
         self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
+    
+    func isEmptyOrWhiteSpaces() -> Bool {
+        self.trimmed().isEmpty
+    }
 }

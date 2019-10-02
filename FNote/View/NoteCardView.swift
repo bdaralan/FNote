@@ -10,13 +10,19 @@ import SwiftUI
 
 struct NoteCardView: View {
     
+    @EnvironmentObject var tagDataSource: TagDataSource
+    
     @ObservedObject var noteCard: NoteCard
+    
+    @State private var addTagViewModel = NoteCardAddTagViewModel()
     
     /// Used to get new input for `noteCard`'s note.
     @State private var noteCardNote = ""
     
     @State private var showNoteEditingSheet = false
     
+    
+    // MARK: Body
     
     var body: some View {
         Form {
@@ -42,18 +48,25 @@ struct NoteCardView: View {
                     rowImage(systemName: "star.fill")
                     Text("Favorite")
                 }
-                Picker(selection: $noteCard.formality, label: formalityPickerLabel) {
+                
+                Picker(selection: $noteCard.formality, label: Group {
+                    rowImage(systemName: "hand.raised.fill")
+                    Text("Formality")
+                }) {
                     ForEach(NoteCard.Formality.allCases, id: \.self) { formality in
                         Text(formality.title).tag(formality)
                     }
                 }
+                
                 NavigationLink(destination: Text("Relationship")) {
                     rowImage(systemName: "link.circle.fill")
                     Text("Relationship")
+                    
                 }
-                NavigationLink(destination: Text("Tag")) {
+                
+                NavigationLink(destination: addTagView) {
                     rowImage(systemName: "tag.fill")
-                    Text("Tag")
+                    Text("Tags")
                 }
             }
             
@@ -88,10 +101,6 @@ extension NoteCardView {
             .foregroundColor(.secondary)
     }
     
-    var formalityPickerLabel: some View {
-        ViewBuilder.buildBlock(rowImage(systemName: "hand.raised.fill"), Text("Formality"))
-    }
-    
     func rowImage(systemName: String) -> some View {
         Image(systemName: systemName)
             .frame(minWidth: 20, maxWidth: 20, alignment: .center)
@@ -104,8 +113,62 @@ extension NoteCardView {
     
     func commitEditingNoteCardNote() {
         noteCard.note = noteCardNote
-        noteCardNote = ""
         showNoteEditingSheet = false
+    }
+}
+
+
+extension NoteCardView {
+    
+    var addTagView: some View {
+        NoteCardAddTagView(viewModel: $addTagViewModel)
+            .onAppear(perform: prepareNoteCardAddTagViewModel)
+    }
+    
+    func prepareNoteCardAddTagViewModel() {
+        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
+        let includedTags = noteCard.tags.compactMap({ TagViewModel(tag: $0) })
+        let excludedTags = allTags.compactMap { tag -> TagViewModel? in
+            let tagModel = TagViewModel(tag: tag)
+            guard !includedTags.contains(where: { $0.uuid == tagModel.uuid }) else { return nil }
+            return tagModel
+        }
+        
+        addTagViewModel.setTags(included: includedTags.sortedByName(), excluded: excludedTags.sortedByName())
+        addTagViewModel.onTagIncluded = addTagToNoteCard
+        addTagViewModel.onTagExcluded = removeTagFromNoteCard
+        addTagViewModel.onTagUpdated = renameTag
+        addTagViewModel.onTagCreated = addNewTagToNoteCard
+    }
+    
+    func addNewTagToNoteCard(_ tag: TagViewModel) {
+        let newTag = Tag(uuid: tag.uuid, context: noteCard.managedObjectContext!)
+        newTag.name = tag.name
+        noteCard.objectWillChange.send()
+        noteCard.tags.insert(newTag)
+    }
+    
+    func addTagToNoteCard(_ tag: TagViewModel) {
+        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
+        guard let tagToAdd = allTags.first(where: { $0.uuid == tag.uuid }) else { return }
+        let tagToAddFromSameContext = tagToAdd.get(from: noteCard.managedObjectContext!)
+        noteCard.objectWillChange.send()
+        noteCard.tags.insert(tagToAddFromSameContext)
+    }
+    
+    func removeTagFromNoteCard(_ tag: TagViewModel) {
+        guard let tagToRemove = noteCard.tags.first(where: { $0.uuid == tag.uuid }) else { return }
+        let tagToRemoveInSameContext = tagToRemove.get(from: noteCard.managedObjectContext!)
+        noteCard.objectWillChange.send()
+        noteCard.tags.remove(tagToRemoveInSameContext)
+    }
+    
+    func renameTag(_ tag: TagViewModel) {
+        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
+        guard let tagToRename = allTags.first(where: { $0.uuid == tag.uuid }) else { return }
+        let tagToRenameInSameContext = tagToRename.get(from: noteCard.managedObjectContext!)
+        tagToRenameInSameContext.name = tag.name
+        tagToRenameInSameContext.objectWillChange.send()
     }
 }
 

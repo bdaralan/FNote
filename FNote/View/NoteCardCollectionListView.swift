@@ -20,7 +20,7 @@ struct NoteCardCollectionListView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(noteCardCollectionDataSource.fetchedResult.fetchedObjects ?? [], id: \.self) { collection in
+                ForEach(noteCardCollectionDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { collection in
                     Button(action: { self.selectCollection(collection: collection) }) {
                         HStack {
                             Text(collection.name)

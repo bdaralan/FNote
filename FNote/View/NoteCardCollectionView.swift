@@ -15,6 +15,8 @@ struct NoteCardCollectionView: View {
     /// A data source used to CRUD note card.
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
     
+    @EnvironmentObject var tagDataSource: TagDataSource
+    
     /// The current note card collection user's selected.
     @State private var currentCollection: NoteCardCollection?
     
@@ -34,7 +36,7 @@ struct NoteCardCollectionView: View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack (spacing: 0){
-                    ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? []) { noteCard in
+                    ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { noteCard in
                         NoteCardViewNavigationLink(noteCard: noteCard)
                     }
                 }
@@ -81,6 +83,7 @@ extension NoteCardCollectionView {
         
         let sheet = NavigationView {
             NoteCardView(noteCard: noteCardDataSource.newObject!)
+                .environmentObject(tagDataSource)
                 .navigationBarTitle("New Note Card", displayMode: .inline)
                 .navigationBarItems(leading: cancelButton, trailing: createButton)
         }

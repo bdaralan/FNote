@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 
 
-class NoteCardCollection: NSManagedObject, ObjectValidatable, Identifiable {
+class NoteCardCollection: NSManagedObject, ObjectValidatable {
 
     @NSManaged private(set) var uuid: String
     @NSManaged var name: String

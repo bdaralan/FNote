@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 
 
-class NoteCard: NSManagedObject, ObjectValidatable, Identifiable {
+class NoteCard: NSManagedObject, ObjectValidatable {
     
     @NSManaged private(set) var uuid: String
     @NSManaged var navtive: String
@@ -55,6 +55,14 @@ class NoteCard: NSManagedObject, ObjectValidatable, Identifiable {
             case .formal: return "Formal"
             }
         }
+    }
+}
+
+
+extension NoteCard {
+    
+    func hasTag(_ tag: Tag) -> Bool {
+        tags.contains(where: { $0.uuid == tag.uuid })
     }
 }
 

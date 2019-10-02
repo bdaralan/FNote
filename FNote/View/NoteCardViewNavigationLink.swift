@@ -14,6 +14,8 @@ struct NoteCardViewNavigationLink: View {
     
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
     
+    @EnvironmentObject var tagDataSource: TagDataSource
+    
     @ObservedObject var noteCard: NoteCard
     
     @ObservedObject private var navigationHandler = NavigationStateHandler()
@@ -40,8 +42,6 @@ extension NoteCardViewNavigationLink {
         Button(action: saveChanges) {
             Text("Save").bold()
         }
-        .disabled(!noteCard.isValid())
-        .hidden(!noteCard.hasChangedValues())
     }
     
     func discardUnsavedChanges() {
@@ -63,13 +63,5 @@ extension NoteCardViewNavigationLink {
 struct NoteCardViewNavigationLink_Previews: PreviewProvider {
     static var previews: some View {
         NoteCardViewNavigationLink(noteCard: .init())
-    }
-}
-
-
-extension View {
-    
-    func hidden(_ condition: Bool) -> some View {
-        condition ? AnyView(self.hidden()) : AnyView(self)
     }
 }

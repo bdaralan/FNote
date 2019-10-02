@@ -50,10 +50,13 @@ class TagDataSource: NSObject, ObjectDataSource {
             sectionNameKeyPath: nil,
             cacheName: nil
         )
-      }
+        
+        super.init()
+        fetchedResult.delegate = self
+    }
     
     // func deals with the UI, to reflect the changes made to the object
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        objectWillChange.send();
+        objectWillChange.send()
     }
 }
