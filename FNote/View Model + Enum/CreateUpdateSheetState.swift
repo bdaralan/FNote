@@ -9,8 +9,7 @@
 import Foundation
 
 
-enum CreateUpdateSheetState: Int, Identifiable {
-    var id: Int { rawValue }
+enum CreateUpdateSheetState {
     case create
     case update
 }

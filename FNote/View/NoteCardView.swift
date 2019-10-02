@@ -14,15 +14,15 @@ struct NoteCardView: View {
     
     @ObservedObject var noteCard: NoteCard
     
+    @State private var addTagViewModel = NoteCardAddTagViewModel()
+    
     /// Used to get new input for `noteCard`'s note.
     @State private var noteCardNote = ""
     
     @State private var showNoteEditingSheet = false
     
-    @State private var addedTags = [TagViewModel]()
     
-    @State private var availableTags = [TagViewModel]()
-    
+    // MARK: Body
     
     var body: some View {
         Form {
@@ -48,18 +48,25 @@ struct NoteCardView: View {
                     rowImage(systemName: "star.fill")
                     Text("Favorite")
                 }
-                Picker(selection: $noteCard.formality, label: formalityPickerLabel) {
+                
+                Picker(selection: $noteCard.formality, label: Group {
+                    rowImage(systemName: "hand.raised.fill")
+                    Text("Formality")
+                }) {
                     ForEach(NoteCard.Formality.allCases, id: \.self) { formality in
                         Text(formality.title).tag(formality)
                     }
                 }
+                
                 NavigationLink(destination: Text("Relationship")) {
                     rowImage(systemName: "link.circle.fill")
                     Text("Relationship")
+                    
                 }
+                
                 NavigationLink(destination: addTagView) {
                     rowImage(systemName: "tag.fill")
-                    Text("Tag")
+                    Text("Tags")
                 }
             }
             
@@ -94,10 +101,6 @@ extension NoteCardView {
             .foregroundColor(.secondary)
     }
     
-    var formalityPickerLabel: some View {
-        ViewBuilder.buildBlock(rowImage(systemName: "hand.raised.fill"), Text("Formality"))
-    }
-    
     func rowImage(systemName: String) -> some View {
         Image(systemName: systemName)
             .frame(minWidth: 20, maxWidth: 20, alignment: .center)
@@ -110,7 +113,6 @@ extension NoteCardView {
     
     func commitEditingNoteCardNote() {
         noteCard.note = noteCardNote
-        noteCardNote = ""
         showNoteEditingSheet = false
     }
 }
@@ -119,60 +121,54 @@ extension NoteCardView {
 extension NoteCardView {
     
     var addTagView: some View {
-        NoteCardAddTagView(
-            addedTags: $addedTags,
-            addableTags: $availableTags,
-            onTagAdd: addTagToNoteCard,
-            onTagRemove: removeTagFromNoteCard,
-            onTagCreate: addNewTagToNoteCard
-        )
-            .onAppear {
-                let allTags = self.tagDataSource.fetchedResult.fetchedObjects ?? []
-                let addedTags = self.noteCard.tags.map({ TagViewModel(tag: $0) })
-                let availableTags = allTags.compactMap { tag -> TagViewModel? in
-                    let tagModel = TagViewModel(tag: tag)
-                    guard !addedTags.contains(tagModel) else { return nil }
-                    return tagModel
-                }
-                
-                self.addedTags = addedTags
-                self.availableTags = availableTags
+        NoteCardAddTagView(viewModel: $addTagViewModel)
+            .onAppear(perform: prepareNoteCardAddTagViewModel)
+    }
+    
+    func prepareNoteCardAddTagViewModel() {
+        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
+        let includedTags = noteCard.tags.compactMap({ TagViewModel(tag: $0) })
+        let excludedTags = allTags.compactMap { tag -> TagViewModel? in
+            let tagModel = TagViewModel(tag: tag)
+            guard !includedTags.contains(where: { $0.uuid == tagModel.uuid }) else { return nil }
+            return tagModel
         }
+        
+        addTagViewModel.setTags(included: includedTags.sortedByName(), excluded: excludedTags.sortedByName())
+        addTagViewModel.onTagIncluded = addTagToNoteCard
+        addTagViewModel.onTagExcluded = removeTagFromNoteCard
+        addTagViewModel.onTagUpdated = renameTag
+        addTagViewModel.onTagCreated = addNewTagToNoteCard
+    }
+    
+    func addNewTagToNoteCard(_ tag: TagViewModel) {
+        let newTag = Tag(uuid: tag.uuid, context: noteCard.managedObjectContext!)
+        newTag.name = tag.name
+        noteCard.objectWillChange.send()
+        noteCard.tags.insert(newTag)
     }
     
     func addTagToNoteCard(_ tag: TagViewModel) {
-        guard !addedTags.contains(tag), let index = availableTags.firstIndex(of: tag) else { return }
-        // update UI property
-        addedTags.append(tag)
-        addedTags.sortByName()
-        availableTags.remove(at: index)
-        
-        // add tag to note card
         let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
         guard let tagToAdd = allTags.first(where: { $0.uuid == tag.uuid }) else { return }
         let tagToAddFromSameContext = tagToAdd.get(from: noteCard.managedObjectContext!)
+        noteCard.objectWillChange.send()
         noteCard.tags.insert(tagToAddFromSameContext)
     }
     
     func removeTagFromNoteCard(_ tag: TagViewModel) {
-        guard !availableTags.contains(tag), let index = addedTags.firstIndex(of: tag) else { return }
-        availableTags.append(tag)
-        availableTags.sortByName()
-        addedTags.remove(at: index)
-        
         guard let tagToRemove = noteCard.tags.first(where: { $0.uuid == tag.uuid }) else { return }
-        let tagToRemoveFromSameContext = tagToRemove.get(from: noteCard.managedObjectContext!)
-        noteCard.tags.remove(tagToRemoveFromSameContext)
+        let tagToRemoveInSameContext = tagToRemove.get(from: noteCard.managedObjectContext!)
+        noteCard.objectWillChange.send()
+        noteCard.tags.remove(tagToRemoveInSameContext)
     }
     
-    func addNewTagToNoteCard(_ tag: TagViewModel) {
-        let newTag = Tag(context: noteCard.managedObjectContext!)
-        newTag.name = tag.name
-        noteCard.tags.insert(newTag)
-        
-        let tagModel = TagViewModel(tag: newTag)
-        availableTags.append(tagModel)
-        availableTags.sortByName()
+    func renameTag(_ tag: TagViewModel) {
+        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
+        guard let tagToRename = allTags.first(where: { $0.uuid == tag.uuid }) else { return }
+        let tagToRenameInSameContext = tagToRename.get(from: noteCard.managedObjectContext!)
+        tagToRenameInSameContext.name = tag.name
+        tagToRenameInSameContext.objectWillChange.send()
     }
 }
 
@@ -181,15 +177,4 @@ struct NoteCardView_Previews: PreviewProvider {
     static var previews: some View {
         NoteCardView(noteCard: .init())
     }
-}
-
-
-func addToSelectedTags(_ tag: TagViewModel) {
-    
-    
-}
-
-func removeFromSelectedTags(_ tag: TagViewModel) {
-    
-    
 }

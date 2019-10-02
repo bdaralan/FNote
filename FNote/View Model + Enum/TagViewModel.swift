@@ -9,18 +9,17 @@
 import Foundation
 
 
-struct TagViewModel: Identifiable, Equatable {
-    var id: String { uuid }
+struct TagViewModel {
     let uuid: String
     var name: String
-}
-
-
-extension TagViewModel {
+    
+    init(uuid: String = UUID().uuidString, name: String = "") {
+        self.uuid = uuid
+        self.name = name
+    }
     
     init(tag: Tag) {
-        uuid = tag.uuid
-        name = tag.name
+        self.init(uuid: tag.uuid, name: tag.name)
     }
 }
 
@@ -29,5 +28,9 @@ extension Array where Element == TagViewModel {
     
     mutating func sortByName() {
         sort(by: { $0.name < $1.name })
+    }
+    
+    func sortedByName() -> [Element] {
+        sorted(by: { $0.name < $1.name })
     }
 }

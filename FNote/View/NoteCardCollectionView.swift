@@ -36,7 +36,7 @@ struct NoteCardCollectionView: View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack (spacing: 0){
-                    ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? []) { noteCard in
+                    ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { noteCard in
                         NoteCardViewNavigationLink(noteCard: noteCard)
                     }
                 }

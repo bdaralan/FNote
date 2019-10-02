@@ -9,7 +9,16 @@
 import SwiftUI
 
 extension View {
+    
     func eraseToAnyView() -> AnyView {
         AnyView(self)
+    }
+    
+    func hidden(_ condition: Bool) -> some View {
+        condition ? AnyView(self.hidden()) : AnyView(self)
+    }
+    
+    func remove(_ condition: Bool) -> some View {
+        condition ? AnyView(EmptyView()) : AnyView(self)
     }
 }
