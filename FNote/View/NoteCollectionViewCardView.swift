@@ -10,17 +10,13 @@ import SwiftUI
 
 struct NoteCardCollectionViewCard: View {
     
-    @ObservedObject var noteCard = NoteCard.sampleNoteCards(count: 1)[0]
+    @ObservedObject var noteCard: NoteCard
     
     var body: some View {
         ZStack {
             VStack(alignment: .leading) {
-                HStack {
-                    Text(noteCard.navtive)
-                        .font(.title)
-                    Spacer()
-                    Image(systemName: "ellipsis")
-                }
+                Text(noteCard.navtive)
+                    .font(.title)
                 .padding(.horizontal)
                 .padding(.vertical, 5)
                 
@@ -32,9 +28,9 @@ struct NoteCardCollectionViewCard: View {
                     .padding(.vertical, 5)
                     
                 HStack (alignment: .center) {
-                    quickButton(imageName: "tag.fill", label: "0")
+                    wordButton()
                     Spacer()
-                    quickButton(imageName: "circle.grid.hex.fill", label: "0")
+                    tagButton()
                     Spacer()
                     formalButton()
                     Spacer()
@@ -45,13 +41,11 @@ struct NoteCardCollectionViewCard: View {
             }
             .background(Color.white)
             .cornerRadius(20)
-       //     .shadow(color: Color.black.opacity(1), radius: 3 , x: 4, y: 1)
         }
         .padding()
         .background(Color.init(red: 225/255, green: 225/255, blue: 225/255))
     }
 }
-
 
 extension NoteCardCollectionViewCard {
     
@@ -93,14 +87,62 @@ extension NoteCardCollectionViewCard {
         return Group {
             Image(systemName: "hand.raised.fill")
             Text(formal)
-                .font(.caption)
+                .font(.body)
         }
+    }
+    
+    func tagButton() -> some View {
+        
+        var tagNumber: String
+        
+        tagNumber = String(noteCard.tags.count)
+        
+        return Button(action: testTag) {
+            HStack{
+                Image(systemName: "tag.fill")
+                Text(tagNumber)
+                    .font(.body)
+            }
+        }
+    }
+    
+    // Function that tests button functionality. Creates a tag, adds it to the notecard, and shows in the view.
+    func testTag()
+    {
+        let exampleTag = Tag(context: noteCard.managedObjectContext!) // the exclamation mark forces the context to exist
+        exampleTag.name = "greetings"
+        noteCard.objectWillChange.send()
+        noteCard.addToTags(exampleTag)
+    }
+    
+    func wordButton() -> some View {
+        var wordNumber: String
+        
+        wordNumber = String(noteCard.relationships.count)
+        
+        return Button(action: testWord) {
+            HStack{
+                Image(systemName: "circle.grid.hex")
+                Text(wordNumber)
+                    .font(.body)
+            }
+        }
+    }
+    
+    // Function that tests button functionality. Creates a notecard, adds it to the notecard, and shows in the view.
+    func testWord()
+    {
+        let exampleNoteCard = NoteCard(context: noteCard.managedObjectContext!)
+        exampleNoteCard.navtive = "Bonjour"
+        exampleNoteCard.translation = "Hello"
+        noteCard.objectWillChange.send()
+        noteCard.addToRelationships(exampleNoteCard)
     }
 }
 
 
 struct NoteCardCollectionViewCard_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionViewCard()
+        NoteCardCollectionViewCard(noteCard: .init())
     }
 }
