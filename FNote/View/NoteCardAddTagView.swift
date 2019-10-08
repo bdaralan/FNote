@@ -12,63 +12,69 @@ import SwiftUI
 struct NoteCardAddTagView: View {
     
     @Binding var viewModel: NoteCardAddTagViewModel
-        
-    /// A flag used to determine the sheet action.
-    @State private var sheetState: CreateUpdateSheetState?
-    
-    /// A flag used to present or dismiss the rename or create sheet.
-    @State private var showSheet = false
     
     /// A tag object used to create or update tag which passed to `onTagCreate` or `onTagRename`.
-    @State private var sheetTag = TagViewModel(uuid: "", name: "")
+    @State private var tagModel = TagViewModel(uuid: "", name: "")
+        
+    /// A flag used to determine the sheet action.
+    @State private var modalTextFieldState = CreateUpdateSheetState.create // default sentinel value
     
     /// A placeholder string for the sheet view.
-    @State private var sheetTagPlaceholder = ""
+    @State private var modalTextFieldPlaceholder = ""
     
     /// A prompt string for the sheet view.
-    @State private var sheetTagPrompt = ""
+    @State private var modalTextFieldPrompt = ""
+    
+    /// A flag used to present or dismiss the rename or create sheet.
+    @State private var showModalTextField = false
     
     
     var body: some View {
         List {
             Section(header: Text("SELECTED TAGS").padding(.top, 20)) {
                 ForEach(viewModel.includedTags, id: \.uuid) { tag in
-                    self.tagRow(for: tag)
+                    self.tagRow(for: tag, showCheckmark: true)
                 }
-                if viewModel.includedTags.isEmpty {
-                    Text("none").foregroundColor(.secondary)
-                }
+                Text("none")
+                    .foregroundColor(.secondary)
+                    .hidden(!viewModel.includedTags.isEmpty)
             }
             
             Section(header: Text("TAGS")) {
                 ForEach(viewModel.excludedTags, id: \.uuid) { tag in
-                    self.tagRow(for: tag)
+                    self.tagRow(for: tag, showCheckmark: false)
                 }
-                if viewModel.excludedTags.isEmpty {
-                    Text("none").foregroundColor(.secondary)
-                }
+                Text("none")
+                    .foregroundColor(.secondary)
+                    .hidden(!viewModel.excludedTags.isEmpty)
             }
         }
         .listStyle(GroupedListStyle())
         .navigationBarTitle("Note Card Tags", displayMode: .inline)
         .navigationBarItems(trailing: createNewTagNavItem)
-        .sheet(isPresented: $showSheet, onDismiss: dismissPresentationSheet, content: modalTextFieldSheet)
+        .sheet(isPresented: $showModalTextField, onDismiss: dismissModalTextField, content: modalTextField)
     }
 }
 
 
 extension NoteCardAddTagView {
     
-    func tagRow(for tag: TagViewModel) -> some View {
+    func tagRow(for tag: TagViewModel, showCheckmark: Bool) -> some View {
         Button(action: { self.tagRowSelected(tag) }) {
             HStack {
                 Text(tag.name)
                 Spacer()
                 Image(systemName: "checkmark")
-                    .opacity(viewModel.includedTags.contains(where: { $0.uuid == tag.uuid }) ? 1 : 0)
+                    .hidden(!showCheckmark)
+            }
+            .accentColor(.primary)
+            .contextMenu {
+                Button(action: { self.beginRenameTag(tag) }) {
+                    Text("Rename")
+                    Image(systemName: "square.and.pencil")
+                }
             }
         }
-        .buttonStyle(PlainButtonStyle())
     }
     
     func tagRowSelected(_ tag: TagViewModel) {
@@ -90,60 +96,57 @@ extension NoteCardAddTagView {
         }
     }
     
-    func modalTextFieldSheet() -> some View {
-        ModalTextField(
-            isActive: $showSheet,
-            text: $sheetTag.name,
-            prompt: sheetTagPrompt,
-            placeholder: sheetTagPlaceholder,
-            onCommit: modalTextFieldCommitNamingTag
+    func modalTextField() -> some View {
+        let commit: () -> Void
+        
+        switch modalTextFieldState {
+        case .create: commit = commitCreateNewTag
+        case .update: commit = commitRenameTag
+        }
+        
+        return ModalTextField(
+            isActive: $showModalTextField,
+            text: $tagModel.name,
+            prompt: modalTextFieldPrompt,
+            placeholder: modalTextFieldPlaceholder,
+            onCommit: commit
         )
     }
     
-    func modalTextFieldCommitNamingTag() {
-        switch sheetState {
-        case .update: commitRenameTag()
-        case .create: commitCreateNewTag()
-        case nil: fatalError("commit naming without setting presetationSheetState")
-        }
-    }
-    
     func beginCreateNewTag() {
-        sheetTag = TagViewModel()
-        sheetTagPrompt = "New Tag"
-        sheetTagPlaceholder = "Tag Name"
-        sheetState = .create
-        showSheet = true
+        tagModel = TagViewModel()
+        modalTextFieldPrompt = "New Tag"
+        modalTextFieldPlaceholder = "Tag Name"
+        modalTextFieldState = .create
+        showModalTextField = true
     }
     
     func commitCreateNewTag() {
-        if !sheetTag.name.isEmptyOrWhiteSpaces() {
-            sheetTag.name = sheetTag.name.trimmed()
-            viewModel.addToIncludedTags(sheetTag, sort: true)
+        if !tagModel.name.isEmptyOrWhiteSpaces() {
+            tagModel.name = tagModel.name.trimmed()
+            viewModel.addToIncludedTags(tagModel, sort: true)
         }
-        dismissPresentationSheet()
+        dismissModalTextField()
     }
     
     func beginRenameTag(_ tag: TagViewModel) {
-        sheetTag = tag
-        sheetTagPrompt = "Rename Tag"
-        sheetTagPlaceholder = tag.name
-        sheetState = .update
-        showSheet = true
+        tagModel = tag
+        modalTextFieldPrompt = "Rename Tag"
+        modalTextFieldPlaceholder = tag.name
+        modalTextFieldState = .update
+        showModalTextField = true
     }
     
     func commitRenameTag() {
-        print(sheetTag)
-        if sheetTagPlaceholder != sheetTag.name, !sheetTag.name.isEmptyOrWhiteSpaces() {
-            sheetTag.name = sheetTag.name.trimmed()
-            viewModel.updateTag(with: sheetTag, sort: true)
+        if modalTextFieldPlaceholder != tagModel.name, !tagModel.name.isEmptyOrWhiteSpaces() {
+            tagModel.name = tagModel.name.trimmed()
+            viewModel.updateTag(with: tagModel, sort: true)
         }
-        dismissPresentationSheet()
+        dismissModalTextField()
     }
     
-    func dismissPresentationSheet() {
-        sheetState = nil
-        showSheet = false
+    func dismissModalTextField() {
+        showModalTextField = false
     }
 }
 
