@@ -95,7 +95,6 @@ extension TagListView {
             break
         }
         tagDataSource.discardNewObject()
-        
     }
     
     func beginRenameTag(_ tag: Tag) {
@@ -153,4 +152,3 @@ struct TagListView_Previews: PreviewProvider {
         TagListView()
     }
 }
-

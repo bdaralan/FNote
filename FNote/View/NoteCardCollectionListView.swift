@@ -87,10 +87,10 @@ extension NoteCardCollectionListView {
         // assign the name from the binding to the new name
         collectionToSave.name = collectionNewName
         
-        //call save on create context on the data source
+        // call save on create context on the data source
         let saveResult = noteCardCollectionDataSource.saveNewObject()
         
-        //check result if success, call discard new object on the data source
+        // check result if success, call discard new object on the data source
         switch saveResult {
         case .saved:
             fetchAllCollections()
