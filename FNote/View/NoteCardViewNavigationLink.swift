@@ -18,6 +18,8 @@ struct NoteCardViewNavigationLink: View {
     
     @ObservedObject var noteCard: NoteCard
     
+    var onDeleted: (() -> Void)?
+    
     @ObservedObject private var navigationHandler = NavigationStateHandler()
     
     
@@ -32,7 +34,7 @@ struct NoteCardViewNavigationLink: View {
 extension NoteCardViewNavigationLink {
     
     var noteCardView: some View {
-        NoteCardView(noteCard: noteCard)
+        NoteCardView(noteCard: noteCard, onDelete: deleteCard)
             .navigationBarTitle("Note Card", displayMode: .inline)
             .navigationBarItems(trailing: saveNavItem)
             .onAppear(perform: setupNavigationPopHandler)
@@ -42,6 +44,12 @@ extension NoteCardViewNavigationLink {
         Button(action: saveChanges) {
             Text("Save").bold()
         }
+    }
+    
+    func deleteCard() {
+        navigationHandler.pop()
+        noteCardDataSource.delete(noteCard, saveContext: true)
+        onDeleted?()
     }
     
     func discardUnsavedChanges() {

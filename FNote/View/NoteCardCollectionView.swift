@@ -37,7 +37,7 @@ struct NoteCardCollectionView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack (spacing: 0){
                     ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { noteCard in
-                        NoteCardViewNavigationLink(noteCard: noteCard)
+                        NoteCardViewNavigationLink(noteCard: noteCard, onDeleted: self.viewReloader.forceReload)
                         .contextMenu{
                             Button(action: self.testContextButtonPrint) {
                                 Text("Move")
