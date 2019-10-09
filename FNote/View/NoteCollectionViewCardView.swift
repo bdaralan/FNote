@@ -21,6 +21,7 @@ struct NoteCardCollectionViewCard: View {
                 .padding(.vertical, 5)
                 
                 Divider()
+         //           .c(Color("note-card-primary-background"))
                     .padding(.horizontal)
                 Text(noteCard.translation)
                     .font(.title)
@@ -39,11 +40,11 @@ struct NoteCardCollectionViewCard: View {
                 .padding(.horizontal)
                 .padding(.bottom, 10)
             }
-            .background(Color.white)
+            .background(Color("note-card-primary-background"))
             .cornerRadius(20)
+            .foregroundColor(Color("note-card-foreground"))
         }
         .padding()
-        .background(Color.init(red: 225/255, green: 225/255, blue: 225/255))
     }
 }
 
