@@ -3,7 +3,7 @@
 //  FNote
 //
 //  Created by Brittney Witts on 9/16/19.
-//  Copyright © 2019 Dara Beng. All rights reserved.
+//  Copyright © 2019 Brittney Witts. All rights reserved.
 //
 
 import SwiftUI
@@ -32,17 +32,18 @@ struct NoteCardCollectionListView: View {
                             Image(systemName: "checkmark")
                                 .opacity(collection.uuid == AppCache.currentCollectionUUID ? 1 : 0)
                         }
-                    }
-                    .contextMenu {
-                        Button(action: { self.beginRenameCollection(collection) }) {
-                            Text("Rename")
-                            Image(systemName: "square.and.pencil")
+                        .contextMenu {
+                            Button(action: { self.beginRenameCollection(collection) }) {
+                                Text("Rename")
+                                Image(systemName: "square.and.pencil")
+                            }
+                            Button(action: { self.deleteCollection(collection) }) {
+                                Text("Delete")
+                                Image(systemName: "trash")
+                            }
                         }
-                        Button(action: { self.deleteCollection(collection) }) {
-                            Text("Delete")
-                            Image(systemName: "trash")
-                        }
                     }
+
                 }
             }
             .navigationBarTitle("Collections")
