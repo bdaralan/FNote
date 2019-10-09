@@ -3,7 +3,7 @@
 //  FNote
 //
 //  Created by Brittney Witts on 9/25/19.
-//  Copyright © 2019 Dara Beng. All rights reserved.
+//  Copyright © 2019 Brittney Witts. All rights reserved.
 //
 
 import SwiftUI
@@ -73,6 +73,28 @@ extension TagListView {
     }
     
     func commitCreateNewTag() {
+        // assign the new object another variable
+        let tagToSave = tagDataSource.newObject!
+        
+        // assign the name from the binding to the new name
+        tagToSave.name = tagNewName
+        
+        // call save on create context on the data source
+        let saveResult = tagDataSource.saveNewObject()
+        
+        // check result, if success, call discard new object on the data source
+        switch saveResult {
+        case .saved:
+            fetchAllTags()
+            showSheet = false
+            
+        case .failed:
+            break
+            
+        case .unchanged:
+            break
+        }
+        tagDataSource.discardNewObject()
         
     }
     

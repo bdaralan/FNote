@@ -43,16 +43,16 @@ struct NoteCardCollectionListView: View {
                             }
                         }
                     }
-
+                    
                 }
             }
             .navigationBarTitle("Collections")
-            // place nav bar item - trailing
-            .navigationBarItems(trailing: createCollectionNavItem)
+                // place nav bar item - trailing
+                .navigationBarItems(trailing: createCollectionNavItem)
         }
-        // place sheet
-        .onAppear(perform: fetchAllCollections)
-        .sheet(isPresented: $showSheet, content: { self.createRenameSheet })
+            // place sheet
+            .onAppear(perform: fetchAllCollections)
+            .sheet(isPresented: $showSheet, content: { self.createRenameSheet })
     }
 }
 
@@ -65,7 +65,7 @@ extension NoteCardCollectionListView {
                 .imageScale(.large)
         }
     }
-
+    
     func beginCreateNewCollection() {
         // create a new object
         noteCardCollectionDataSource.prepareNewObject()
@@ -83,7 +83,7 @@ extension NoteCardCollectionListView {
     func commitCreateNewCollection() {
         // assign the new object another variable
         let collectionToSave = noteCardCollectionDataSource.newObject!
-
+        
         // assign the name from the binding to the new name
         collectionToSave.name = collectionNewName
         
