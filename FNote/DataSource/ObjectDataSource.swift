@@ -88,7 +88,6 @@ extension ObjectDataSource {
         object.objectWillChange.send() // tell UI to update
         
         if object.hasChangedValues() {
-            object.validateData()
             saveCreateContext()
             return .saved
         } else {
@@ -103,7 +102,6 @@ extension ObjectDataSource {
         object.objectWillChange.send() // tell UI to update
         
         if object.hasChangedValues() {
-            object.validateData()
             saveUpdateContext()
             return .saved
         } else {

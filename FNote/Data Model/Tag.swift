@@ -32,6 +32,13 @@ class Tag: NSManagedObject, ObjectValidatable {
         super.willChangeValue(forKey: key)
         objectWillChange.send()
     }
+    
+    override func willSave() {
+        if !isDeleted {
+            validateData()
+        }
+        super.willSave()
+    }
 }
 
 
@@ -50,7 +57,7 @@ extension Tag {
     }
     
     func validateData() {
-        name = name.trimmed()
+        setPrimitiveValue(name.trimmed(), forKey: #keyPath(Tag.name))
     }
 }
 

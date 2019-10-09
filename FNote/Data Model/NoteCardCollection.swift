@@ -27,6 +27,13 @@ class NoteCardCollection: NSManagedObject, ObjectValidatable {
         super.willChangeValue(forKey: key)
         objectWillChange.send()
     }
+    
+    override func willSave() {
+        if !isDeleted {
+            validateData()
+        }
+        super.willSave()
+    }
 }
 
 
@@ -45,7 +52,7 @@ extension NoteCardCollection {
     }
     
     func validateData() {
-        name = name.trimmed()
+        setPrimitiveValue(name.trimmed(), forKey: #keyPath(NoteCardCollection.name))
     }
 }
 
@@ -103,7 +110,7 @@ extension NoteCardCollection {
             
             for noteName in 1...noteCount {
                 let note = NoteCard(context: sampleContext)
-                note.navtive = "Navitve \(noteName)"
+                note.native = "Navitve \(noteName)"
                 note.translation = "Translation: \(noteName)"
                 note.collection = collection
             }

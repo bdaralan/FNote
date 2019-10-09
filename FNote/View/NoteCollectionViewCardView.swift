@@ -15,7 +15,7 @@ struct NoteCardCollectionViewCard: View {
     var body: some View {
         ZStack {
             VStack(alignment: .leading) {
-                Text(noteCard.navtive)
+                Text(noteCard.native)
                     .font(.title)
                 .padding(.horizontal)
                 .padding(.vertical, 5)
@@ -133,7 +133,7 @@ extension NoteCardCollectionViewCard {
     func testWord()
     {
         let exampleNoteCard = NoteCard(context: noteCard.managedObjectContext!)
-        exampleNoteCard.navtive = "Bonjour"
+        exampleNoteCard.native = "Bonjour"
         exampleNoteCard.translation = "Hello"
         noteCard.objectWillChange.send()
         noteCard.addToRelationships(exampleNoteCard)

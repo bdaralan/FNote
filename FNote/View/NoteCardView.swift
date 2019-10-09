@@ -28,7 +28,7 @@ struct NoteCardView: View {
         Form {
             Section(header: Text("NATIVE & TRANSLATION").padding(.top, 20)) {
                 VStack(alignment: .leading, spacing: 2) {
-                    TextField("Native", text: $noteCard.navtive)
+                    TextField("Native", text: $noteCard.native)
                         .font(.title)
                     Text("Native")
                         .font(.caption)

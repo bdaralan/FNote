@@ -14,7 +14,7 @@ import CoreData
 class NoteCard: NSManagedObject, ObjectValidatable {
     
     @NSManaged private(set) var uuid: String
-    @NSManaged var navtive: String
+    @NSManaged var native: String
     @NSManaged var translation: String
     @NSManaged var isFavorited: Bool
     @NSManaged var note: String
@@ -38,6 +38,13 @@ class NoteCard: NSManagedObject, ObjectValidatable {
     override func willChangeValue(forKey key: String) {
         super.willChangeValue(forKey: key)
         objectWillChange.send()
+    }
+    
+    override func willSave() {
+        if !isDeleted {
+            validateData()
+        }
+        super.willSave()
     }
     
     
@@ -74,7 +81,7 @@ extension NoteCard {
     }
     
     func hasValidInputs() -> Bool {
-        !navtive.trimmed().isEmpty && !translation.trimmed().isEmpty
+        !native.trimmed().isEmpty && !translation.trimmed().isEmpty
     }
     
     func hasChangedValues() -> Bool {
@@ -82,13 +89,9 @@ extension NoteCard {
     }
     
     func validateData() {
-        navtive = navtive.trimmed()
-        translation = translation.trimmed()
-        note = note.trimmed()
-        
-        let validFormatilies = Formality.allCases.map({ $0.rawValue })
-        guard !validFormatilies.contains(formalityValue) else { return }
-        formality = .unknown
+        setPrimitiveValue(native.trimmed(), forKey: #keyPath(NoteCard.native))
+        setPrimitiveValue(translation.trimmed(), forKey: #keyPath(NoteCard.translation))
+        setPrimitiveValue(note, forKey: #keyPath(NoteCard.note))
     }
 }
 
@@ -101,7 +104,7 @@ extension NoteCard {
         if let uuid = uuid {
             let collectionUUID = #keyPath(NoteCard.collection.uuid)
             request.predicate = .init(format: "\(collectionUUID) == %@", uuid)
-            request.sortDescriptors = [.init(key: #keyPath(NoteCard.navtive), ascending: true)]
+            request.sortDescriptors = [.init(key: #keyPath(NoteCard.native), ascending: true)]
         } else {
             request.predicate = .init(value: false)
             request.sortDescriptors = []
@@ -158,7 +161,7 @@ extension NoteCard {
         var notes = [NoteCard]()
         for note in 1...count {
             let noteCard = NoteCard(context: sampleContext)
-            noteCard.navtive = "Native \(note)"
+            noteCard.native = "Native \(note)"
             noteCard.translation = "Translation \(note)"
             notes.append(noteCard)
         }
