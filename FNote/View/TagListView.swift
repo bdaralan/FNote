@@ -99,7 +99,33 @@ extension TagListView {
     }
     
     func beginRenameTag(_ tag: Tag) {
+        tagNewName = tag.name
+        tagDataSource.setUpdateObject(tag)
+        tagToRename = tag
+        createRenameSheet = ModalTextField(isActive: $showSheet, text: $tagNewName, prompt: "Rename", placeholder: tagToRename!.name, onCommit: commitRename).eraseToAnyView()
+        showSheet = true
+    }
+    
+    func commitRename() {
+        // assign the new name to the stored tag
+        tagToRename!.name = tagNewName
         
+        // data source save
+        let result = tagDataSource.saveUpdateObject()
+        
+        switch result {
+        case .saved:
+            tagToRename = nil
+            tagDataSource.setUpdateObject(nil)
+            fetchAllTags()
+            showSheet = false
+            
+        case .failed:
+            break
+            
+        case .unchanged:
+            break
+        }
     }
     
     func deleteTag(_ tag: Tag) {
