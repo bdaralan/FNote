@@ -129,7 +129,14 @@ extension TagListView {
     }
     
     func deleteTag(_ tag: Tag) {
+        // delete
+        tagDataSource.delete(tag, saveContext: true)
         
+        // update UI
+        fetchAllTags()
+        
+        // post delete notification
+        NotificationCenter.default.post(name: .appCurrentTagDidDelete, object: tag)
     }
     
     func fetchAllTags() {
@@ -139,7 +146,6 @@ extension TagListView {
         tagDataSource.performFetch(request)
         viewReloader.forceReload()
     }
-    
 }
 
 struct TagListView_Previews: PreviewProvider {
