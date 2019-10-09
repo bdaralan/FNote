@@ -53,6 +53,7 @@ struct NoteCardCollectionView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 .padding(.vertical)
+                .background(Color("note-card-background"))
             }
             .onAppear(perform: setupOnAppear)
             .navigationBarTitle(currentCollection?.name ?? "???")
