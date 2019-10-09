@@ -91,7 +91,7 @@ extension NoteCard {
     func validateData() {
         setPrimitiveValue(native.trimmed(), forKey: #keyPath(NoteCard.native))
         setPrimitiveValue(translation.trimmed(), forKey: #keyPath(NoteCard.translation))
-        setPrimitiveValue(note, forKey: #keyPath(NoteCard.note))
+        setPrimitiveValue(note.trimmed(), forKey: #keyPath(NoteCard.note))
     }
 }
 
