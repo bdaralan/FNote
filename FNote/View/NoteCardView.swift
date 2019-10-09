@@ -14,6 +14,8 @@ struct NoteCardView: View {
     
     @ObservedObject var noteCard: NoteCard
     
+    var onDelete: (() -> Void)?
+    
     @State private var addTagViewModel = NoteCardAddTagViewModel()
     
     /// Used to get new input for `noteCard`'s note.
@@ -76,6 +78,15 @@ struct NoteCardView: View {
                     .padding(0)
                     .overlay(emptyNotePlaceholderText, alignment: .topLeading)
                     .onTapGesture(perform: beginEditingNoteCardNote)
+            }
+            
+            Section {
+                Button(action: onDelete ?? {}) {
+                    Text("Delete")
+                        .foregroundColor(.red)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                }
+                .hidden(onDelete == nil)
             }
         }
         .sheet(isPresented: $showNoteEditingSheet, content: { self.noteEditingSheet })
