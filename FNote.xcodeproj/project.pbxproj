@@ -51,6 +51,8 @@
 		B4DF1AA82330180000F90D13 /* NoteCardNoteTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DF1AA72330180000F90D13 /* NoteCardNoteTextViewWrapper.swift */; };
 		B4E41E5623354B720057EB0A /* NoteCardViewNavigationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */; };
 		B4EE3ECC2329D86500CC40B7 /* ModalTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */; };
+		B4FFEB27234ED0CE00B4550F /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FFEB26234ED0CE00B4550F /* Color.swift */; };
+		B4FFEB29234ED2AA00B4550F /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FFEB28234ED2AA00B4550F /* Image.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +114,8 @@
 		B4DF1AA72330180000F90D13 /* NoteCardNoteTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardNoteTextViewWrapper.swift; sourceTree = "<group>"; };
 		B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardViewNavigationLink.swift; sourceTree = "<group>"; };
 		B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextField.swift; sourceTree = "<group>"; };
+		B4FFEB26234ED0CE00B4550F /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		B4FFEB28234ED2AA00B4550F /* Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,6 +211,8 @@
 				B4BAC54423206B28007EAF15 /* String.swift */,
 				650D14E82332B96100B6E2BF /* View.swift */,
 				B40B519B2335C2D6002DA41D /* NotificationName.swift */,
+				B4FFEB26234ED0CE00B4550F /* Color.swift */,
+				B4FFEB28234ED2AA00B4550F /* Image.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -398,6 +404,7 @@
 				B466BAFD23333DF5007DD130 /* SettingView.swift in Sources */,
 				65F373A6232981C6002CD331 /* NoteCardCollectionListView.swift in Sources */,
 				B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */,
+				B4FFEB29234ED2AA00B4550F /* Image.swift in Sources */,
 				B40BB61C2335BFED00E2F98B /* TagListView.swift in Sources */,
 				B411E04D2332F60F008D99A0 /* ViewForceReloader.swift in Sources */,
 				B402F62E234093C200EC0A77 /* CreateUpdateSheetState.swift in Sources */,
@@ -411,6 +418,7 @@
 				65F373A023289D4C002CD331 /* NoteCardCollectionDataSource.swift in Sources */,
 				B411E0512332F6B4008D99A0 /* NotificatonObserver.swift in Sources */,
 				B4EE3ECC2329D86500CC40B7 /* ModalTextField.swift in Sources */,
+				B4FFEB27234ED0CE00B4550F /* Color.swift in Sources */,
 				650D14E92332B96100B6E2BF /* View.swift in Sources */,
 				B4BAC54323205022007EAF15 /* NoteCardDataSource.swift in Sources */,
 				B4BAC541232041FE007EAF15 /* ObjectValidatable.swift in Sources */,
