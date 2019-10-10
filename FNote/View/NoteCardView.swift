@@ -183,9 +183,8 @@ extension NoteCardView {
     func renameTag(_ tag: TagViewModel) {
         let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
         guard let tagToRename = allTags.first(where: { $0.uuid == tag.uuid }) else { return }
-        let tagToRenameInSameContext = tagToRename.get(from: noteCard.managedObjectContext!)
+        let tagToRenameInSameContext = tagToRename.get(from: tagDataSource.updateContext)
         tagToRenameInSameContext.name = tag.name
-        tagToRenameInSameContext.objectWillChange.send()
     }
 }
 

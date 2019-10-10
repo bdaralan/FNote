@@ -48,21 +48,24 @@ struct NoteCardAddTagViewModel {
     }
     
     mutating func updateTag(with tag: TagViewModel, sort: Bool) {
+        var isUpdated = false
         if let index = includedTags.firstIndex(where: { $0.uuid == tag.uuid }) {
             includedTags[index] = tag
+            isUpdated = true
             if sort {
                 includedTags.sortByName()
             }
-            return
-        }
         
-        if let index = excludedTags.firstIndex(where: { $0.uuid == tag.uuid }) {
-            excludedTags.remove(at: index)
-            excludedTags.insert(tag, at: index)
+        } else if let index = excludedTags.firstIndex(where: { $0.uuid == tag.uuid }) {
+            excludedTags[index] = tag
+            isUpdated = true
             if sort {
                 excludedTags.sortByName()
             }
-            return
+        }
+        
+        if isUpdated {
+            onTagUpdated?(tag)
         }
     }
     

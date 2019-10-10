@@ -11,6 +11,8 @@ import SwiftUI
 
 struct NoteCardAddTagView: View {
     
+    @EnvironmentObject var tagDataSource: TagDataSource
+    
     @Binding var viewModel: NoteCardAddTagViewModel
     
     /// A tag object used to create or update tag which passed to `onTagCreate` or `onTagRename`.
@@ -24,6 +26,9 @@ struct NoteCardAddTagView: View {
     
     /// A prompt string for the sheet view.
     @State private var modalTextFieldPrompt = ""
+    
+    /// A description used to describe error.
+    @State private var modalTextFieldDescription = ""
     
     /// A flag used to present or dismiss the rename or create sheet.
     @State private var showModalTextField = false
@@ -109,19 +114,29 @@ extension NoteCardAddTagView {
             text: $tagModel.name,
             prompt: modalTextFieldPrompt,
             placeholder: modalTextFieldPlaceholder,
+            description: modalTextFieldDescription,
+            descriptionColor: .red,
             onCommit: commit
         )
     }
     
     func beginCreateNewTag() {
         tagModel = TagViewModel()
+        modalTextFieldState = .create
         modalTextFieldPrompt = "New Tag"
         modalTextFieldPlaceholder = "Tag Name"
-        modalTextFieldState = .create
+        modalTextFieldDescription = ""
         showModalTextField = true
     }
     
     func commitCreateNewTag() {
+        // if tag exists, show cannot create message
+        if tagDataSource.isTagNameExisted(tagModel.name, in: tagDataSource.updateContext) {
+            modalTextFieldDescription = "Tag name '\(tagModel.name)' already exists"
+            return
+        }
+        
+        // create if it is not an empty whitespaces
         if !tagModel.name.isEmptyOrWhiteSpaces() {
             tagModel.name = tagModel.name.trimmed()
             viewModel.addToIncludedTags(tagModel, sort: true)
@@ -131,14 +146,29 @@ extension NoteCardAddTagView {
     
     func beginRenameTag(_ tag: TagViewModel) {
         tagModel = tag
+        modalTextFieldState = .update
         modalTextFieldPrompt = "Rename Tag"
         modalTextFieldPlaceholder = tag.name
-        modalTextFieldState = .update
+        modalTextFieldDescription = ""
         showModalTextField = true
     }
     
     func commitRenameTag() {
-        if modalTextFieldPlaceholder != tagModel.name, !tagModel.name.isEmptyOrWhiteSpaces() {
+        // just dismiss if the name is the same
+        // note: placeholder was set to tag's current name in begin rename method
+        if modalTextFieldPlaceholder == tagModel.name {
+            dismissModalTextField()
+            return
+        }
+        
+        // if tag name exists, show tag name exists message
+        if tagDataSource.isTagNameExisted(tagModel.name, in: tagDataSource.updateContext) {
+            modalTextFieldDescription = "Tag name '\(tagModel.name)' already exists"
+            return
+        }
+        
+        // rename if it is not an empty whitespaces
+        if !tagModel.name.isEmptyOrWhiteSpaces() {
             tagModel.name = tagModel.name.trimmed()
             viewModel.updateTag(with: tagModel, sort: true)
         }

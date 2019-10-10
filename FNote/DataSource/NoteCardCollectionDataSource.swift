@@ -59,3 +59,19 @@ class NoteCardCollectionDataSource: NSObject, ObjectDataSource {
         objectWillChange.send()
     }
 }
+
+
+extension NoteCardCollectionDataSource {
+    
+    /// Check if the given name is already existed.
+    /// - Parameter name: The name to check.
+    func isCollectionNameExisted(_ name: String, in context: NSManagedObjectContext) -> Bool {
+        let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
+        request.predicate = .init(value: true)
+        
+        // return true if cannot fetch for some reason to prevent creating the tag
+        guard let allCollections = try? context.fetch(request) else { return true }
+        let collectionNames = allCollections.map({ $0.name })
+        return collectionNames.contains(name)
+    }
+}

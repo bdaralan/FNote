@@ -60,6 +60,7 @@ extension NoteCardViewNavigationLink {
     func saveChanges() {
         noteCard.objectWillChange.send() // tell the UI to refresh
         noteCardDataSource.saveUpdateContext()
+        tagDataSource.saveUpdateContext()
     }
     
     func setupNavigationPopHandler() {
