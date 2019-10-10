@@ -23,6 +23,8 @@ struct NoteCardView: View {
     
     @State private var showNoteEditingSheet = false
     
+    let imageSize: CGFloat = 20
+    
     
     // MARK: Body
     
@@ -47,12 +49,14 @@ struct NoteCardView: View {
             
             Section(header: Text("RELATIONSHIP & TAG")) {
                 Toggle(isOn: $noteCard.isFavorited) {
-                    rowImage(systemName: "star.fill")
+                    Image.noteCardFavorite(noteCard.isFavorited)
+                        .frame(width: imageSize, height: imageSize, alignment: .center)
                     Text("Favorite")
                 }
                 
                 Picker(selection: $noteCard.formality, label: Group {
-                    rowImage(systemName: "hand.raised.fill")
+                    Image.noteCardFormality
+                        .frame(width: imageSize, height: imageSize, alignment: .center)
                     Text("Formality")
                 }) {
                     ForEach(NoteCard.Formality.allCases, id: \.self) { formality in
@@ -61,13 +65,15 @@ struct NoteCardView: View {
                 }
                 
                 NavigationLink(destination: Text("Relationship")) {
-                    rowImage(systemName: "link.circle.fill")
+                    Image.noteCardRelationship
+                        .frame(width: imageSize, height: imageSize, alignment: .center)
                     Text("Relationship")
                     
                 }
                 
                 NavigationLink(destination: addTagView) {
-                    rowImage(systemName: "tag.fill")
+                    Image.noteCardTag
+                        .frame(width: imageSize, height: imageSize, alignment: .center)
                     Text("Tags")
                 }
             }

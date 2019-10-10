@@ -35,25 +35,12 @@ struct NoteCardCollectionView: View {
     var body: some View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
-                VStack (spacing: 0){
+                VStack(spacing: 24) {
                     ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { noteCard in
                         NoteCardViewNavigationLink(noteCard: noteCard, onDeleted: self.viewReloader.forceReload)
-                        .contextMenu{
-                            Button(action: self.testContextButtonPrint) {
-                                Text("Move")
-                                Image(systemName: "folder.circle")
-                                }
-                                Button(action: {self.deleteCard(noteCard)} ) {
-                                    Text("Delete")
-                                    Image(systemName: "trash")
-                                }
-                            }
                     }
-                    
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                .padding(.vertical)
-                .background(Color("note-card-background"))
+                .padding()
             }
             .onAppear(perform: setupOnAppear)
             .navigationBarTitle(currentCollection?.name ?? "???")
@@ -93,14 +80,12 @@ extension NoteCardCollectionView {
             self.viewReloader.forceReload()
         }
         
-        let sheet = NavigationView {
+        return NavigationView {
             NoteCardView(noteCard: noteCardDataSource.newObject!)
                 .environmentObject(tagDataSource)
                 .navigationBarTitle("New Note Card", displayMode: .inline)
                 .navigationBarItems(leading: cancelButton, trailing: createButton)
         }
-        
-        return sheet
     }
     
     /// Start creating new note card.
@@ -141,16 +126,9 @@ extension NoteCardCollectionView {
         showCreateNewNoteCardSheet = false
     }
     
-    func deleteCard(_ notecard: NoteCard)
-    {
+    func deleteNoteCard(_ notecard: NoteCard) {
         noteCardDataSource.delete(notecard, saveContext: true)
         fetchNoteCards()
-    }
-    
-    // Placeholder function for move
-    func testContextButtonPrint()
-    {
-        print("test")
     }
 }
 

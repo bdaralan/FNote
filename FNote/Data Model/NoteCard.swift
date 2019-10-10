@@ -62,6 +62,15 @@ class NoteCard: NSManagedObject, ObjectValidatable {
             case .formal: return "Formal"
             }
         }
+        
+        var abbreviation: String {
+            switch self {
+            case .unknown: return "?"
+            case .informal: return "I"
+            case .neutral: return "N"
+            case .formal: return "F"
+            }
+        }
     }
 }
 

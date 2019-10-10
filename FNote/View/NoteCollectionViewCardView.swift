@@ -12,122 +12,82 @@ struct NoteCardCollectionViewCard: View {
     
     @ObservedObject var noteCard: NoteCard
     
+    
     var body: some View {
-        ZStack {
-            VStack(alignment: .leading) {
-                Text(noteCard.native)
-                    .font(.title)
-                .padding(.horizontal)
-                .padding(.vertical, 5)
-                
-                Divider()
-         //           .c(Color("note-card-primary-background"))
-                    .padding(.horizontal)
-                Text(noteCard.translation)
-                    .font(.title)
-                    .padding(.horizontal)
-                    .padding(.vertical, 5)
-                    
-                HStack (alignment: .center) {
-                    wordButton()
-                    Spacer()
-                    tagButton()
-                    Spacer()
-                    formalButton()
-                    Spacer()
-                    starButton()
-                }
-                .padding(.horizontal)
-                .padding(.bottom, 10)
+        VStack(alignment: .leading, spacing: 16) {
+            Text(noteCard.native)
+                .font(.title)
+                .foregroundColor(.primary)
+            
+            Divider()
+                .background(Color.noteCardDivider)
+            
+            Text(noteCard.translation)
+                .font(.headline)
+                .foregroundColor(.primary)
+            
+            HStack (alignment: .center) {
+                relationshipButton()
+                Spacer()
+                tagButton()
+                Spacer()
+                formalButton()
+                Spacer()
+                starButton()
             }
-            .background(Color("note-card-primary-background"))
-            .cornerRadius(20)
-            .foregroundColor(Color("note-card-foreground"))
+            .padding(.top, 4)
         }
         .padding()
+        .background(Color.noteCardBackground)
+        .cornerRadius(15)
+        .shadow(color: Color.primary.opacity(0.15), radius: 2, x: 0, y: 1)
     }
 }
 
+
 extension NoteCardCollectionViewCard {
     
-    func quickButton(imageName: String, label: String) -> some View {
-        Group {
-            Image(systemName: imageName)
-            Text(label)
-                .font(.caption)
-        }
-    }
-    
-    func starButton() -> some View {
-        var starImage: String
-          
-        if noteCard.isFavorited {
-            starImage = "star.fill"
-        }
-        else {
-            starImage = "star"
-        }
-        
-        return Image(systemName: starImage)
-    }
-    
-    func formalButton() -> some View {
-        let formal: String
-        
-        switch noteCard.formality {
-        case .unknown:
-            formal = "?"
-        case .informal:
-            formal = "I"
-        case .neutral:
-            formal = "N"
-        case .formal:
-            formal = "F"
-        }
-        
-        return Group {
-            Image(systemName: "hand.raised.fill")
-            Text(formal)
-                .font(.body)
+    func relationshipButton() -> some View {
+        Button(action: testWord) {
+            HStack {
+                Image.noteCardRelationship
+                Text("\(noteCard.relationships.count)")
+                    .font(.body)
+            }
+            .foregroundColor(.primary)
         }
     }
     
     func tagButton() -> some View {
-        
-        var tagNumber: String
-        
-        tagNumber = String(noteCard.tags.count)
-        
-        return Button(action: testTag) {
-            HStack{
-                Image(systemName: "tag.fill")
-                Text(tagNumber)
-                    .font(.body)
-            }
+        HStack {
+            Image.noteCardTag
+            Text("\(noteCard.tags.count)")
+        }
+        .font(.body)
+        .foregroundColor(.primary)
+    }
+    
+    func formalButton() -> some View {
+        HStack {
+            Image.noteCardFormality
+            Text(noteCard.formality.abbreviation)
+        }
+        .font(.body)
+        .foregroundColor(.primary)
+    }
+    
+    func starButton() -> some View {
+        Button(action: toggleNoteCardFavorite) {
+            Image.noteCardFavorite(noteCard.isFavorited)
+                .font(.body)
+                .foregroundColor(.primary)
         }
     }
     
-    // Function that tests button functionality. Creates a tag, adds it to the notecard, and shows in the view.
-    func testTag()
-    {
-        let exampleTag = Tag(context: noteCard.managedObjectContext!) // the exclamation mark forces the context to exist
-        exampleTag.name = "greetings"
-        noteCard.objectWillChange.send()
-        noteCard.addToTags(exampleTag)
-    }
-    
-    func wordButton() -> some View {
-        var wordNumber: String
-        
-        wordNumber = String(noteCard.relationships.count)
-        
-        return Button(action: testWord) {
-            HStack{
-                Image(systemName: "circle.grid.hex")
-                Text(wordNumber)
-                    .font(.body)
-            }
-        }
+    func toggleNoteCardFavorite() {
+        noteCard.isFavorited.toggle()
+        noteCard.managedObjectContext?.quickSave()
+        noteCard.managedObjectContext?.parent?.quickSave()
     }
     
     // Function that tests button functionality. Creates a notecard, adds it to the notecard, and shows in the view.
