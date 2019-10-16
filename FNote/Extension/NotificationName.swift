@@ -15,11 +15,10 @@ extension Notification.Name {
     static let appCurrentCollectionDidChange = Notification.Name("Notification.Name.appCurrentCollectionDidChange")
     
     // set notification name for deleting a collection
-    static let appCollectionDidDelete =
-        Notification.Name("Notification.Name.appCollectionDidDelete")
+    static let appCollectionDidDelete = Notification.Name("Notification.Name.appCollectionDidDelete")
     
     // set notification name for deleting a tag
-    static let appCurrentTagDidDelete = Notification.Name("Notificiation.Name.appCurrentTagDidDelete")
+    static let appCurrentTagDidDelete = Notification.Name("Notification.Name.appCurrentTagDidDelete")
 }
 
 

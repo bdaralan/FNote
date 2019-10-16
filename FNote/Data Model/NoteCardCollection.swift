@@ -79,6 +79,22 @@ extension NoteCardCollection {
 
 extension NoteCardCollection {
     
+    /// Check if a name already exists in the context.
+    /// - Parameters:
+    ///   - name: The name to check. The name is case sensitive.
+    ///   - context: The context to check.
+    /// - Returns: `true` if the name is in the context or if failed to check.
+    static func isNameExisted(name: String, in context: NSManagedObjectContext) -> Bool {
+        let request = requestAllCollections()
+        guard let collections = try? context.fetch(request) else { return true }
+        let names = collections.map({ $0.name })
+        return names.contains(name)
+    }
+}
+
+
+extension NoteCardCollection {
+    
     @nonobjc class func fetchRequest() -> NSFetchRequest<NoteCardCollection> {
         return NSFetchRequest<NoteCardCollection>(entityName: "NoteCardCollection")
     }
@@ -95,28 +111,4 @@ extension NoteCardCollection {
     @objc(removeNoteCards:)
     @NSManaged func removeFromNoteCards(_ values: NSSet)
 
-}
-
-
-extension NoteCardCollection {
-    
-    static func sampleCollections(count: Int, noteCount: Int) -> [NoteCardCollection] {
-        let sampleContext = CoreDataStack.sampleContext
-        
-        var collections = [NoteCardCollection]()
-        for name in 1...count {
-            let collection = NoteCardCollection(context: sampleContext)
-            collection.name = "Collection \(name)"
-            
-            for noteName in 1...noteCount {
-                let note = NoteCard(context: sampleContext)
-                note.native = "Navitve \(noteName)"
-                note.translation = "Translation: \(noteName)"
-                note.collection = collection
-            }
-            
-            collections.append(collection)
-        }
-        return collections
-    }
 }

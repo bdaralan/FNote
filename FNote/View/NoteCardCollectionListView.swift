@@ -43,16 +43,13 @@ struct NoteCardCollectionListView: View {
                             }
                         }
                     }
-                    
                 }
             }
             .navigationBarTitle("Collections")
-                // place nav bar item - trailing
-                .navigationBarItems(trailing: createCollectionNavItem)
+            .navigationBarItems(trailing: createCollectionNavItem)  /* place nav bar item - trailing */
         }
-            // place sheet
-            .onAppear(perform: fetchAllCollections)
-            .sheet(isPresented: $showSheet, content: { self.createRenameSheet })
+        .onAppear(perform: fetchAllCollections)
+        .sheet(isPresented: $showSheet, content: { self.createRenameSheet }) /* place sheet */
     }
 }
 
