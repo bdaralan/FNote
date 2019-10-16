@@ -10,6 +10,8 @@ import SwiftUI
 
 struct NoteCardView: View {
     
+    @EnvironmentObject var noteCardDataSource: NoteCardDataSource
+    
     @EnvironmentObject var tagDataSource: TagDataSource
     
     @ObservedObject var noteCard: NoteCard
@@ -22,6 +24,8 @@ struct NoteCardView: View {
     @State private var noteCardNote = ""
     
     @State private var showNoteEditingSheet = false
+    
+    @State private var showAddNoteCardRelationshipSheet = false
     
     let imageSize: CGFloat = 20
     
@@ -64,7 +68,7 @@ struct NoteCardView: View {
                     }
                 }
                 
-                NavigationLink(destination: Text("Relationship")) {
+                NavigationLink(destination: noteCardRelationshipView) {
                     Image.noteCardRelationship
                         .frame(width: imageSize, height: imageSize, alignment: .center)
                     Text("Relationship")
@@ -96,6 +100,52 @@ struct NoteCardView: View {
             }
         }
         .sheet(isPresented: $showNoteEditingSheet, content: { self.noteEditingSheet })
+    }
+}
+
+
+extension NoteCardView {
+    
+    // MARK: Relationships
+    
+    // View that uses the NoteCardRelationshipView
+    var noteCardRelationshipView: some View {
+        NoteCardRelationshipView(noteCards: NoteCard.sampleNoteCards(count: 10))
+        .navigationBarTitle("Relationships")
+        .navigationBarItems(trailing: addRelationshipNavItem)
+            .sheet(isPresented: $showAddNoteCardRelationshipSheet, onDismiss: nil, content: {self.addRelationshipCardView})
+    }
+    
+    // Button to show the add relationship sheet
+    var addRelationshipNavItem: some View {
+        Button(action: beginAddRelationship) {
+                Image(systemName: "plus")
+                    .imageScale(.large)
+        }
+    }
+    
+    // View that lets the user add unrelated cards
+    var addRelationshipCardView: some View {
+        
+        // Fetch all the notecards through the data source
+        let allNoteCards = noteCardDataSource.fetchedResult.fetchedObjects ?? []
+        
+        // Filters allNoteCards to show unrelated cards by checking if it is in the relationship set
+        let unrelatedNoteCards = allNoteCards.filter { noteCard in
+            return !self.noteCard.relationships.contains(noteCard)
+        }
+        
+        // Use NavigationView to allow user to cancel and add while in NoteCardRelationshipView
+        return NavigationView {
+            NoteCardRelationshipView(noteCards: unrelatedNoteCards, onLongPressed: nil, onDone: nil)
+                .navigationBarTitle("Add Relationships", displayMode: .inline)
+                .navigationBarItems(leading: Text("Cancel"), trailing: Text("Add"))
+        }
+    }
+    
+    // Change the boolean to true to display the sheet
+    func beginAddRelationship() {
+        showAddNoteCardRelationshipSheet = true
     }
 }
 
