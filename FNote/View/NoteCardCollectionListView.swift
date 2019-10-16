@@ -13,8 +13,11 @@ struct NoteCardCollectionListView: View {
     @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
     @State private var collectionToRename: NoteCardCollection?
     @State private var collectionNewName = ""
-    @State private var showSheet = false
-    @State private var createRenameSheet = AnyView(EmptyView())
+    @State private var modalTextFieldDescription = ""
+    @State private var modalTextFieldPrompt = ""
+    @State private var modalTextFieldPlaceholder = ""
+    @State private var modalTextFieldState = CreateUpdateSheetState.create
+    @State private var showModalTextField = false
     @ObservedObject private var viewReloader = ViewForceReloader()
     
     var body: some View {
@@ -49,7 +52,7 @@ struct NoteCardCollectionListView: View {
             .navigationBarItems(trailing: createCollectionNavItem)  /* place nav bar item - trailing */
         }
         .onAppear(perform: fetchAllCollections)
-        .sheet(isPresented: $showSheet, content: { self.createRenameSheet }) /* place sheet */
+        .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
     }
 }
 
@@ -70,14 +73,23 @@ extension NoteCardCollectionListView {
         // set the object name to empty
         collectionNewName = ""
         
-        // show the text field for user to type in. if they remove the entire name, the old name will
-        // appear in grey
-        createRenameSheet = ModalTextField(isActive: $showSheet, text: $collectionNewName, prompt: "New Collection", placeholder: "Collection Name", onCommit: commitCreateNewCollection).eraseToAnyView()
-        showSheet = true
+        // modifying modal text field
+        modalTextFieldPrompt = "New Collection"
+        modalTextFieldPlaceholder = "Collection Name"
+        modalTextFieldDescription = ""
+        modalTextFieldState = .create
+        
+        showModalTextField = true
     }
     
     // commit new collection after creating it
     func commitCreateNewCollection() {
+        // checking for duplicate collection name
+        if NoteCardCollection.isNameExisted(name: collectionNewName, in: noteCardCollectionDataSource.createContext) {
+            modalTextFieldDescription = "Collection name already exists."
+            return
+        }
+        
         // assign the new object another variable
         let collectionToSave = noteCardCollectionDataSource.newObject!
         
@@ -91,10 +103,10 @@ extension NoteCardCollectionListView {
         switch saveResult {
         case .saved:
             fetchAllCollections()
-            showSheet = false
+            showModalTextField = false
             
             // when user creates a new collection for the first time, that collection will
-            // automatically be selected
+            // automatically be selected to show in the Note Cards tab
             if noteCardCollectionDataSource.fetchedResult.fetchedObjects?.count == 1 {
                 selectCollection(collection: collectionToSave)
             }
@@ -112,11 +124,29 @@ extension NoteCardCollectionListView {
         collectionNewName = collection.name
         noteCardCollectionDataSource.setUpdateObject(collection)
         collectionToRename = collection
-        createRenameSheet = ModalTextField(isActive: $showSheet, text: $collectionNewName, prompt: "Rename", placeholder: collectionToRename!.name, onCommit: commitRename).eraseToAnyView()
-        showSheet = true
+        
+        // modifying modal text field
+        modalTextFieldPrompt = "Rename Collection"
+        modalTextFieldPlaceholder = collection.name
+        modalTextFieldDescription = ""
+        modalTextFieldState = .update
+        
+        showModalTextField = true
     }
     
     func commitRename() {
+        // cannot rename the collection the original name
+        if collectionNewName == collectionToRename?.name {
+            showModalTextField = false
+            return
+        }
+        
+        // checking for a duplicate name
+        if NoteCardCollection.isNameExisted(name: collectionNewName, in: noteCardCollectionDataSource.createContext) {
+            modalTextFieldDescription = "Collection name already exists."
+            return
+        }
+        
         // assign the new name to the stored collection
         collectionToRename!.name = collectionNewName
         
@@ -128,7 +158,7 @@ extension NoteCardCollectionListView {
             collectionToRename = nil
             noteCardCollectionDataSource.setUpdateObject(nil)
             fetchAllCollections()
-            showSheet = false
+            showModalTextField = false
             
         case .failed:
             break
@@ -165,6 +195,25 @@ extension NoteCardCollectionListView {
         AppCache.currentCollectionUUID = collection.uuid
         viewReloader.forceReload()
         NotificationCenter.default.post(name: .appCurrentCollectionDidChange, object: collection)
+    }
+    
+    func modalTextField() -> some View {
+        let commit: () -> Void
+        
+        switch modalTextFieldState {
+        case .create: commit = commitCreateNewCollection
+        case .update: commit = commitRename
+        }
+        
+        return ModalTextField(
+            isActive: $showModalTextField,
+            text: $collectionNewName,
+            prompt: modalTextFieldPrompt,
+            placeholder: modalTextFieldPlaceholder,
+            description: modalTextFieldDescription,
+            descriptionColor: .red,
+            onCommit: commit
+        )
     }
 }
 
