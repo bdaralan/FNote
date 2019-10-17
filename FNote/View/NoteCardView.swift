@@ -193,15 +193,7 @@ extension NoteCardView {
     }
     
     func prepareNoteCardAddTagViewModel() {
-        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
-        let includedTags = noteCard.tags.compactMap({ TagViewModel(tag: $0) })
-        let excludedTags = allTags.compactMap { tag -> TagViewModel? in
-            let tagModel = TagViewModel(tag: tag)
-            guard !includedTags.contains(where: { $0.uuid == tagModel.uuid }) else { return nil }
-            return tagModel
-        }
-        
-        addTagViewModel.setTags(included: includedTags.sortedByName(), excluded: excludedTags.sortedByName())
+        addTagViewModel.configure(for: noteCard, allTags: tagDataSource.fetchedResult.fetchedObjects ?? [])
         addTagViewModel.onTagIncluded = addTagToNoteCard
         addTagViewModel.onTagExcluded = removeTagFromNoteCard
         addTagViewModel.onTagUpdated = renameTag
@@ -209,32 +201,33 @@ extension NoteCardView {
     }
     
     func addNewTagToNoteCard(_ tag: TagViewModel) {
-        let newTag = Tag(uuid: tag.uuid, context: noteCard.managedObjectContext!)
+        guard let context = noteCard.managedObjectContext else { return }
+        let newTag = Tag(uuid: tag.uuid, context: context)
         newTag.name = tag.name
         noteCard.objectWillChange.send()
         noteCard.tags.insert(newTag)
     }
     
     func addTagToNoteCard(_ tag: TagViewModel) {
+        guard let context = noteCard.managedObjectContext else { return }
         let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
-        guard let tagToAdd = allTags.first(where: { $0.uuid == tag.uuid }) else { return }
-        let tagToAddFromSameContext = tagToAdd.get(from: noteCard.managedObjectContext!)
+        guard let tagToAdd = allTags.first(where: { $0.uuid == tag.uuid })?.get(from: context) else { return }
         noteCard.objectWillChange.send()
-        noteCard.tags.insert(tagToAddFromSameContext)
+        noteCard.tags.insert(tagToAdd)
     }
     
     func removeTagFromNoteCard(_ tag: TagViewModel) {
-        guard let tagToRemove = noteCard.tags.first(where: { $0.uuid == tag.uuid }) else { return }
-        let tagToRemoveInSameContext = tagToRemove.get(from: noteCard.managedObjectContext!)
+        guard let context = noteCard.managedObjectContext else { return }
+        guard let tagToRemove = noteCard.tags.first(where: { $0.uuid == tag.uuid })?.get(from: context) else { return }
         noteCard.objectWillChange.send()
-        noteCard.tags.remove(tagToRemoveInSameContext)
+        noteCard.tags.remove(tagToRemove)
     }
     
     func renameTag(_ tag: TagViewModel) {
+        guard let context = noteCard.managedObjectContext else { return }
         let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
-        guard let tagToRename = allTags.first(where: { $0.uuid == tag.uuid }) else { return }
-        let tagToRenameInSameContext = tagToRename.get(from: tagDataSource.updateContext)
-        tagToRenameInSameContext.name = tag.name
+        guard let tagToRename = allTags.first(where: { $0.uuid == tag.uuid })?.get(from: context) else { return }
+        tagToRename.name = tag.name
     }
 }
 
