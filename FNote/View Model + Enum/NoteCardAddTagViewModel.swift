@@ -42,57 +42,56 @@ struct NoteCardAddTagViewModel {
     
     // MARK: Method
     
-    mutating func setTags(included: [TagViewModel], excluded: [TagViewModel]) {
-        includedTags = included
-        excludedTags = excluded
+    mutating func configure(for noteCard: NoteCard, allTags: [Tag]) {
+        includedTags = noteCard.tags.compactMap({ TagViewModel(tag: $0) })
+        excludedTags = allTags.compactMap { tag -> TagViewModel? in
+            let tagModel = TagViewModel(tag: tag)
+            guard !includedTags.contains(where: { $0.uuid == tagModel.uuid }) else { return nil }
+            return tagModel
+        }
+        includedTags.sortByName()
+        excludedTags.sortByName()
     }
     
-    mutating func updateTag(with tag: TagViewModel, sort: Bool) {
-        var isUpdated = false
+    mutating func updateTag(with tag: TagViewModel) {
         if let index = includedTags.firstIndex(where: { $0.uuid == tag.uuid }) {
             includedTags[index] = tag
-            isUpdated = true
-            if sort {
-                includedTags.sortByName()
-            }
+            includedTags.sortByName()
+            onTagUpdated?(tag)
+            return
         
-        } else if let index = excludedTags.firstIndex(where: { $0.uuid == tag.uuid }) {
-            excludedTags[index] = tag
-            isUpdated = true
-            if sort {
-                excludedTags.sortByName()
-            }
         }
         
-        if isUpdated {
+        if let index = excludedTags.firstIndex(where: { $0.uuid == tag.uuid }) {
+            excludedTags[index] = tag
+            excludedTags.sortByName()
             onTagUpdated?(tag)
+            return
         }
     }
     
-    mutating func addToIncludedTags(_ tag: TagViewModel, sort: Bool) {
+    mutating func addToIncludedTags(_ tag: TagViewModel) {
         if let index = excludedTags.firstIndex(where: { $0.uuid == tag.uuid }) {
             excludedTags.remove(at: index)
             includedTags.append(tag)
+            includedTags.sortByName()
             onTagIncluded?(tag)
-        } else {
-            if !isIncludedTag(tag) {
-                includedTags.append(tag)
-                onTagCreated?(tag)
-            }
+            return
         }
         
-        if sort {
+        if !isIncludedTag(tag) {
+            includedTags.append(tag)
             includedTags.sortByName()
+            onTagCreated?(tag)
+            return
         }
     }
     
-    mutating func addToExcludedTags(_ tag: TagViewModel, sort: Bool) {
+    mutating func addToExcludedTags(_ tag: TagViewModel) {
         guard let index = includedTags.firstIndex(where: { $0.uuid == tag.uuid }) else { return }
         includedTags.remove(at: index)
         excludedTags.append(tag)
-        if sort {
-            excludedTags.sortByName()
-        }
+        excludedTags.sortByName()
         onTagExcluded?(tag)
     }
 }

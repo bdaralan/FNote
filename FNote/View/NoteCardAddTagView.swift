@@ -38,7 +38,7 @@ struct NoteCardAddTagView: View {
         List {
             Section(header: Text("SELECTED TAGS").padding(.top, 20)) {
                 ForEach(viewModel.includedTags, id: \.uuid) { tag in
-                    self.tagRow(for: tag, showCheckmark: true)
+                    self.tagRow(for: tag)
                 }
                 Text("none")
                     .foregroundColor(.secondary)
@@ -47,7 +47,7 @@ struct NoteCardAddTagView: View {
             
             Section(header: Text("TAGS")) {
                 ForEach(viewModel.excludedTags, id: \.uuid) { tag in
-                    self.tagRow(for: tag, showCheckmark: false)
+                    self.tagRow(for: tag)
                 }
                 Text("none")
                     .foregroundColor(.secondary)
@@ -64,29 +64,26 @@ struct NoteCardAddTagView: View {
 
 extension NoteCardAddTagView {
     
-    func tagRow(for tag: TagViewModel, showCheckmark: Bool) -> some View {
+    func tagRow(for tag: TagViewModel) -> some View {
         Button(action: { self.tagRowSelected(tag) }) {
-            HStack {
-                Text(tag.name)
-                Spacer()
-                Image(systemName: "checkmark")
-                    .hidden(!showCheckmark)
-            }
-            .accentColor(.primary)
-            .contextMenu {
-                Button(action: { self.beginRenameTag(tag) }) {
-                    Text("Rename")
-                    Image(systemName: "square.and.pencil")
-                }
-            }
+            Text(tag.name)
+                .accentColor(.primary)
+                .contextMenu(menuItems: { renameTagContextMenuItem(for: tag) })
         }
     }
     
     func tagRowSelected(_ tag: TagViewModel) {
         if viewModel.isIncludedTag(tag) {
-            viewModel.addToExcludedTags(tag, sort: true)
+            viewModel.addToExcludedTags(tag)
         } else {
-            viewModel.addToIncludedTags(tag, sort: true)
+            viewModel.addToIncludedTags(tag)
+        }
+    }
+    
+    func renameTagContextMenuItem(for tag: TagViewModel) -> some View {
+        Button(action: { self.beginRenameTag(tag) }) {
+            Text("Rename")
+            Image(systemName: "square.and.pencil")
         }
     }
 }
@@ -139,7 +136,7 @@ extension NoteCardAddTagView {
         // create if it is not an empty whitespaces
         if !tagModel.name.isEmptyOrWhiteSpaces() {
             tagModel.name = tagModel.name.trimmed()
-            viewModel.addToIncludedTags(tagModel, sort: true)
+            viewModel.addToIncludedTags(tagModel)
         }
         dismissModalTextField()
     }
@@ -170,7 +167,7 @@ extension NoteCardAddTagView {
         // rename if it is not an empty whitespaces
         if !tagModel.name.isEmptyOrWhiteSpaces() {
             tagModel.name = tagModel.name.trimmed()
-            viewModel.updateTag(with: tagModel, sort: true)
+            viewModel.updateTag(with: tagModel)
         }
         dismissModalTextField()
     }
