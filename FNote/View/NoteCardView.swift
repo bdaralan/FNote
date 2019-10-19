@@ -17,9 +17,7 @@ struct NoteCardView: View {
     @ObservedObject var noteCard: NoteCard
     
     var onDelete: (() -> Void)?
-    
-    @State private var addTagViewModel = NoteCardAddTagViewModel()
-    
+        
     /// Used to get new input for `noteCard`'s note.
     @State private var noteCardNote = ""
     
@@ -75,7 +73,7 @@ struct NoteCardView: View {
                     
                 }
                 
-                NavigationLink(destination: addTagView) {
+                NavigationLink(destination: NoteCardAddTagView(noteCard: noteCard)) {
                     Image.noteCardTag
                         .frame(width: imageSize, height: imageSize, alignment: .center)
                     Text("Tags")
@@ -181,53 +179,6 @@ extension NoteCardView {
     func commitEditingNoteCardNote() {
         noteCard.note = noteCardNote
         showNoteEditingSheet = false
-    }
-}
-
-
-extension NoteCardView {
-    
-    var addTagView: some View {
-        NoteCardAddTagView(viewModel: $addTagViewModel)
-            .onAppear(perform: prepareNoteCardAddTagViewModel)
-    }
-    
-    func prepareNoteCardAddTagViewModel() {
-        addTagViewModel.configure(for: noteCard, allTags: tagDataSource.fetchedResult.fetchedObjects ?? [])
-        addTagViewModel.onTagIncluded = addTagToNoteCard
-        addTagViewModel.onTagExcluded = removeTagFromNoteCard
-        addTagViewModel.onTagUpdated = renameTag
-        addTagViewModel.onTagCreated = addNewTagToNoteCard
-    }
-    
-    func addNewTagToNoteCard(_ tag: TagViewModel) {
-        guard let context = noteCard.managedObjectContext else { return }
-        let newTag = Tag(uuid: tag.uuid, context: context)
-        newTag.name = tag.name
-        noteCard.objectWillChange.send()
-        noteCard.tags.insert(newTag)
-    }
-    
-    func addTagToNoteCard(_ tag: TagViewModel) {
-        guard let context = noteCard.managedObjectContext else { return }
-        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
-        guard let tagToAdd = allTags.first(where: { $0.uuid == tag.uuid })?.get(from: context) else { return }
-        noteCard.objectWillChange.send()
-        noteCard.tags.insert(tagToAdd)
-    }
-    
-    func removeTagFromNoteCard(_ tag: TagViewModel) {
-        guard let context = noteCard.managedObjectContext else { return }
-        guard let tagToRemove = noteCard.tags.first(where: { $0.uuid == tag.uuid })?.get(from: context) else { return }
-        noteCard.objectWillChange.send()
-        noteCard.tags.remove(tagToRemove)
-    }
-    
-    func renameTag(_ tag: TagViewModel) {
-        guard let context = noteCard.managedObjectContext else { return }
-        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
-        guard let tagToRename = allTags.first(where: { $0.uuid == tag.uuid })?.get(from: context) else { return }
-        tagToRename.name = tag.name
     }
 }
 
