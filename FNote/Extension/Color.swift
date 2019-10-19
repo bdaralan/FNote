@@ -11,7 +11,15 @@ import SwiftUI
 
 extension Color {
     
+    static let appAccent = Color("app-accent-color")
+    
     static let noteCardBackground = Color("note-card-background")
     
     static let noteCardDivider = Color("note-card-divider")
+}
+
+
+extension UIColor {
+    
+    static let appAccent = UIColor(named: "app-accent-color")
 }
