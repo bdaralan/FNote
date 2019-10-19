@@ -44,6 +44,8 @@ extension NoteCardViewNavigationLink {
         Button(action: saveChanges) {
             Text("Save").bold()
         }
+        .disabled(!noteCard.isValid())
+        .hidden(!noteCard.hasChangedValues())
     }
     
     func deleteCard() {

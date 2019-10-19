@@ -49,28 +49,30 @@ struct NoteCardAddTagView: View {
     
     
     var body: some View {
-        List {
-            Section(header: Text("SELECTED TAGS").padding(.top, 20)) {
-                ForEach(includedTags, id: \.uuid) { tag in
-                    self.tagRow(for: tag)
+        NavigationView {
+            List {
+                Section(header: Text("SELECTED TAGS").padding(.top, 20)) {
+                    ForEach(includedTags, id: \.uuid) { tag in
+                        self.tagRow(for: tag)
+                    }
+                    Text("none")
+                        .foregroundColor(.secondary)
+                        .hidden(!noteCard.tags.isEmpty)
                 }
-                Text("none")
-                    .foregroundColor(.secondary)
-                    .hidden(!noteCard.tags.isEmpty)
-            }
-            
-            Section(header: Text("TAGS")) {
-                ForEach(excludedTags, id: \.uuid) { tag in
-                    self.tagRow(for: tag)
+                
+                Section(header: Text("TAGS")) {
+                    ForEach(excludedTags, id: \.uuid) { tag in
+                        self.tagRow(for: tag)
+                    }
+                    Text("none")
+                        .foregroundColor(.secondary)
+                        .hidden(!excludedTags.isEmpty)
                 }
-                Text("none")
-                    .foregroundColor(.secondary)
-                    .hidden(!excludedTags.isEmpty)
             }
+            .listStyle(GroupedListStyle())
+            .navigationBarTitle("Note Card Tags", displayMode: .inline)
+            .navigationBarItems(trailing: createNewTagNavItem)
         }
-        .listStyle(GroupedListStyle())
-        .navigationBarTitle("Note Card Tags", displayMode: .inline)
-        .navigationBarItems(trailing: createNewTagNavItem)
         .sheet(isPresented: $showModalTextField, onDismiss: dismissModalTextField, content: modalTextField)
     }
 }

@@ -73,7 +73,7 @@ extension NoteCardCollectionViewCard {
             Text(noteCard.formality.abbreviation)
         }
         .font(.body)
-        .foregroundColor(.primary)
+        .foregroundColor(noteCard.formality.color)
     }
     
     func starButton() -> some View {

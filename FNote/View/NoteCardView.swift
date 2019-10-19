@@ -16,14 +16,19 @@ struct NoteCardView: View {
     
     @ObservedObject var noteCard: NoteCard
     
+    /// An action to perform when delete button is tapped.
+    ///
+    /// The delete button is hidden if this value is `nil`.
     var onDelete: (() -> Void)?
         
     /// Used to get new input for `noteCard`'s note.
     @State private var noteCardNote = ""
     
-    @State private var showNoteEditingSheet = false
+    /// A flag to control note model text field keyboard.
+    @State private var isNoteEditingActive = true
     
-    @State private var showAddNoteCardRelationshipSheet = false
+    /// A sheet to indicate when presentation sheet to show.
+    @State private var sheet: Sheet?
     
     let imageSize: CGFloat = 20
     
@@ -33,6 +38,7 @@ struct NoteCardView: View {
     var body: some View {
         Form {
             Section(header: Text("NATIVE & TRANSLATION").padding(.top, 20)) {
+                // MARK: Native & Translation
                 VStack(alignment: .leading, spacing: 2) {
                     TextField("Native", text: $noteCard.native)
                         .font(.title)
@@ -50,45 +56,58 @@ struct NoteCardView: View {
             }
             
             Section(header: Text("RELATIONSHIP & TAG")) {
+                // MARK: Formality
+                HStack {
+                    Image.noteCardFormality
+                        .frame(width: imageSize, height: imageSize, alignment: .center)
+                        .foregroundColor(noteCard.formality.color)
+                    Picker("Formality", selection: $noteCard.formality) {
+                        ForEach(NoteCard.Formality.allCases, id: \.self) { formality in
+                            Text(formality.title).tag(formality)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                }
+                
+                // MARK: Favorite
                 Toggle(isOn: $noteCard.isFavorited) {
                     Image.noteCardFavorite(noteCard.isFavorited)
                         .frame(width: imageSize, height: imageSize, alignment: .center)
                     Text("Favorite")
                 }
                 
-                Picker(selection: $noteCard.formality, label: Group {
-                    Image.noteCardFormality
-                        .frame(width: imageSize, height: imageSize, alignment: .center)
-                    Text("Formality")
-                }) {
-                    ForEach(NoteCard.Formality.allCases, id: \.self) { formality in
-                        Text(formality.title).tag(formality)
+                // MARK: Relationship
+                Button(action: beginEditingRelationship) {
+                    HStack {
+                        Image.noteCardRelationship
+                            .frame(width: imageSize, height: imageSize, alignment: .center)
+                        Text("Relationship")
                     }
+                    .foregroundColor(.primary)
                 }
                 
-                NavigationLink(destination: noteCardRelationshipView) {
-                    Image.noteCardRelationship
-                        .frame(width: imageSize, height: imageSize, alignment: .center)
-                    Text("Relationship")
-                    
-                }
-                
-                NavigationLink(destination: NoteCardAddTagView(noteCard: noteCard)) {
-                    Image.noteCardTag
-                        .frame(width: imageSize, height: imageSize, alignment: .center)
-                    Text("Tags")
+                // MARK: Tag
+                Button(action: beginEditingTag) {
+                    HStack {
+                        Image.noteCardTag
+                            .frame(width: imageSize, height: imageSize, alignment: .center)
+                        Text("Tags")
+                    }
+                    .foregroundColor(.primary)
                 }
             }
             
             Section(header: Text("NOTE")) {
+                // MARK: Note
                 NoteCardNoteTextViewWrapper(text: $noteCard.note)
                     .frame(minHeight: 250, maxHeight: .infinity, alignment: .center)
                     .padding(0)
                     .overlay(emptyNotePlaceholderText, alignment: .topLeading)
-                    .onTapGesture(perform: beginEditingNoteCardNote)
+                    .onTapGesture(perform: beginEditingNote)
             }
             
             Section {
+                // MARK: Delete
                 Button(action: onDelete ?? {}) {
                     Text("Delete")
                         .foregroundColor(.red)
@@ -97,65 +116,66 @@ struct NoteCardView: View {
                 .hidden(onDelete == nil)
             }
         }
-        .sheet(isPresented: $showNoteEditingSheet, content: { self.noteEditingSheet })
+        .sheet(item: $sheet, onDismiss: dismissSheet, content: presentationSheet)
     }
 }
 
+
+// MARK: - Relationship View
 
 extension NoteCardView {
     
-    // MARK: Relationships
-    
     // View that uses the NoteCardRelationshipView
-    var noteCardRelationshipView: some View {
-        NoteCardRelationshipView(noteCards: NoteCard.sampleNoteCards(count: 10))
-        .navigationBarTitle("Relationships")
-        .navigationBarItems(trailing: addRelationshipNavItem)
-            .sheet(isPresented: $showAddNoteCardRelationshipSheet, onDismiss: nil, content: {self.addRelationshipCardView})
+    var relationshipEditingSheet: some View {
+        NoteCardAddRelationshipView(noteCards: NoteCard.sampleNoteCards(count: 10))
     }
     
-    // Button to show the add relationship sheet
-    var addRelationshipNavItem: some View {
-        Button(action: beginAddRelationship) {
-                Image(systemName: "plus")
-                    .imageScale(.large)
-        }
+    func beginEditingRelationship() {
+        sheet = .relationship
     }
     
-    // View that lets the user add unrelated cards
-    var addRelationshipCardView: some View {
+    func commitEditingRelationship() {
         
-        // Fetch all the notecards through the data source
-        let allNoteCards = noteCardDataSource.fetchedResult.fetchedObjects ?? []
-        
-        // Filters allNoteCards to show unrelated cards by checking if it is in the relationship set
-        let unrelatedNoteCards = allNoteCards.filter { noteCard in
-            return !self.noteCard.relationships.contains(noteCard)
-        }
-        
-        // Use NavigationView to allow user to cancel and add while in NoteCardRelationshipView
-        return NavigationView {
-            NoteCardRelationshipView(noteCards: unrelatedNoteCards, onLongPressed: nil, onDone: nil)
-                .navigationBarTitle("Add Relationships", displayMode: .inline)
-                .navigationBarItems(leading: Text("Cancel"), trailing: Text("Add"))
-        }
     }
     
-    // Change the boolean to true to display the sheet
-    func beginAddRelationship() {
-        showAddNoteCardRelationshipSheet = true
+    func cancelEditingRelationship() {
+        
     }
 }
 
+
+// MARK: - Tag View
+
+extension NoteCardView {
+    
+    var tagEditingSheet: some View {
+        NoteCardAddTagView(noteCard: noteCard)
+    }
+    
+    func beginEditingTag() {
+        sheet = .tag
+    }
+    
+    func commitEditingTag() {
+        
+    }
+    
+    func cancelEditingTag() {
+        
+    }
+}
+
+
+// MARK: - Note View
 
 extension NoteCardView {
     
     var noteEditingSheet: some View {
         ModalTextView(
-            isActive: $showNoteEditingSheet,
+            isActive: $isNoteEditingActive,
             text: $noteCardNote,
             prompt: "Note",
-            onCommit: commitEditingNoteCardNote
+            onCommit: commitEditingNote
         )
     }
     
@@ -171,14 +191,59 @@ extension NoteCardView {
             .frame(minWidth: 20, maxWidth: 20, alignment: .center)
     }
     
-    func beginEditingNoteCardNote() {
+    func beginEditingNote() {
         noteCardNote = noteCard.note
-        showNoteEditingSheet = true
+        sheet = .note
     }
     
-    func commitEditingNoteCardNote() {
+    func commitEditingNote() {
         noteCard.note = noteCardNote
-        showNoteEditingSheet = false
+        sheet = nil
+    }
+}
+
+
+// MARK: - Sheet
+
+extension NoteCardView {
+    
+    enum Sheet: Identifiable {
+        case relationship
+        case tag
+        case note
+        
+        var id: Sheet { self }
+    }
+    
+    func presentationSheet(for sheet: Sheet) -> some View {
+        switch sheet {
+        
+        case .relationship:
+            return relationshipEditingSheet
+                .eraseToAnyView()
+        
+        case .tag:
+            return tagEditingSheet
+                .environmentObject(tagDataSource)
+                .eraseToAnyView()
+        
+        case .note:
+            return noteEditingSheet
+                .eraseToAnyView()
+        }
+    }
+    
+    var dismissSheet: () -> Void {
+        switch sheet {
+        case .relationship:
+            return cancelEditingRelationship
+        case .tag:
+            return cancelEditingTag
+        case .note:
+            return commitEditingNote
+        case nil:
+            return {}
+        }
     }
 }
 
