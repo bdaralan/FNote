@@ -1,5 +1,5 @@
 //
-//  NoteCardAddRelationshipView.swift
+//  NoteCardRelationshipView.swift
 //  FNote
 //
 //  Created by Veronica Sumariyanto on 10/16/19.
@@ -9,7 +9,7 @@
 import SwiftUI
 
 
-struct NoteCardAddRelationshipView: View {
+struct NoteCardRelationshipView: View {
     
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
     
@@ -41,7 +41,7 @@ struct NoteCardAddRelationshipView: View {
 }
 
 
-extension NoteCardAddRelationshipView {
+extension NoteCardRelationshipView {
     
     // Button to show the add relationship sheet
     var addRelationshipNavItem: some View {
@@ -72,8 +72,8 @@ extension NoteCardAddRelationshipView {
 }
 
 
-struct NoteCardAddRelationshipView_Previews: PreviewProvider {
+struct NoteCardRelationshipView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardAddRelationshipView(noteCards: [], onLongPressed: nil, onDone: nil)
+        NoteCardRelationshipView(noteCards: [], onLongPressed: nil, onDone: nil)
     }
 }

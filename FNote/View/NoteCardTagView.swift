@@ -1,5 +1,5 @@
 //
-//  NoteCardAddTagView.swift
+//  NoteCardTagView.swift
 //  FNote
 //
 //  Created by Dara Beng on 9/27/19.
@@ -9,7 +9,7 @@
 import SwiftUI
 
 
-struct NoteCardAddTagView: View {
+struct NoteCardTagView: View {
     
     @EnvironmentObject var tagDataSource: TagDataSource
     
@@ -70,7 +70,7 @@ struct NoteCardAddTagView: View {
                 }
             }
             .listStyle(GroupedListStyle())
-            .navigationBarTitle("Note Card Tags", displayMode: .inline)
+            .navigationBarTitle("Tags", displayMode: .inline)
             .navigationBarItems(trailing: createNewTagNavItem)
         }
         .sheet(isPresented: $showModalTextField, onDismiss: dismissModalTextField, content: modalTextField)
@@ -78,7 +78,7 @@ struct NoteCardAddTagView: View {
 }
 
 
-extension NoteCardAddTagView {
+extension NoteCardTagView {
     
     func tagRow(for tag: Tag) -> some View {
         Button(action: { self.tagRowSelected(tag) }) {
@@ -107,7 +107,7 @@ extension NoteCardAddTagView {
 }
 
 
-extension NoteCardAddTagView {
+extension NoteCardTagView {
     
     var createNewTagNavItem: some View {
         Button(action: beginCreateNewTag) {
@@ -212,8 +212,8 @@ extension NoteCardAddTagView {
 }
 
 
-struct NoteCardAddTagView_Previews: PreviewProvider {
+struct NoteCardTagView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardAddTagView(noteCard: .init())
+        NoteCardTagView(noteCard: .init())
     }
 }

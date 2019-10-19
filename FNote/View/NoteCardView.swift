@@ -20,9 +20,6 @@ struct NoteCardView: View {
     ///
     /// The delete button is hidden if this value is `nil`.
     var onDelete: (() -> Void)?
-        
-    /// Used to get new input for `noteCard`'s note.
-    @State private var noteCardNote = ""
     
     /// A flag to control note model text field keyboard.
     @State private var isNoteEditingActive = true
@@ -121,13 +118,13 @@ struct NoteCardView: View {
 }
 
 
-// MARK: - Relationship View
+// MARK: - Relationship Sheet
 
 extension NoteCardView {
     
     // View that uses the NoteCardRelationshipView
     var relationshipEditingSheet: some View {
-        NoteCardAddRelationshipView(noteCards: NoteCard.sampleNoteCards(count: 10))
+        NoteCardRelationshipView(noteCards: NoteCard.sampleNoteCards(count: 10))
     }
     
     func beginEditingRelationship() {
@@ -144,12 +141,12 @@ extension NoteCardView {
 }
 
 
-// MARK: - Tag View
+// MARK: - Tag Sheet
 
 extension NoteCardView {
     
     var tagEditingSheet: some View {
-        NoteCardAddTagView(noteCard: noteCard)
+        NoteCardTagView(noteCard: noteCard)
     }
     
     func beginEditingTag() {
@@ -166,16 +163,16 @@ extension NoteCardView {
 }
 
 
-// MARK: - Note View
+// MARK: - Note Sheet
 
 extension NoteCardView {
     
     var noteEditingSheet: some View {
         ModalTextView(
             isActive: $isNoteEditingActive,
-            text: $noteCardNote,
+            text: $noteCard.note,
             prompt: "Note",
-            onCommit: commitEditingNote
+            onCommit: commitEditingTag
         )
     }
     
@@ -192,18 +189,17 @@ extension NoteCardView {
     }
     
     func beginEditingNote() {
-        noteCardNote = noteCard.note
         sheet = .note
     }
     
     func commitEditingNote() {
-        noteCard.note = noteCardNote
+        noteCard.note = noteCard.note.trimmed()
         sheet = nil
     }
 }
 
 
-// MARK: - Sheet
+// MARK: - Presentation Sheet
 
 extension NoteCardView {
     
