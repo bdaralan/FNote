@@ -26,9 +26,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
             window.rootViewController = UIHostingController(rootView: mainTabView)
-            self.window = window
             window.makeKeyAndVisible()
+            self.window = window
         }
+        
+        window?.tintColor = .appAccent
+        UISwitch.appearance().onTintColor = .appAccent
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
