@@ -13,13 +13,13 @@ struct NoteCardAddTagView: View {
     
     @EnvironmentObject var tagDataSource: TagDataSource
     
-    @Binding var viewModel: NoteCardAddTagViewModel
-    
-    /// A tag object used to create or update tag which passed to `onTagCreate` or `onTagRename`.
-    @State private var tagModel = TagViewModel(uuid: "", name: "")
+    @ObservedObject var noteCard: NoteCard
         
     /// A flag used to determine the sheet action.
     @State private var modalTextFieldState = CreateUpdateSheetState.create // default sentinel value
+    
+    /// A text for the sheet view.
+    @State private var modalTextFieldText = ""
     
     /// A placeholder string for the sheet view.
     @State private var modalTextFieldPlaceholder = ""
@@ -33,25 +33,39 @@ struct NoteCardAddTagView: View {
     /// A flag used to present or dismiss the rename or create sheet.
     @State private var showModalTextField = false
     
+    var noteCardTagIDs: [String] {
+        noteCard.tags.map({ $0.uuid })
+    }
+    
+    var includedTags: [Tag] {
+        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
+        return allTags.filter({ noteCardTagIDs.contains($0.uuid) })
+    }
+    
+    var excludedTags: [Tag] {
+        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
+        return allTags.filter({ !noteCardTagIDs.contains($0.uuid) })
+    }
+    
     
     var body: some View {
         List {
             Section(header: Text("SELECTED TAGS").padding(.top, 20)) {
-                ForEach(viewModel.includedTags, id: \.uuid) { tag in
+                ForEach(includedTags, id: \.uuid) { tag in
                     self.tagRow(for: tag)
                 }
                 Text("none")
                     .foregroundColor(.secondary)
-                    .hidden(!viewModel.includedTags.isEmpty)
+                    .hidden(!noteCard.tags.isEmpty)
             }
             
             Section(header: Text("TAGS")) {
-                ForEach(viewModel.excludedTags, id: \.uuid) { tag in
+                ForEach(excludedTags, id: \.uuid) { tag in
                     self.tagRow(for: tag)
                 }
                 Text("none")
                     .foregroundColor(.secondary)
-                    .hidden(!viewModel.excludedTags.isEmpty)
+                    .hidden(!excludedTags.isEmpty)
             }
         }
         .listStyle(GroupedListStyle())
@@ -64,7 +78,7 @@ struct NoteCardAddTagView: View {
 
 extension NoteCardAddTagView {
     
-    func tagRow(for tag: TagViewModel) -> some View {
+    func tagRow(for tag: Tag) -> some View {
         Button(action: { self.tagRowSelected(tag) }) {
             Text(tag.name)
                 .accentColor(.primary)
@@ -72,15 +86,17 @@ extension NoteCardAddTagView {
         }
     }
     
-    func tagRowSelected(_ tag: TagViewModel) {
-        if viewModel.isIncludedTag(tag) {
-            viewModel.addToExcludedTags(tag)
-        } else {
-            viewModel.addToIncludedTags(tag)
+    func tagRowSelected(_ tag: Tag) {
+        if let tag = noteCard.tags.first(where: { $0.uuid == tag.uuid }) {
+            noteCard.tags.remove(tag)
+        
+        } else if let tag = tagDataSource.fetchedResult.fetchedObjects?.first(where: { $0.uuid == tag.uuid }) {
+            let tagToAdd = tag.get(from: noteCard.managedObjectContext!)
+            noteCard.tags.insert(tagToAdd)
         }
     }
     
-    func renameTagContextMenuItem(for tag: TagViewModel) -> some View {
+    func renameTagContextMenuItem(for tag: Tag) -> some View {
         Button(action: { self.beginRenameTag(tag) }) {
             Text("Rename")
             Image(systemName: "square.and.pencil")
@@ -108,7 +124,7 @@ extension NoteCardAddTagView {
         
         return ModalTextField(
             isActive: $showModalTextField,
-            text: $tagModel.name,
+            text: $modalTextFieldText,
             prompt: modalTextFieldPrompt,
             placeholder: modalTextFieldPlaceholder,
             description: modalTextFieldDescription,
@@ -118,7 +134,6 @@ extension NoteCardAddTagView {
     }
     
     func beginCreateNewTag() {
-        tagModel = TagViewModel()
         modalTextFieldState = .create
         modalTextFieldPrompt = "New Tag"
         modalTextFieldPlaceholder = "Tag Name"
@@ -127,47 +142,64 @@ extension NoteCardAddTagView {
     }
     
     func commitCreateNewTag() {
+        let tagName = modalTextFieldText.trimmed()
+        
         // if tag exists, show cannot create message
-        if tagDataSource.isTagNameExisted(tagModel.name, in: tagDataSource.updateContext) {
-            modalTextFieldDescription = "Tag name '\(tagModel.name)' already exists"
+        if tagDataSource.isTagNameExisted(tagName, in: tagDataSource.createContext) {
+            modalTextFieldDescription = "Tag name '\(tagName)' already exists"
             return
         }
         
         // create if it is not an empty whitespaces
-        if !tagModel.name.isEmptyOrWhiteSpaces() {
-            tagModel.name = tagModel.name.trimmed()
-            viewModel.addToIncludedTags(tagModel)
+        if !tagName.isEmptyOrWhiteSpaces() {
+            tagDataSource.prepareNewObject()
+            
+            let newTag = tagDataSource.newObject!
+            newTag.name = tagName
+            tagDataSource.saveCreateContext()
+            
+            let newTagToAdd = newTag.get(from: noteCard.managedObjectContext!)
+            noteCard.tags.insert(newTagToAdd)
+            
+            tagDataSource.discardNewObject()
         }
+        
         dismissModalTextField()
     }
     
-    func beginRenameTag(_ tag: TagViewModel) {
-        tagModel = tag
-        modalTextFieldState = .update
-        modalTextFieldPrompt = "Rename Tag"
+    func beginRenameTag(_ tag: Tag) {
+        tagDataSource.setUpdateObject(tag)
+        modalTextFieldText = tag.name
         modalTextFieldPlaceholder = tag.name
+        modalTextFieldPrompt = "Rename Tag"
         modalTextFieldDescription = ""
+        modalTextFieldState = .update
         showModalTextField = true
     }
     
     func commitRenameTag() {
+        guard let tag = tagDataSource.updateObject else { return }
+        let tagNewName = modalTextFieldText.trimmed()
+        
         // just dismiss if the name is the same
         // note: placeholder was set to tag's current name in begin rename method
-        if modalTextFieldPlaceholder == tagModel.name {
+        if tagNewName == tag.name {
             dismissModalTextField()
             return
         }
         
         // if tag name exists, show tag name exists message
-        if tagDataSource.isTagNameExisted(tagModel.name, in: tagDataSource.updateContext) {
-            modalTextFieldDescription = "Tag name '\(tagModel.name)' already exists"
+        if tagDataSource.isTagNameExisted(tagNewName, in: tagDataSource.updateContext) {
+            modalTextFieldDescription = "Tag name '\(tagNewName)' already exists"
             return
         }
         
         // rename if it is not an empty whitespaces
-        if !tagModel.name.isEmptyOrWhiteSpaces() {
-            tagModel.name = tagModel.name.trimmed()
-            viewModel.updateTag(with: tagModel)
+        if !tagNewName.isEmptyOrWhiteSpaces() {
+            tag.objectWillChange.send()
+            tag.name = tagNewName
+            tagDataSource.saveUpdateContext()
+            tagDataSource.setUpdateObject(nil)
         }
         dismissModalTextField()
     }
@@ -180,6 +212,6 @@ extension NoteCardAddTagView {
 
 struct NoteCardAddTagView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardAddTagView(viewModel: .constant(.init()))
+        NoteCardAddTagView(noteCard: .init())
     }
 }

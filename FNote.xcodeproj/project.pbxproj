@@ -13,7 +13,6 @@
 		665C7EB923209B4D000BFD9F /* TagDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C7EB823209B4D000BFD9F /* TagDataSource.swift */; };
 		668E537523297FDB0095DD71 /* NoteCollectionViewCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668E537423297FDB0095DD71 /* NoteCollectionViewCardView.swift */; };
 		66B945B72357A1C2003147AA /* NoteCardRelationshipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B945B62357A1C2003147AA /* NoteCardRelationshipView.swift */; };
-		B402F62C2340883F00EC0A77 /* TagViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B402F62B2340883F00EC0A77 /* TagViewModel.swift */; };
 		B402F62E234093C200EC0A77 /* CreateUpdateSheetState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B402F62D234093C200EC0A77 /* CreateUpdateSheetState.swift */; };
 		B40B519C2335C2D6002DA41D /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40B519B2335C2D6002DA41D /* NotificationName.swift */; };
 		B40BB61C2335BFED00E2F98B /* TagListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40BB61B2335BFED00E2F98B /* TagListView.swift */; };
@@ -21,7 +20,6 @@
 		B411E04F2332F672008D99A0 /* NavigationStateHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E04E2332F672008D99A0 /* NavigationStateHandler.swift */; };
 		B411E0512332F6B4008D99A0 /* NotificatonObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E0502332F6B4008D99A0 /* NotificatonObserver.swift */; };
 		B4153C592329843F00496E38 /* NoteCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4153C582329843F00496E38 /* NoteCardView.swift */; };
-		B4605FD223452E75007731D9 /* NoteCardAddTagViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4605FD123452E75007731D9 /* NoteCardAddTagViewModel.swift */; };
 		B466BAFD23333DF5007DD130 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B466BAFC23333DF5007DD130 /* SettingView.swift */; };
 		B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */; };
 		B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3404232E8214008B2088 /* ModalTextView.swift */; };
@@ -73,7 +71,6 @@
 		665C7EB823209B4D000BFD9F /* TagDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDataSource.swift; sourceTree = "<group>"; };
 		668E537423297FDB0095DD71 /* NoteCollectionViewCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCollectionViewCardView.swift; sourceTree = "<group>"; };
 		66B945B62357A1C2003147AA /* NoteCardRelationshipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardRelationshipView.swift; sourceTree = "<group>"; };
-		B402F62B2340883F00EC0A77 /* TagViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagViewModel.swift; sourceTree = "<group>"; };
 		B402F62D234093C200EC0A77 /* CreateUpdateSheetState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateSheetState.swift; sourceTree = "<group>"; };
 		B40B519B2335C2D6002DA41D /* NotificationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
 		B40BB61B2335BFED00E2F98B /* TagListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListView.swift; sourceTree = "<group>"; };
@@ -81,7 +78,6 @@
 		B411E04E2332F672008D99A0 /* NavigationStateHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationStateHandler.swift; sourceTree = "<group>"; };
 		B411E0502332F6B4008D99A0 /* NotificatonObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificatonObserver.swift; sourceTree = "<group>"; };
 		B4153C582329843F00496E38 /* NoteCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardView.swift; sourceTree = "<group>"; };
-		B4605FD123452E75007731D9 /* NoteCardAddTagViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardAddTagViewModel.swift; sourceTree = "<group>"; };
 		B466BAFC23333DF5007DD130 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewWrapper.swift; sourceTree = "<group>"; };
 		B46B3404232E8214008B2088 /* ModalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextView.swift; sourceTree = "<group>"; };
@@ -141,8 +137,6 @@
 		B402F62A234087F900EC0A77 /* View Model + Enum */ = {
 			isa = PBXGroup;
 			children = (
-				B4605FD123452E75007731D9 /* NoteCardAddTagViewModel.swift */,
-				B402F62B2340883F00EC0A77 /* TagViewModel.swift */,
 				B402F62D234093C200EC0A77 /* CreateUpdateSheetState.swift */,
 			);
 			path = "View Model + Enum";
@@ -415,7 +409,6 @@
 				B499A3602326DA27002D16A0 /* MainTabView.swift in Sources */,
 				B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */,
 				B4BB117623145DC400A380AA /* FNote.xcdatamodeld in Sources */,
-				B4605FD223452E75007731D9 /* NoteCardAddTagViewModel.swift in Sources */,
 				B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */,
 				66B945B72357A1C2003147AA /* NoteCardRelationshipView.swift in Sources */,
 				B4D7341A233F36FE00A3958A /* NavigationBarBackButton.swift in Sources */,
@@ -442,7 +435,6 @@
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
 				B499A3632326E518002D16A0 /* NoteCardCollectionView.swift in Sources */,
 				B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */,
-				B402F62C2340883F00EC0A77 /* TagViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
