@@ -9,6 +9,7 @@
 
 import Foundation
 import CoreData
+import SwiftUI
 
 
 class NoteCard: NSManagedObject, ObjectValidatable {
@@ -69,6 +70,15 @@ class NoteCard: NSManagedObject, ObjectValidatable {
             case .informal: return "I"
             case .neutral: return "N"
             case .formal: return "F"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .unknown: return .primary
+            case .informal: return .red
+            case .neutral: return .orange
+            case .formal: return .green
             }
         }
     }
