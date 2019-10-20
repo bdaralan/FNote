@@ -37,6 +37,7 @@ struct NoteCardRelationshipView: View {
             .navigationBarTitle("Relationships", displayMode: .inline)
             .navigationBarItems(trailing: addRelationshipNavItem)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
