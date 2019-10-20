@@ -33,18 +33,21 @@ struct NoteCardTagView: View {
     /// A flag used to present or dismiss the rename or create sheet.
     @State private var showModalTextField = false
     
-    var noteCardTagIDs: [String] {
-        noteCard.tags.map({ $0.uuid })
-    }
+    /// An action to perform when the done button is tapped.
+    var onDone: (() -> Void)?
     
     var includedTags: [Tag] {
         let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
-        return allTags.filter({ noteCardTagIDs.contains($0.uuid) })
+        return allTags.filter { tag in
+            self.noteCard.tags.contains(where: { $0.uuid == tag.uuid })
+        }
     }
     
     var excludedTags: [Tag] {
         let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
-        return allTags.filter({ !noteCardTagIDs.contains($0.uuid) })
+        return allTags.filter { tag in
+            !self.noteCard.tags.contains(where: { $0.uuid == tag.uuid })
+        }
     }
     
     
@@ -71,7 +74,7 @@ struct NoteCardTagView: View {
             }
             .listStyle(GroupedListStyle())
             .navigationBarTitle("Tags", displayMode: .inline)
-            .navigationBarItems(trailing: createNewTagNavItem)
+            .navigationBarItems(leading: doneNavItem, trailing: createNewTagNavItem)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $showModalTextField, onDismiss: dismissModalTextField, content: modalTextField)
@@ -115,6 +118,13 @@ extension NoteCardTagView {
             Image(systemName: "plus")
                 .imageScale(.large)
         }
+    }
+    
+    var doneNavItem: some View {
+        Button(action: onDone ?? {}) {
+            Text("Done")
+        }
+        .hidden(onDone == nil)
     }
     
     func modalTextField() -> some View {
@@ -204,6 +214,7 @@ extension NoteCardTagView {
             tagDataSource.saveUpdateContext()
             tagDataSource.setUpdateObject(nil)
         }
+        
         dismissModalTextField()
     }
     
