@@ -42,15 +42,16 @@ struct NoteCardCollectionView: View {
                 }
                 .padding()
             }
-            .onAppear(perform: setupOnAppear)
             .navigationBarTitle(currentCollection?.name ?? "???")
             .navigationBarItems(trailing: createNewNoteCardNavItem)
+            .onAppear(perform: setupOnAppear)
             .sheet(
                 isPresented: $showCreateNewNoteCardSheet,
                 onDismiss: cancelCreateNewNoteCard,
                 content: createNewNoteCardSheet
             )
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
@@ -86,6 +87,7 @@ extension NoteCardCollectionView {
                 .navigationBarTitle("New Note Card", displayMode: .inline)
                 .navigationBarItems(leading: cancelButton, trailing: createButton)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     /// Start creating new note card.

@@ -73,6 +73,7 @@ struct NoteCardTagView: View {
             .navigationBarTitle("Tags", displayMode: .inline)
             .navigationBarItems(trailing: createNewTagNavItem)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $showModalTextField, onDismiss: dismissModalTextField, content: modalTextField)
     }
 }

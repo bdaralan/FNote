@@ -56,6 +56,7 @@ struct MainTabView: View {
                 .tabItem(Tab.setting.tabItem)
                 .tag(Tab.setting)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

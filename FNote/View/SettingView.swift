@@ -24,6 +24,7 @@ struct SettingView: View {
             }
             .navigationBarTitle("Settings")
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
