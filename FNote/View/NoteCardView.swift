@@ -131,11 +131,7 @@ extension NoteCardView {
         sheet = .relationship
     }
     
-    func commitEditingRelationship() {
-        
-    }
-    
-    func cancelEditingRelationship() {
+    func doneEditingRelationship() {
         
     }
 }
@@ -146,19 +142,15 @@ extension NoteCardView {
 extension NoteCardView {
     
     var tagEditingSheet: some View {
-        NoteCardTagView(noteCard: noteCard)
+        NoteCardTagView(noteCard: noteCard, onDone: doneEditingTag)
     }
     
     func beginEditingTag() {
         sheet = .tag
     }
     
-    func commitEditingTag() {
-        
-    }
-    
-    func cancelEditingTag() {
-        
+    func doneEditingTag() {
+        sheet = nil
     }
 }
 
@@ -172,7 +164,7 @@ extension NoteCardView {
             isActive: $isNoteEditingActive,
             text: $noteCard.note,
             prompt: "Note",
-            onCommit: commitEditingTag
+            onCommit: commitEditingNote
         )
     }
     
@@ -232,9 +224,9 @@ extension NoteCardView {
     var dismissSheet: () -> Void {
         switch sheet {
         case .relationship:
-            return cancelEditingRelationship
+            return doneEditingRelationship
         case .tag:
-            return cancelEditingTag
+            return doneEditingTag
         case .note:
             return commitEditingNote
         case nil:
