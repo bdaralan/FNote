@@ -26,12 +26,15 @@ struct NoteCardCollectionListView: View {
                 ForEach(noteCardCollectionDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { collection in
                     Button(action: { self.selectCollection(collection: collection) }) {
                         HStack {
-                            Text(collection.name)
-                            Spacer()
-                            Text("34564586790984")
-                                .multilineTextAlignment(.trailing)
-                                .foregroundColor(.secondary)
-                                .padding(.horizontal)
+                            VStack(alignment: .leading) {
+                                Text(collection.name)
+                                    .font(.title)
+                                Text("\(collection.noteCards.count) CARDS")
+                                    .foregroundColor(.secondary)
+                                    .font(.subheadline )
+                            }
+                            
+                            Spacer() // hstack
                             Image(systemName: "checkmark")
                                 .opacity(collection.uuid == AppCache.currentCollectionUUID ? 1 : 0)
                         }
