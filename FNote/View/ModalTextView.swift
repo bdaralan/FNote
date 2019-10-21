@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct ModalTextView: View {
-    
+        
     @Binding var isActive: Bool
     
     @Binding var text: String
@@ -43,9 +43,7 @@ struct ModalTextView: View {
 extension ModalTextView {
     
     var dragHandle: some View {
-        RoundedRectangle(cornerRadius: 2, style: .continuous)
-            .frame(width: 40, height: 4, alignment: .center)
-            .foregroundColor(.primary)
+        ModalDragHandle(hideOnLandscape: true)
             .padding(.top, 8)
     }
 }
