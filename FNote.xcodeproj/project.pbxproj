@@ -50,6 +50,7 @@
 		B4DF1AA82330180000F90D13 /* NoteCardNoteTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DF1AA72330180000F90D13 /* NoteCardNoteTextViewWrapper.swift */; };
 		B4E41E5623354B720057EB0A /* NoteCardViewNavigationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */; };
 		B4EE3ECC2329D86500CC40B7 /* ModalTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */; };
+		B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EEF32B235D99B400869567 /* ModalDragHandle.swift */; };
 		B4FFEB27234ED0CE00B4550F /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FFEB26234ED0CE00B4550F /* Color.swift */; };
 		B4FFEB29234ED2AA00B4550F /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FFEB28234ED2AA00B4550F /* Image.swift */; };
 /* End PBXBuildFile section */
@@ -112,6 +113,7 @@
 		B4DF1AA72330180000F90D13 /* NoteCardNoteTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardNoteTextViewWrapper.swift; sourceTree = "<group>"; };
 		B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardViewNavigationLink.swift; sourceTree = "<group>"; };
 		B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextField.swift; sourceTree = "<group>"; };
+		B4EEF32B235D99B400869567 /* ModalDragHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalDragHandle.swift; sourceTree = "<group>"; };
 		B4FFEB26234ED0CE00B4550F /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		B4FFEB28234ED2AA00B4550F /* Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -248,6 +250,7 @@
 				B4BAC5272320400A007EAF15 /* Data Model */,
 				B4BAC52123203F58007EAF15 /* DataSource */,
 				B499A35A2326D972002D16A0 /* View */,
+				B4EEF32A235D997200869567 /* View Component */,
 				B4C76DF9232C0A180033DDEA /* UIView */,
 				B402F62A234087F900EC0A77 /* View Model + Enum */,
 				B40BB6172335B11900E2F98B /* View Modifier + Utility */,
@@ -291,6 +294,14 @@
 				B46B3406232E8634008B2088 /* FirstTimeResponder.swift */,
 			);
 			path = UIView;
+			sourceTree = "<group>";
+		};
+		B4EEF32A235D997200869567 /* View Component */ = {
+			isa = PBXGroup;
+			children = (
+				B4EEF32B235D99B400869567 /* ModalDragHandle.swift */,
+			);
+			path = "View Component";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -429,6 +440,7 @@
 				B4D73417233F074E00A3958A /* NoteCardTagView.swift in Sources */,
 				B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */,
 				B4153C592329843F00496E38 /* NoteCardView.swift in Sources */,
+				B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */,
 				B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */,
 				B46B3407232E8634008B2088 /* FirstTimeResponder.swift in Sources */,
 				B411E04F2332F672008D99A0 /* NavigationStateHandler.swift in Sources */,

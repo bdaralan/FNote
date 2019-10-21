@@ -8,8 +8,9 @@
 
 import SwiftUI
 
+
 struct ModalTextField: View {
-    
+        
     @Binding var isActive: Bool
     
     @Binding var text: String
@@ -43,11 +44,12 @@ struct ModalTextField: View {
         .padding(.horizontal)
         .overlay(dragHandle, alignment: .top)
     }
-    
+}
+
+
+extension ModalTextField {
     var dragHandle: some View {
-        RoundedRectangle(cornerRadius: 2, style: .continuous)
-            .frame(width: 40, height: 4, alignment: .center)
-            .foregroundColor(.primary)
+            ModalDragHandle(hideOnLandscape: true)
             .padding(.top, 8)
     }
 }
