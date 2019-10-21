@@ -75,6 +75,22 @@ extension Tag {
 
 extension Tag {
     
+    /// Check if a name already exists in the context.
+    /// - Parameters:
+    ///   - name: The name to check. The name is case sensitive.
+    ///   - context: The context to check.
+    /// - Returns: `true` if the name is in the context or if failed to check.
+    static func isNameExisted(name: String, in context: NSManagedObjectContext) -> Bool {
+        let request = requestAllTags()
+        guard let collections = try? context.fetch(request) else { return true }
+        let names = collections.map({ $0.name })
+        return names.contains(name)
+    }
+}
+
+
+extension Tag {
+    
     @nonobjc class func fetchRequest() -> NSFetchRequest<Tag> {
         return NSFetchRequest<Tag>(entityName: "Tag")
     }
@@ -91,21 +107,4 @@ extension Tag {
     @objc(removeNoteCards:)
     @NSManaged func removeFromNoteCards(_ values: NSSet)
 
-}
-
-
-extension Tag {
-    
-    static func sampleTags(count: Int) -> [Tag] {
-        let sampleContext = CoreDataStack.sampleContext
-        
-        var tags = [Tag]()
-        for name in 1...count {
-            let tag = Tag(context: sampleContext)
-            tag.name = "Tag \(name)"
-            tags.append(tag)
-        }
-        
-        return tags
-    }
 }
