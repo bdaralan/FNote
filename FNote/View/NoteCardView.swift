@@ -8,6 +8,7 @@
 
 import SwiftUI
 
+
 struct NoteCardView: View {
     
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
@@ -26,6 +27,8 @@ struct NoteCardView: View {
     
     /// A sheet to indicate when presentation sheet to show.
     @State private var sheet: Sheet?
+    
+    @State private var showDeleteAlert = false
     
     let imageSize: CGFloat = 20
     
@@ -105,7 +108,7 @@ struct NoteCardView: View {
             
             Section {
                 // MARK: Delete
-                Button(action: onDelete ?? {}) {
+                Button(action: { self.showDeleteAlert = true }) {
                     Text("Delete")
                         .foregroundColor(.red)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
@@ -114,6 +117,7 @@ struct NoteCardView: View {
             }
         }
         .sheet(item: $sheet, onDismiss: dismissSheet, content: presentationSheet)
+        .alert(isPresented: $showDeleteAlert, content: deleteAlert)
     }
 }
 
@@ -232,6 +236,18 @@ extension NoteCardView {
         case nil:
             return {}
         }
+    }
+}
+
+
+// MARK: - Alert
+
+extension NoteCardView {
+    
+    func deleteAlert() -> Alert {
+        let title = Text("Delete Note Card")
+        let delete = Alert.Button.destructive(Text("Delete"), action: onDelete)
+        return Alert(title: title, primaryButton: .cancel(), secondaryButton: delete)
     }
 }
 
