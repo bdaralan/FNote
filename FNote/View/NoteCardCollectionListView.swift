@@ -29,9 +29,10 @@ struct NoteCardCollectionListView: View {
                             VStack(alignment: .leading) {
                                 Text(collection.name)
                                     .font(.title)
-                                Text("\(collection.noteCards.count) CARDS")
-                                    .foregroundColor(.secondary)
-                                    .font(.subheadline )
+                                Text(self.showCollectionCount(count: collection.noteCards.count))
+                                .foregroundColor(.secondary)
+                                .font(.subheadline )
+                                
                             }
                             
                             Spacer() // hstack
@@ -217,6 +218,14 @@ extension NoteCardCollectionListView {
             descriptionColor: .red,
             onCommit: commit
         )
+    }
+    
+    func showCollectionCount(count: Int) -> String {
+        if count == 1 {
+            return "\(count) CARD"
+        } else {
+            return "\(count) CARDS"
+        }
     }
 }
 
