@@ -11,7 +11,7 @@ import SwiftUI
 struct NoteCardCollectionViewCard: View {
     
     @ObservedObject var noteCard: NoteCard
-    
+    var showQuickButton: Bool = true
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -36,6 +36,7 @@ struct NoteCardCollectionViewCard: View {
                 starButton()
             }
             .padding(.top, 4)
+            .hidden(!showQuickButton)
         }
         .padding()
         .background(Color.noteCardBackground)

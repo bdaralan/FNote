@@ -13,6 +13,8 @@ struct NoteCardRelationshipView: View {
     
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
     
+    @ObservedObject var noteCard: NoteCard
+    
     /// An array of notecards to display.
     var noteCards: [NoteCard]
     
@@ -29,13 +31,13 @@ struct NoteCardRelationshipView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 24) {
                     ForEach(noteCards, id: \.uuid) { noteCard in
-                        NoteCardCollectionViewCard(noteCard: noteCard)
+                        NoteCardCollectionViewCard(noteCard: noteCard, showQuickButton: false)
                     }
                 }
                 .padding()
             }
             .navigationBarTitle("Relationships", displayMode: .inline)
-            .navigationBarItems(trailing: addRelationshipNavItem)
+            .navigationBarItems(leading: doneNavItem, trailing: searchNavItem)
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -45,11 +47,18 @@ struct NoteCardRelationshipView: View {
 extension NoteCardRelationshipView {
     
     // Button to show the add relationship sheet
-    var addRelationshipNavItem: some View {
+    var searchNavItem: some View {
         Button(action: {}) {
-            Image(systemName: "plus")
+            Image(systemName: "magnifyingglass")
                 .imageScale(.large)
         }
+    }
+    
+    var doneNavItem: some View {
+        Button(action: onDone ?? {}) {
+            Text("Done")
+        }
+        .hidden(onDone == nil)
     }
     
     // View that lets the user add unrelated cards
@@ -75,6 +84,6 @@ extension NoteCardRelationshipView {
 
 struct NoteCardRelationshipView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardRelationshipView(noteCards: [], onLongPressed: nil, onDone: nil)
+        NoteCardRelationshipView(noteCard: .init(), noteCards: [])
     }
 }
