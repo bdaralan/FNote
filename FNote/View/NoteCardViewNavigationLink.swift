@@ -11,22 +11,24 @@ import SwiftUI
 
 /// A navigation link view for viewing or editing note card.
 struct NoteCardViewNavigationLink: View {
-    
+        
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
-    
-    @EnvironmentObject var tagDataSource: TagDataSource
     
     @ObservedObject var noteCard: NoteCard
     
+    /// The UUID of the note card to be pushed onto the navigation view.
+    @Binding var selectedNoteCardID: String?
+    
+    @State private var showDiscardAlert = false
+    
     var onDeleted: (() -> Void)?
-    
-    @ObservedObject private var navigationHandler = NavigationStateHandler()
-    
+        
     
     var body: some View {
-        NavigationLink(destination: noteCardView, isActive: $navigationHandler.isPushed) {
+        NavigationLink(destination: noteCardView, tag: noteCard.uuid, selection: $selectedNoteCardID) {
             NoteCardCollectionViewCard(noteCard: noteCard)
         }
+        .alert(isPresented: $showDiscardAlert, content: { self.discardAlert })
     }
 }
 
@@ -37,7 +39,7 @@ extension NoteCardViewNavigationLink {
         NoteCardView(noteCard: noteCard, onDelete: deleteCard)
             .navigationBarTitle("Note Card", displayMode: .inline)
             .navigationBarItems(trailing: saveNavItem)
-            .onAppear(perform: setupNavigationPopHandler)
+            .onDisappear(perform: checkUnsavedChanges)
     }
     
     var saveNavItem: some View {
@@ -49,30 +51,42 @@ extension NoteCardViewNavigationLink {
     }
     
     func deleteCard() {
-        navigationHandler.pop()
         noteCardDataSource.delete(noteCard, saveContext: true)
         onDeleted?()
-    }
-    
-    func discardUnsavedChanges() {
-        guard noteCard.hasChangedValues() else { return }
-        noteCardDataSource.discardUpdateContext()
     }
     
     func saveChanges() {
         noteCard.objectWillChange.send() // tell the UI to refresh
         noteCardDataSource.saveUpdateContext()
-        tagDataSource.saveUpdateContext()
     }
     
-    func setupNavigationPopHandler() {
-        navigationHandler.onPopped = discardUnsavedChanges
+    func discardChanges() {
+        noteCard.objectWillChange.send() // tell the UI to refresh
+        noteCardDataSource.discardUpdateContext()
+    }
+}
+
+
+extension NoteCardViewNavigationLink {
+    
+    var discardAlert: Alert {
+        let title = Text("Unsaved Changes")
+        let message = Text("There are unsaved changes.\nWould you like to save the changes?")
+        let save = Alert.Button.default(Text("Save"), action: saveChanges)
+        let discard = Alert.Button.destructive(Text("Discard"), action: discardChanges)
+        return Alert(title: title, message: message, primaryButton: discard, secondaryButton: save)
+    }
+    
+    /// Check and show discard alert if there are unsaved changes.
+    func checkUnsavedChanges() {
+        guard noteCard.hasChangedValues() else { return }
+        showDiscardAlert = true
     }
 }
 
 
 struct NoteCardViewNavigationLink_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardViewNavigationLink(noteCard: .init())
+        NoteCardViewNavigationLink(noteCard: .init(), selectedNoteCardID: .constant(nil))
     }
 }

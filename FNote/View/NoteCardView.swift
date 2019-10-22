@@ -254,8 +254,9 @@ extension NoteCardView {
     
     func deleteAlert() -> Alert {
         let title = Text("Delete Note Card")
+        let message = Text("Delete note card from the collection.")
         let delete = Alert.Button.destructive(Text("Delete"), action: onDelete)
-        return Alert(title: title, primaryButton: .cancel(), secondaryButton: delete)
+        return Alert(title: title, message: message, primaryButton: .cancel(), secondaryButton: delete)
     }
 }
 

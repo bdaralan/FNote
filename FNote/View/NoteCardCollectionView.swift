@@ -23,6 +23,8 @@ struct NoteCardCollectionView: View {
     /// A flag used to show or hide create-new-note-card sheet.
     @State private var showCreateNewNoteCardSheet = false
     
+    @State private var selectedNoteCardID: String?
+    
     /// A view reloader used to force reload view.
     @ObservedObject private var viewReloader = ViewForceReloader()
     
@@ -37,7 +39,11 @@ struct NoteCardCollectionView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 24) {
                     ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { noteCard in
-                        NoteCardViewNavigationLink(noteCard: noteCard, onDeleted: self.viewReloader.forceReload)
+                        NoteCardViewNavigationLink(
+                            noteCard: noteCard,
+                            selectedNoteCardID: self.$selectedNoteCardID,
+                            onDeleted: self.viewReloader.forceReload
+                        )
                     }
                 }
                 .padding()
