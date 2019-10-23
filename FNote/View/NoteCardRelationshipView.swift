@@ -28,12 +28,14 @@ struct NoteCardRelationshipView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 24) {
                     ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { noteCard in
-                        NoteCardCollectionViewCard(
-                            noteCard: noteCard,
-                            showQuickButton: false,
-                            cardBackground: self.cardBackgroundColor(for: noteCard)
-                        )
-                            .hidden(noteCard.uuid == self.noteCard.uuid)
+                        Button(action: { self.noteCardSelected(noteCard) }) {
+                            NoteCardCollectionViewCard(
+                                noteCard: noteCard,
+                                showQuickButton: false,
+                                cardBackground: self.cardBackgroundColor(for: noteCard)
+                            )
+                                .hidden(noteCard.uuid == self.noteCard.uuid)
+                        }
                     }
                 }
                 .padding()
@@ -62,31 +64,29 @@ extension NoteCardRelationshipView {
         }
         .hidden(onDone == nil)
     }
-    
-    // View that lets the user add unrelated cards
-    var addRelationshipCardView: some View {
-        Text("Add Relationship")
-//        // Fetch all the notecards through the data source
-//        let allNoteCards = noteCardDataSource.fetchedResult.fetchedObjects ?? []
-//
-//        // Filters allNoteCards to show unrelated cards by checking if it is in the relationship set
-//        let unrelatedNoteCards = allNoteCards.filter { noteCard in
-//            return !self.noteCard.relationships.contains(noteCard)
-//        }
-//
-//        // Use NavigationView to allow user to cancel and add while in NoteCardRelationshipView
-//        return NavigationView {
-//            NoteCardRelationshipView(noteCards: unrelatedNoteCards, onLongPressed: nil, onDone: nil)
-//                .navigationBarTitle("Add Relationships", displayMode: .inline)
-//                .navigationBarItems(leading: Text("Cancel"), trailing: Text("Add"))
-//        }
-    }
 }
 
 extension NoteCardRelationshipView {
     
+    /// Add or remove the selected cards in the notecard's relationship set.
+    func noteCardSelected(_ noteCard: NoteCard) {
+        guard let context = self.noteCard.managedObjectContext else { return }
+        
+        let noteCard = noteCard.get(from: context)
+        self.noteCard.objectWillChange.send()   // object will be changed, show the changes
+        
+        if self.noteCard.relationships.contains(noteCard) {
+            self.noteCard.relationships.remove(noteCard)
+        }
+        else {
+            self.noteCard.relationships.insert(noteCard)
+        }
+ 
+    }
+    
+    /// Set the background color for selected cards.
     func cardBackgroundColor(for noteCard: NoteCard) -> Color? {
-        if noteCard.relationships.contains(where: { $0.uuid == noteCard.uuid }) {
+        if self.noteCard.relationships.contains(where: { $0.uuid == noteCard.uuid }) {
             return .appAccent // return orange color if card is in the relationships
         }
         return nil // return default color if card is not in relationship

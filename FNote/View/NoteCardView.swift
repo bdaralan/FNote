@@ -129,7 +129,7 @@ extension NoteCardView {
     // View that uses the NoteCardRelationshipView
     var relationshipEditingSheet: some View {
         NoteCardRelationshipView(noteCard: noteCard, onDone: doneEditingRelationship)
-            .environmentObject(noteCardDataSource)
+            .environmentObject(noteCardDataSource) // use the noteCardDataSource as the environment object
     }
     
     func beginEditingRelationship() {
