@@ -24,8 +24,14 @@ struct TagListView: View {
         NavigationView {
             List {
                 ForEach(tagDataSource.fetchedResult.fetchedObjects ?? [], id: \.self) { tag in
-                    Text(tag.name)
+                    VStack(alignment: .leading) {
+                        Text(tag.name)
+                            .font(.title)
                         
+                        Text(self.showTagCount(count: tag.noteCards.count))
+                            .foregroundColor(.secondary)
+                            .font(.subheadline)
+                    }
                         .contextMenu {
                             Button(action: { self.beginRenameTag(tag) }) {
                                 Text("Rename")
