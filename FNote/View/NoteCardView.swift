@@ -128,15 +128,8 @@ extension NoteCardView {
     
     // View that uses the NoteCardRelationshipView
     var relationshipEditingSheet: some View {
-        var noteCards = noteCardDataSource.fetchedResult.fetchedObjects ?? []
-        
-        noteCards.removeAll(where: { $0.uuid == noteCard.uuid })
-        
-        return NoteCardRelationshipView(
-            noteCard: noteCard,
-            noteCards: noteCards,
-            onDone: doneEditingRelationship
-        )
+        NoteCardRelationshipView(noteCard: noteCard, onDone: doneEditingRelationship)
+            .environmentObject(noteCardDataSource)
     }
     
     func beginEditingRelationship() {

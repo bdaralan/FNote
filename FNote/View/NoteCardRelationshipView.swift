@@ -15,9 +15,6 @@ struct NoteCardRelationshipView: View {
     
     @ObservedObject var noteCard: NoteCard
     
-    /// An array of notecards to display.
-    var noteCards: [NoteCard]
-    
     /// An action to perform when a notecard is long pressed
     var onLongPressed: (() -> Void)?
     
@@ -30,8 +27,13 @@ struct NoteCardRelationshipView: View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 24) {
-                    ForEach(noteCards, id: \.uuid) { noteCard in
-                        NoteCardCollectionViewCard(noteCard: noteCard, showQuickButton: false)
+                    ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { noteCard in
+                        NoteCardCollectionViewCard(
+                            noteCard: noteCard,
+                            showQuickButton: false,
+                            cardBackground: self.cardBackgroundColor(for: noteCard)
+                        )
+                            .hidden(noteCard.uuid == self.noteCard.uuid)
                     }
                 }
                 .padding()
@@ -81,9 +83,18 @@ extension NoteCardRelationshipView {
     }
 }
 
+extension NoteCardRelationshipView {
+    
+    func cardBackgroundColor(for noteCard: NoteCard) -> Color? {
+        if noteCard.relationships.contains(where: { $0.uuid == noteCard.uuid }) {
+            return .appAccent // return orange color if card is in the relationships
+        }
+        return nil // return default color if card is not in relationship
+    }
+}
 
 struct NoteCardRelationshipView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardRelationshipView(noteCard: .init(), noteCards: [])
+        NoteCardRelationshipView(noteCard: .init())
     }
 }

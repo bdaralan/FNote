@@ -13,6 +13,8 @@ struct NoteCardCollectionViewCard: View {
     @ObservedObject var noteCard: NoteCard
     var showQuickButton: Bool = true
     
+    var cardBackground: Color? = .noteCardBackground
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(noteCard.native)
@@ -39,7 +41,7 @@ struct NoteCardCollectionViewCard: View {
             .hidden(!showQuickButton)
         }
         .padding()
-        .background(Color.noteCardBackground)
+        .background(cardBackground)
         .cornerRadius(15)
         .shadow(color: Color.primary.opacity(0.15), radius: 2, x: 0, y: 1)
     }
