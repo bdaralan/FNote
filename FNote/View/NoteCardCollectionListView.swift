@@ -30,8 +30,8 @@ struct NoteCardCollectionListView: View {
                                 Text(collection.name)
                                     .font(.title)
                                 Text(self.showCollectionCount(count: collection.noteCards.count))
-                                .foregroundColor(.secondary)
-                                .font(.subheadline )
+                                    .foregroundColor(.secondary)
+                                    .font(.subheadline )
                                 
                             }
                             

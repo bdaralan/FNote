@@ -13,8 +13,11 @@ struct TagListView: View {
     @EnvironmentObject var tagDataSource: TagDataSource
     @State private var tagToRename: Tag?
     @State private var tagNewName = ""
-    @State private var showSheet = false
-    @State private var createRenameSheet = AnyView(EmptyView())
+    @State private var modalTextFieldDescription = ""
+    @State private var modalTextFieldPrompt = ""
+    @State private var modalTextFieldPlaceholder = ""
+    @State private var modalTextFieldState = CreateUpdateSheetState.create
+    @State private var showModalTextField = false
     @ObservedObject private var viewReloader = ViewForceReloader()
     
     var body: some View {
@@ -43,7 +46,7 @@ struct TagListView: View {
         }
             // place sheet
             .onAppear(perform: fetchAllTags)
-            .sheet(isPresented: $showSheet, content: { self.createRenameSheet})
+            .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
     }
 }
 
@@ -65,14 +68,18 @@ extension TagListView {
         // set the object name to empty
         tagNewName = ""
         
-        // show the text field for user to type in. if they remove the entire name, the old name will
-        // appear in grey
-        createRenameSheet = ModalTextField(isActive: $showSheet, text: $tagNewName, prompt: "New Tag", placeholder: "Tag Name", onCommit: commitCreateNewTag).eraseToAnyView()
+        // modifying modal text field
+        modalTextFieldPrompt = "New Tag"
+        modalTextFieldPlaceholder = "Tag Name"
+        modalTextFieldDescription = ""
+        modalTextFieldState = .create
         
-        showSheet = true
+        showModalTextField = true
     }
     
     func commitCreateNewTag() {
+        
+        
         // assign the new object another variable
         let tagToSave = tagDataSource.newObject!
         
@@ -86,7 +93,7 @@ extension TagListView {
         switch saveResult {
         case .saved:
             fetchAllTags()
-            showSheet = false
+            showModalTextField = false
             
         case .failed:
             break
@@ -101,11 +108,29 @@ extension TagListView {
         tagNewName = tag.name
         tagDataSource.setUpdateObject(tag)
         tagToRename = tag
-        createRenameSheet = ModalTextField(isActive: $showSheet, text: $tagNewName, prompt: "Rename", placeholder: tagToRename!.name, onCommit: commitRename).eraseToAnyView()
-        showSheet = true
+
+        // modifying modal text field
+        modalTextFieldPrompt = "Rename Tag"
+        modalTextFieldPlaceholder = tag.name
+        modalTextFieldDescription = ""
+        modalTextFieldState = .update
+        
+        showModalTextField = true
     }
     
     func commitRename() {
+        // cannot rename the tag to the original name
+        if tagNewName == tagToRename?.name {
+            showModalTextField = false
+            return
+        }
+        
+        // checking for a duplicate name
+        if Tag.isNameExisted(name: tagNewName, in: tagDataSource.createContext) {
+            modalTextFieldDescription = "Tag name already exists."
+            return
+        }
+        
         // assign the new name to the stored tag
         tagToRename!.name = tagNewName
         
@@ -117,7 +142,7 @@ extension TagListView {
             tagToRename = nil
             tagDataSource.setUpdateObject(nil)
             fetchAllTags()
-            showSheet = false
+            showModalTextField = false
             
         case .failed:
             break
@@ -144,6 +169,33 @@ extension TagListView {
         
         tagDataSource.performFetch(request)
         viewReloader.forceReload()
+    }
+    
+    func modalTextField() -> some View {
+        let commit: () -> Void
+        
+        switch modalTextFieldState {
+        case .create: commit = commitCreateNewTag
+        case .update: commit = commitRename
+        }
+        
+        return ModalTextField(
+            isActive: $showModalTextField,
+            text: $tagNewName,
+            prompt: modalTextFieldPrompt,
+            placeholder: modalTextFieldPlaceholder,
+            description: modalTextFieldDescription,
+            descriptionColor: .red,
+            onCommit: commit
+        )
+    }
+    
+    func showTagCount(count: Int) -> String {
+        if count == 1 {
+            return "\(count) CARD"
+        } else {
+            return "\(count) CARDS"
+        }
     }
 }
 
