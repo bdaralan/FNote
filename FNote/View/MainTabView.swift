@@ -75,7 +75,7 @@ extension MainTabView {
         func tabItem() -> some View {
             switch self {
             case .home:
-                return createTabViewItem(name: "Notes", systemImage: "rectangle.fill.on.rectangle.angled.fill")
+                return createTabViewItem(name: "Cards", systemImage: "rectangle.fill.on.rectangle.angled.fill")
             case .collection:
                 return createTabViewItem(name: "Collections", systemImage: "rectangle.stack.fill")
             case .tag:
