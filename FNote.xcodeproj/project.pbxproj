@@ -29,6 +29,7 @@
 		B499A3602326DA27002D16A0 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35F2326DA27002D16A0 /* MainTabView.swift */; };
 		B499A3632326E518002D16A0 /* NoteCardCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A3622326E518002D16A0 /* NoteCardCollectionView.swift */; };
 		B499A3652326E8B7002D16A0 /* CoreDataStack+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A3642326E8B7002D16A0 /* CoreDataStack+Extension.swift */; };
+		B4AFD4522360B1B3004BAA9B /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AFD4512360B1B3004BAA9B /* CloudKit.framework */; };
 		B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */; };
 		B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */; };
 		B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5342320405B007EAF15 /* NoteCard.swift */; };
@@ -88,6 +89,8 @@
 		B499A35F2326DA27002D16A0 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		B499A3622326E518002D16A0 /* NoteCardCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionView.swift; sourceTree = "<group>"; };
 		B499A3642326E8B7002D16A0 /* CoreDataStack+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataStack+Extension.swift"; sourceTree = "<group>"; };
+		B4AFD44F2360B1A8004BAA9B /* FNote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FNote.entitlements; sourceTree = "<group>"; };
+		B4AFD4512360B1B3004BAA9B /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedObjectContext.swift; sourceTree = "<group>"; };
 		B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
 		B4BAC5342320405B007EAF15 /* NoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCard.swift; sourceTree = "<group>"; };
@@ -123,6 +126,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B4AFD4522360B1B3004BAA9B /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +195,14 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		B4AFD4502360B1B3004BAA9B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B4AFD4512360B1B3004BAA9B /* CloudKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B4BAC52123203F58007EAF15 /* DataSource */ = {
 			isa = PBXGroup;
 			children = (
@@ -232,6 +244,7 @@
 				B4BB116F23145DC400A380AA /* FNote */,
 				B4BB118923145DC600A380AA /* FNoteTests */,
 				B4BB116E23145DC400A380AA /* Products */,
+				B4AFD4502360B1B3004BAA9B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -247,6 +260,7 @@
 		B4BB116F23145DC400A380AA /* FNote */ = {
 			isa = PBXGroup;
 			children = (
+				B4AFD44F2360B1A8004BAA9B /* FNote.entitlements */,
 				B4BAC5272320400A007EAF15 /* Data Model */,
 				B4BAC52123203F58007EAF15 /* DataSource */,
 				B499A35A2326D972002D16A0 /* View */,
@@ -598,6 +612,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FNote/FNote.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"FNote/Preview Content\"";
 				DEVELOPMENT_TEAM = J58QF9TXDQ;
@@ -618,6 +633,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FNote/FNote.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"FNote/Preview Content\"";
 				DEVELOPMENT_TEAM = J58QF9TXDQ;
