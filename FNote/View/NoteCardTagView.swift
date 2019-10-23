@@ -14,9 +14,6 @@ struct NoteCardTagView: View {
     @EnvironmentObject var tagDataSource: TagDataSource
     
     @ObservedObject var noteCard: NoteCard
-        
-    /// A flag used to determine the sheet action.
-    @State private var modalTextFieldState = CreateUpdateSheetState.create // default sentinel value
     
     /// A text for the sheet view.
     @State private var modalTextFieldText = ""
@@ -88,7 +85,6 @@ extension NoteCardTagView {
         Button(action: { self.tagRowSelected(tag) }) {
             Text(tag.name)
                 .accentColor(.primary)
-                .contextMenu(menuItems: { renameTagContextMenuItem(for: tag) })
         }
     }
     
@@ -99,13 +95,6 @@ extension NoteCardTagView {
         } else if let tag = tagDataSource.fetchedResult.fetchedObjects?.first(where: { $0.uuid == tag.uuid }) {
             let tagToAdd = tag.get(from: noteCard.managedObjectContext!)
             noteCard.tags.insert(tagToAdd)
-        }
-    }
-    
-    func renameTagContextMenuItem(for tag: Tag) -> some View {
-        Button(action: { self.beginRenameTag(tag) }) {
-            Text("Rename")
-            Image(systemName: "square.and.pencil")
         }
     }
 }
@@ -128,26 +117,18 @@ extension NoteCardTagView {
     }
     
     func modalTextField() -> some View {
-        let commit: () -> Void
-        
-        switch modalTextFieldState {
-        case .create: commit = commitCreateNewTag
-        case .update: commit = commitRenameTag
-        }
-        
-        return ModalTextField(
+        ModalTextField(
             isActive: $showModalTextField,
             text: $modalTextFieldText,
             prompt: modalTextFieldPrompt,
             placeholder: modalTextFieldPlaceholder,
             description: modalTextFieldDescription,
             descriptionColor: .red,
-            onCommit: commit
+            onCommit: commitCreateNewTag
         )
     }
     
     func beginCreateNewTag() {
-        modalTextFieldState = .create
         modalTextFieldPrompt = "New Tag"
         modalTextFieldPlaceholder = "Tag Name"
         modalTextFieldDescription = ""
@@ -175,44 +156,6 @@ extension NoteCardTagView {
             noteCard.tags.insert(newTagToAdd)
             
             tagDataSource.discardNewObject()
-        }
-        
-        dismissModalTextField()
-    }
-    
-    func beginRenameTag(_ tag: Tag) {
-        tagDataSource.setUpdateObject(tag)
-        modalTextFieldText = tag.name
-        modalTextFieldPlaceholder = tag.name
-        modalTextFieldPrompt = "Rename Tag"
-        modalTextFieldDescription = ""
-        modalTextFieldState = .update
-        showModalTextField = true
-    }
-    
-    func commitRenameTag() {
-        guard let tag = tagDataSource.updateObject else { return }
-        let tagNewName = modalTextFieldText.trimmed()
-        
-        // just dismiss if the name is the same
-        // note: placeholder was set to tag's current name in begin rename method
-        if tagNewName == tag.name {
-            dismissModalTextField()
-            return
-        }
-        
-        // if tag name exists, show tag name exists message
-        if tagDataSource.isTagNameExisted(tagNewName, in: tagDataSource.updateContext) {
-            modalTextFieldDescription = "Tag name '\(tagNewName)' already exists"
-            return
-        }
-        
-        // rename if it is not an empty whitespaces
-        if !tagNewName.isEmptyOrWhiteSpaces() {
-            tag.objectWillChange.send()
-            tag.name = tagNewName
-            tagDataSource.saveUpdateContext()
-            tagDataSource.setUpdateObject(nil)
         }
         
         dismissModalTextField()
