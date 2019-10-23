@@ -28,7 +28,8 @@ struct NoteCardCollectionListView: View {
                         HStack {
                             VStack(alignment: .leading) {
                                 Text(collection.name)
-                                    .font(.title)
+                                    .font(.headline)
+                                Spacer()
                                 Text(self.showCollectionCount(count: collection.noteCards.count))
                                     .foregroundColor(.secondary)
                                     .font(.subheadline )

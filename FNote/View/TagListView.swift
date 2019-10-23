@@ -26,8 +26,8 @@ struct TagListView: View {
                 ForEach(tagDataSource.fetchedResult.fetchedObjects ?? [], id: \.self) { tag in
                     VStack(alignment: .leading) {
                         Text(tag.name)
-                            .font(.title)
-                        
+                            .font(.headline)
+                        Spacer()
                         Text(self.showTagCount(count: tag.noteCards.count))
                             .foregroundColor(.secondary)
                             .font(.subheadline)
