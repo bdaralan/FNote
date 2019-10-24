@@ -50,14 +50,14 @@ class NoteCard: NSManagedObject, ObjectValidatable {
     
     
     enum Formality: Int64, CaseIterable {
-        case unknown
+        case notset
         case informal
         case neutral
         case formal
         
         var title: String {
             switch self {
-            case .unknown: return "No Set"
+            case .notset: return "None"
             case .informal: return "Informal"
             case .neutral: return "Neutral"
             case .formal: return "Formal"
@@ -66,7 +66,7 @@ class NoteCard: NSManagedObject, ObjectValidatable {
         
         var abbreviation: String {
             switch self {
-            case .unknown: return "?"
+            case .notset: return "?"
             case .informal: return "I"
             case .neutral: return "N"
             case .formal: return "F"
@@ -75,7 +75,7 @@ class NoteCard: NSManagedObject, ObjectValidatable {
         
         var color: Color {
             switch self {
-            case .unknown: return .primary
+            case .notset: return .primary
             case .informal: return .red
             case .neutral: return .orange
             case .formal: return .green

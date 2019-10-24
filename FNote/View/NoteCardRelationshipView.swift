@@ -34,8 +34,8 @@ struct NoteCardRelationshipView: View {
                                 showQuickButton: false,
                                 cardBackground: self.cardBackgroundColor(for: noteCard)
                             )
-                                .hidden(noteCard.uuid == self.noteCard.uuid)
                         }
+                        .hidden(noteCard.uuid == self.noteCard.uuid)
                     }
                 }
                 .padding()

@@ -11,9 +11,11 @@ import SwiftUI
 struct NoteCardCollectionViewCard: View {
     
     @ObservedObject var noteCard: NoteCard
+    
     var showQuickButton: Bool = true
     
-    var cardBackground: Color? = .noteCardBackground
+    var cardBackground: Color?
+    
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -41,9 +43,9 @@ struct NoteCardCollectionViewCard: View {
             .hidden(!showQuickButton)
         }
         .padding()
-        .background(cardBackground)
+        .background(cardBackground ?? .noteCardBackground)
         .cornerRadius(15)
-        .shadow(color: Color.primary.opacity(0.15), radius: 2, x: 0, y: 1)
+        .shadow(color: Color.primary.opacity(0.1), radius: 1, x: -1, y: 1)
     }
 }
 
@@ -73,7 +75,7 @@ extension NoteCardCollectionViewCard {
     func formalButton() -> some View {
         HStack {
             Image.noteCardFormality
-            Text(noteCard.formality.abbreviation)
+            Text(noteCard.formality == .notset ? " " : noteCard.formality.abbreviation)
         }
         .font(.body)
         .foregroundColor(noteCard.formality.color)

@@ -16,6 +16,8 @@ extension Color {
     static let noteCardBackground = Color("note-card-background")
     
     static let noteCardDivider = Color("note-card-divider")
+    
+    static let tagScrollPillBackground = Color("tag-scroll-pill-background")
 }
 
 

@@ -81,29 +81,46 @@ struct NoteCardView: View {
                     HStack {
                         Image.noteCardRelationship
                             .frame(width: imageSize, height: imageSize, alignment: .center)
+                            .foregroundColor(.primary)
                         Text("Relationship")
+                            .foregroundColor(.primary)
+                        Spacer()
+                        Text(noteCard.relationships.isEmpty ? "none" : "\(noteCard.relationships.count)")
+                            .foregroundColor(.secondary)
                     }
-                    .foregroundColor(.primary)
                 }
                 
                 // MARK: Tag
                 Button(action: beginEditingTag) {
-                    HStack {
-                        Image.noteCardTag
-                            .frame(width: imageSize, height: imageSize, alignment: .center)
-                        Text("Tags")
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack {
+                            Image.noteCardTag
+                                .frame(width: imageSize, height: imageSize, alignment: .center)
+                                .foregroundColor(.primary)
+                            Text("Tags")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Text(noteCard.tags.isEmpty ? "none" : "\(noteCard.tags.count)")
+                                .foregroundColor(.secondary)
+                        }
+                        tagPillScrollView
+                            .onTapGesture(perform: beginEditingTag)
+                            .hidden(noteCard.tags.isEmpty)
                     }
-                    .foregroundColor(.primary)
+                    .padding(.top, noteCard.tags.isEmpty ? 0 : 6)
                 }
             }
             
             Section(header: Text("NOTE")) {
-                // MARK: Note
-                NoteCardNoteTextViewWrapper(text: $noteCard.note)
-                    .frame(minHeight: 250, maxHeight: .infinity, alignment: .center)
-                    .padding(0)
-                    .overlay(emptyNotePlaceholderText, alignment: .topLeading)
-                    .onTapGesture(perform: beginEditingNote)
+                VStack {
+                    Text(noteCard.note.isEmpty ? "⠂⠂⠂" : noteCard.note)
+                        .foregroundColor(noteCard.note.isEmpty ? .secondary : .primary)
+                }
+                .frame(maxWidth: .infinity, minHeight: 0, alignment: .leading)
+                .padding(.vertical, noteCard.note.isEmpty ? 0 : 6)
+                .contentShape(Rectangle())
+                .onTapGesture(perform: beginEditingNote)
+                .onLongPressGesture(perform: copyNoteToClipboard)
             }
             
             Section {
@@ -118,6 +135,45 @@ struct NoteCardView: View {
         }
         .sheet(item: $sheet, onDismiss: dismissSheet, content: presentationSheet)
         .alert(isPresented: $showDeleteAlert, content: deleteAlert)
+    }
+}
+
+
+// MARK: - Tag Pills Scroll View
+
+extension NoteCardView {
+    
+    /// A horizontal scroll view displaying note card's tags.
+    var tagPillScrollView: some View {
+        // these values attempt to make the scroll view sits at
+        // bottom of the row, but keep the tag pill visually in the center
+        //
+        // reason: make the bottom of the row the scroll area instead of
+        // button's tapping area
+        let scrollViewHeight: CGFloat = 40
+        let scrollViewOffsetY: CGFloat = 6
+        let scrollViewContentOffsetY = scrollViewOffsetY * -1.5
+        
+        let pillBackground = RoundedRectangle(cornerRadius: 20, style: .continuous)
+            .fill(Color.tagScrollPillBackground)
+        
+        let scrollView = ScrollView(.horizontal, showsIndicators: false) {
+            HStack {
+                ForEach(Array(noteCard.tags), id: \.self) { tag in
+                    Text(tag.name)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 4)
+                        .font(.callout)
+                        .foregroundColor(.primary)
+                        .background(pillBackground)
+                }
+            }
+            .offset(y: scrollViewContentOffsetY)
+            .frame(height: scrollViewHeight, alignment: .bottom)
+        }
+        .offset(y: scrollViewOffsetY)
+        
+        return scrollView
     }
 }
 
@@ -192,6 +248,11 @@ extension NoteCardView {
     func commitEditingNote() {
         noteCard.note = noteCard.note.trimmed()
         sheet = nil
+    }
+    
+    func copyNoteToClipboard() {
+        guard !noteCard.note.isEmpty else { return }
+        UIPasteboard.general.string = noteCard.note
     }
 }
 
