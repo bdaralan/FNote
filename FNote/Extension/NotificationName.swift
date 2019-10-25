@@ -9,6 +9,8 @@
 import Foundation
 
 
+// MARK: - App
+
 extension Notification.Name {
     
     // set notification name for selecting a collection
@@ -21,4 +23,12 @@ extension Notification.Name {
     static let appCurrentTagDidDelete = Notification.Name("Notification.Name.appCurrentTagDidDelete")
 }
 
+
+// MARK: - Core Data Stack
+
+extension Notification.Name {
+    
+    /// A notification name for remote store values change.
+    static let persistentStoreRemoteChange = Notification.Name("NSPersistentStoreRemoteChangeNotification")
+}
 

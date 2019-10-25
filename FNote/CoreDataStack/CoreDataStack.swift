@@ -5,7 +5,7 @@
 //  Created by Dara Beng on 9/9/19.
 //  Copyright © 2019 Dara Beng. All rights reserved.
 //
-// reference: https://developer.apple.com/documentation/coredata/consuming_relevant_store_changes
+//  reference: https://developer.apple.com/documentation/coredata/consuming_relevant_store_changes
 
 import CoreData
 
@@ -29,6 +29,12 @@ class CoreDataStack: NSObject {
         
         // auto merge new changes when store gets new updates
         persistentContainer.viewContext.automaticallyMergesChangesFromParent = true
+        
+        // turn on history tracking and listen to remote change notification
+        let storeDescription = persistentContainer.persistentStoreDescriptions.first!
+        let enabled = NSNumber(value: true)
+        storeDescription.setOption(enabled, forKey: "NSPersistentHistoryTrackingKey")
+        storeDescription.setOption(enabled, forKey: "NSPersistentStoreRemoteChangeNotificationOptionKey")
         
         // load container
         persistentContainer.loadPersistentStores { storeDescription, error in
