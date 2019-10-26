@@ -31,6 +31,8 @@ struct NoteCardCollectionView: View {
     /// A notification observer that listen to current collection did change notification.
     @ObservedObject private var currentCollectionObserver = NotificationObserver(name: .appCurrentCollectionDidChange)
     
+    let searchField = SearchField()
+    
     
     // MARK: Body
     
@@ -38,6 +40,7 @@ struct NoteCardCollectionView: View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 24) {
+                    SearchTextField(searchField: searchField)
                     ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { noteCard in
                         NoteCardViewNavigationLink(
                             noteCard: noteCard,
@@ -150,6 +153,7 @@ extension NoteCardCollectionView {
         loadCurrentCollection()
         fetchNoteCards()
         setupCurrentCollectionObserver()
+        setupSearchTextField()
     }
     
     /// Get user's current selected note-card collection.
@@ -166,10 +170,13 @@ extension NoteCardCollectionView {
     }
     
     /// Fetch note cards to displays.
-    func fetchNoteCards() {
-        let currentCollectionUUID = currentCollection?.uuid
-        let request = NoteCard.requestNoteCards(forCollectionUUID: currentCollectionUUID)
-        noteCardDataSource.performFetch(request)
+    func fetchNoteCards(searchText: String = "") {
+        if let currentCollectionUUID = currentCollection?.uuid {
+            let request = NoteCard.requestNoteCards(forCollectionUUID: currentCollectionUUID, predicate: searchText)
+            noteCardDataSource.performFetch(request)
+        } else {
+            noteCardDataSource.performFetch(NoteCard.requestNone())
+        }
         viewReloader.forceReload()
     }
     
@@ -178,6 +185,18 @@ extension NoteCardCollectionView {
         currentCollectionObserver.onReceived = { notification in
             self.loadCurrentCollection()
             self.fetchNoteCards()
+        }
+    }
+}
+
+
+// MARK: - Search Text Field
+
+extension NoteCardCollectionView {
+    
+    func setupSearchTextField() {
+        searchField.onSearchTextDebounced = { searchText in
+            self.fetchNoteCards(searchText: searchText)
         }
     }
 }

@@ -87,14 +87,6 @@ class NoteCard: NSManagedObject, ObjectValidatable {
 
 extension NoteCard {
     
-    func hasTag(_ tag: Tag) -> Bool {
-        tags.contains(where: { $0.uuid == tag.uuid })
-    }
-}
-
-
-extension NoteCard {
-    
     func isValid() -> Bool {
         hasValidInputs() && collection != nil
     }
@@ -117,18 +109,36 @@ extension NoteCard {
 
 extension NoteCard {
     
-    static func requestNoteCards(forCollectionUUID uuid: String?) -> NSFetchRequest<NoteCard> {
+    /// A request to fetch note card in a collection.
+    /// - Parameters:
+    ///   - uuid: The collection UUID.
+    ///   - predicate: A predicate to match either the `translation` or `native`.
+    static func requestNoteCards(forCollectionUUID uuid: String, predicate: String = "") -> NSFetchRequest<NoteCard> {
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
+        let collectionUUID = #keyPath(NoteCard.collection.uuid)
+        let native = #keyPath(NoteCard.native)
+        let translation = #keyPath(NoteCard.translation)
         
-        if let uuid = uuid {
-            let collectionUUID = #keyPath(NoteCard.collection.uuid)
-            request.predicate = .init(format: "\(collectionUUID) == %@", uuid)
-            request.sortDescriptors = [.init(key: #keyPath(NoteCard.native), ascending: true)]
+        let matchCollection = NSPredicate(format: "\(collectionUUID) == %@", uuid)
+        
+        if predicate.trimmed().isEmpty {
+            request.predicate = matchCollection
         } else {
-            request.predicate = .init(value: false)
-            request.sortDescriptors = []
+            let query = "\(translation) CONTAINS[c] %@ OR \(native) CONTAINS[c] %@"
+            let matchTranslationOrNative = NSPredicate(format: query, predicate, predicate)
+            let predicates = [matchCollection, matchTranslationOrNative]
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         }
         
+        request.sortDescriptors = [.init(key: translation, ascending: true)]
+        
+        return request
+    }
+    
+    static func requestNone() -> NSFetchRequest<NoteCard> {
+        let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
+        request.predicate = .init(value: false)
+        request.sortDescriptors = []
         return request
     }
 }
