@@ -27,7 +27,9 @@ struct MainTabView: View {
         return dataSource
     }()
     
-    @State private var currentTabItem = Tab.home
+    @State private var currentTabItem = Tab.card
+    
+    let persistentStoreRemoteChangeObserver = NotificationObserver(name: .persistentStoreRemoteChange)
     
     
     // MARK: - Body
@@ -37,8 +39,8 @@ struct MainTabView: View {
             NoteCardCollectionView()
                 .environmentObject(noteCardDataSource)
                 .environmentObject(tagDataSource)
-                .tabItem(Tab.home.tabItem)
-                .tag(Tab.home)
+                .tabItem(Tab.card.tabItem)
+                .tag(Tab.card)
             
             NoteCardCollectionListView()
                 .environmentObject(noteCardCollectionDataSource)
@@ -57,6 +59,37 @@ struct MainTabView: View {
                 .tag(Tab.setting)
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .onAppear(perform: setupView)
+    }
+}
+
+
+// MARK: Setup
+
+extension MainTabView {
+    
+    func setupView() {
+        persistentStoreRemoteChangeObserver.onReceived = refreshFetchedObjects
+    }
+    
+    func refreshFetchedObjects(withRemoteChange notification: Notification) {
+        let history = CoreDataStack.current.historyTracker
+        guard let newHistoryToken = history.token(fromRemoteChange: notification) else { return }
+        guard !newHistoryToken.isEqual(history.lastToken) else { return }
+        history.updateLastToken(newHistoryToken)
+        
+        DispatchQueue.main.async {
+            switch self.currentTabItem {
+            case .card:
+                self.noteCardDataSource.refreshFetchedObjects()
+            case .collection:
+                self.noteCardCollectionDataSource.refreshFetchedObjects()
+            case .tag:
+                self.tagDataSource.refreshFetchedObjects()
+            case .setting:
+                break
+            }
+        }
     }
 }
 
@@ -66,7 +99,7 @@ struct MainTabView: View {
 extension MainTabView {
     
     enum Tab: Int {
-        case home
+        case card
         case collection
         case tag
         case setting
@@ -74,7 +107,7 @@ extension MainTabView {
         
         func tabItem() -> some View {
             switch self {
-            case .home:
+            case .card:
                 return createTabViewItem(name: "Cards", systemImage: "rectangle.fill.on.rectangle.angled.fill")
             case .collection:
                 return createTabViewItem(name: "Collections", systemImage: "rectangle.stack.fill")

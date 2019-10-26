@@ -1,5 +1,5 @@
 //
-//  NotificatonObserver.swift
+//  NotificationObserver.swift
 //  FNote
 //
 //  Created by Dara Beng on 9/18/19.

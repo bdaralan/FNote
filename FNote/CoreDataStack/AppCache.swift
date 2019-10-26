@@ -21,9 +21,6 @@ struct AppCache {
     
     @UserDefaultsOptionalValue(forKey: "AppCache.kCurrentCollectionUUID", default: nil)
     static var currentCollectionUUID: String?
-    
-    @UserDefaultsOptionalValue(forKey: "AppCache.kCoreDataLastChangesHistoryToken", default: nil)
-    static var persistentStoreLastChangeHistoryToken: NSPersistentHistoryToken?
 }
 
 

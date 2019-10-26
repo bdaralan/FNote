@@ -75,6 +75,13 @@ extension ObjectDataSource {
             print(error)
         }
     }
+    
+    func refreshFetchedObjects(sendObjectWillChange: Bool = true) {
+        if sendObjectWillChange {
+            fetchedResult.fetchedObjects?.forEach({ $0.objectWillChange.send() })
+        }
+        fetchedResult.managedObjectContext.refreshAllObjects()
+    }
 }
 
 

@@ -18,6 +18,8 @@ class CoreDataStack: NSObject {
     
     let persistentContainer: NSPersistentContainer
     
+    let historyTracker: CoreDataStackHistoryTracker
+    
     var mainContext: NSManagedObjectContext {
         persistentContainer.viewContext
     }
@@ -40,6 +42,8 @@ class CoreDataStack: NSObject {
         persistentContainer.loadPersistentStores { storeDescription, error in
             if let error = error { fatalError("could not load persistent store with error: \(error)") }
         }
+        
+        historyTracker = CoreDataStackHistoryTracker(historyTokenDataKey: "CoreDataStack.HistoryTracker")
         
         super.init()
         
