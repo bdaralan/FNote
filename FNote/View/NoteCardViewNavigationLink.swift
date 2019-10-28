@@ -28,6 +28,7 @@ struct NoteCardViewNavigationLink: View {
         NavigationLink(destination: noteCardView, tag: noteCard.uuid, selection: $selectedNoteCardID) {
             NoteCardCollectionViewCard(noteCard: noteCard)
         }
+        .buttonStyle(NoteCardNavigationButtonStyle())
         .alert(isPresented: $showDiscardAlert, content: { self.discardAlert })
     }
 }
