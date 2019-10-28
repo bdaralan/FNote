@@ -110,10 +110,8 @@ extension NoteCardTagView {
     }
     
     var doneNavItem: some View {
-        Button(action: onDone ?? {}) {
-            Text("Done")
-        }
-        .hidden(onDone == nil)
+        Button("Done", action: onDone ?? {})
+            .hidden(onDone == nil)
     }
     
     func modalTextField() -> some View {
@@ -131,6 +129,7 @@ extension NoteCardTagView {
     func beginCreateNewTag() {
         modalTextFieldPrompt = "New Tag"
         modalTextFieldPlaceholder = "Tag Name"
+        modalTextFieldText = ""
         modalTextFieldDescription = ""
         showModalTextField = true
     }
@@ -139,7 +138,7 @@ extension NoteCardTagView {
         let tagName = modalTextFieldText.trimmed()
         
         // if tag exists, show cannot create message
-        if tagDataSource.isTagNameExisted(tagName, in: tagDataSource.createContext) {
+        if Tag.isNameExisted(name: tagName, in: tagDataSource.createContext) {
             modalTextFieldDescription = "Tag name '\(tagName)' already exists"
             return
         }

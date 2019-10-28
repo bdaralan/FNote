@@ -100,8 +100,9 @@ struct NoteCardView: View {
                             Text("Tags")
                                 .foregroundColor(.primary)
                             Spacer()
-                            Text(noteCard.tags.isEmpty ? "none" : "\(noteCard.tags.count)")
+                            Text("none")
                                 .foregroundColor(.secondary)
+                                .hidden(!noteCard.tags.isEmpty)
                         }
                         tagPillScrollView
                             .onTapGesture(perform: beginEditingTag)
@@ -157,9 +158,10 @@ extension NoteCardView {
         let pillBackground = RoundedRectangle(cornerRadius: 20, style: .continuous)
             .fill(Color.tagScrollPillBackground)
         
+        let sortedTags = noteCard.tags.sorted(by: { $0.name < $1.name })
         let scrollView = ScrollView(.horizontal, showsIndicators: false) {
             HStack {
-                ForEach(Array(noteCard.tags), id: \.self) { tag in
+                ForEach(sortedTags, id: \.self) { tag in
                     Text(tag.name)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 4)

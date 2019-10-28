@@ -82,9 +82,8 @@ extension Tag {
     /// - Returns: `true` if the name is in the context or if failed to check.
     static func isNameExisted(name: String, in context: NSManagedObjectContext) -> Bool {
         let request = requestAllTags()
-        guard let collections = try? context.fetch(request) else { return true }
-        let names = collections.map({ $0.name })
-        return names.contains(name)
+        guard let tags = try? context.fetch(request) else { return true }
+        return tags.contains(where: { $0.name == name })
     }
 }
 

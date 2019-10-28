@@ -60,19 +60,3 @@ class TagDataSource: NSObject, ObjectDataSource {
         objectWillChange.send()
     }
 }
-
-
-extension TagDataSource {
-    
-    /// Check if the given name is already existed.
-    /// - Parameter name: The name to check.
-    func isTagNameExisted(_ name: String, in context: NSManagedObjectContext) -> Bool {
-        let request = Tag.fetchRequest() as NSFetchRequest<Tag>
-        request.predicate = .init(value: true)
-        
-        // return true if cannot fetch for some reason to prevent creating the tag
-        guard let allTags = try? context.fetch(request) else { return true }
-        let tagNames = allTags.map({ $0.name })
-        return tagNames.contains(name)
-    }
-}
