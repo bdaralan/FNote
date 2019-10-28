@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 
 /// A view that displays note cards of the current selected note-card collection.
@@ -31,7 +32,29 @@ struct NoteCardCollectionView: View {
     /// A notification observer that listen to current collection did change notification.
     @ObservedObject private var currentCollectionObserver = NotificationObserver(name: .appCurrentCollectionDidChange)
     
-    let searchField = SearchField()
+    @ObservedObject private var searchField = SearchField()
+    
+    /// A fetch controller used for searching note cards.
+    ///
+    /// - Important:
+    ///   - Initialize its value to tell the view that it is in searching state.
+    ///   - Make sure to set the value back to `nil` to tell the view that it is not in searching state.
+    ///   - Use the computed property `isSearching` when one to check the state.
+    @State private var searchFetchResult: NSFetchedResultsController<NoteCard>?
+    
+    /// A boolean indicate if the view is in searching state.
+    var isSearching: Bool {
+        searchFetchResult != nil
+    }
+    
+    /// The note cards to display.
+    var noteCards: [NoteCard] {
+        if isSearching {
+            return searchFetchResult?.fetchedObjects ?? []
+        } else {
+            return noteCardDataSource.fetchedResult.fetchedObjects ?? []
+        }
+    }
     
     
     // MARK: Body
@@ -40,8 +63,8 @@ struct NoteCardCollectionView: View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 24) {
-                    SearchTextField(searchField: searchField)
-                    ForEach(noteCardDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { noteCard in
+                    SearchTextField(searchField: searchField, onCancel: searchTextFieldCanceled)
+                    ForEach(noteCards, id: \.uuid) { noteCard in
                         NoteCardViewNavigationLink(
                             noteCard: noteCard,
                             selectedNoteCardID: self.$selectedNoteCardID,
@@ -170,9 +193,9 @@ extension NoteCardCollectionView {
     }
     
     /// Fetch note cards to displays.
-    func fetchNoteCards(searchText: String = "") {
+    func fetchNoteCards() {
         if let currentCollectionUUID = currentCollection?.uuid {
-            let request = NoteCard.requestNoteCards(forCollectionUUID: currentCollectionUUID, predicate: searchText)
+            let request = NoteCard.requestNoteCards(forCollectionUUID: currentCollectionUUID)
             noteCardDataSource.performFetch(request)
         } else {
             noteCardDataSource.performFetch(NoteCard.requestNone())
@@ -198,6 +221,42 @@ extension NoteCardCollectionView {
         searchField.onSearchTextDebounced = { searchText in
             self.fetchNoteCards(searchText: searchText)
         }
+    }
+    
+    /// Fetch note cards using `searchFetchResult` with the given search text.
+    /// - Parameter searchText: The search text.
+    func fetchNoteCards(searchText: String) {
+        if !searchText.isEmpty, searchFetchResult == nil {
+            // initialize searchFetchResult when start searching
+            // only does so if there is text in the search text field
+            // this prevents unnecessary fetching in the case where user
+            // activates the search but then cancels right away
+            searchFetchResult = .init(
+                fetchRequest: NoteCard.requestNone(),
+                managedObjectContext: noteCardDataSource.updateContext,
+                sectionNameKeyPath: nil,
+                cacheName: nil
+            )
+        }
+        
+        guard let collectionUUID = AppCache.currentCollectionUUID else {
+            // cancel the search if cannot get current collection ID
+            searchFetchResult = nil
+            searchField.cancel()
+            return
+        }
+        
+        // being fetching with the search text if searchFetchResult is initialized.
+        guard let searchFetchResult = searchFetchResult else { return }
+        let request = NoteCard.requestNoteCards(forCollectionUUID: collectionUUID, predicate: searchText)
+        searchFetchResult.fetchRequest.predicate = request.predicate
+        searchFetchResult.fetchRequest.sortDescriptors = request.sortDescriptors
+        try? searchFetchResult.performFetch()
+    }
+    
+    /// Discard `searchFetchResult` on search text field canceled.
+    func searchTextFieldCanceled() {
+        searchFetchResult = nil
     }
 }
 
