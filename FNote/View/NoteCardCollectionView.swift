@@ -34,6 +34,8 @@ struct NoteCardCollectionView: View {
     
     @ObservedObject private var searchField = SearchField()
     
+    @ObservedObject private var searchOption = SearchOption()
+    
     /// A fetch controller used for searching note cards.
     ///
     /// - Important:
@@ -63,7 +65,11 @@ struct NoteCardCollectionView: View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 24) {
-                    SearchTextField(searchField: searchField, onCancel: searchTextFieldCanceled)
+                    SearchTextField(
+                        searchField: searchField,
+                        searchOption: searchOption,
+                        onCancel: searchTextFieldCanceled
+                    )
                     ForEach(noteCards, id: \.uuid) { noteCard in
                         NoteCardViewNavigationLink(
                             noteCard: noteCard,
@@ -221,6 +227,17 @@ extension NoteCardCollectionView {
         searchField.onSearchTextDebounced = { searchText in
             self.fetchNoteCards(searchText: searchText)
         }
+        
+        let options = NoteCardSearchOption.allCases.map({ $0.rawValue })
+        searchOption.options = options
+        searchOption.selectedOptions = [options.first!]
+        searchOption.allowsMultipleSelections = false
+        searchOption.allowsEmptySelection = false
+        
+        searchOption.selectedOptionsChanged = {
+            let searchText = self.searchField.searchText
+            self.fetchNoteCards(searchText: searchText)
+        }
     }
     
     /// Fetch note cards using `searchFetchResult` with the given search text.
@@ -248,7 +265,17 @@ extension NoteCardCollectionView {
         
         // being fetching with the search text if searchFetchResult is initialized.
         guard let searchFetchResult = searchFetchResult else { return }
-        let request = NoteCard.requestNoteCards(forCollectionUUID: collectionUUID, predicate: searchText)
+        
+        // safe to unwrapped here because already setup to always have one state
+        // see setupSearchTextField() method
+        let searchState = NoteCardSearchOption(rawValue: searchOption.selectedOptions.first!)!
+        
+        let request = NoteCard.requestNoteCards(
+            forCollectionUUID: collectionUUID,
+            searchText: searchText,
+            search: searchState
+        )
+        
         searchFetchResult.fetchRequest.predicate = request.predicate
         searchFetchResult.fetchRequest.sortDescriptors = request.sortDescriptors
         try? searchFetchResult.performFetch()
@@ -257,6 +284,7 @@ extension NoteCardCollectionView {
     /// Discard `searchFetchResult` on search text field canceled.
     func searchTextFieldCanceled() {
         searchFetchResult = nil
+        searchOption.selectedOptions = [searchOption.options.first!]
     }
 }
 

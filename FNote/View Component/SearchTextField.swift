@@ -17,48 +17,127 @@ struct SearchTextField: View {
     
     @ObservedObject var searchField: SearchField
     
+    @ObservedObject var searchOption = SearchOption()
+    
     var onEditingChanged: ((Bool) -> Void)?
     
     var onCancel: (() -> Void)?
     
     @State private var isEditing = false
     
+    @State private var showSearchOption = false
+    
+    var isActive: Bool {
+        isEditing || !searchField.searchText.isEmpty
+    }
+    
+    let animationDuration = 0.3
+    
     
     // MARK: - Body
     
     var body: some View {
-        HStack {
+        VStack(alignment: .leading) {
             HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.secondary)
-                TextField(
-                    searchField.placeholder,
-                    text: $searchField.searchText,
-                    onEditingChanged: searchTextFieldEditingChanged
-                )
+                HStack {
+                    searchIcon
+                    textField
+                    if !searchOption.options.isEmpty && isActive {
+                        searchOptionButton
+                            .transition(.scale)
+                            .animation(.easeInOut(duration: animationDuration))
+                    }
+                }
+                .padding(8)
+                .background(Color(UIColor(white: colorScheme == .light ? 0.92 : 0.1, alpha: 1)))
+                .cornerRadius(10)
+                
+                // show cancel button when the search is editing or there is text
+                if isActive {
+                    cancelButton
+                        .transition(.scale)
+                        .animation(.easeInOut(duration: animationDuration))
+                }
             }
-            .padding(8)
-            .background(Color(UIColor(white: colorScheme == .light ? 0.92 : 0.1, alpha: 1)))
-            .cornerRadius(10)
-            .animation(.easeOut)
+            .animation(.easeInOut(duration: animationDuration))
             
-            // show cancel button when the search is editing or there is text
-            if isEditing || !searchField.searchText.isEmpty {
-                Button("Cancel", action: cancelSearch)
-                    .foregroundColor(.accentColor)
-                    .transition(.scale)
-                    .animation(.easeInOut(duration: 0.3))
+            if showSearchOption {
+                searchOptionView
+                    .transition(AnyTransition.move(edge: .top).combined(with: .opacity))
+                    .animation(.easeIn(duration: animationDuration))
+                    .zIndex(-1)
             }
         }
+        .frameInfinity(alignment: .top)
     }
 }
 
+
+// MARK: - View Component
+
+extension SearchTextField {
+    
+    var searchIcon: some View {
+        Image(systemName: "magnifyingglass")
+            .foregroundColor(.secondary)
+    }
+    
+    var textField: some View {
+        TextField(
+            searchField.placeholder,
+            text: $searchField.searchText,
+            onEditingChanged: searchTextFieldEditingChanged
+        )
+    }
+    
+    var searchOptionButton: some View {
+        Button(action: { self.showSearchOption.toggle() }) {
+            Image(systemName: "slider.horizontal.3")
+        }
+    }
+    
+    var cancelButton: some View {
+        Button("Cancel", action: cancelSearch)
+            .foregroundColor(.accentColor)
+    }
+    
+    var searchOptionView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack {
+                ForEach(searchOption.options, id: \.self) { option in
+                    self.searchOptionText(
+                        option: option,
+                        selected: self.searchOption.selectedOptions.contains(option)
+                    )
+                        .animation(.easeInOut(duration: 0.2))
+                        .onTapGesture(perform: { self.searchOption.handleSelection(option: option) })
+                }
+            }
+        }
+    }
+    
+    func searchOptionText(option: String, selected: Bool) -> some View {
+        Text(option)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 6)
+            .font(.callout)
+            .foregroundColor(.primary)
+            .background(Color.tagScrollPillBackground)
+            .cornerRadius(20)
+            .overlay(Capsule(style: .circular).stroke(Color.appAccent, lineWidth: selected ? 2 : 0))
+            .padding(2)
+    }
+}
+
+
+// MARK: - Text Field
 
 extension SearchTextField {
     
     func cancelSearch() {
         searchField.cancel()
         searchField.clear()
+        showSearchOption = false
         onCancel?()
     }
     
@@ -72,11 +151,44 @@ extension SearchTextField {
 }
 
 
+/// An observable object used with `SearchTextField` to handle search options.
+class SearchOption: ObservableObject {
+    
+    @Published var options = [String]()
+    
+    @Published var selectedOptions = [String]()
+    
+    var allowsMultipleSelections = false
+    
+    var allowsEmptySelection = true
+    
+    var selectedOptionsChanged: (() -> Void)?
+    
+    func handleSelection(option: String) {
+        if let index = selectedOptions.firstIndex(of: option) { // deselect
+            if !allowsEmptySelection, selectedOptions.count == 1 {
+                return
+            }
+            selectedOptions.remove(at: index)
+            selectedOptionsChanged?()
+        
+        } else { // select
+            if allowsMultipleSelections {
+                selectedOptions.append(option)
+            } else {
+                selectedOptions = [option]
+            }
+            selectedOptionsChanged?()
+        }
+    }
+}
+
+
 /// An observable object used with `SearchTextField` to handle search.
 ///
 /// The object provides actions to perform when text changed or debounced.
 class SearchField: ObservableObject {
-
+    
     @Published var searchText = "" {
         didSet { onSearchTextChanged?(searchText) }
     }

@@ -109,6 +109,14 @@ extension NoteCard {
 
 extension NoteCard {
     
+    /// A request to fetch no note card.
+    static func requestNone() -> NSFetchRequest<NoteCard> {
+        let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
+        request.predicate = .init(value: false)
+        request.sortDescriptors = []
+        return request
+    }
+    
     /// A request to fetch note card in a collection.
     /// - Parameters:
     ///   - uuid: The collection UUID.
@@ -135,11 +143,63 @@ extension NoteCard {
         return request
     }
     
-    static func requestNone() -> NSFetchRequest<NoteCard> {
+    /// A request used with search feature to fetch note card in a collection.
+    /// - Parameters:
+    ///   - uuid: The collection UUID.
+    ///   - searchText: The search text.
+    ///   - search: The search option.
+    static func requestNoteCards(forCollectionUUID uuid: String, searchText: String, search: NoteCardSearchOption) -> NSFetchRequest<NoteCard> {
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        request.predicate = .init(value: false)
-        request.sortDescriptors = []
-        return request
+        let collectionUUID = #keyPath(NoteCard.collection.uuid)
+        let translation = #keyPath(NoteCard.translation)
+        let native = #keyPath(NoteCard.native)
+        let note = #keyPath(NoteCard.note)
+        let tags = #keyPath(NoteCard.tags)
+        
+        let matchCollection = NSPredicate(format: "\(collectionUUID) == %@", uuid)
+        
+        if translation.trimmed().isEmpty {
+            request.predicate = matchCollection
+            request.sortDescriptors = [.init(key: translation, ascending: true)]
+            return request
+        }
+        
+        switch search {
+        case .translationOrNative:
+            return requestNoteCards(forCollectionUUID: uuid, predicate: searchText)
+        
+        case .translation:
+            let query = "\(translation) CONTAINS[c] %@"
+            let matchTranslation = NSPredicate(format: query, searchText)
+            let predicates = [matchCollection, matchTranslation]
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+            request.sortDescriptors = [.init(key: translation, ascending: true)]
+            return request
+        
+        case .native:
+            let query = "\(native) CONTAINS[c] %@"
+            let matchNative = NSPredicate(format: query, searchText)
+            let predicates = [matchCollection, matchNative]
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+            request.sortDescriptors = [.init(key: native, ascending: true)]
+            return request
+        
+        case .tag:
+            let query = "SUBQUERY(\(tags), $tag, $tag.name CONTAINS[c] %@).@count > 0"
+            let matchTag = NSPredicate(format: query, searchText)
+            let predicates = [matchCollection, matchTag]
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+            request.sortDescriptors = [.init(key: translation, ascending: true)]
+            return request
+            
+        case .note:
+            let query = "\(note) CONTAINS[c] %@"
+            let matchNote = NSPredicate(format: query, searchText)
+            let predicates = [matchCollection, matchNote]
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+            request.sortDescriptors = [.init(key: translation, ascending: true)]
+            return request
+        }
     }
 }
 

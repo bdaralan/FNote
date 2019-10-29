@@ -17,4 +17,8 @@ extension View {
     func hidden(_ condition: Bool) -> some View {
         condition ? AnyView(EmptyView()) : AnyView(self)
     }
+    
+    func frameInfinity(alignment: Alignment) -> some View {
+        frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: alignment)
+    }
 }

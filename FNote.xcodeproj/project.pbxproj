@@ -21,6 +21,7 @@
 		B411E0512332F6B4008D99A0 /* NotificationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E0502332F6B4008D99A0 /* NotificationObserver.swift */; };
 		B4153C592329843F00496E38 /* NoteCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4153C582329843F00496E38 /* NoteCardView.swift */; };
 		B45A49FF2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A49FE2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift */; };
+		B45A4A032368A2810079D8DE /* NoteCardSearchOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A4A022368A2810079D8DE /* NoteCardSearchOption.swift */; };
 		B466BAFD23333DF5007DD130 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B466BAFC23333DF5007DD130 /* SettingView.swift */; };
 		B46B0F592364A0CE0074B71A /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B0F582364A0CD0074B71A /* SearchTextField.swift */; };
 		B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */; };
@@ -84,6 +85,7 @@
 		B411E0502332F6B4008D99A0 /* NotificationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObserver.swift; sourceTree = "<group>"; };
 		B4153C582329843F00496E38 /* NoteCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardView.swift; sourceTree = "<group>"; };
 		B45A49FE2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardNavigationButtonStyle.swift; sourceTree = "<group>"; };
+		B45A4A022368A2810079D8DE /* NoteCardSearchOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchOption.swift; sourceTree = "<group>"; };
 		B466BAFC23333DF5007DD130 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		B46B0F582364A0CD0074B71A /* SearchTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewWrapper.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				B402F62D234093C200EC0A77 /* CreateUpdateSheetState.swift */,
+				B45A4A022368A2810079D8DE /* NoteCardSearchOption.swift */,
 			);
 			path = "View Model + Enum";
 			sourceTree = "<group>";
@@ -472,6 +475,7 @@
 				B411E04F2332F672008D99A0 /* NavigationStateHandler.swift in Sources */,
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
 				B499A3632326E518002D16A0 /* NoteCardCollectionView.swift in Sources */,
+				B45A4A032368A2810079D8DE /* NoteCardSearchOption.swift in Sources */,
 				B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
