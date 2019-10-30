@@ -53,7 +53,7 @@ struct NoteCardCollectionViewCard: View {
 extension NoteCardCollectionViewCard {
     
     func relationshipButton() -> some View {
-        Button(action: testWord) {
+        Button(action: {} ) {
             HStack {
                 Image.noteCardRelationship
                 Text("\(noteCard.relationships.count)")

@@ -195,5 +195,6 @@ extension NoteCardRelationshipView {
     /// Discard `searchFetchResult` on search text field canceled.
     func searchTextFieldCanceled() {
         searchFetchResult = nil
+        searchOption.selectedOptions = [searchOption.options.first!]
     }
 }
