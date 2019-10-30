@@ -16,6 +16,11 @@ struct NoteCardCollectionViewCard: View {
     
     var cardBackground: Color?
     
+    var onRelationshipTapped: (() -> Void)?
+    
+    var onTagTapped: (() -> Void)?
+    
+    var onFormalityTapped: (() -> Void)?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -53,7 +58,7 @@ struct NoteCardCollectionViewCard: View {
 extension NoteCardCollectionViewCard {
     
     func relationshipButton() -> some View {
-        Button(action: {} ) {
+        Button(action: onRelationshipTapped ?? {} ) {
             HStack {
                 Image.noteCardRelationship
                 Text("\(noteCard.relationships.count)")
@@ -64,21 +69,25 @@ extension NoteCardCollectionViewCard {
     }
     
     func tagButton() -> some View {
-        HStack {
-            Image.noteCardTag
-            Text("\(noteCard.tags.count)")
+        Button(action: onTagTapped ?? {}) {
+            HStack {
+                Image.noteCardTag
+                Text("\(noteCard.tags.count)")
+            }
+            .font(.body)
+            .foregroundColor(.primary)
         }
-        .font(.body)
-        .foregroundColor(.primary)
     }
     
     func formalButton() -> some View {
-        HStack {
-            Image.noteCardFormality
-            Text(noteCard.formality == .notset ? " " : noteCard.formality.abbreviation)
+        Button(action: onFormalityTapped ?? {}) {
+            HStack {
+                Image.noteCardFormality
+                Text(noteCard.formality == .notset ? " " : noteCard.formality.abbreviation)
+            }
+            .font(.body)
+            .foregroundColor(noteCard.formality.color)
         }
-        .font(.body)
-        .foregroundColor(noteCard.formality.color)
     }
     
     func starButton() -> some View {

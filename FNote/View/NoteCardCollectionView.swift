@@ -26,11 +26,16 @@ struct NoteCardCollectionView: View {
     
     @State private var selectedNoteCardID: String?
     
+    @State private var sheetState: NoteCardView.Sheet?
+    
     /// A view reloader used to force reload view.
     @ObservedObject private var viewReloader = ViewForceReloader()
     
     /// A notification observer that listen to current collection did change notification.
-    @ObservedObject private var currentCollectionObserver = NotificationObserver(name: .appCurrentCollectionDidChange)
+    let currentCollectionObserver = NotificationObserver(name: .appCurrentCollectionDidChange)
+    
+    // Listener for the notifcation to request displaying notecard details
+    let requestDisplayingNoteCardObserver = NotificationObserver(name: .requestDisplayingNoteCardDetail)
     
     @ObservedObject private var searchField = SearchField()
     
@@ -57,7 +62,6 @@ struct NoteCardCollectionView: View {
             return noteCardDataSource.fetchedResult.fetchedObjects ?? []
         }
     }
-    
     
     // MARK: Body
     
@@ -183,6 +187,7 @@ extension NoteCardCollectionView {
         loadCurrentCollection()
         fetchNoteCards()
         setupCurrentCollectionObserver()
+        setupRequestDisplayingNoteCardObserver()
         setupSearchTextField()
     }
     
@@ -215,6 +220,13 @@ extension NoteCardCollectionView {
         currentCollectionObserver.onReceived = { notification in
             self.loadCurrentCollection()
             self.fetchNoteCards()
+        }
+    }
+    
+    func setupRequestDisplayingNoteCardObserver() {
+        requestDisplayingNoteCardObserver.onReceived = { notification in
+            guard let noteCard = notification.object as? NoteCard else { return }
+            self.selectedNoteCardID = noteCard.uuid
         }
     }
 }
