@@ -2,8 +2,8 @@
 //  NoteCardCollectionListRow.swift
 //  FNote
 //
-//  Created by Andrew Flores on 10/30/19.
-//  Copyright © 2019 Dara Beng. All rights reserved.
+//  Created by Brittney Witts on 10/30/19.
+//  Copyright © 2019 Brittney Witts. All rights reserved.
 //
 
 import SwiftUI

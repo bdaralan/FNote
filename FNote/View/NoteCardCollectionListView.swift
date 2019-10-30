@@ -28,17 +28,17 @@ struct NoteCardCollectionListView: View {
                         
                         // call the collection view
                         NoteCardCollectionListRow(collection: collection)
-
-                        // context menu
-                        .contextMenu {
-                            Button(action: { self.beginRenameCollection(collection) }) {
-                                Text("Rename")
-                                Image(systemName: "square.and.pencil")
-                            }
-                            Button(action: { self.deleteCollection(collection) }) {
-                                Text("Delete")
-                                Image(systemName: "trash")
-                            }
+                            
+                            // context menu
+                            .contextMenu {
+                                Button(action: { self.beginRenameCollection(collection) }) {
+                                    Text("Rename")
+                                    Image(systemName: "square.and.pencil")
+                                }
+                                Button(action: { self.deleteCollection(collection) }) {
+                                    Text("Delete")
+                                    Image(systemName: "trash")
+                                }
                         }
                     }
                 }
@@ -218,7 +218,7 @@ extension NoteCardCollectionListView {
         )
     }
     
-
+    
 }
 
 struct NoteCardCollectionListView_Previews: PreviewProvider {

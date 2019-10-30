@@ -24,23 +24,20 @@ struct TagListView: View {
         NavigationView {
             List {
                 ForEach(tagDataSource.fetchedResult.fetchedObjects ?? [], id: \.self) { tag in
-                    VStack(alignment: .leading) {
-                        Text(tag.name)
-                            .font(.headline)
-                        Spacer()
-                        Text(self.showTagCount(count: tag.noteCards.count))
-                            .foregroundColor(.secondary)
-                            .font(.subheadline)
-                    }
-                        .contextMenu {
-                            Button(action: { self.beginRenameTag(tag) }) {
-                                Text("Rename")
-                                Image(systemName: "square.and.pencil")
-                            }
-                            Button(action: { self.deleteTag(tag) }) {
-                                Text("Delete")
-                                Image(systemName: "trash")
-                            }
+                    
+                    // call the tag view
+                    TagListRow(tag: tag)
+                        
+                        //context menu
+                    .contextMenu {
+                        Button(action: { self.beginRenameTag(tag) }) {
+                            Text("Rename")
+                            Image(systemName: "square.and.pencil")
+                        }
+                        Button(action: { self.deleteTag(tag) }) {
+                            Text("Delete")
+                            Image(systemName: "trash")
+                        }
                     }
                 }
             }
@@ -114,7 +111,7 @@ extension TagListView {
         tagNewName = tag.name
         tagDataSource.setUpdateObject(tag)
         tagToRename = tag
-
+        
         // modifying modal text field
         modalTextFieldPrompt = "Rename Tag"
         modalTextFieldPlaceholder = tag.name
@@ -194,14 +191,6 @@ extension TagListView {
             descriptionColor: .red,
             onCommit: commit
         )
-    }
-    
-    func showTagCount(count: Int) -> String {
-        if count == 1 {
-            return "\(count) CARD"
-        } else {
-            return "\(count) CARDS"
-        }
     }
 }
 
