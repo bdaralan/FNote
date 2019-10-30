@@ -12,6 +12,8 @@ struct NoteCardCollectionListRow: View {
     
     @ObservedObject var collection: NoteCardCollection
     
+    var showCheckmark: Bool
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -26,7 +28,7 @@ struct NoteCardCollectionListRow: View {
             
             Spacer() // hstack
             Image(systemName: "checkmark")
-                .opacity(collection.uuid == AppCache.currentCollectionUUID ? 1 : 0)
+                .opacity(showCheckmark ? 1 : 0)
         }
     }
 }
@@ -44,6 +46,6 @@ extension NoteCardCollectionListRow {
 
 struct NoteCardCollectionListRow_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionListRow(collection: .init())
+        NoteCardCollectionListRow(collection: .init(), showCheckmark: true)
     }
 }

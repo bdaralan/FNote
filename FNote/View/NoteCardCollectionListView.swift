@@ -25,10 +25,11 @@ struct NoteCardCollectionListView: View {
             List {
                 ForEach(noteCardCollectionDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { collection in
                     Button(action: { self.selectCollection(collection: collection) }) {
-                        
                         // call the collection view
-                        NoteCardCollectionListRow(collection: collection)
-                            
+                        NoteCardCollectionListRow(
+                            collection: collection,
+                            showCheckmark: collection.uuid == AppCache.currentCollectionUUID
+                        )   
                             // context menu
                             .contextMenu {
                                 Button(action: { self.beginRenameCollection(collection) }) {
