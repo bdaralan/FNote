@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		650D14E92332B96100B6E2BF /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650D14E82332B96100B6E2BF /* View.swift */; };
+		656AC27E236A11AE0038F301 /* NoteCardCollectionListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656AC27D236A11AE0038F301 /* NoteCardCollectionListRow.swift */; };
 		65F373A023289D4C002CD331 /* NoteCardCollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F3739F23289D4C002CD331 /* NoteCardCollectionDataSource.swift */; };
 		65F373A6232981C6002CD331 /* NoteCardCollectionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F373A5232981C6002CD331 /* NoteCardCollectionListView.swift */; };
 		665C7EB923209B4D000BFD9F /* TagDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C7EB823209B4D000BFD9F /* TagDataSource.swift */; };
@@ -67,6 +68,7 @@
 
 /* Begin PBXFileReference section */
 		650D14E82332B96100B6E2BF /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
+		656AC27D236A11AE0038F301 /* NoteCardCollectionListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionListRow.swift; sourceTree = "<group>"; };
 		65F3739F23289D4C002CD331 /* NoteCardCollectionDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionDataSource.swift; sourceTree = "<group>"; };
 		65F373A5232981C6002CD331 /* NoteCardCollectionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionListView.swift; sourceTree = "<group>"; };
 		665C7EB823209B4D000BFD9F /* TagDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDataSource.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 				B466BAFC23333DF5007DD130 /* SettingView.swift */,
 				B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */,
 				B40BB61B2335BFED00E2F98B /* TagListView.swift */,
+				656AC27D236A11AE0038F301 /* NoteCardCollectionListRow.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -421,6 +424,7 @@
 				B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */,
 				B4BB117623145DC400A380AA /* FNote.xcdatamodeld in Sources */,
 				B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */,
+				656AC27E236A11AE0038F301 /* NoteCardCollectionListRow.swift in Sources */,
 				66B945B72357A1C2003147AA /* NoteCardRelationshipView.swift in Sources */,
 				B4D7341A233F36FE00A3958A /* NavigationBarBackButton.swift in Sources */,
 				65F373A023289D4C002CD331 /* NoteCardCollectionDataSource.swift in Sources */,

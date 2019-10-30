@@ -25,21 +25,11 @@ struct NoteCardCollectionListView: View {
             List {
                 ForEach(noteCardCollectionDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { collection in
                     Button(action: { self.selectCollection(collection: collection) }) {
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text(collection.name)
-                                    .font(.headline)
-                                Spacer()
-                                Text(self.showCollectionCount(count: collection.noteCards.count))
-                                    .foregroundColor(.secondary)
-                                    .font(.subheadline )
-                                
-                            }
-                            
-                            Spacer() // hstack
-                            Image(systemName: "checkmark")
-                                .opacity(collection.uuid == AppCache.currentCollectionUUID ? 1 : 0)
-                        }
+                        
+                        // call the collection view
+                        NoteCardCollectionListRow(collection: collection)
+
+                        // context menu
                         .contextMenu {
                             Button(action: { self.beginRenameCollection(collection) }) {
                                 Text("Rename")
@@ -72,9 +62,6 @@ extension NoteCardCollectionListView {
     }
     
     func beginCreateNewCollection() {
-        // create a new object
-        noteCardCollectionDataSource.prepareNewObject()
-        
         // set the object name to empty
         collectionNewName = ""
         
@@ -89,11 +76,20 @@ extension NoteCardCollectionListView {
     
     // commit new collection after creating it
     func commitCreateNewCollection() {
+        
+        // checking for an empty name
+        if collectionNewName.trimmed().isEmpty {
+            showModalTextField = false
+            return
+        }
+        
         // checking for duplicate collection name
         if NoteCardCollection.isNameExisted(name: collectionNewName, in: noteCardCollectionDataSource.createContext) {
             modalTextFieldDescription = "Collection name already exists."
             return
         }
+        
+        noteCardCollectionDataSource.prepareNewObject()
         
         // assign the new object another variable
         let collectionToSave = noteCardCollectionDataSource.newObject!
@@ -117,7 +113,8 @@ extension NoteCardCollectionListView {
             }
             
         case .failed:
-            break
+            // if something goes, clear the CreateContext
+            noteCardCollectionDataSource.discardCreateContext()
             
         case .unchanged:
             break
@@ -141,7 +138,7 @@ extension NoteCardCollectionListView {
     
     func commitRename() {
         // cannot rename the collection the original name
-        if collectionNewName == collectionToRename?.name {
+        if collectionNewName == collectionToRename?.name || collectionNewName.trimmed().isEmpty {
             showModalTextField = false
             return
         }
@@ -221,13 +218,7 @@ extension NoteCardCollectionListView {
         )
     }
     
-    func showCollectionCount(count: Int) -> String {
-        if count == 1 {
-            return "\(count) CARD"
-        } else {
-            return "\(count) CARDS"
-        }
-    }
+
 }
 
 struct NoteCardCollectionListView_Previews: PreviewProvider {
