@@ -94,16 +94,6 @@ extension NoteCardCollectionViewCard {
         noteCard.managedObjectContext?.quickSave()
         noteCard.managedObjectContext?.parent?.quickSave()
     }
-    
-    // Function that tests button functionality. Creates a notecard, adds it to the notecard, and shows in the view.
-    func testWord()
-    {
-        let exampleNoteCard = NoteCard(context: noteCard.managedObjectContext!)
-        exampleNoteCard.native = "Bonjour"
-        exampleNoteCard.translation = "Hello"
-        noteCard.objectWillChange.send()
-        noteCard.addToRelationships(exampleNoteCard)
-    }
 }
 
 

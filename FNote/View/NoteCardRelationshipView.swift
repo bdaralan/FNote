@@ -23,6 +23,8 @@ struct NoteCardRelationshipView: View {
     
     @ObservedObject private var searchField = SearchField()
     
+    @ObservedObject private var searchOption = SearchOption()
+    
     ///
     /// - Important:
     ///   - Initialize its value to tell the view that it is in searching state.
@@ -48,7 +50,11 @@ struct NoteCardRelationshipView: View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 24) {
-                    SearchTextField(searchField: searchField, onCancel: searchTextFieldCanceled)
+                    SearchTextField(
+                        searchField: searchField,
+                        searchOption: searchOption,
+                        onCancel: searchTextFieldCanceled
+                    )
                     ForEach(noteCards, id: \.uuid) { noteCard in
                         NoteCardCollectionViewCard(
                             noteCard: noteCard,
@@ -123,12 +129,25 @@ struct NoteCardRelationshipView_Previews: PreviewProvider {
 
 // MARK: - Search Field
 extension NoteCardRelationshipView {
-    
+
     func setupSearchTextField() {
         searchField.onSearchTextDebounced = { searchText in
             self.fetchNoteCards(searchText: searchText)
         }
+        
+        /// The options the user can choose when searching for a notecard.
+        let options = NoteCardSearchOption.allCases.map({ $0.rawValue })
+        searchOption.options = options
+        searchOption.selectedOptions = [options.first!]
+        searchOption.allowsMultipleSelections = false
+        searchOption.allowsEmptySelection = false
+        
+        searchOption.selectedOptionsChanged = {
+            let searchText = self.searchField.searchText
+            self.fetchNoteCards(searchText: searchText)
+        }
     }
+    
     
     /// Fetch note cards using `searchFetchResult` with the given search text.
     /// - Parameter searchText: The search text.
@@ -156,7 +175,17 @@ extension NoteCardRelationshipView {
         
         // begin fetching with the search text if searchFetchResult is initialized.
         guard let searchFetchResult = searchFetchResult else { return }
-        let request = NoteCard.requestNoteCards(forCollectionUUID: collectionUUID, predicate: searchText)
+        
+        // safe to unwrapped here because already setup to always have one state
+        // see setupSearchTextField() method
+        let searchState = NoteCardSearchOption(rawValue: searchOption.selectedOptions.first!)!
+        
+        // Use the second requestNoteCards defined in Notecard that includes the collectionUUID, searchText, and searchState
+        let request = NoteCard.requestNoteCards(
+            forCollectionUUID: collectionUUID,
+            searchText: searchText,
+            search: searchState)
+        
         searchFetchResult.fetchRequest.predicate = request.predicate
         searchFetchResult.fetchRequest.sortDescriptors = request.sortDescriptors
         try? searchFetchResult.performFetch()
