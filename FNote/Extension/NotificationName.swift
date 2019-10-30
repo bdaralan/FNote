@@ -21,6 +21,10 @@ extension Notification.Name {
     
     // set notification name for deleting a tag
     static let appCurrentTagDidDelete = Notification.Name("Notification.Name.appCurrentTagDidDelete")
+    
+    /// Set notification name for requesting NoteCardCollectioView to display the card details
+    /// - Important: the notification must pass in a NoteCard object
+    static let requestDisplayingNoteCardDetail = Notification.Name("Notification.Name.requestDisplayingNoteCardDetail")
 }
 
 
