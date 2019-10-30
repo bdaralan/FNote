@@ -113,7 +113,7 @@ extension NoteCardCollectionListView {
             }
             
         case .failed:
-            // if something goes, clear the CreateContext
+            // if something goes wrong, clear the CreateContext
             noteCardCollectionDataSource.discardCreateContext()
             
         case .unchanged:

@@ -65,9 +65,6 @@ extension TagListView {
     }
     
     func beginCreateNewTag() {
-        // create new object
-        tagDataSource.prepareNewObject()
-        
         // set the object name to empty
         tagNewName = ""
         
@@ -80,8 +77,22 @@ extension TagListView {
         showModalTextField = true
     }
     
+    // commit new tag after creating it
     func commitCreateNewTag() {
         
+        // checking for an empty name
+        if tagNewName.trimmed().isEmpty {
+            showModalTextField = false
+            return
+        }
+        
+        // checking for a duplicate name
+        if Tag.isNameExisted(name: tagNewName, in: tagDataSource.createContext) {
+            modalTextFieldDescription = "Tag name already exists."
+            return
+        }
+        
+        tagDataSource.prepareNewObject()
         
         // assign the new object another variable
         let tagToSave = tagDataSource.newObject!
@@ -99,7 +110,8 @@ extension TagListView {
             showModalTextField = false
             
         case .failed:
-            break
+            // if something goes wrong, clear the CreateContext
+            tagDataSource.discardCreateContext()
             
         case .unchanged:
             break
