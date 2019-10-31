@@ -26,9 +26,12 @@ struct NoteCardCollectionListRow: View {
                 
             }
             
-            Spacer() // hstack
-            Image(systemName: "checkmark")
-                .opacity(showCheckmark ? 1 : 0)
+            if showCheckmark {
+                Spacer()
+                Image(systemName: "checkmark")
+                    .transition(.scale)
+                    .animation(.easeInOut(duration: 0.3))
+            }
         }
     }
 }
