@@ -64,11 +64,12 @@ struct SearchTextField: View {
             if showSearchOption {
                 searchOptionView
                     .transition(AnyTransition.move(edge: .top).combined(with: .opacity))
-                    .animation(.easeIn(duration: animationDuration))
+                    .animation(.easeInOut(duration: animationDuration))
                     .zIndex(-1)
             }
         }
         .frameInfinity(alignment: .top)
+        .animation(.easeInOut)
     }
 }
 
