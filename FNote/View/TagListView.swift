@@ -18,6 +18,8 @@ struct TagListView: View {
     @State private var modalTextFieldPlaceholder = ""
     @State private var modalTextFieldState = CreateUpdateSheetState.create
     @State private var showModalTextField = false
+    @State private var tagToDelete: Tag?
+    @State private var showDeleteTagAlert = false
     @ObservedObject private var viewReloader = ViewForceReloader()
     
     var body: some View {
@@ -34,7 +36,7 @@ struct TagListView: View {
                             Text("Rename")
                             Image(systemName: "square.and.pencil")
                         }
-                        Button(action: { self.deleteTag(tag) }) {
+                        Button(action: { self.beginDeleteTag(tag) }) {
                             Text("Delete")
                             Image(systemName: "trash")
                         }
@@ -50,6 +52,7 @@ struct TagListView: View {
             // place sheet
             .onAppear(perform: fetchAllTags)
             .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
+            .alert(isPresented: $showDeleteTagAlert, content: { self.deleteTagAlert })
     }
 }
 
@@ -167,17 +170,6 @@ extension TagListView {
         }
     }
     
-    func deleteTag(_ tag: Tag) {
-        // delete
-        tagDataSource.delete(tag, saveContext: true)
-        
-        // update UI
-        fetchAllTags()
-        
-        // post delete notification
-        NotificationCenter.default.post(name: .appCurrentTagDidDelete, object: tag)
-    }
-    
     func fetchAllTags() {
         // create a fetch request
         let request = Tag.requestAllTags()
@@ -205,6 +197,45 @@ extension TagListView {
         )
     }
 }
+
+
+extension TagListView {
+    
+    var deleteTagAlert: Alert {
+        guard let tag = tagToDelete else {
+            fatalError("🧨 attempt to delete tag but does not have a reference to it 💣")
+        }
+        
+        let delete = Alert.Button.destructive(Text("Delete")) {
+            self.commitDeleteTag(tag)
+        }
+        
+        return Alert(
+            title: Text("Delete '\(tag.name)'"),
+            message: Text("Delete a tag will also remove it from the note cards"),
+            primaryButton: .cancel(),
+            secondaryButton: delete
+        )
+    }
+    
+    func beginDeleteTag(_ tag: Tag) {
+        tagToDelete = tag
+        showDeleteTagAlert = true
+    }
+    
+    func commitDeleteTag(_ tag: Tag) {
+        // delete
+        tagDataSource.delete(tag, saveContext: true)
+        tagToDelete = nil
+        
+        // update UI
+        fetchAllTags()
+        
+        // post delete notification
+        NotificationCenter.default.post(name: .appCurrentTagDidDelete, object: tag)
+    }
+}
+
 
 struct TagListView_Previews: PreviewProvider {
     static var previews: some View {
