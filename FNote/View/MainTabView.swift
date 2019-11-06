@@ -52,11 +52,11 @@ struct MainTabView: View {
                 .tabItem(Tab.tag.tabItem)
                 .tag(Tab.tag)
             
-            SettingView()
+            ProfileView()
                 .environmentObject(noteCardCollectionDataSource)
                 .environmentObject(tagDataSource)
-                .tabItem(Tab.setting.tabItem)
-                .tag(Tab.setting)
+                .tabItem(Tab.profile.tabItem)
+                .tag(Tab.profile)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear(perform: setupView)
@@ -86,13 +86,12 @@ extension MainTabView {
                 self.noteCardCollectionDataSource.refreshFetchedObjects()
             case .tag:
                 self.tagDataSource.refreshFetchedObjects()
-            case .setting:
+            case .profile:
                 break
             }
         }
     }
 }
-
 
 // MARK: - Tab Enum
 
@@ -102,7 +101,7 @@ extension MainTabView {
         case card
         case collection
         case tag
-        case setting
+        case profile
         
         
         func tabItem() -> some View {
@@ -113,8 +112,8 @@ extension MainTabView {
                 return createTabViewItem(name: "Collections", systemImage: "rectangle.stack.fill")
             case .tag:
                 return createTabViewItem(name: "Tags", systemImage: "tag.fill")
-            case .setting:
-                return createTabViewItem(name: "Settings", systemImage: "gear")
+            case .profile:
+                return createTabViewItem(name: "Profile", systemImage: "person.crop.square.fill")
             }
         }
         
@@ -123,7 +122,6 @@ extension MainTabView {
         }
     }
 }
-
 
 struct MainTabView_Previews: PreviewProvider {
     static var previews: some View {
