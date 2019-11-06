@@ -22,6 +22,9 @@ struct NoteCardCollectionViewCard: View {
     
     var onFormalityTapped: (() -> Void)?
     
+    @ObservedObject private var viewReloader = ViewForceReloader()
+    
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(noteCard.native)
@@ -102,6 +105,7 @@ extension NoteCardCollectionViewCard {
         noteCard.isFavorited.toggle()
         noteCard.managedObjectContext?.quickSave()
         noteCard.managedObjectContext?.parent?.quickSave()
+        viewReloader.forceReload()
     }
 }
 
