@@ -71,11 +71,18 @@ extension NoteCardViewNavigationLink {
 extension NoteCardViewNavigationLink {
     
     var discardAlert: Alert {
-        let title = Text("Unsaved Changes")
-        let message = Text("There are unsaved changes.\nWould you like to save the changes?")
-        let save = Alert.Button.default(Text("Save"), action: saveChanges)
-        let discard = Alert.Button.destructive(Text("Discard"), action: discardChanges)
-        return Alert(title: title, message: message, primaryButton: discard, secondaryButton: save)
+        if noteCard.isValid() {
+            let title = Text("Unsaved Changes")
+            let message = Text("There are unsaved changes.\nWould you like to save the changes?")
+            let save = Alert.Button.default(Text("Save"), action: saveChanges)
+            let discard = Alert.Button.destructive(Text("Discard"), action: discardChanges)
+            return Alert(title: title, message: message, primaryButton: discard, secondaryButton: save)
+        } else {
+            let title = Text("Invalid Input")
+            let message = Text("Your changes have not been saved. After dismissing this message all unsaved changes will be reverted.")
+            let revert = Alert.Button.default(Text("Revert"), action: discardChanges)
+            return Alert(title: title, message: message, dismissButton: revert)
+        }
     }
     
     /// Check and show discard alert if there are unsaved changes.
