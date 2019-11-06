@@ -18,6 +18,8 @@ struct NoteCardCollectionListView: View {
     @State private var modalTextFieldPlaceholder = ""
     @State private var modalTextFieldState = CreateUpdateSheetState.create
     @State private var showModalTextField = false
+    @State private var collectionToDelete: NoteCardCollection?
+    @State private var showDeleteCollectionAlert = false
     @ObservedObject private var viewReloader = ViewForceReloader()
     
     var body: some View {
@@ -36,7 +38,7 @@ struct NoteCardCollectionListView: View {
                                     Text("Rename")
                                     Image(systemName: "square.and.pencil")
                                 }
-                                Button(action: { self.deleteCollection(collection) }) {
+                                Button(action: { self.beginDeleteCollection(collection) }) {
                                     Text("Delete")
                                     Image(systemName: "trash")
                                 }
@@ -49,8 +51,10 @@ struct NoteCardCollectionListView: View {
         }
         .onAppear(perform: fetchAllCollections)
         .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
+        .alert(isPresented: $showDeleteCollectionAlert, content: { self.deleteCollectionAlert })
     }
 }
+
 
 extension NoteCardCollectionListView {
     
@@ -171,21 +175,6 @@ extension NoteCardCollectionListView {
         }
     }
     
-    func deleteCollection(_ collection: NoteCardCollection) {
-        // check UUID for NoteCard view
-        if collection.uuid == AppCache.currentCollectionUUID {
-            AppCache.currentCollectionUUID = nil
-        }
-        // delete
-        noteCardCollectionDataSource.delete(collection, saveContext: true)
-        
-        // update UI
-        fetchAllCollections()
-        
-        // post delete notification
-        NotificationCenter.default.post(name: .appCollectionDidDelete, object: collection)
-    }
-    
     func fetchAllCollections() {
         // create a fetch request
         let request = NoteCardCollection.requestAllCollections()
@@ -218,9 +207,54 @@ extension NoteCardCollectionListView {
             onCommit: commit
         )
     }
-    
-    
 }
+
+
+// MARK: - Delete & Alert
+
+extension NoteCardCollectionListView {
+    
+    var deleteCollectionAlert: Alert {
+        guard let collection = collectionToDelete else {
+            fatalError("🧨 attempt to delete collection but does not have a reference to it 💣")
+        }
+        
+        let delete = Alert.Button.destructive(Text("Delete"), action: {
+            self.commitDeleteCollection(collection)
+        })
+        
+        return Alert(
+            title: Text("Delete '\(collection.name)'"),
+            message: Text("Delete a collection will also delete its note cards"),
+            primaryButton: .cancel(),
+            secondaryButton: delete
+        )
+    }
+    
+    func beginDeleteCollection(_ collection: NoteCardCollection) {
+        // keep a reference to the collection so the alert can delete it
+        collectionToDelete = collection
+        showDeleteCollectionAlert = true
+    }
+    
+    func commitDeleteCollection(_ collection: NoteCardCollection) {
+        // check UUID for NoteCard view
+        if collection.uuid == AppCache.currentCollectionUUID {
+            AppCache.currentCollectionUUID = nil
+        }
+        
+        // delete
+        noteCardCollectionDataSource.delete(collection, saveContext: true)
+        collectionToDelete = nil // don't need to keep the reference any more
+        
+        // update UI
+        fetchAllCollections()
+        
+        // post delete notification
+        NotificationCenter.default.post(name: .appCollectionDidDelete, object: collection)
+    }
+}
+
 
 struct NoteCardCollectionListView_Previews: PreviewProvider {
     static var previews: some View {
