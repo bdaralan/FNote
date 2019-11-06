@@ -136,9 +136,9 @@ extension NoteCardRelationshipView {
         }
         
         /// The options the user can choose when searching for a notecard.
-        let options = NoteCardSearchOption.allCases.map({ $0.rawValue })
-        searchOption.options = options
-        searchOption.selectedOptions = [options.first!]
+        let options = [NoteCardSearchOption.translationOrNative, .note, .tag, .translation, .native]
+        searchOption.options = options.map({ $0.rawValue })
+        searchOption.selectedOptions = [searchOption.options.first!]
         searchOption.allowsMultipleSelections = false
         searchOption.allowsEmptySelection = false
         
