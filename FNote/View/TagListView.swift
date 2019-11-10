@@ -138,7 +138,7 @@ extension TagListView {
     
     func commitRename() {
         // cannot rename the tag to the original name
-        if tagNewName == tagToRename?.name {
+        if tagNewName == tagToRename?.name || tagNewName.trimmed().isEmpty {
             showModalTextField = false
             return
         }
