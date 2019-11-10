@@ -152,18 +152,9 @@ extension NoteCardRelationshipView {
     /// Fetch note cards using `searchFetchResult` with the given search text.
     /// - Parameter searchText: The search text.
     func fetchNoteCards(searchText: String) {
-        if !searchText.isEmpty, searchFetchResult == nil {
-            // initialize searchFetchResult when start searching
-            // only does so if there is text in the search text field
-            // this prevents unnecessary fetching in the case where user
-            // activates the search but then cancels right away
-            searchFetchResult = .init(
-                fetchRequest: NoteCard.requestNone(),
-                managedObjectContext: noteCardDataSource.updateContext,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-            print(searchText)
+        if searchText.trimmed().isEmpty {
+            searchFetchResult = nil
+            return
         }
         
         guard let collectionUUID = AppCache.currentCollectionUUID else {
@@ -173,18 +164,32 @@ extension NoteCardRelationshipView {
             return
         }
         
-        // begin fetching with the search text if searchFetchResult is initialized.
+        // initialize searchFetchResult when start searching
+        // only does so if there is text in the search text field
+        // this prevents unnecessary fetching in the case where user
+        // activates the search but then cancels right away
+        if searchFetchResult == nil {
+            searchFetchResult = .init(
+                fetchRequest: NoteCard.requestNone(),
+                managedObjectContext: noteCardDataSource.updateContext,
+                sectionNameKeyPath: nil,
+                cacheName: nil
+            )
+        }
+        
+        // being fetching with the search text if searchFetchResult is initialized.
         guard let searchFetchResult = searchFetchResult else { return }
         
-        // safe to unwrapped here because already setup to always have one state
+        // safe to unwrapped here because already setup to always have one option
         // see setupSearchTextField() method
-        let searchState = NoteCardSearchOption(rawValue: searchOption.selectedOptions.first!)!
+        let searchingOption = NoteCardSearchOption(rawValue: searchOption.selectedOptions.first!)!
         
-        // Use the second requestNoteCards defined in Notecard that includes the collectionUUID, searchText, and searchState
+        // Use the second requestNoteCards defined in Notecard that includes the collectionUUID, searchText, and searchingOption
         let request = NoteCard.requestNoteCards(
             forCollectionUUID: collectionUUID,
             searchText: searchText,
-            search: searchState)
+            search: searchingOption
+        )
         
         searchFetchResult.fetchRequest.predicate = request.predicate
         searchFetchResult.fetchRequest.sortDescriptors = request.sortDescriptors

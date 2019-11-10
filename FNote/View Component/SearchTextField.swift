@@ -69,7 +69,7 @@ struct SearchTextField: View {
             }
         }
         .frameInfinity(alignment: .top)
-        .animation(.easeInOut)
+        .animation(.easeInOut(duration: animationDuration))
     }
 }
 
