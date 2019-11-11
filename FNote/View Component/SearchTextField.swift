@@ -131,7 +131,7 @@ extension SearchTextField {
 }
 
 
-// MARK: - Text Field
+// MARK: - Method
 
 extension SearchTextField {
     
@@ -152,38 +152,7 @@ extension SearchTextField {
 }
 
 
-/// An observable object used with `SearchTextField` to handle search options.
-class SearchOption: ObservableObject {
-    
-    @Published var options = [String]()
-    
-    @Published var selectedOptions = [String]()
-    
-    var allowsMultipleSelections = false
-    
-    var allowsEmptySelection = true
-    
-    var selectedOptionsChanged: (() -> Void)?
-    
-    func handleSelection(option: String) {
-        if let index = selectedOptions.firstIndex(of: option) { // deselect
-            if !allowsEmptySelection, selectedOptions.count == 1 {
-                return
-            }
-            selectedOptions.remove(at: index)
-            selectedOptionsChanged?()
-        
-        } else { // select
-            if allowsMultipleSelections {
-                selectedOptions.append(option)
-            } else {
-                selectedOptions = [option]
-            }
-            selectedOptionsChanged?()
-        }
-    }
-}
-
+// MARK: - SearchField Model
 
 /// An observable object used with `SearchTextField` to handle search.
 ///
@@ -225,6 +194,41 @@ class SearchField: ObservableObject {
     func cancel() {
         let dismissKeyboard = #selector(UIResponder.resignFirstResponder)
         UIApplication.shared.sendAction(dismissKeyboard, to: nil, from: nil, for: nil)
+    }
+}
+
+
+// MARK: - SearchOption Model
+
+/// An observable object used with `SearchTextField` to handle search options.
+class SearchOption: ObservableObject {
+    
+    @Published var options = [String]()
+    
+    @Published var selectedOptions = [String]()
+    
+    var allowsMultipleSelections = false
+    
+    var allowsEmptySelection = true
+    
+    var selectedOptionsChanged: (() -> Void)?
+    
+    func handleSelection(option: String) {
+        if let index = selectedOptions.firstIndex(of: option) { // deselect
+            if !allowsEmptySelection, selectedOptions.count == 1 {
+                return
+            }
+            selectedOptions.remove(at: index)
+            selectedOptionsChanged?()
+        
+        } else { // select
+            if allowsMultipleSelections {
+                selectedOptions.append(option)
+            } else {
+                selectedOptions = [option]
+            }
+            selectedOptionsChanged?()
+        }
     }
 }
 

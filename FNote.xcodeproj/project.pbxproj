@@ -36,6 +36,7 @@
 		B499A3632326E518002D16A0 /* NoteCardCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A3622326E518002D16A0 /* NoteCardCollectionView.swift */; };
 		B499A3652326E8B7002D16A0 /* CoreDataStack+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A3642326E8B7002D16A0 /* CoreDataStack+Extension.swift */; };
 		B4AFD4522360B1B3004BAA9B /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AFD4512360B1B3004BAA9B /* CloudKit.framework */; };
+		B4B49B602378CCF90086B8B5 /* NoteCardSearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B49B5F2378CCF90086B8B5 /* NoteCardSearchModel.swift */; };
 		B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */; };
 		B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */; };
 		B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5342320405B007EAF15 /* NoteCard.swift */; };
@@ -103,6 +104,7 @@
 		B499A3642326E8B7002D16A0 /* CoreDataStack+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataStack+Extension.swift"; sourceTree = "<group>"; };
 		B4AFD44F2360B1A8004BAA9B /* FNote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FNote.entitlements; sourceTree = "<group>"; };
 		B4AFD4512360B1B3004BAA9B /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		B4B49B5F2378CCF90086B8B5 /* NoteCardSearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchModel.swift; sourceTree = "<group>"; };
 		B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedObjectContext.swift; sourceTree = "<group>"; };
 		B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
 		B4BAC5342320405B007EAF15 /* NoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCard.swift; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 			children = (
 				B402F62D234093C200EC0A77 /* CreateUpdateSheetState.swift */,
 				B45A4A022368A2810079D8DE /* NoteCardSearchOption.swift */,
+				B4B49B5F2378CCF90086B8B5 /* NoteCardSearchModel.swift */,
 			);
 			path = "View Model + Enum";
 			sourceTree = "<group>";
@@ -466,6 +469,7 @@
 				B45A49FF2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift in Sources */,
 				650D14E92332B96100B6E2BF /* View.swift in Sources */,
 				B4BAC54323205022007EAF15 /* NoteCardDataSource.swift in Sources */,
+				B4B49B602378CCF90086B8B5 /* NoteCardSearchModel.swift in Sources */,
 				B4BAC541232041FE007EAF15 /* ObjectValidatable.swift in Sources */,
 				B40B519C2335C2D6002DA41D /* NotificationName.swift in Sources */,
 				B499A3652326E8B7002D16A0 /* CoreDataStack+Extension.swift in Sources */,

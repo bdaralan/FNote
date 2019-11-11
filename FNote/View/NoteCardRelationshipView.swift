@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import CoreData
+
 
 struct NoteCardRelationshipView: View {
     
@@ -21,40 +21,34 @@ struct NoteCardRelationshipView: View {
     /// An action to perform when the done button is pressed
     var onDone: (() -> Void)?
     
-    @ObservedObject private var searchField = SearchField()
+    /// A view model used to handle search.
+    @State private var  noteCardSearchModel = NoteCardSearchModel()
     
-    @ObservedObject private var searchOption = SearchOption()
-    
-    ///
-    /// - Important:
-    ///   - Initialize its value to tell the view that it is in searching state.
-    ///   - Make sure to set the value back to `nil` to tell the view that it is not in searching state.
-    ///   - Use the computed property `isSearching` when one to check the state.
-    @State private var searchFetchResult: NSFetchedResultsController<NoteCard>?
-    
-    /// A boolean indicate if the view is in searching state.
-    var isSearching: Bool {
-        searchFetchResult != nil
-    }
+    /// A view reloader used to force reload view.
+    @ObservedObject private var viewReloader = ViewForceReloader()
     
     /// The note cards to display.
     var noteCards: [NoteCard] {
-        if isSearching {
-            return searchFetchResult?.fetchedObjects ?? []
+        if noteCardSearchModel.isActive {
+            return noteCardSearchModel.searchFetchResult?.fetchedObjects ?? []
         } else {
             return noteCardDataSource.fetchedResult.fetchedObjects ?? []
         }
     }
+    
+    
     // Displaying the notecards from the collection in a ScrollView using their id and NoteCardCollectionViewCard
     var body: some View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 24) {
                     SearchTextField(
-                        searchField: searchField,
-                        searchOption: searchOption,
-                        onCancel: searchTextFieldCanceled
+                        searchField: noteCardSearchModel.searchField,
+                        searchOption: noteCardSearchModel.searchOption,
+                        onCancel: noteCardSearchModel.deactivate
                     )
+                        .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
+                    
                     ForEach(noteCards, id: \.uuid) { noteCard in
                         NoteCardCollectionViewCard(
                             noteCard: noteCard,
@@ -69,7 +63,7 @@ struct NoteCardRelationshipView: View {
             }
             .navigationBarTitle("Relationships", displayMode: .inline)
             .navigationBarItems(leading: doneNavItem, trailing: searchNavItem)
-            .onAppear(perform: setupSearchTextField)
+            .onAppear(perform: setupView)
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -121,85 +115,17 @@ extension NoteCardRelationshipView {
     }
 }
 
-struct NoteCardRelationshipView_Previews: PreviewProvider {
-    static var previews: some View {
-        NoteCardRelationshipView(noteCard: .init())
+
+extension NoteCardRelationshipView {
+
+    func setupView() {
+        noteCardSearchModel.context = noteCardDataSource.updateContext
     }
 }
 
-// MARK: - Search Field
-extension NoteCardRelationshipView {
 
-    func setupSearchTextField() {
-        searchField.onSearchTextDebounced = { searchText in
-            self.fetchNoteCards(searchText: searchText)
-        }
-        
-        /// The options the user can choose when searching for a notecard.
-        let options = [NoteCardSearchOption.translationOrNative, .note, .tag, .translation, .native]
-        searchOption.options = options.map({ $0.rawValue })
-        searchOption.selectedOptions = [searchOption.options.first!]
-        searchOption.allowsMultipleSelections = false
-        searchOption.allowsEmptySelection = false
-        
-        searchOption.selectedOptionsChanged = {
-            let searchText = self.searchField.searchText
-            self.fetchNoteCards(searchText: searchText)
-        }
-    }
-    
-    
-    /// Fetch note cards using `searchFetchResult` with the given search text.
-    /// - Parameter searchText: The search text.
-    func fetchNoteCards(searchText: String) {
-        if searchText.trimmed().isEmpty {
-            searchFetchResult = nil
-            return
-        }
-        
-        guard let collectionUUID = AppCache.currentCollectionUUID else {
-            // cancel the search if cannot get current collection ID
-            searchFetchResult = nil
-            searchField.cancel()
-            return
-        }
-        
-        // initialize searchFetchResult when start searching
-        // only does so if there is text in the search text field
-        // this prevents unnecessary fetching in the case where user
-        // activates the search but then cancels right away
-        if searchFetchResult == nil {
-            searchFetchResult = .init(
-                fetchRequest: NoteCard.requestNone(),
-                managedObjectContext: noteCardDataSource.updateContext,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-        }
-        
-        // being fetching with the search text if searchFetchResult is initialized.
-        guard let searchFetchResult = searchFetchResult else { return }
-        
-        // safe to unwrapped here because already setup to always have one option
-        // see setupSearchTextField() method
-        let searchingOption = NoteCardSearchOption(rawValue: searchOption.selectedOptions.first!)!
-        
-        // Use the second requestNoteCards defined in Notecard that includes the collectionUUID, searchText, and searchingOption
-        let request = NoteCard.requestNoteCards(
-            forCollectionUUID: collectionUUID,
-            searchText: searchText,
-            search: searchingOption
-        )
-        
-        searchFetchResult.fetchRequest.predicate = request.predicate
-        searchFetchResult.fetchRequest.sortDescriptors = request.sortDescriptors
-        try? searchFetchResult.performFetch()
-        
-    }
-    
-    /// Discard `searchFetchResult` on search text field canceled.
-    func searchTextFieldCanceled() {
-        searchFetchResult = nil
-        searchOption.selectedOptions = [searchOption.options.first!]
+struct NoteCardRelationshipView_Previews: PreviewProvider {
+    static var previews: some View {
+        NoteCardRelationshipView(noteCard: .init())
     }
 }

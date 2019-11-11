@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import CoreData
 
 
 /// A view that displays note cards of the current selected note-card collection.
@@ -28,36 +27,22 @@ struct NoteCardCollectionView: View {
     
     @State private var sheetState: NoteCardView.Sheet?
     
+    /// A view model used to handle search.
+    @State private var  noteCardSearchModel = NoteCardSearchModel()
+    
     /// A view reloader used to force reload view.
     @ObservedObject private var viewReloader = ViewForceReloader()
     
     /// A notification observer that listen to current collection did change notification.
     let currentCollectionObserver = NotificationObserver(name: .appCurrentCollectionDidChange)
     
-    // Listener for the notifcation to request displaying notecard details
+    // Listener for the notification to request displaying notecard details
     let requestDisplayingNoteCardObserver = NotificationObserver(name: .requestDisplayingNoteCardDetail)
-    
-    @ObservedObject private var searchField = SearchField()
-    
-    @ObservedObject private var searchOption = SearchOption()
-    
-    /// A fetch controller used for searching note cards.
-    ///
-    /// - Important:
-    ///   - Initialize its value to tell the view that it is in searching state.
-    ///   - Make sure to set the value back to `nil` to tell the view that it is not in searching state.
-    ///   - Use the computed property `isSearching` when one to check the state.
-    @State private var searchFetchResult: NSFetchedResultsController<NoteCard>?
-    
-    /// A boolean indicate if the view is in searching state.
-    var isSearching: Bool {
-        searchFetchResult != nil
-    }
     
     /// The note cards to display.
     var noteCards: [NoteCard] {
-        if isSearching {
-            return searchFetchResult?.fetchedObjects ?? []
+        if noteCardSearchModel.isActive {
+            return noteCardSearchModel.searchFetchResult?.fetchedObjects ?? []
         } else {
             return noteCardDataSource.fetchedResult.fetchedObjects ?? []
         }
@@ -70,10 +55,12 @@ struct NoteCardCollectionView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 24) {
                     SearchTextField(
-                        searchField: searchField,
-                        searchOption: searchOption,
-                        onCancel: searchTextFieldCanceled
+                        searchField: noteCardSearchModel.searchField,
+                        searchOption: noteCardSearchModel.searchOption,
+                        onCancel: noteCardSearchModel.deactivate
                     )
+                        .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
+                    
                     ForEach(noteCards, id: \.uuid) { noteCard in
                         NoteCardViewNavigationLink(
                             noteCard: noteCard,
@@ -84,9 +71,9 @@ struct NoteCardCollectionView: View {
                 }
                 .padding()
             }
-            .navigationBarTitle(currentCollection?.name ?? "???")
+            .navigationBarTitle(currentCollection?.name ?? "")
             .navigationBarItems(trailing: createNewNoteCardNavItem)
-            .onAppear(perform: setupOnAppear)
+            .onAppear(perform: setupView)
             .sheet(
                 isPresented: $showCreateNewNoteCardSheet,
                 onDismiss: cancelCreateNewNoteCard,
@@ -183,12 +170,13 @@ extension NoteCardCollectionView {
 extension NoteCardCollectionView {
     
     /// Prepare view and data when view appears.
-    func setupOnAppear() {
+    func setupView() {
         loadCurrentCollection()
         fetchNoteCards()
         setupCurrentCollectionObserver()
         setupRequestDisplayingNoteCardObserver()
-        setupSearchTextField()
+        
+        noteCardSearchModel.context = noteCardDataSource.updateContext
     }
     
     /// Get user's current selected note-card collection.
@@ -228,81 +216,6 @@ extension NoteCardCollectionView {
             guard let noteCard = notification.object as? NoteCard else { return }
             self.selectedNoteCardID = noteCard.uuid
         }
-    }
-}
-
-
-// MARK: - Search Text Field
-
-extension NoteCardCollectionView {
-    
-    func setupSearchTextField() {
-        searchField.onSearchTextDebounced = { searchText in
-            self.fetchNoteCards(searchText: searchText)
-        }
-        
-        let options = [NoteCardSearchOption.translationOrNative, .note, .tag, .translation, .native]
-        searchOption.options = options.map({ $0.rawValue })
-        searchOption.selectedOptions = [searchOption.options.first!]
-        searchOption.allowsMultipleSelections = false
-        searchOption.allowsEmptySelection = false
-        
-        searchOption.selectedOptionsChanged = {
-            let searchText = self.searchField.searchText
-            self.fetchNoteCards(searchText: searchText)
-        }
-    }
-    
-    /// Fetch note cards using `searchFetchResult` with the given search text.
-    /// - Parameter searchText: The search text.
-    func fetchNoteCards(searchText: String) {
-        if searchText.trimmed().isEmpty {
-            searchFetchResult = nil
-            return
-        }
-        
-        guard let collectionUUID = AppCache.currentCollectionUUID else {
-            // cancel the search if cannot get current collection ID
-            searchFetchResult = nil
-            searchField.cancel()
-            return
-        }
-        
-        // initialize searchFetchResult when start searching
-        // only does so if there is text in the search text field
-        // this prevents unnecessary fetching in the case where user
-        // activates the search but then cancels right away
-        if searchFetchResult == nil {
-            searchFetchResult = .init(
-                fetchRequest: NoteCard.requestNone(),
-                managedObjectContext: noteCardDataSource.updateContext,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-        }
-        
-        // being fetching with the search text if searchFetchResult is initialized.
-        guard let searchFetchResult = searchFetchResult else { return }
-        
-        // safe to unwrapped here because already setup to always have one option
-        // see setupSearchTextField() method
-        let searchingOption = NoteCardSearchOption(rawValue: searchOption.selectedOptions.first!)!
-        
-        let request = NoteCard.requestNoteCards(
-            forCollectionUUID: collectionUUID,
-            searchText: searchText,
-            search: searchingOption
-        )
-        
-        searchFetchResult.fetchRequest.predicate = request.predicate
-        searchFetchResult.fetchRequest.sortDescriptors = request.sortDescriptors
-        try? searchFetchResult.performFetch()
-    }
-    
-    /// Discard `searchFetchResult` on search text field canceled.
-    func searchTextFieldCanceled() {
-        searchFetchResult = nil
-        searchOption.selectedOptions = [searchOption.options.first!]
     }
 }
 
