@@ -234,7 +234,7 @@ extension NoteCardCollectionListView {
         
         return Alert(
             title: Text("Delete '\(collection.name)'"),
-            message: Text("Delete a collection will also delete its note cards"),
+            message: Text("Deleting a collection will also delete its note cards."),
             primaryButton: .cancel(),
             secondaryButton: delete
         )
