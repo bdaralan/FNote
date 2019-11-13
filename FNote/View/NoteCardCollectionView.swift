@@ -18,15 +18,13 @@ struct NoteCardCollectionView: View {
     @EnvironmentObject var tagDataSource: TagDataSource
     
     /// The current note card collection user's selected.
-    @State private var currentCollection: NoteCardCollection?
+    @ObservedObject var collection: NoteCardCollection
     
     /// A flag used to show or hide create-new-note-card sheet.
     @State private var showCreateNewNoteCardSheet = false
     
     @State private var selectedNoteCardID: String?
-    
-    @State private var sheetState: NoteCardView.Sheet?
-    
+        
     /// A view model used to handle search.
     @State private var  noteCardSearchModel = NoteCardSearchModel()
     
@@ -71,7 +69,7 @@ struct NoteCardCollectionView: View {
                 }
                 .padding()
             }
-            .navigationBarTitle(currentCollection?.name ?? "")
+            .navigationBarTitle(collection.name)
             .navigationBarItems(trailing: createNewNoteCardNavItem)
             .onAppear(perform: setupView)
             .sheet(
@@ -95,7 +93,6 @@ extension NoteCardCollectionView {
             Image(systemName: "plus")
                 .imageScale(.large)
         }
-        .disabled(currentCollection == nil)
     }
     
     /// A sheet view for creating new note card.
@@ -132,7 +129,7 @@ extension NoteCardCollectionView {
         // then assign it to the new note card's collection
         // will unwrapped optional values because they must exist
         let newNoteCard = noteCardDataSource.newObject!
-        let collectionInCreateContext = currentCollection?.get(from: noteCardDataSource.createContext)
+        let collectionInCreateContext = collection.get(from: noteCardDataSource.createContext)
         newNoteCard.collection = collectionInCreateContext
     
         let saveResult = noteCardDataSource.saveNewObject()
@@ -141,7 +138,7 @@ extension NoteCardCollectionView {
         
         case .saved:
             noteCardDataSource.discardNewObject()
-            fetchNoteCards()
+//            noteCardDataSource.performFetch()
             viewReloader.forceReload()
             showCreateNewNoteCardSheet = false
         
@@ -160,7 +157,8 @@ extension NoteCardCollectionView {
     
     func deleteNoteCard(_ notecard: NoteCard) {
         noteCardDataSource.delete(notecard, saveContext: true)
-        fetchNoteCards()
+//        noteCardDataSource.performFetch()
+        viewReloader.forceReload()
     }
 }
 
@@ -171,44 +169,9 @@ extension NoteCardCollectionView {
     
     /// Prepare view and data when view appears.
     func setupView() {
-        loadCurrentCollection()
-        fetchNoteCards()
-        setupCurrentCollectionObserver()
+        collection.objectWillChange.send()
         setupRequestDisplayingNoteCardObserver()
-        
         noteCardSearchModel.context = noteCardDataSource.updateContext
-    }
-    
-    /// Get user's current selected note-card collection.
-    func loadCurrentCollection() {
-        guard let currentCollectionUUID = AppCache.currentCollectionUUID else {
-            currentCollection = nil
-            return
-        }
-
-        guard currentCollection?.uuid != AppCache.currentCollectionUUID else { return }
-        let request = NoteCardCollection.requestCollection(withUUID: currentCollectionUUID)
-        let context = noteCardDataSource.fetchedResult.managedObjectContext
-        currentCollection = try? context.fetch(request).first
-    }
-    
-    /// Fetch note cards to displays.
-    func fetchNoteCards() {
-        if let currentCollectionUUID = currentCollection?.uuid {
-            let request = NoteCard.requestNoteCards(forCollectionUUID: currentCollectionUUID)
-            noteCardDataSource.performFetch(request)
-        } else {
-            noteCardDataSource.performFetch(NoteCard.requestNone())
-        }
-        viewReloader.forceReload()
-    }
-    
-    /// Setup current collection observer action.
-    func setupCurrentCollectionObserver() {
-        currentCollectionObserver.onReceived = { notification in
-            self.loadCurrentCollection()
-            self.fetchNoteCards()
-        }
     }
     
     func setupRequestDisplayingNoteCardObserver() {
@@ -222,6 +185,6 @@ extension NoteCardCollectionView {
 
 struct NoteCardCollectionView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionView()
+        NoteCardCollectionView(collection: .init())
     }
 }

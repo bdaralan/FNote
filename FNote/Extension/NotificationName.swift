@@ -13,17 +13,19 @@ import Foundation
 
 extension Notification.Name {
     
-    // set notification name for selecting a collection
+    /// A notification name for changing current collection.
+    /// - Important: Must pass in the collection to the notification's object.
     static let appCurrentCollectionDidChange = Notification.Name("Notification.Name.appCurrentCollectionDidChange")
     
-    // set notification name for deleting a collection
+    /// A notification name for deleting a collection.
+    /// - Important: Must pass in the collection's UUID to the notification's object.
     static let appCollectionDidDelete = Notification.Name("Notification.Name.appCollectionDidDelete")
     
     // set notification name for deleting a tag
     static let appCurrentTagDidDelete = Notification.Name("Notification.Name.appCurrentTagDidDelete")
     
-    /// Set notification name for requesting NoteCardCollectioView to display the card details
-    /// - Important: the notification must pass in a NoteCard object
+    /// A notification name for requesting `NoteCardCollectionView` to display the card details.
+    /// - Important: Must pass in the note card to the notification's object.
     static let requestDisplayingNoteCardDetail = Notification.Name("Notification.Name.requestDisplayingNoteCardDetail")
 }
 

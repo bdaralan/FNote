@@ -243,6 +243,10 @@ extension NoteCardCollectionListView {
             AppCache.currentCollectionUUID = nil
         }
         
+        // grab the uuid to pass into notification object
+        // because after deleting, the context will erase the collection data
+        let collectionUUID = collection.uuid
+        
         // delete
         noteCardCollectionDataSource.delete(collection, saveContext: true)
         collectionToDelete = nil // don't need to keep the reference any more
@@ -251,7 +255,7 @@ extension NoteCardCollectionListView {
         fetchAllCollections()
         
         // post delete notification
-        NotificationCenter.default.post(name: .appCollectionDidDelete, object: collection)
+        NotificationCenter.default.post(name: .appCollectionDidDelete, object: collectionUUID)
     }
 }
 

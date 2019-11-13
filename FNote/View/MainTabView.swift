@@ -29,18 +29,33 @@ struct MainTabView: View {
     
     @State private var currentTabItem = Tab.card
     
+    @State private var currentCollectionUUID: String?
+    
+    @State private var currentCollection: NoteCardCollection?
+    
     let persistentStoreRemoteChangeObserver = NotificationObserver(name: .persistentStoreRemoteChange)
+    
+    /// A notification observer that listen to current collection did change notification.
+    let collectionChangedObserver = NotificationObserver(name: .appCurrentCollectionDidChange)
+    
+    let collectionDeletedObserver = NotificationObserver(name: .appCollectionDidDelete)
     
     
     // MARK: - Body
     
     var body: some View {
         TabView(selection: $currentTabItem) {
-            NoteCardCollectionView()
-                .environmentObject(noteCardDataSource)
-                .environmentObject(tagDataSource)
-                .tabItem(Tab.card.tabItem)
-                .tag(Tab.card)
+            if currentCollection != nil && currentCollectionUUID == currentCollection?.uuid {
+                NoteCardCollectionView(collection: currentCollection!)
+                    .environmentObject(noteCardDataSource)
+                    .environmentObject(tagDataSource)
+                    .tabItem(Tab.card.tabItem)
+                    .tag(Tab.card)
+            } else {
+                Text("No Collection")
+                    .tabItem(Tab.card.tabItem)
+                    .tag(Tab.card)
+            }
             
             NoteCardCollectionListView()
                 .environmentObject(noteCardCollectionDataSource)
@@ -69,6 +84,12 @@ struct MainTabView: View {
 extension MainTabView {
     
     func setupView() {
+        loadCurrentCollection()
+        setupPersistentStoreRemoteChangeObserver()
+        setupCollectionObserver()
+    }
+    
+    func setupPersistentStoreRemoteChangeObserver() {
         persistentStoreRemoteChangeObserver.onReceived = refreshFetchedObjects
     }
     
@@ -89,6 +110,54 @@ extension MainTabView {
             case .setting:
                 break
             }
+        }
+    }
+    
+    /// Setup current collection observer action.
+    func setupCollectionObserver() {
+        collectionChangedObserver.onReceived = { notification in
+            if let collection = notification.object as? NoteCardCollection {
+                self.setCurrentCollection(collection)
+            } else {
+                self.setCurrentCollection(nil)
+            }
+        }
+        
+        collectionDeletedObserver.onReceived = { notification in
+            guard let collectionUUID = notification.object as? String else { return }
+            guard collectionUUID == self.currentCollectionUUID else { return }
+            self.setCurrentCollection(nil)
+        }
+    }
+    
+    /// Set the current collection.
+    /// - Parameter collection: The collection to be set.
+    func setCurrentCollection(_ collection: NoteCardCollection?) {
+        guard let collection = collection else {
+            currentCollection = nil
+            currentCollectionUUID = nil
+            noteCardDataSource.performFetch(NoteCard.requestNone())
+            return
+        }
+        
+        guard currentCollectionUUID != collection.uuid else { return }
+        
+        let context = noteCardDataSource.fetchedResult.managedObjectContext
+        currentCollection = context.object(with: collection.objectID) as? NoteCardCollection
+        currentCollectionUUID = currentCollection?.uuid
+        
+        let request = NoteCard.requestNoteCards(forCollectionUUID: collection.uuid)
+        noteCardDataSource.performFetch(request)
+    }
+    
+    /// Get user's current selected note-card collection.
+    func loadCurrentCollection() {
+        if let uuid = AppCache.currentCollectionUUID {
+            let context = noteCardDataSource.fetchedResult.managedObjectContext
+            let collection = try? context.fetch(NoteCardCollection.requestCollection(withUUID: uuid)).first
+            setCurrentCollection(collection)
+        } else {
+            setCurrentCollection(nil)
         }
     }
 }
