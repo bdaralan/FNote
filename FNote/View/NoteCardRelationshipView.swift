@@ -40,26 +40,16 @@ struct NoteCardRelationshipView: View {
     // Displaying the notecards from the collection in a ScrollView using their id and NoteCardCollectionViewCard
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: true) {
-                VStack(spacing: 24) {
-                    SearchTextField(
-                        searchField: noteCardSearchModel.searchField,
-                        searchOption: noteCardSearchModel.searchOption,
-                        onCancel: noteCardSearchModel.deactivate
-                    )
-                        .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
-                    
-                    ForEach(noteCards, id: \.uuid) { noteCard in
-                        NoteCardCollectionViewCard(
-                            noteCard: noteCard,
-                            showQuickButton: false,
-                            cardBackground: self.cardBackgroundColor(for: noteCard)
-                        )
-                            .hidden(noteCard.uuid == self.noteCard.uuid)
-                            .onTapGesture { self.noteCardSelected(noteCard) }
-                    }
-                }
-                .padding()
+            VStack(spacing: 0) {
+                SearchTextField(
+                    searchField: noteCardSearchModel.searchField,
+                    searchOption: noteCardSearchModel.searchOption,
+                    onCancel: noteCardSearchModel.deactivate
+                )
+                    .padding(.horizontal)
+                    .padding(.vertical, 12)
+                
+                NoteCardScrollView(noteCards: noteCards, onTap: noteCardSelected, showQuickButton: false)
             }
             .navigationBarTitle("Relationships", displayMode: .inline)
             .navigationBarItems(leading: doneNavItem, trailing: searchNavItem)
@@ -70,6 +60,7 @@ struct NoteCardRelationshipView: View {
 }
 
 
+// MARK: - Nav Items
 extension NoteCardRelationshipView {
     
     // Button to show the add relationship sheet
@@ -127,5 +118,13 @@ extension NoteCardRelationshipView {
 struct NoteCardRelationshipView_Previews: PreviewProvider {
     static var previews: some View {
         NoteCardRelationshipView(noteCard: .init())
+    }
+}
+
+// MARK: - Preview Only Related Words
+extension NoteCardRelationshipView {
+    
+    func previewRelatedNoteCards() -> Set<NoteCard> {
+        return self.noteCard.relationships
     }
 }

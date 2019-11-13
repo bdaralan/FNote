@@ -10,6 +10,8 @@ import SwiftUI
 
 struct NoteCardCollectionViewCard: View {
     
+    @EnvironmentObject var noteCardDataSource: NoteCardDataSource
+    
     @ObservedObject var noteCard: NoteCard
     
     var showQuickButton: Bool = true
@@ -24,6 +26,7 @@ struct NoteCardCollectionViewCard: View {
     
     @ObservedObject private var viewReloader = ViewForceReloader()
     
+    @State private var sheet: Sheet?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -54,6 +57,7 @@ struct NoteCardCollectionViewCard: View {
         .background(cardBackground ?? .noteCardBackground)
         .cornerRadius(15)
         .shadow(color: Color.primary.opacity(0.1), radius: 1, x: -1, y: 1)
+        .sheet(item: $sheet, onDismiss: dismissSheet, content: previewSheet)
     }
 }
 
@@ -61,7 +65,7 @@ struct NoteCardCollectionViewCard: View {
 extension NoteCardCollectionViewCard {
     
     func relationshipButton() -> some View {
-        Button(action: onRelationshipTapped ?? {} ) {
+        Button(action: beginPreviewRelationships ) {
             HStack {
                 Image.noteCardRelationship
                 Text("\(noteCard.relationships.count)")
@@ -110,6 +114,110 @@ extension NoteCardCollectionViewCard {
 }
 
 
+// MARK: - Button Sheets
+
+extension NoteCardCollectionViewCard {
+    
+    enum Sheet: Identifiable {
+        case relationship
+        case tag
+        case note
+        
+        var id: Sheet { self }
+    }
+    
+    func previewSheet(for sheet: Sheet) -> some View {
+        switch sheet {
+     
+        case .relationship:
+            return relationshipPreviewSheet
+                .eraseToAnyView()
+        
+        case .tag:
+            return tagPreviewSheet
+                .eraseToAnyView()
+            
+        case .note:
+            return notePreviewSheet
+                .eraseToAnyView()
+        }
+    }
+    
+    var dismissSheet: () -> Void {
+        switch sheet {
+        case .relationship:
+            return donePreviewRelationships
+        case .tag:
+            return donePreviewTags
+        case .note:
+            return donePreviewNote
+        case nil:
+            return {}
+        }
+    }
+}
+
+// MARK: - Relationships Preview Sheet
+
+extension NoteCardCollectionViewCard {
+    
+    /// A sheet that previews the related cards of the selected card.
+    // Use NoteCardRelationshipView
+    var relationshipPreviewSheet: some View {
+        NoteCardScrollView(noteCards: Array(noteCard.relationships), onTap: { print($0.native) }, showQuickButton: false)
+            .padding(.vertical)
+    }
+    
+    // Action that goes in the quick button
+    func beginPreviewRelationships() {
+        sheet = .relationship
+    }
+    
+    func donePreviewRelationships() {
+        sheet = nil
+    }
+}
+
+
+// MARK: - Tag Preview Sheet
+
+extension NoteCardCollectionViewCard {
+    
+    /// A sheet that previews the tags of the selected card.
+    var tagPreviewSheet: some View {
+        EmptyView()
+    }
+    
+    // Action that goes in the quick button
+    func beginPreviewTags() {
+        sheet = .tag
+    }
+    
+    func donePreviewTags() {
+        sheet = nil
+    }
+}
+
+
+// MARK: - Formality Preview Sheet
+
+extension NoteCardCollectionViewCard {
+    
+    /// A sheet that previews note of the selected card.
+    // Use NoteCardRelationshipView
+    var notePreviewSheet: some View {
+        EmptyView()
+    }
+    
+    // Action that goes in the quick button
+    func beginPreviewNote() {
+        sheet = .relationship
+    }
+    
+    func donePreviewNote() {
+        sheet = nil
+    }
+}
 struct NoteCardCollectionViewCard_Previews: PreviewProvider {
     static var previews: some View {
         NoteCardCollectionViewCard(noteCard: .init())

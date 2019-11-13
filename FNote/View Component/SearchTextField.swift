@@ -68,7 +68,6 @@ struct SearchTextField: View {
                     .zIndex(-1)
             }
         }
-        .frameInfinity(alignment: .top)
         .animation(.easeInOut(duration: animationDuration))
     }
 }
