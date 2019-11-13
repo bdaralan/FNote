@@ -18,12 +18,14 @@ struct ProfileView: View {
         NavigationView {
             VStack {
                 VStack(alignment: .center, spacing: 16) {
+                    // start user profile picture
                     Image("usethis").resizable().aspectRatio(contentMode: .fit)
                         .frame(height: 100)
                         .clipShape(Circle())
                         .shadow(radius: 10)
                         .overlay(Circle().stroke(Color.black, lineWidth: 5))
                     
+                    // grab username
                     Text("Username")
                 }
             .padding()
@@ -40,20 +42,24 @@ struct ProfileView: View {
                     Section {
                         Text("Help")
                     }
-                    
-                }
-            }
+                } // end form
+                    .overlay(Text(showVersion()).foregroundColor(.secondary), alignment: .bottom)
+
+            } // end vstack
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            
+                
         .navigationBarTitle("Profile")
-       
+            
         }
     }
 }
 
 extension ProfileView {
-    // add version number to the bottom of the view
-
+    // show version number
+    func showVersion() -> String {
+        let appVersionString: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
+        return "Version \(appVersionString)"
+    }
 }
 
 struct SettingView_Previews: PreviewProvider {
