@@ -21,6 +21,9 @@ struct AppCache {
     
     @UserDefaultsOptionalValue(forKey: "AppCache.kCurrentCollectionUUID", default: nil)
     static var currentCollectionUUID: String?
+    
+    @UserDefaultsValue(forKey: "AppCache.Username", default: "StudiousStudent08")
+    static var username: String
 }
 
 

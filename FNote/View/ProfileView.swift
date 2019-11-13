@@ -13,6 +13,8 @@ struct ProfileView: View {
     @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
     
     @EnvironmentObject var tagDataSource: TagDataSource
+    @State private var usernameToChange = ""
+    @State private var showModalTextField = false
     
     var body: some View {
         NavigationView {
@@ -25,8 +27,11 @@ struct ProfileView: View {
                         .shadow(radius: 10)
                         .overlay(Circle().stroke(Color.black, lineWidth: 5))
                     
+                    HStack {
                     // grab username
-                    Text("Username")
+                        Text(AppCache.username).font(.headline)
+                    Image(systemName: "pencil").onTapGesture(perform: beginUsername)
+                    }
                 }
             .padding()
                 
@@ -49,7 +54,7 @@ struct ProfileView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 
         .navigationBarTitle("Profile")
-            
+        .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
         }
     }
 }
@@ -59,6 +64,32 @@ extension ProfileView {
     func showVersion() -> String {
         let appVersionString: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
         return "Version \(appVersionString)"
+    }
+    
+    func modalTextField() -> some View {
+        
+        return ModalTextField(
+            isActive: $showModalTextField,
+            text: $usernameToChange,
+            prompt: "Enter a new username",
+            placeholder: AppCache.username,
+            descriptionColor: .red,
+            onCommit: commitUsername
+        )
+    }
+    
+    func beginUsername() {
+        usernameToChange = ""
+        showModalTextField = true
+    }
+    
+    func commitUsername() {
+        if usernameToChange.trimmed().isEmpty {
+            showModalTextField = false
+        }
+        
+        AppCache.username = usernameToChange
+        showModalTextField = false
     }
 }
 
