@@ -45,7 +45,7 @@ struct MainTabView: View {
     
     var body: some View {
         TabView(selection: $currentTabItem) {
-            if currentCollection != nil && currentCollectionUUID == currentCollection?.uuid {
+            if currentCollection != nil {
                 NoteCardCollectionView(collection: currentCollection!)
                     .environmentObject(noteCardDataSource)
                     .environmentObject(tagDataSource)
@@ -173,21 +173,34 @@ extension MainTabView {
         case profile
         
         
-        func tabItem() -> some View {
+        var title: String {
             switch self {
-            case .card:
-                return createTabViewItem(name: "Cards", systemImage: "rectangle.fill.on.rectangle.angled.fill")
-            case .collection:
-                return createTabViewItem(name: "Collections", systemImage: "rectangle.stack.fill")
-            case .tag:
-                return createTabViewItem(name: "Tags", systemImage: "tag.fill")
-            case .profile:
-                return createTabViewItem(name: "Profile", systemImage: "person.crop.square.fill")
+            case .card: return "Card"
+            case .collection: return "Collections"
+            case .tag: return "Tags"
+            case .profile: return "Profile"
             }
         }
         
-        func createTabViewItem(name: String, systemImage: String) -> some View {
-            ViewBuilder.buildBlock(Image(systemName: systemImage), Text(name))
+        var systemImage: String {
+            switch self {
+            case .card: return "rectangle.fill.on.rectangle.angled.fill"
+            case .collection: return "rectangle.stack.fill"
+            case .tag: return "tag.fill"
+            case .profile: return "person.fill"
+            }
+        }
+        
+        func tabItem() -> some View {
+            let size: CGFloat = self == .profile ? 23 : 17
+            
+            let image = Image(systemName: systemImage)
+                .frame(alignment: .bottom)
+                .font(.system(size: size))
+            
+            let tabName = Text(title)
+            
+            return ViewBuilder.buildBlock(image, tabName)
         }
     }
 }
