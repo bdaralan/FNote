@@ -20,11 +20,17 @@ struct NoteCardCollectionViewCard: View {
     
     var onRelationshipTapped: (() -> Void)?
     
+    /// An action to perform when the done button is pressed
+    var onDone: (() -> Void)?
+    
     var onTagTapped: (() -> Void)?
     
     var onFormalityTapped: (() -> Void)?
     
     @ObservedObject private var viewReloader = ViewForceReloader()
+    
+    /// A view model used to handle search.
+    @State private var  noteCardSearchModel = NoteCardSearchModel()
     
     @State private var sheet: Sheet?
     
@@ -161,11 +167,49 @@ extension NoteCardCollectionViewCard {
 
 extension NoteCardCollectionViewCard {
     
+    /// The note cards to display.
+    var noteCards: [NoteCard] {
+        if noteCardSearchModel.isActive {
+            return noteCardSearchModel.searchFetchResult?.fetchedObjects ?? []
+        } else {
+            return Array(noteCard.relationships)
+        }
+    }
     /// A sheet that previews the related cards of the selected card.
     // Use NoteCardRelationshipView
     var relationshipPreviewSheet: some View {
-        NoteCardScrollView(noteCards: Array(noteCard.relationships), onTap: { print($0.native) }, showQuickButton: false)
-            .padding(.vertical)
+        NavigationView {
+            VStack(spacing: 0) {
+                SearchTextField(
+                    searchField: noteCardSearchModel.searchField,
+                    searchOption: noteCardSearchModel.searchOption,
+                    onCancel: noteCardSearchModel.deactivate
+                )
+                    .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
+                    .padding(.horizontal)
+                    .padding(.vertical, 12)
+                
+                NoteCardScrollView(noteCards: noteCards, showQuickButton: false)
+            }
+            .navigationBarTitle("Relationships", displayMode: .inline)
+            .navigationBarItems(leading: doneNavItem, trailing: searchNavItem)
+            .onAppear(perform: setupView)
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
+    }
+    
+    // Button to show the add relationship sheet
+    var searchNavItem: some View {
+        Button(action: {}) {
+            Image(systemName: "magnifyingglass")
+                .imageScale(.large)
+        }
+    }
+    
+    var doneNavItem: some View {
+        Button(action: donePreviewRelationships) {
+            Text("Done")
+        }
     }
     
     // Action that goes in the quick button
@@ -175,6 +219,11 @@ extension NoteCardCollectionViewCard {
     
     func donePreviewRelationships() {
         sheet = nil
+        onDone?()
+    }
+    
+    func setupView() {
+        noteCardSearchModel.context = noteCardDataSource.updateContext
     }
 }
 

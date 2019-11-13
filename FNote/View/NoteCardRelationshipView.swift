@@ -36,7 +36,6 @@ struct NoteCardRelationshipView: View {
         }
     }
     
-    
     // Displaying the notecards from the collection in a ScrollView using their id and NoteCardCollectionViewCard
     var body: some View {
         NavigationView {
@@ -46,6 +45,7 @@ struct NoteCardRelationshipView: View {
                     searchOption: noteCardSearchModel.searchOption,
                     onCancel: noteCardSearchModel.deactivate
                 )
+                    .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
                     .padding(.horizontal)
                     .padding(.vertical, 12)
                 
