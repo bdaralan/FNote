@@ -27,11 +27,10 @@ struct SearchTextField: View {
     
     @State private var showSearchOption = false
     
+    /// A flag indicate the search is editing or there is text.
     var isActive: Bool {
         isEditing || !searchField.searchText.isEmpty
     }
-    
-    let animationDuration = 0.3
     
     
     // MARK: - Body
@@ -42,33 +41,23 @@ struct SearchTextField: View {
                 HStack {
                     searchIcon
                     textField
+                    
                     if !searchOption.options.isEmpty && isActive {
                         searchOptionButton
-                            .transition(.scale)
-                            .animation(.easeInOut(duration: animationDuration))
                     }
                 }
                 .padding(8)
-                .background(Color(UIColor(white: colorScheme == .light ? 0.92 : 0.1, alpha: 1)))
-                .cornerRadius(10)
+                .background(searchBackground)
                 
-                // show cancel button when the search is editing or there is text
                 if isActive {
                     cancelButton
-                        .transition(.scale)
-                        .animation(.easeInOut(duration: animationDuration))
                 }
             }
-            .animation(.easeInOut(duration: animationDuration))
             
             if showSearchOption {
                 searchOptionView
-                    .transition(AnyTransition.move(edge: .top).combined(with: .opacity))
-                    .animation(.easeInOut(duration: animationDuration))
-                    .zIndex(-1)
             }
         }
-        .animation(.easeInOut(duration: animationDuration))
     }
 }
 
@@ -76,6 +65,11 @@ struct SearchTextField: View {
 // MARK: - View Component
 
 extension SearchTextField {
+    
+    var searchBackground: some View {
+        RoundedRectangle(cornerRadius: 10, style: .continuous)
+            .fill(Color(white: colorScheme == .light ? 0.92 : 0.1))
+    }
     
     var searchIcon: some View {
         Image(systemName: "magnifyingglass")
@@ -94,38 +88,42 @@ extension SearchTextField {
         Button(action: { self.showSearchOption.toggle() }) {
             Image(systemName: "slider.horizontal.3")
         }
+        .transition(AnyTransition.scale.animation(.easeInOut))
     }
     
     var cancelButton: some View {
         Button("Cancel", action: cancelSearch)
             .foregroundColor(.accentColor)
+            .transition(AnyTransition.scale.animation(.easeInOut))
     }
     
     var searchOptionView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
                 ForEach(searchOption.options, id: \.self) { option in
-                    self.searchOptionText(
-                        option: option,
-                        selected: self.searchOption.selectedOptions.contains(option)
-                    )
-                        .animation(.easeInOut(duration: 0.2))
-                        .onTapGesture(perform: { self.searchOption.handleSelection(option: option) })
+                    self.searchOptionText(option: option)
                 }
             }
         }
     }
     
-    func searchOptionText(option: String, selected: Bool) -> some View {
-        Text(option)
-            .padding(.horizontal, 16)
+    func searchOptionText(option: String) -> some View {
+        let isSelected = searchOption.selectedOptions.contains(option)
+        let border = Capsule(style: .circular).stroke(Color.appAccent, lineWidth: isSelected ? 2 : 0)
+        let tapAction = {
+            self.searchOption.handleSelection(option: option)
+        }
+        return Text(option)
             .padding(.vertical, 6)
+            .padding(.horizontal, 16)
             .font(.callout)
             .foregroundColor(.primary)
             .background(Color.tagScrollPillBackground)
             .cornerRadius(20)
-            .overlay(Capsule(style: .circular).stroke(Color.appAccent, lineWidth: selected ? 2 : 0))
+            .overlay(border)
             .padding(2)
+            .animation(.easeInOut)
+            .onTapGesture(perform: tapAction)
     }
 }
 

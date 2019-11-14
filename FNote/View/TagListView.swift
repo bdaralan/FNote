@@ -26,33 +26,37 @@ struct TagListView: View {
         NavigationView {
             List {
                 ForEach(tagDataSource.fetchedResult.fetchedObjects ?? [], id: \.self) { tag in
-                    
                     // call the tag view
                     TagListRow(tag: tag)
-                        
-                        //context menu
-                    .contextMenu {
-                        Button(action: { self.beginRenameTag(tag) }) {
-                            Text("Rename")
-                            Image(systemName: "square.and.pencil")
-                        }
-                        Button(action: { self.beginDeleteTag(tag) }) {
-                            Text("Delete")
-                            Image(systemName: "trash")
-                        }
-                    }
+                        .contextMenu(menuItems: { self.contextMenuItems(for: tag) })
                 }
             }
-                // nav bar title goes here
-                // nav bar button goes here
-                .navigationBarTitle("Tags")
-                .navigationBarItems(trailing: createTagNavItem)
+            .navigationBarTitle("Tags") /* nav bar title goes here */
+            .navigationBarItems(trailing: createTagNavItem) /* nav bar button goes here */
             
         }
-            // place sheet
-            .onAppear(perform: fetchAllTags)
-            .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
-            .alert(isPresented: $showDeleteTagAlert, content: { self.deleteTagAlert })
+        .onAppear(perform: fetchAllTags)
+        .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
+        .alert(isPresented: $showDeleteTagAlert, content: { self.deleteTagAlert })
+    }
+}
+
+
+extension TagListView {
+    
+    func contextMenuItems(for tag: Tag) -> some View {
+        let rename = { self.beginRenameTag(tag) }
+        let delete = { self.beginDeleteTag(tag) }
+        return Group {
+            Button(action: rename) {
+                Text("Rename")
+                Image(systemName: "square.and.pencil")
+            }
+            Button(action: delete) {
+                Text("Delete")
+                Image(systemName: "trash")
+            }
+        }
     }
 }
 
