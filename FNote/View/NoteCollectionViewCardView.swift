@@ -90,7 +90,7 @@ extension NoteCardCollectionViewCard {
         Button(action: onFormalityTapped ?? {}) {
             HStack {
                 Image.noteCardFormality
-                Text(noteCard.formality == .notset ? " " : noteCard.formality.abbreviation)
+                Text(noteCard.formality.abbreviation)
             }
             .font(.body)
             .foregroundColor(noteCard.formality.color)

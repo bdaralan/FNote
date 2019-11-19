@@ -47,41 +47,6 @@ class NoteCard: NSManagedObject, ObjectValidatable {
         }
         super.willSave()
     }
-    
-    
-    enum Formality: Int64, CaseIterable {
-        case notset
-        case informal
-        case neutral
-        case formal
-        
-        var title: String {
-            switch self {
-            case .notset: return "None"
-            case .informal: return "Informal"
-            case .neutral: return "Neutral"
-            case .formal: return "Formal"
-            }
-        }
-        
-        var abbreviation: String {
-            switch self {
-            case .notset: return "?"
-            case .informal: return "I"
-            case .neutral: return "N"
-            case .formal: return "F"
-            }
-        }
-        
-        var color: Color {
-            switch self {
-            case .notset: return .primary
-            case .informal: return .red
-            case .neutral: return .orange
-            case .formal: return .green
-            }
-        }
-    }
 }
 
 
@@ -149,52 +114,113 @@ extension NoteCard {
     /// - Parameters:
     ///   - uuid: The collection UUID.
     ///   - searchText: The search text.
-    ///   - search: The search option.
-    static func requestNoteCards(forCollectionUUID uuid: String, searchText: String, search: NoteCardSearchOption) -> NSFetchRequest<NoteCard> {
+    ///   - scope: The search scope.
+    ///   - option: The search option. The default is `nil` which means include all matches.
+    static func requestNoteCards(forCollectionUUID uuid: String, searchText: String, scope: NoteCardSearchScope, option: NoteCardSearchOption? = nil) -> NSFetchRequest<NoteCard> {
         guard !searchText.trimmed().isEmpty else { return requestNone() }
         let collectionUUID = #keyPath(NoteCard.collection.uuid)
+        let cardUUID = #keyPath(NoteCard.uuid)
         let translation = #keyPath(NoteCard.translation)
         let native = #keyPath(NoteCard.native)
         let note = #keyPath(NoteCard.note)
         let tags = #keyPath(NoteCard.tags)
         
-        let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        let matchCollection = NSPredicate(format: "\(collectionUUID) == %@", uuid)
+        var predicates = [NSPredicate]()
+        var sortDescriptors = [NSSortDescriptor]()
         
-        switch search {
+        let matchCollection = NSPredicate(format: "\(collectionUUID) == %@", uuid)
+        predicates.append(matchCollection)
+        
+        // set scope predicate
+        switch scope {
         case .translationOrNative:
             return requestNoteCards(forCollectionUUID: uuid, predicate: searchText)
         
         case .translation:
             let query = "\(translation) CONTAINS[c] %@"
             let matchTranslation = NSPredicate(format: query, searchText)
-            let predicates = [matchCollection, matchTranslation]
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-            request.sortDescriptors = [.init(key: translation, ascending: true)]
+            predicates.append(matchTranslation)
+            sortDescriptors.append(.init(key: translation, ascending: true))
         
         case .native:
             let query = "\(native) CONTAINS[c] %@"
             let matchNative = NSPredicate(format: query, searchText)
-            let predicates = [matchCollection, matchNative]
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-            request.sortDescriptors = [.init(key: native, ascending: true)]
+            predicates.append(matchNative)
+            sortDescriptors.append(.init(key: native, ascending: true))
         
         case .tag:
             let query = "SUBQUERY(\(tags), $tag, $tag.name CONTAINS[c] %@).@count > 0"
             let matchTag = NSPredicate(format: query, searchText)
-            let predicates = [matchCollection, matchTag]
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-            request.sortDescriptors = [.init(key: translation, ascending: true)]
+            predicates.append(matchTag)
+            sortDescriptors.append(.init(key: translation, ascending: true))
             
         case .note:
             let query = "\(note) CONTAINS[c] %@"
             let matchNote = NSPredicate(format: query, searchText)
-            let predicates = [matchCollection, matchNote]
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-            request.sortDescriptors = [.init(key: translation, ascending: true)]
+            predicates.append(matchNote)
+            sortDescriptors.append(.init(key: translation, ascending: true))
         }
         
+        // set option predicate
+        switch option {
+        case nil: break
+        
+        case .include(let noteCards):
+            let uuids = noteCards.map({ $0.uuid })
+            let query = "\(cardUUID) IN %@"
+            let includeNoteCards = NSPredicate(format: query, uuids)
+            predicates.append(includeNoteCards)
+        
+        case .exclude(let noteCards):
+            let uuids = noteCards.map({ $0.uuid })
+            let query = "NOT (\(cardUUID) IN %@)"
+            let exclude = NSPredicate(format: query, uuids)
+            predicates.append(exclude)
+        }
+        
+        // create request
+        let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
+        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        request.sortDescriptors = sortDescriptors
         return request
+    }
+}
+
+
+extension NoteCard {
+    
+    enum Formality: Int64, CaseIterable {
+        case unspecified
+        case informal
+        case neutral
+        case formal
+        
+        var title: String {
+            switch self {
+            case .unspecified: return "Undecided"
+            case .informal: return "Informal"
+            case .neutral: return "Neutral"
+            case .formal: return "Formal"
+            }
+        }
+        
+        var abbreviation: String {
+            switch self {
+            case .unspecified: return "U"
+            case .informal: return "I"
+            case .neutral: return "N"
+            case .formal: return "F"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .unspecified: return .primary
+            case .informal: return .red
+            case .neutral: return .orange
+            case .formal: return .green
+            }
+        }
     }
 }
 

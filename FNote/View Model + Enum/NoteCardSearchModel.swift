@@ -62,8 +62,8 @@ extension NoteCardSearchModel {
     }
     
     private func setupSearchOption() {
-        let options = [NoteCardSearchOption.translationOrNative, .note, .tag, .translation, .native]
-        searchOption.options = options.map({ $0.rawValue })
+        let options = [NoteCardSearchScope.translationOrNative, .note, .tag, .translation, .native]
+        searchOption.options = options.map({ $0.title })
         searchOption.selectedOptions = [searchOption.options.first!]
         searchOption.allowsMultipleSelections = false
         searchOption.allowsEmptySelection = false
@@ -107,12 +107,12 @@ extension NoteCardSearchModel {
         
         // safe to unwrapped here because already setup to always have one option
         // see setupSearchTextField() method
-        let searchingOption = NoteCardSearchOption(rawValue: searchOption.selectedOptions.first!)!
+        let searchScope = NoteCardSearchScope.scope(withTitle: searchOption.selectedOptions.first!)!
         
         let request = NoteCard.requestNoteCards(
             forCollectionUUID: collectionUUID,
             searchText: searchText,
-            search: searchingOption
+            scope: searchScope
         )
         
         searchFetchResult.fetchRequest.predicate = request.predicate
