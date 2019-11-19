@@ -134,7 +134,10 @@ extension NoteCard {
         // set scope predicate
         switch scope {
         case .translationOrNative:
-            return requestNoteCards(forCollectionUUID: uuid, predicate: searchText)
+            let query = "\(translation) CONTAINS[c] %@ OR \(native) CONTAINS[c] %@"
+            let matchTranslationOrNative = NSPredicate(format: query, searchText, searchText)
+            predicates.append(matchTranslationOrNative)
+            sortDescriptors.append(.init(key: translation, ascending: true))
         
         case .translation:
             let query = "\(translation) CONTAINS[c] %@"

@@ -30,6 +30,8 @@ class NoteCardSearchModel: ObservableObject {
     
     @Published private(set) var searchOption: SearchOption
     
+    var noteCardSearchOption: NoteCardSearchOption?
+    
     var isActive: Bool {
         searchFetchResult != nil
     }
@@ -112,7 +114,8 @@ extension NoteCardSearchModel {
         let request = NoteCard.requestNoteCards(
             forCollectionUUID: collectionUUID,
             searchText: searchText,
-            scope: searchScope
+            scope: searchScope,
+            option: noteCardSearchOption
         )
         
         searchFetchResult.fetchRequest.predicate = request.predicate
