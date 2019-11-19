@@ -2,8 +2,8 @@
 //  ProfileView.swift
 //  FNote
 //
-//  Created by Dara Beng on 9/18/19.
-//  Copyright © 2019 Dara Beng. All rights reserved.
+//  Created by Brittney Witts on 11/13/19.
+//  Copyright © 2019 Brittney Witts. All rights reserved.
 //
 
 import SwiftUI
@@ -64,14 +64,14 @@ struct ProfileView: View {
 }
 
 extension ProfileView {
-    // show version number
+    // show current version number
     func showVersion() -> String {
         let appVersionString: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
         return "Version \(appVersionString)"
     }
     
+    // modalTextField
     func modalTextField() -> some View {
-        
         return ModalTextField(
             isActive: $showModalTextField,
             text: $usernameToChange,
