@@ -53,7 +53,7 @@ extension ProfileView {
                 .aspectRatio(contentMode: .fit)
                 .clipShape(Circle())
                 .shadow(radius: 10)
-                .overlay(Circle().stroke(Color.black, lineWidth: 5))
+                .overlay(Circle().stroke(Color.black, lineWidth: 2))
             
             // grab username
             Text(setting.username)
