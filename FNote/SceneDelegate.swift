@@ -19,15 +19,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
+        let setting = UserSetting.current
+        setting.applyColorScheme()
+        setting.listenToRemoteChange()
+        NSUbiquitousKeyValueStore.default.synchronize()
+        
         let mainTabView = MainTabView()
+        
         window.rootViewController = UIHostingController(rootView: mainTabView)
         window.makeKeyAndVisible()
         
         window.tintColor = .appAccent
         UISwitch.appearance().onTintColor = .appAccent
-        
-        let setting = UserSetting.current
-        setting.applyColorScheme()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -50,12 +53,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
+        NSUbiquitousKeyValueStore.default.synchronize()
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
+        NSUbiquitousKeyValueStore.default.synchronize()
     }
 }
 

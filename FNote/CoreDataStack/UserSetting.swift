@@ -12,7 +12,9 @@ import Combine
 
 class UserSetting: ObservableObject, Codable {
     
-    static let current = UserSetting.load()
+    static private(set) var current = UserSetting.load()
+    
+    static let kSavedData = "kUserSetting.iCloudSavedData"
     
     @Published var username = ""
     
@@ -46,16 +48,24 @@ class UserSetting: ObservableObject, Codable {
     /// Save the settings.
     func save() {
         guard let data = try? JSONEncoder().encode(self) else { return }
-        AppCache.userSettingData = data
+        let iCloudStore = NSUbiquitousKeyValueStore.default
+        iCloudStore.set(data, forKey: Self.kSavedData)
+        iCloudStore.synchronize()
     }
     
     func applyColorScheme() {
         let interface = colorScheme.userInterfaceStyle
         let windows = UIApplication.shared.windows
-        windows.forEach({ $0.overrideUserInterfaceStyle = interface })
+        for window in windows where window.overrideUserInterfaceStyle != interface {
+            window.overrideUserInterfaceStyle = interface
+        }
     }
-    
-    // MARK: Publisher
+}
+
+
+// MARK: - Setup
+
+extension UserSetting {
     
     /// Setup setting publishers.
     private func setupPublishers() {
@@ -65,6 +75,20 @@ class UserSetting: ObservableObject, Codable {
         
         cancellables.append(color)
     }
+    
+    func listenToRemoteChange() {
+        let center = NotificationCenter.default
+        let notification = NSUbiquitousKeyValueStore.didChangeExternallyNotification
+        let action = #selector(handleRemoteChange)
+        center.addObserver(self, selector: action, name: notification, object: nil)
+    }
+    
+    @objc private func handleRemoteChange() {
+        objectWillChange.send()
+        let updatedSetting = UserSetting.load()
+        UserSetting.current.username = updatedSetting.username
+        print("handleRemoteChange")
+    }
 }
 
 
@@ -72,22 +96,25 @@ extension UserSetting {
     
     static private func load() -> UserSetting {
         let decoder = JSONDecoder()
-        let data = AppCache.userSettingData
+        let iCloudStore = NSUbiquitousKeyValueStore.default
+        let savedData = iCloudStore.object(forKey: Self.kSavedData) as? Data
         
-        if let data = data, let setting = try? decoder.decode(UserSetting.self, from: data) {
+        if let data = savedData, let setting = try? decoder.decode(UserSetting.self, from: data) {
+            return setting
+        } else {
+            let setting = UserSetting()
+            setting.username = randomUsername()
+            setting.save()
             return setting
         }
-        
-        let setting = UserSetting()
-        setting.username = randomUsername()
-        setting.save()
-        return setting
     }
     
     static private func randomUsername() -> String {
         let number = Int.random(in: 1...999)
         return String(format: "User%03d", number)
     }
+    
+    static let sample = UserSetting()
 }
 
 

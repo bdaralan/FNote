@@ -11,94 +11,127 @@ import SwiftUI
 struct ProfileView: View {
     
     @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
-    
     @EnvironmentObject var tagDataSource: TagDataSource
+    @ObservedObject var setting: UserSetting
     @State private var usernameToChange = ""
     @State private var showModalTextField = false
-    @ObservedObject var setting = UserSetting.current
     
     
     // MARK: Body
     
     var body: some View {
         NavigationView {
-            VStack {
-                VStack(alignment: .center, spacing: 16) {
-                    // start user profile picture
-                    Image("usethis").resizable().aspectRatio(contentMode: .fit)
-                        .frame(height: 100)
-                        .clipShape(Circle())
-                        .shadow(radius: 10)
-                        .overlay(Circle().stroke(Color.black, lineWidth: 5))
-                    
-                    HStack {
-                    // grab username
-                        Text(setting.username).font(.headline)
-                    Image(systemName: "pencil").onTapGesture(perform: beginUsername)
-                    }
+            VStack(alignment: .center, spacing: 0) {
+                profilePictureView
+                Divider()
+                List {
+                    favoriteCardSection
+                    colorSchemeSection
+                    helpSection
                 }
-            .padding()
-                
-                Form {
-                    Section {
-                        Text("Favorite cards.")
-                    }
-                    
-                    Section {
-                        Text("Dark Mode toggle")
-                    }
-                    
-                    Section {
-                        Text("Help")
-                    }
-                } // end form
-                    .overlay(Text(showVersion()).foregroundColor(.secondary), alignment: .bottom)
-
-            } // end vstack
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                
-        .navigationBarTitle("Profile")
-        .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
+                .listStyle(GroupedListStyle())
+            }
+            .navigationBarHidden(true) /* hide the nav bar */
+            .navigationBarTitle("") /* SwiftUI bug: must set the title to something to hide the nav bar */
+            .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
         }
     }
 }
 
+
+// MARK: - User Profile
+
 extension ProfileView {
-    // show current version number
-    func showVersion() -> String {
-        let appVersionString: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
-        return "Version \(appVersionString)"
+    
+    var profilePictureView: some View {
+        VStack(alignment: .center, spacing: 16) {
+            // start user profile picture
+            Image("user-profile-placeholder")
+                .resizable()
+                .frame(width: 100, height: 100)
+                .aspectRatio(contentMode: .fit)
+                .clipShape(Circle())
+                .shadow(radius: 10)
+                .overlay(Circle().stroke(Color.black, lineWidth: 5))
+            
+            HStack {
+                // grab username
+                Text(setting.username).font(.headline)
+                Image(systemName: "pencil").onTapGesture(perform: beginEditingUsername)
+            }
+        }
+        .padding()
     }
+}
+
+
+// MARK: - Setting Form Section
+
+extension ProfileView {
+    
+    var favoriteCardSection: some View {
+        Section {
+            Text("Favorite cards.")
+        }
+    }
+    
+    var colorSchemeSection: some View {
+        Section {
+            Text("Dark Mode toggle")
+        }
+    }
+    
+    var helpSection: some View {
+        Section(footer: appVersionFooterText) {
+            Text("Help")
+        }
+    }
+    
+    var appVersionFooterText: some View {
+        // if cannot get the version, show nothing (empty text)
+        let key = "CFBundleShortVersionString"
+        let version = Bundle.main.object(forInfoDictionaryKey: key) as? String ?? ""
+        let appVersion = version.isEmpty ? "" : "Version \(version)"
+        return Text(appVersion)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding()
+    }
+}
+
+
+// MARK: - Sheet
+
+extension ProfileView {
     
     // modalTextField
     func modalTextField() -> some View {
         return ModalTextField(
             isActive: $showModalTextField,
             text: $usernameToChange,
-            prompt: "Enter a new username",
+            prompt: "Edit Username",
             placeholder: setting.username,
-            descriptionColor: .red,
-            onCommit: commitUsername
+            onCommit: commitEditingUsername
         )
     }
     
-    func beginUsername() {
-        usernameToChange = ""
+    func beginEditingUsername() {
+        usernameToChange = setting.username
         showModalTextField = true
     }
     
-    func commitUsername() {
-        if usernameToChange.trimmed().isEmpty {
-            showModalTextField = false
+    func commitEditingUsername() {
+        let newUsername = usernameToChange.trimmed()
+        if !newUsername.isEmpty, setting.username != newUsername {
+            setting.username = newUsername
+            setting.save()
         }
-        
-        setting.username = usernameToChange
         showModalTextField = false
     }
 }
 
+
 struct SettingView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileView()
+        ProfileView(setting: .sample)
     }
 }

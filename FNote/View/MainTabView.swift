@@ -67,7 +67,7 @@ struct MainTabView: View {
                 .tabItem(Tab.tag.tabItem)
                 .tag(Tab.tag)
             
-            ProfileView()
+            ProfileView(setting: .current)
                 .environmentObject(noteCardCollectionDataSource)
                 .environmentObject(tagDataSource)
                 .tabItem(Tab.profile.tabItem)

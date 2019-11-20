@@ -21,9 +21,6 @@ struct AppCache {
     
     @UserDefaultsOptionalValue(forKey: "kAppCache.currentCollectionUUID", default: nil, store: .local)
     static var currentCollectionUUID: String?
-    
-    @UserDefaultsOptionalValue(forKey: "kAppCache.userSettingData", default: nil, store: .iCloud)
-    static var userSettingData: Data?
 }
 
 
@@ -142,7 +139,9 @@ extension UserDefaultsStoreValue {
         case .local:
             UserDefaults.standard.set(newValue, forKey: key)
         case .iCloud:
-            NSUbiquitousKeyValueStore.default.set(newValue, forKey: key)
+            let iCloudStore = NSUbiquitousKeyValueStore.default
+            iCloudStore.set(newValue, forKey: key)
+            iCloudStore.synchronize()
         }
     }
     
