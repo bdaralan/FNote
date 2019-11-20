@@ -14,19 +14,19 @@ struct NoteCardCollectionViewCard: View {
     
     @ObservedObject var noteCard: NoteCard
     
-    var showQuickButton: Bool = true
+    var showQuickButtons: Bool = true
     
     var cardBackground: Color?
     
-    var onRelationshipTapped: (() -> Void)?
-    
-    var onTagTapped: (() -> Void)?
-    
-    var onFormalityTapped: (() -> Void)?
-    
     @ObservedObject private var viewReloader = ViewForceReloader()
     
+    /// A view model used to handle search.
+    @State private var  noteCardSearchModel = NoteCardSearchModel()
+    
     @State private var sheet: Sheet?
+    
+    
+    // MARK: Body
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -51,7 +51,7 @@ struct NoteCardCollectionViewCard: View {
                 starButton()
             }
             .padding(.top, 4)
-            .hidden(!showQuickButton)
+            .hidden(!showQuickButtons)
         }
         .padding()
         .background(cardBackground ?? .noteCardBackground)
@@ -65,7 +65,7 @@ struct NoteCardCollectionViewCard: View {
 extension NoteCardCollectionViewCard {
     
     func relationshipButton() -> some View {
-        Button(action: beginPreviewRelationships ) {
+        Button(action: beginPreviewRelationships) {
             HStack {
                 Image.noteCardRelationship
                 Text("\(noteCard.relationships.count)")
@@ -76,7 +76,7 @@ extension NoteCardCollectionViewCard {
     }
     
     func tagButton() -> some View {
-        Button(action: onTagTapped ?? {}) {
+        Button(action: {}) {
             HStack {
                 Image.noteCardTag
                 Text("\(noteCard.tags.count)")
@@ -87,10 +87,10 @@ extension NoteCardCollectionViewCard {
     }
     
     func formalButton() -> some View {
-        Button(action: onFormalityTapped ?? {}) {
+        Button(action: {}) {
             HStack {
                 Image.noteCardFormality
-                Text(noteCard.formality == .notset ? " " : noteCard.formality.abbreviation)
+                Text(noteCard.formality.abbreviation)
             }
             .font(.body)
             .foregroundColor(noteCard.formality.color)
@@ -130,7 +130,7 @@ extension NoteCardCollectionViewCard {
         switch sheet {
      
         case .relationship:
-            return relationshipPreviewSheet
+            return relationshipPreviewsSheet
                 .eraseToAnyView()
         
         case .tag:
@@ -161,11 +161,36 @@ extension NoteCardCollectionViewCard {
 
 extension NoteCardCollectionViewCard {
     
+    /// The note cards to display.
+    var noteCards: [NoteCard] {
+        if noteCardSearchModel.isActive {
+            return noteCardSearchModel.searchFetchResult?.fetchedObjects ?? []
+        } else {
+            return Array(noteCard.relationships)
+        }
+    }
+    
     /// A sheet that previews the related cards of the selected card.
-    // Use NoteCardRelationshipView
-    var relationshipPreviewSheet: some View {
-        NoteCardScrollView(noteCards: Array(noteCard.relationships), onTap: { print($0.native) }, showQuickButton: false)
-            .padding(.vertical)
+    var relationshipPreviewsSheet: some View {
+        NavigationView {
+            NoteCardScrollView(
+                noteCards: noteCards,
+                onTap: { print($0.native) },
+                showQuickButtons: false,
+                searchModel: noteCardSearchModel
+            )
+                .navigationBarTitle("Relationships", displayMode: .inline)
+                .navigationBarItems(leading: doneNavItem)
+                .onAppear(perform: setupNoteCardSearchModel)
+                .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
+    }
+    
+    var doneNavItem: some View {
+        Button(action: donePreviewRelationships) {
+            Text("Done")
+        }
     }
     
     // Action that goes in the quick button
@@ -175,6 +200,11 @@ extension NoteCardCollectionViewCard {
     
     func donePreviewRelationships() {
         sheet = nil
+    }
+    
+    func setupNoteCardSearchModel() {
+        noteCardSearchModel.context = noteCardDataSource.updateContext
+        noteCardSearchModel.noteCardSearchOption = .include(Array(noteCard.relationships))
     }
 }
 
@@ -199,7 +229,7 @@ extension NoteCardCollectionViewCard {
 }
 
 
-// MARK: - Formality Preview Sheet
+// MARK: - Note Preview Sheet
 
 extension NoteCardCollectionViewCard {
     

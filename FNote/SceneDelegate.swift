@@ -25,6 +25,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window.tintColor = .appAccent
         UISwitch.appearance().onTintColor = .appAccent
+        
+        let setting = UserSetting.current
+        setting.applyColorScheme()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

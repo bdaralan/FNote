@@ -31,18 +31,8 @@ struct NoteCardCollectionListView: View {
                         NoteCardCollectionListRow(
                             collection: collection,
                             showCheckmark: collection.uuid == AppCache.currentCollectionUUID
-                        )   
-                            // context menu
-                            .contextMenu {
-                                Button(action: { self.beginRenameCollection(collection) }) {
-                                    Text("Rename")
-                                    Image(systemName: "square.and.pencil")
-                                }
-                                Button(action: { self.beginDeleteCollection(collection) }) {
-                                    Text("Delete")
-                                    Image(systemName: "trash")
-                                }
-                        }
+                        )
+                            .contextMenu(menuItems: { self.contextMenuItems(for: collection) })
                     }
                 }
             }
@@ -52,6 +42,25 @@ struct NoteCardCollectionListView: View {
         .onAppear(perform: fetchAllCollections)
         .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
         .alert(isPresented: $showDeleteCollectionAlert, content: { self.deleteCollectionAlert })
+    }
+}
+
+
+extension NoteCardCollectionListView {
+    
+    func contextMenuItems(for collection: NoteCardCollection) -> some View {
+        let rename = { self.beginRenameCollection(collection) }
+        let delete = { self.beginDeleteCollection(collection) }
+        return Group {
+            Button(action: rename) {
+                Text("Rename")
+                Image(systemName: "square.and.pencil")
+            }
+            Button(action: delete) {
+                Text("Delete")
+                Image(systemName: "trash")
+            }
+        }
     }
 }
 

@@ -32,28 +32,30 @@ struct NoteCardRelationshipView: View {
         if noteCardSearchModel.isActive {
             return noteCardSearchModel.searchFetchResult?.fetchedObjects ?? []
         } else {
-            return noteCardDataSource.fetchedResult.fetchedObjects ?? []
+            var noteCards = noteCardDataSource.fetchedResult.fetchedObjects ?? []
+            guard let noteCardIndex = noteCards.firstIndex(of: noteCard) else { return noteCards }
+            noteCards.remove(at: noteCardIndex)
+            return noteCards
         }
     }
     
     
+    // MARK: Body
     // Displaying the notecards from the collection in a ScrollView using their id and NoteCardCollectionViewCard
+    
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                SearchTextField(
-                    searchField: noteCardSearchModel.searchField,
-                    searchOption: noteCardSearchModel.searchOption,
-                    onCancel: noteCardSearchModel.deactivate
-                )
-                    .padding(.horizontal)
-                    .padding(.vertical, 12)
-                
-                NoteCardScrollView(noteCards: noteCards, onTap: noteCardSelected, showQuickButton: false)
-            }
-            .navigationBarTitle("Relationships", displayMode: .inline)
-            .navigationBarItems(leading: doneNavItem, trailing: searchNavItem)
-            .onAppear(perform: setupView)
+            NoteCardScrollView(
+                noteCards: noteCards,
+                selectedCards: Array(noteCard.relationships),
+                onTap: noteCardSelected,
+                showQuickButtons: false,
+                searchModel: noteCardSearchModel
+            )
+                .navigationBarTitle("Relationships", displayMode: .inline)
+                .navigationBarItems(leading: doneNavItem)
+                .onAppear(perform: setupView)
+                .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -61,15 +63,8 @@ struct NoteCardRelationshipView: View {
 
 
 // MARK: - Nav Items
+
 extension NoteCardRelationshipView {
-    
-    // Button to show the add relationship sheet
-    var searchNavItem: some View {
-        Button(action: {}) {
-            Image(systemName: "magnifyingglass")
-                .imageScale(.large)
-        }
-    }
     
     var doneNavItem: some View {
         Button(action: onDone ?? {}) {
@@ -90,11 +85,9 @@ extension NoteCardRelationshipView {
         
         if self.noteCard.relationships.contains(noteCard) {
             self.noteCard.relationships.remove(noteCard)
-        }
-        else {
+        } else {
             self.noteCard.relationships.insert(noteCard)
         }
- 
     }
     
     /// Set the background color for selected cards.
@@ -111,6 +104,7 @@ extension NoteCardRelationshipView {
 
     func setupView() {
         noteCardSearchModel.context = noteCardDataSource.updateContext
+        noteCardSearchModel.noteCardSearchOption = .exclude([noteCard])
     }
 }
 
@@ -118,13 +112,5 @@ extension NoteCardRelationshipView {
 struct NoteCardRelationshipView_Previews: PreviewProvider {
     static var previews: some View {
         NoteCardRelationshipView(noteCard: .init())
-    }
-}
-
-// MARK: - Preview Only Related Words
-extension NoteCardRelationshipView {
-    
-    func previewRelatedNoteCards() -> Set<NoteCard> {
-        return self.noteCard.relationships
     }
 }
