@@ -59,17 +59,14 @@ extension ProfileView {
             Text(setting.username)
                 .font(.headline)
                 .overlay(editPencil, alignment: .trailing)
-            
-            
         }
         .padding()
     }
     var editPencil: some View {
-        
         Image(systemName: "pencil")
             .offset(x: 25)
             
-        .onTapGesture(perform: beginEditingUsername)
+            .onTapGesture(perform: beginEditingUsername)
         
     }
 }
@@ -87,10 +84,15 @@ extension ProfileView {
     
     var colorSchemeSection: some View {
         Section(header: Text("COLOR SCHEMES")) {
-            createColorSchemeButton(action: { self.setting.colorScheme = .system }, colorScheme: .system)
-            createColorSchemeButton(action: { self.setting.colorScheme = .alwaysLight }, colorScheme: .alwaysLight)
-            createColorSchemeButton(action: { self.setting.colorScheme = .alwaysDark }, colorScheme: .alwaysDark)
+            createColorSchemeButton(action: { self.setColorScheme(to: .system) }, colorScheme: .system)
+            createColorSchemeButton(action: { self.setColorScheme(to: .alwaysLight) }, colorScheme: .alwaysLight)
+            createColorSchemeButton(action: { self.setColorScheme(to: .alwaysDark) }, colorScheme: .alwaysDark)
         }
+    }
+    
+    func setColorScheme(to colorScheme: UserSetting.ColorScheme) {
+        setting.colorScheme = colorScheme
+        setting.save()
     }
     
     func createColorSchemeButton (action: @escaping () -> Void, colorScheme: UserSetting.ColorScheme) -> some View {
@@ -98,8 +100,8 @@ extension ProfileView {
             HStack {
                 Text(colorScheme.title)
                 if self.setting.colorScheme == colorScheme {
-                        Spacer()
-                        Image(systemName: "checkmark")
+                    Spacer()
+                    Image(systemName: "checkmark")
                 }
             }
             .accentColor(.primary)
