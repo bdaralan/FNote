@@ -55,15 +55,22 @@ extension ProfileView {
                 .shadow(radius: 10)
                 .overlay(Circle().stroke(Color.black, lineWidth: 5))
             
-            HStack {
-                // grab username
-                Text(setting.username)
-                    .font(.headline)
-                Image(systemName: "pencil")
-                    .onTapGesture(perform: beginEditingUsername)
-            }
+            // grab username
+            Text(setting.username)
+                .font(.headline)
+                .overlay(editPencil, alignment: .trailing)
+            
+            
         }
         .padding()
+    }
+    var editPencil: some View {
+        
+        Image(systemName: "pencil")
+            .offset(x: 25)
+            
+        .onTapGesture(perform: beginEditingUsername)
+        
     }
 }
 
@@ -79,8 +86,23 @@ extension ProfileView {
     }
     
     var colorSchemeSection: some View {
-        Section {
-            Text("Dark Mode toggle")
+        Section(header: Text("COLOR SCHEMES")) {
+            createColorSchemeButton(action: { self.setting.colorScheme = .system }, colorScheme: .system)
+            createColorSchemeButton(action: { self.setting.colorScheme = .alwaysLight }, colorScheme: .alwaysLight)
+            createColorSchemeButton(action: { self.setting.colorScheme = .alwaysDark }, colorScheme: .alwaysDark)
+        }
+    }
+    
+    func createColorSchemeButton (action: @escaping () -> Void, colorScheme: UserSetting.ColorScheme) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(colorScheme.title)
+                if self.setting.colorScheme == colorScheme {
+                        Spacer()
+                        Image(systemName: "checkmark")
+                }
+            }
+            .accentColor(.primary)
         }
     }
     

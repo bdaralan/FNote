@@ -133,7 +133,7 @@ extension UserSetting {
         
         var title: String {
             switch self {
-            case .system: return "System"
+            case .system: return "Adapt System Appearance"
             case .alwaysLight: return "Always Light"
             case .alwaysDark: return "Always Dark"
             }
