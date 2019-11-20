@@ -17,6 +17,8 @@ extension Image {
     
     static let noteCardTag = Image(systemName: "tag")
     
+    static let noteCardNote = Image(systemName: "doc.plaintext")
+    
     static func noteCardFavorite(_ enable: Bool) -> Image {
         Image(systemName: enable ? "star.fill" : "star")
     }

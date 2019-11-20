@@ -22,6 +22,9 @@ struct NoteCardCollectionViewCard: View {
     
     @State private var sheet: Sheet?
     
+    /// A flag to control note model text field keyboard.
+    @State private var isNoteEditingActive = false
+
     @State private var relationshipNoteCards = [NoteCard]()
     
     /// A view model used to handle search.
@@ -32,9 +35,13 @@ struct NoteCardCollectionViewCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(noteCard.native)
-                .font(.title)
-                .foregroundColor(.primary)
+            HStack{
+                Text(noteCard.native)
+                    .font(.title)
+                    .foregroundColor(.primary)
+                Spacer()
+                noteButton()
+            }
             
             Divider()
                 .background(Color.noteCardDivider)
@@ -103,6 +110,13 @@ extension NoteCardCollectionViewCard {
         Button(action: toggleNoteCardFavorite) {
             Image.noteCardFavorite(noteCard.isFavorited)
                 .font(.body)
+                .foregroundColor(.primary)
+        }
+    }
+    
+    func noteButton() -> some View {
+        Button(action: beginPreviewNote) {
+            Image.noteCardNote
                 .foregroundColor(.primary)
         }
     }
@@ -179,14 +193,13 @@ extension NoteCardCollectionViewCard {
 extension NoteCardCollectionViewCard {
     
     /// A sheet that previews note of the selected card.
-    // Use NoteCardRelationshipView
     var notePreviewSheet: some View {
-        EmptyView()
+        ModalTextView(isActive: $isNoteEditingActive, text: $noteCard.note, prompt: "Notes", onCommit: donePreviewNote)
     }
     
     // Action that goes in the quick button
     func beginPreviewNote() {
-        sheet = .relationship
+        sheet = .note
     }
     
     func donePreviewNote() {
