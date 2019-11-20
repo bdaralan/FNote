@@ -62,12 +62,12 @@ extension ProfileView {
         }
         .padding()
     }
+    
+    // set the pencil image to be able to edit the username
     var editPencil: some View {
         Image(systemName: "pencil")
             .offset(x: 25)
-            
             .onTapGesture(perform: beginEditingUsername)
-        
     }
 }
 
@@ -76,12 +76,14 @@ extension ProfileView {
 
 extension ProfileView {
     
+    // FAVORITE CARDS
     var favoriteCardSection: some View {
         Section {
             Text("Favorite cards.")
         }
     }
     
+    // COLOR SCHEMES
     var colorSchemeSection: some View {
         Section(header: Text("COLOR SCHEMES")) {
             createColorSchemeButton(action: { self.setColorScheme(to: .system) }, colorScheme: .system)
@@ -108,6 +110,7 @@ extension ProfileView {
         }
     }
     
+    // HELP SECTION
     var helpSection: some View {
         Section(footer: appVersionFooterText) {
             Text("Help")
