@@ -180,13 +180,6 @@
 			path = "View Modifier + Utility";
 			sourceTree = "<group>";
 		};
-		B411E04B2332F5FC008D99A0 /* Utility */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Utility;
-			sourceTree = "<group>";
-		};
 		B499A3572326D932002D16A0 /* CoreDataStack */ = {
 			isa = PBXGroup;
 			children = (
@@ -295,7 +288,6 @@
 				B40BB6172335B11900E2F98B /* View Modifier + Utility */,
 				B4BAC52223203F60007EAF15 /* Extension */,
 				B499A3572326D932002D16A0 /* CoreDataStack */,
-				B411E04B2332F5FC008D99A0 /* Utility */,
 				B4BB117023145DC400A380AA /* AppDelegate.swift */,
 				B4BB117223145DC400A380AA /* SceneDelegate.swift */,
 				B4BB117923145DC600A380AA /* Assets.xcassets */,

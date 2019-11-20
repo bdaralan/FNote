@@ -8,6 +8,7 @@
 
 import SwiftUI
 
+
 struct ProfileView: View {
     
     @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
@@ -56,8 +57,10 @@ extension ProfileView {
             
             HStack {
                 // grab username
-                Text(setting.username).font(.headline)
-                Image(systemName: "pencil").onTapGesture(perform: beginEditingUsername)
+                Text(setting.username)
+                    .font(.headline)
+                Image(systemName: "pencil")
+                    .onTapGesture(perform: beginEditingUsername)
             }
         }
         .padding()
@@ -65,7 +68,7 @@ extension ProfileView {
 }
 
 
-// MARK: - Setting Form Section
+// MARK: - Setting Section
 
 extension ProfileView {
     
