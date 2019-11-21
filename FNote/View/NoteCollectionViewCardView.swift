@@ -20,10 +20,12 @@ struct NoteCardCollectionViewCard: View {
     
     @ObservedObject private var viewReloader = ViewForceReloader()
     
-    /// A view model used to handle search.
-    @State private var  noteCardSearchModel = NoteCardSearchModel()
-    
     @State private var sheet: Sheet?
+    
+    @State private var relationshipNoteCards = [NoteCard]()
+    
+    /// A view model used to handle search.
+    let noteCardSearchModel = NoteCardSearchModel()
     
     
     // MARK: Body
@@ -114,97 +116,40 @@ extension NoteCardCollectionViewCard {
 }
 
 
-// MARK: - Button Sheets
-
-extension NoteCardCollectionViewCard {
-    
-    enum Sheet: Identifiable {
-        case relationship
-        case tag
-        case note
-        
-        var id: Sheet { self }
-    }
-    
-    func previewSheet(for sheet: Sheet) -> some View {
-        switch sheet {
-     
-        case .relationship:
-            return relationshipPreviewsSheet
-                .eraseToAnyView()
-        
-        case .tag:
-            return tagPreviewSheet
-                .eraseToAnyView()
-            
-        case .note:
-            return notePreviewSheet
-                .eraseToAnyView()
-        }
-    }
-    
-    var dismissSheet: () -> Void {
-        switch sheet {
-        case .relationship:
-            return donePreviewRelationships
-        case .tag:
-            return donePreviewTags
-        case .note:
-            return donePreviewNote
-        case nil:
-            return {}
-        }
-    }
-}
-
 // MARK: - Relationships Preview Sheet
 
 extension NoteCardCollectionViewCard {
     
-    /// The note cards to display.
-    var noteCards: [NoteCard] {
-        if noteCardSearchModel.isActive {
-            return noteCardSearchModel.searchFetchResult?.fetchedObjects ?? []
-        } else {
-            return Array(noteCard.relationships)
-        }
-    }
-    
     /// A sheet that previews the related cards of the selected card.
     var relationshipPreviewsSheet: some View {
-        NavigationView {
+        let doneNavItem = Button("Done", action: donePreviewRelationships)
+        return NavigationView {
             NoteCardScrollView(
-                noteCards: noteCards,
+                noteCards: relationshipNoteCards,
                 onTap: { print($0.native) },
                 showQuickButtons: false,
                 searchModel: noteCardSearchModel
             )
                 .navigationBarTitle("Relationships", displayMode: .inline)
                 .navigationBarItems(leading: doneNavItem)
-                .onAppear(perform: setupNoteCardSearchModel)
-                .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
     
-    var doneNavItem: some View {
-        Button(action: donePreviewRelationships) {
-            Text("Done")
-        }
-    }
-    
     // Action that goes in the quick button
     func beginPreviewRelationships() {
+        relationshipNoteCards = noteCard.relationships.sorted(by: { $0.translation < $1.translation })
+        noteCardSearchModel.context = noteCardDataSource.updateContext
+        noteCardSearchModel.noteCardSearchOption = .include(relationshipNoteCards)
         sheet = .relationship
     }
     
     func donePreviewRelationships() {
+        relationshipNoteCards = []
+        noteCardSearchModel.deactivate()
+        noteCardSearchModel.context = nil
+        noteCardSearchModel.noteCardSearchOption = nil
         sheet = nil
-    }
-    
-    func setupNoteCardSearchModel() {
-        noteCardSearchModel.context = noteCardDataSource.updateContext
-        noteCardSearchModel.noteCardSearchOption = .include(Array(noteCard.relationships))
     }
 }
 
@@ -248,6 +193,47 @@ extension NoteCardCollectionViewCard {
         sheet = nil
     }
 }
+
+
+// MARK: - Sheets
+
+extension NoteCardCollectionViewCard {
+    
+    enum Sheet: Identifiable {
+        case relationship
+        case tag
+        case note
+        
+        var id: Sheet { self }
+    }
+    
+    func previewSheet(for sheet: Sheet) -> some View {
+        switch sheet {
+        case .relationship:
+            return relationshipPreviewsSheet.eraseToAnyView()
+        case .tag:
+            return tagPreviewSheet.eraseToAnyView()
+        case .note:
+            return notePreviewSheet.eraseToAnyView()
+        }
+    }
+    
+    var dismissSheet: () -> Void {
+        switch sheet {
+        case .relationship:
+            return donePreviewRelationships
+        case .tag:
+            return donePreviewTags
+        case .note:
+            return donePreviewNote
+        case nil:
+            return {}
+        }
+    }
+}
+
+
+
 struct NoteCardCollectionViewCard_Previews: PreviewProvider {
     static var previews: some View {
         NoteCardCollectionViewCard(noteCard: .init())

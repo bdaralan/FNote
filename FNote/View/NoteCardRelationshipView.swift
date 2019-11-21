@@ -21,23 +21,13 @@ struct NoteCardRelationshipView: View {
     /// An action to perform when the done button is pressed
     var onDone: (() -> Void)?
     
-    /// A view model used to handle search.
-    @State private var  noteCardSearchModel = NoteCardSearchModel()
-    
     /// A view reloader used to force reload view.
     @ObservedObject private var viewReloader = ViewForceReloader()
     
-    /// The note cards to display.
-    var noteCards: [NoteCard] {
-        if noteCardSearchModel.isActive {
-            return noteCardSearchModel.searchFetchResult?.fetchedObjects ?? []
-        } else {
-            var noteCards = noteCardDataSource.fetchedResult.fetchedObjects ?? []
-            guard let noteCardIndex = noteCards.firstIndex(of: noteCard) else { return noteCards }
-            noteCards.remove(at: noteCardIndex)
-            return noteCards
-        }
-    }
+    @State private var noteCards = [NoteCard]()
+    
+    /// A view model used to handle search.
+    let noteCardSearchModel = NoteCardSearchModel()
     
     
     // MARK: Body
@@ -54,10 +44,9 @@ struct NoteCardRelationshipView: View {
             )
                 .navigationBarTitle("Relationships", displayMode: .inline)
                 .navigationBarItems(leading: doneNavItem)
-                .onAppear(perform: setupView)
-                .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .onAppear(perform: setupView)
     }
 }
 
@@ -67,12 +56,13 @@ struct NoteCardRelationshipView: View {
 extension NoteCardRelationshipView {
     
     var doneNavItem: some View {
-        Button(action: onDone ?? {}) {
-            Text("Done")
-        }
-        .hidden(onDone == nil)
+        Button("Done", action: onDone ?? {})
+            .hidden(onDone == nil)
     }
 }
+
+
+// MARK: - Method
 
 extension NoteCardRelationshipView {
     
@@ -100,9 +90,17 @@ extension NoteCardRelationshipView {
 }
 
 
+// MARK: - Setup
+
 extension NoteCardRelationshipView {
 
     func setupView() {
+        // setup note cards
+        let allCards = noteCardDataSource.fetchedResult.fetchedObjects ?? []
+        let noteCardUUID = noteCard.uuid
+        noteCards = allCards.filter({ $0.uuid != noteCardUUID })
+        
+        // setup search model
         noteCardSearchModel.context = noteCardDataSource.updateContext
         noteCardSearchModel.noteCardSearchOption = .exclude([noteCard])
     }

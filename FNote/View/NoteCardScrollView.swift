@@ -28,8 +28,16 @@ struct NoteCardScrollView: View {
     
     /// A model used for searching.
     ///
-    /// If `nil` the search field will not be shown.
-    var searchModel: NoteCardSearchModel?
+    /// If its context is `nil` the search field will not be shown.
+    @ObservedObject var searchModel = NoteCardSearchModel()
+    
+    var noteCardsToDisplay: [NoteCard] {
+        if searchModel.context != nil, searchModel.isActive {
+            return searchModel.searchFetchResult?.fetchedObjects ?? []
+        } else {
+            return noteCards
+        }
+    }
     
     
     // MARK: Body
@@ -37,15 +45,15 @@ struct NoteCardScrollView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: true) {
             VStack(spacing: 24) {
-                if searchModel != nil {
+                if searchModel.context != nil {
                     SearchTextField(
-                        searchField: searchModel!.searchField,
-                        searchOption: searchModel!.searchOption,
-                        onCancel: searchModel!.deactivate
+                        searchField: searchModel.searchField,
+                        searchOption: searchModel.searchOption,
+                        onCancel: searchModel.deactivate
                     )
                 }
                 
-                ForEach(noteCards, id: \.uuid) { noteCard in
+                ForEach(noteCardsToDisplay, id: \.uuid) { noteCard in
                     NoteCardCollectionViewCard(
                         noteCard: noteCard,
                         showQuickButtons: false,
@@ -62,6 +70,6 @@ struct NoteCardScrollView: View {
 
 struct NoteCardScrollView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardScrollView(noteCards: [], onTap: nil)
+        NoteCardScrollView(noteCards: [], onTap: nil, searchModel: .init())
     }
 }

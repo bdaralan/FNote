@@ -16,27 +16,32 @@ struct TagListView: View {
     @State private var modalTextFieldDescription = ""
     @State private var modalTextFieldPrompt = ""
     @State private var modalTextFieldPlaceholder = ""
-    @State private var modalTextFieldState = CreateUpdateSheetState.create
-    @State private var showModalTextField = false
+    @State private var isModalTextFieldActive = false
+    @State private var sheet: Sheet?
     @State private var tagToDelete: Tag?
     @State private var showDeleteTagAlert = false
+    @State private var previewNoteCards = [NoteCard]()
+    let noteCardPreviewSearchModel = NoteCardSearchModel()
     @ObservedObject private var viewReloader = ViewForceReloader()
+    
+    
+    // MARK: Body
     
     var body: some View {
         NavigationView {
             List {
                 ForEach(tagDataSource.fetchedResult.fetchedObjects ?? [], id: \.self) { tag in
-                    // call the tag view
-                    TagListRow(tag: tag)
-                        .contextMenu(menuItems: { self.contextMenuItems(for: tag) })
+                    Button(action: { self.showNoteCardPreviewSheet(for: tag) }) {
+                        TagListRow(tag: tag)
+                            .contextMenu(menuItems: { self.contextMenuItems(for: tag) })
+                    }
                 }
             }
             .navigationBarTitle("Tags") /* nav bar title goes here */
             .navigationBarItems(trailing: createTagNavItem) /* nav bar button goes here */
-            
         }
         .onAppear(perform: fetchAllTags)
-        .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
+        .sheet(item: $sheet, onDismiss: dismissSheet, content: presentationSheet)
         .alert(isPresented: $showDeleteTagAlert, content: { self.deleteTagAlert })
     }
 }
@@ -61,6 +66,8 @@ extension TagListView {
 }
 
 
+// MARK: - Create Tag
+
 extension TagListView {
     
     //Nav bar item for adding a new tag
@@ -71,6 +78,18 @@ extension TagListView {
         }
     }
     
+    var createTagSheet: some View {
+        ModalTextField(
+            isActive: $isModalTextFieldActive,
+            text: $tagNewName,
+            prompt: modalTextFieldPrompt,
+            placeholder: modalTextFieldPlaceholder,
+            description: modalTextFieldDescription,
+            descriptionColor: .red,
+            onCommit: commitCreateNewTag
+        )
+    }
+    
     func beginCreateNewTag() {
         // set the object name to empty
         tagNewName = ""
@@ -79,9 +98,9 @@ extension TagListView {
         modalTextFieldPrompt = "New Tag"
         modalTextFieldPlaceholder = "Tag Name"
         modalTextFieldDescription = ""
-        modalTextFieldState = .create
         
-        showModalTextField = true
+        isModalTextFieldActive = true
+        sheet = .createTag
     }
     
     // commit new tag after creating it
@@ -89,7 +108,8 @@ extension TagListView {
         
         // checking for an empty name
         if tagNewName.trimmed().isEmpty {
-            showModalTextField = false
+            isModalTextFieldActive = false
+            sheet = nil
             return
         }
         
@@ -114,7 +134,7 @@ extension TagListView {
         switch saveResult {
         case .saved:
             fetchAllTags()
-            showModalTextField = false
+            dismissSheet()
             
         case .failed:
             // if something goes wrong, clear the CreateContext
@@ -124,6 +144,24 @@ extension TagListView {
             break
         }
         tagDataSource.discardNewObject()
+    }
+}
+
+
+// MARK: - Rename Tag
+
+extension TagListView {
+    
+    var renameTagSheet: some View {
+        ModalTextField(
+            isActive: $isModalTextFieldActive,
+            text: $tagNewName,
+            prompt: modalTextFieldPrompt,
+            placeholder: modalTextFieldPlaceholder,
+            description: modalTextFieldDescription,
+            descriptionColor: .red,
+            onCommit: commitRename
+        )
     }
     
     func beginRenameTag(_ tag: Tag) {
@@ -135,15 +173,15 @@ extension TagListView {
         modalTextFieldPrompt = "Rename Tag"
         modalTextFieldPlaceholder = tag.name
         modalTextFieldDescription = ""
-        modalTextFieldState = .update
         
-        showModalTextField = true
+        isModalTextFieldActive = true
+        sheet = .renameTag
     }
     
     func commitRename() {
         // cannot rename the tag to the original name
         if tagNewName == tagToRename?.name || tagNewName.trimmed().isEmpty {
-            showModalTextField = false
+            dismissSheet()
             return
         }
         
@@ -164,7 +202,7 @@ extension TagListView {
             tagToRename = nil
             tagDataSource.setUpdateObject(nil)
             fetchAllTags()
-            showModalTextField = false
+            dismissSheet()
             
         case .failed:
             break
@@ -173,35 +211,10 @@ extension TagListView {
             break
         }
     }
-    
-    func fetchAllTags() {
-        // create a fetch request
-        let request = Tag.requestAllTags()
-        
-        tagDataSource.performFetch(request)
-        viewReloader.forceReload()
-    }
-    
-    func modalTextField() -> some View {
-        let commit: () -> Void
-        
-        switch modalTextFieldState {
-        case .create: commit = commitCreateNewTag
-        case .update: commit = commitRename
-        }
-        
-        return ModalTextField(
-            isActive: $showModalTextField,
-            text: $tagNewName,
-            prompt: modalTextFieldPrompt,
-            placeholder: modalTextFieldPlaceholder,
-            description: modalTextFieldDescription,
-            descriptionColor: .red,
-            onCommit: commit
-        )
-    }
 }
 
+
+// MARK: - Delete Tag
 
 extension TagListView {
     
@@ -237,6 +250,87 @@ extension TagListView {
         
         // post delete notification
         NotificationCenter.default.post(name: .appCurrentTagDidDelete, object: tag)
+    }
+}
+
+
+// MARK: - Note Card Preview
+
+extension TagListView {
+    
+    var noteCardPreviewSheet: some View {
+        let doneNavItem = Button("Done", action: dismissNoteCardPreviewSheet)
+        return NavigationView {
+            NoteCardScrollView(
+                noteCards: previewNoteCards,
+                selectedCards: [],
+                onTap: nil,
+                showQuickButtons: false,
+                searchModel: noteCardPreviewSearchModel
+            )
+                .navigationBarTitle("Note Cards", displayMode: .inline)
+                .navigationBarItems(leading: doneNavItem)
+        }
+    }
+    
+    func showNoteCardPreviewSheet(for tag: Tag) {
+        previewNoteCards = tag.noteCards.sorted(by: { $0.translation < $1.translation })
+        noteCardPreviewSearchModel.context = tagDataSource.fetchedResult.managedObjectContext
+        noteCardPreviewSearchModel.noteCardSearchOption = .include(previewNoteCards)
+        sheet = .noteCardPreview
+    }
+    
+    func dismissNoteCardPreviewSheet() {
+        previewNoteCards = []
+        noteCardPreviewSearchModel.deactivate()
+        noteCardPreviewSearchModel.context = nil
+        noteCardPreviewSearchModel.noteCardSearchOption = nil
+        sheet = nil
+    }
+}
+
+
+// MARK: - Sheet
+
+extension TagListView {
+    
+    enum Sheet: Identifiable {
+        case noteCardPreview
+        case renameTag
+        case createTag
+        
+        var id: Sheet { self }
+    }
+    
+    func presentationSheet(for sheet: Sheet) -> some View {
+        switch sheet {
+        case .noteCardPreview:
+            return noteCardPreviewSheet.eraseToAnyView()
+        case .renameTag:
+            return renameTagSheet.eraseToAnyView()
+        case .createTag:
+            return createTagSheet.eraseToAnyView()
+        }
+    }
+    
+    func dismissSheet() {
+        dismissNoteCardPreviewSheet()
+        isModalTextFieldActive = false
+        sheet = nil
+    }
+}
+
+
+// MARK: - Fetch Tag
+
+extension TagListView {
+    
+    func fetchAllTags() {
+        // create a fetch request
+        let request = Tag.requestAllTags()
+        
+        tagDataSource.performFetch(request)
+        viewReloader.forceReload()
     }
 }
 

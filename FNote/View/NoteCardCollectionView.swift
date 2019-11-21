@@ -138,7 +138,6 @@ extension NoteCardCollectionView {
         
         case .saved:
             noteCardDataSource.discardNewObject()
-//            noteCardDataSource.performFetch()
             viewReloader.forceReload()
             showCreateNewNoteCardSheet = false
         
@@ -157,7 +156,6 @@ extension NoteCardCollectionView {
     
     func deleteNoteCard(_ notecard: NoteCard) {
         noteCardDataSource.delete(notecard, saveContext: true)
-//        noteCardDataSource.performFetch()
         viewReloader.forceReload()
     }
 }
