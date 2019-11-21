@@ -54,7 +54,7 @@ struct NoteCardScrollView: View {
                 }
                 
                 ForEach(noteCardsToDisplay, id: \.uuid) { noteCard in
-                    NoteCardCollectionViewCard(
+                    NoteCardView(
                         noteCard: noteCard,
                         showQuickButtons: false,
                         cardBackground: self.selectedCards.contains(noteCard) ? .appAccent : nil

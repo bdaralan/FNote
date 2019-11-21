@@ -1,5 +1,5 @@
 //
-//  NoteCardView.swift
+//  NoteCardDetailView.swift
 //  FNote
 //
 //  Created by Dara Beng on 9/11/19.
@@ -9,7 +9,7 @@
 import SwiftUI
 
 
-struct NoteCardView: View {
+struct NoteCardDetailView: View {
     
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
     
@@ -142,7 +142,7 @@ struct NoteCardView: View {
 
 // MARK: - Tag Pills Scroll View
 
-extension NoteCardView {
+extension NoteCardDetailView {
     
     /// A horizontal scroll view displaying note card's tags.
     var tagPillScrollView: some View {
@@ -182,7 +182,7 @@ extension NoteCardView {
 
 // MARK: - Relationship Sheet
 
-extension NoteCardView {
+extension NoteCardDetailView {
     
     // View that uses the NoteCardRelationshipView
     var relationshipEditingSheet: some View {
@@ -202,7 +202,7 @@ extension NoteCardView {
 
 // MARK: - Tag Sheet
 
-extension NoteCardView {
+extension NoteCardDetailView {
     
     var tagEditingSheet: some View {
         NoteCardTagView(noteCard: noteCard, onDone: doneEditingTag)
@@ -220,7 +220,7 @@ extension NoteCardView {
 
 // MARK: - Note Sheet
 
-extension NoteCardView {
+extension NoteCardDetailView {
     
     var noteEditingSheet: some View {
         ModalTextView(
@@ -263,7 +263,7 @@ extension NoteCardView {
 
 // MARK: - Presentation Sheet
 
-extension NoteCardView {
+extension NoteCardDetailView {
     
     enum Sheet: Identifiable {
         case relationship
@@ -308,7 +308,7 @@ extension NoteCardView {
 
 // MARK: - Alert
 
-extension NoteCardView {
+extension NoteCardDetailView {
     
     func deleteAlert() -> Alert {
         let title = Text("Delete Note Card")
@@ -321,6 +321,6 @@ extension NoteCardView {
 
 struct NoteCardView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardView(noteCard: .init())
+        NoteCardDetailView(noteCard: .init())
     }
 }

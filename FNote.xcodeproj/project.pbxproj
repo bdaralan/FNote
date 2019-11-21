@@ -23,7 +23,7 @@
 		B411E04D2332F60F008D99A0 /* ViewForceReloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E04C2332F60F008D99A0 /* ViewForceReloader.swift */; };
 		B411E04F2332F672008D99A0 /* NavigationStateHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E04E2332F672008D99A0 /* NavigationStateHandler.swift */; };
 		B411E0512332F6B4008D99A0 /* NotificationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E0502332F6B4008D99A0 /* NotificationObserver.swift */; };
-		B4153C592329843F00496E38 /* NoteCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4153C582329843F00496E38 /* NoteCardView.swift */; };
+		B4153C592329843F00496E38 /* NoteCardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4153C582329843F00496E38 /* NoteCardDetailView.swift */; };
 		B45A49FF2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A49FE2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift */; };
 		B45A4A032368A2810079D8DE /* NoteCardSearchScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */; };
 		B466BAFD23333DF5007DD130 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B466BAFC23333DF5007DD130 /* ProfileView.swift */; };
@@ -92,7 +92,7 @@
 		B411E04C2332F60F008D99A0 /* ViewForceReloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewForceReloader.swift; sourceTree = "<group>"; };
 		B411E04E2332F672008D99A0 /* NavigationStateHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationStateHandler.swift; sourceTree = "<group>"; };
 		B411E0502332F6B4008D99A0 /* NotificationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObserver.swift; sourceTree = "<group>"; };
-		B4153C582329843F00496E38 /* NoteCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardView.swift; sourceTree = "<group>"; };
+		B4153C582329843F00496E38 /* NoteCardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardDetailView.swift; sourceTree = "<group>"; };
 		B45A49FE2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardNavigationButtonStyle.swift; sourceTree = "<group>"; };
 		B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchScope.swift; sourceTree = "<group>"; };
 		B466BAFC23333DF5007DD130 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
@@ -206,7 +206,7 @@
 				66B945B62357A1C2003147AA /* NoteCardRelationshipView.swift */,
 				66F9A743237C8E3F007D2330 /* NoteCardScrollView.swift */,
 				B4D73416233F074E00A3958A /* NoteCardTagView.swift */,
-				B4153C582329843F00496E38 /* NoteCardView.swift */,
+				B4153C582329843F00496E38 /* NoteCardDetailView.swift */,
 				B466BAFC23333DF5007DD130 /* ProfileView.swift */,
 				B40BB61B2335BFED00E2F98B /* TagListView.swift */,
 				656AC281236A1AA30038F301 /* TagListRow.swift */,
@@ -479,7 +479,7 @@
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,
 				B4D73417233F074E00A3958A /* NoteCardTagView.swift in Sources */,
 				B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */,
-				B4153C592329843F00496E38 /* NoteCardView.swift in Sources */,
+				B4153C592329843F00496E38 /* NoteCardDetailView.swift in Sources */,
 				B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */,
 				B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */,
 				B40F09FD237CFC6600E4F7D3 /* UserSetting.swift in Sources */,

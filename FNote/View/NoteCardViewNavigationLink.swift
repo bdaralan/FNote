@@ -26,7 +26,7 @@ struct NoteCardViewNavigationLink: View {
     
     var body: some View {
         NavigationLink(destination: noteCardView, tag: noteCard.uuid, selection: $selectedNoteCardID) {
-            NoteCardCollectionViewCard(noteCard: noteCard)
+            NoteCardView(noteCard: noteCard)
         }
         .buttonStyle(NoteCardNavigationButtonStyle())
         .alert(isPresented: $showDiscardAlert, content: { self.discardAlert })
@@ -37,7 +37,7 @@ struct NoteCardViewNavigationLink: View {
 extension NoteCardViewNavigationLink {
     
     var noteCardView: some View {
-        NoteCardView(noteCard: noteCard, onDelete: deleteCard)
+        NoteCardDetailView(noteCard: noteCard, onDelete: deleteCard)
             .navigationBarTitle("Note Card", displayMode: .inline)
             .navigationBarItems(trailing: saveNavItem)
             .onDisappear(perform: checkUnsavedChanges)

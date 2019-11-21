@@ -108,7 +108,7 @@ extension NoteCardCollectionView {
         }
         
         return NavigationView {
-            NoteCardView(noteCard: noteCardDataSource.newObject!)
+            NoteCardDetailView(noteCard: noteCardDataSource.newObject!)
                 .environmentObject(noteCardDataSource)
                 .environmentObject(tagDataSource)
                 .navigationBarTitle("New Note Card", displayMode: .inline)

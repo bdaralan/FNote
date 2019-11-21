@@ -1,5 +1,5 @@
 //
-//  NoteCardCollectionViewCard.swift
+//  NoteCardView.swift
 //  FNote
 //
 //  Created by Veronica Sumariyanto on 9/9/19.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct NoteCardCollectionViewCard: View {
+struct NoteCardView: View {
     
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
     
@@ -39,8 +39,10 @@ struct NoteCardCollectionViewCard: View {
                 Text(noteCard.native)
                     .font(.title)
                     .foregroundColor(.primary)
-                Spacer()
-                noteButton()
+                if showQuickButtons && !noteCard.note.isEmpty {
+                    Spacer()
+                    noteButton
+                }
             }
             
             Divider()
@@ -50,17 +52,18 @@ struct NoteCardCollectionViewCard: View {
                 .font(.headline)
                 .foregroundColor(.primary)
             
-            HStack (alignment: .center) {
-                relationshipButton()
-                Spacer()
-                tagButton()
-                Spacer()
-                formalButton()
-                Spacer()
-                starButton()
+            if showQuickButtons {
+                HStack (alignment: .center) {
+                    relationshipButton
+                    Spacer()
+                    tagButton
+                    Spacer()
+                    formalButton
+                    Spacer()
+                    starButton
+                }
+                .padding(.top, 4)
             }
-            .padding(.top, 4)
-            .hidden(!showQuickButtons)
         }
         .padding()
         .background(cardBackground ?? .noteCardBackground)
@@ -71,9 +74,9 @@ struct NoteCardCollectionViewCard: View {
 }
 
 
-extension NoteCardCollectionViewCard {
+extension NoteCardView {
     
-    func relationshipButton() -> some View {
+    var relationshipButton: some View {
         Button(action: beginPreviewRelationships) {
             HStack {
                 Image.noteCardRelationship
@@ -84,7 +87,7 @@ extension NoteCardCollectionViewCard {
         }
     }
     
-    func tagButton() -> some View {
+    var tagButton: some View {
         Button(action: {}) {
             HStack {
                 Image.noteCardTag
@@ -95,7 +98,7 @@ extension NoteCardCollectionViewCard {
         }
     }
     
-    func formalButton() -> some View {
+    var formalButton: some View {
         Button(action: {}) {
             HStack {
                 Image.noteCardFormality
@@ -106,7 +109,7 @@ extension NoteCardCollectionViewCard {
         }
     }
     
-    func starButton() -> some View {
+    var starButton: some View {
         Button(action: toggleNoteCardFavorite) {
             Image.noteCardFavorite(noteCard.isFavorited)
                 .font(.body)
@@ -114,10 +117,16 @@ extension NoteCardCollectionViewCard {
         }
     }
     
-    func noteButton() -> some View {
+    var noteButton: some View {
         Button(action: beginPreviewNote) {
-            Image.noteCardNote
-                .foregroundColor(.primary)
+            ZStack {
+                Rectangle() // tappable area
+                    .fill(Color.clear)
+                    .frame(width: 35, height: 35, alignment: .center)
+                Image.noteCardNote
+                    .font(.body)
+                    .foregroundColor(.primary)
+            }
         }
     }
     
@@ -132,7 +141,7 @@ extension NoteCardCollectionViewCard {
 
 // MARK: - Relationships Preview Sheet
 
-extension NoteCardCollectionViewCard {
+extension NoteCardView {
     
     /// A sheet that previews the related cards of the selected card.
     var relationshipPreviewsSheet: some View {
@@ -170,11 +179,11 @@ extension NoteCardCollectionViewCard {
 
 // MARK: - Tag Preview Sheet
 
-extension NoteCardCollectionViewCard {
+extension NoteCardView {
     
     /// A sheet that previews the tags of the selected card.
     var tagPreviewSheet: some View {
-        EmptyView()
+        Text("Tag Preview")
     }
     
     // Action that goes in the quick button
@@ -190,7 +199,7 @@ extension NoteCardCollectionViewCard {
 
 // MARK: - Note Preview Sheet
 
-extension NoteCardCollectionViewCard {
+extension NoteCardView {
     
     /// A sheet that previews note of the selected card.
     var notePreviewSheet: some View {
@@ -216,7 +225,7 @@ extension NoteCardCollectionViewCard {
 
 // MARK: - Sheets
 
-extension NoteCardCollectionViewCard {
+extension NoteCardView {
     
     enum Sheet: Identifiable {
         case relationship
@@ -255,6 +264,6 @@ extension NoteCardCollectionViewCard {
 
 struct NoteCardCollectionViewCard_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionViewCard(noteCard: .init())
+        NoteCardView(noteCard: .init())
     }
 }
