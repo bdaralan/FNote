@@ -18,6 +18,8 @@ struct ModalTextView: View {
     
     var onCommit: (() -> Void) = {}
     
+    var disableEditing = false
+    
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -30,7 +32,7 @@ struct ModalTextView: View {
                     Text("Done").bold()
                 }
             }
-            ModalTextViewWrapper(text: $text, isActive: $isActive)
+            ModalTextViewWrapper(text: $text, isActive: $isActive, disableEditing: disableEditing)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding(.vertical, 20)

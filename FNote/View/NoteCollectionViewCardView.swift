@@ -194,7 +194,13 @@ extension NoteCardCollectionViewCard {
     
     /// A sheet that previews note of the selected card.
     var notePreviewSheet: some View {
-        ModalTextView(isActive: $isNoteEditingActive, text: $noteCard.note, prompt: "Notes", onCommit: donePreviewNote)
+        ModalTextView(
+            isActive: $isNoteEditingActive,
+            text: $noteCard.note,
+            prompt: "Notes",
+            onCommit: donePreviewNote,
+            disableEditing: true
+        )
     }
     
     // Action that goes in the quick button

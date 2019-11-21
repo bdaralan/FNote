@@ -244,11 +244,13 @@ extension NoteCardView {
     }
     
     func beginEditingNote() {
+        isNoteEditingActive = true
         sheet = .note
     }
     
     func commitEditingNote() {
         noteCard.note = noteCard.note.trimmed()
+        isNoteEditingActive = false
         sheet = nil
     }
     

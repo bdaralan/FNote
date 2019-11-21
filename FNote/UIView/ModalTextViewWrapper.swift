@@ -15,58 +15,70 @@ struct ModalTextViewWrapper: UIViewRepresentable {
     
     @Binding var isActive: Bool
     
+    var disableEditing = false
+    
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text)
+        Coordinator(wrapper: self)
     }
     
     func makeUIView(context: Context) -> UITextView {
-        let textView = UITextView()
-        textView.font = .preferredFont(forTextStyle: .body)
-        context.coordinator.textView = textView
-        return textView
+        context.coordinator.textView
     }
     
     func updateUIView(_ uiView: UITextView, context: Context) {
-        uiView.text = text
-        context.coordinator.handleFirstResponse(for: uiView, isActive: isActive)
+        context.coordinator.update(with: self)
     }
     
     
     // MARK - Coordinator
     
-    class Coordinator: NSObject, UITextViewDelegate, FirstTimeResponder {
+    class Coordinator: NSObject, UITextViewDelegate, InputViewResponder {
+
+        var wrapper: ModalTextViewWrapper
         
-        var textView: UITextView! {
-            didSet { setupTextView() }
-        }
+        let textView = UITextView()
         
-        @Binding var text: String
         
-        var isActive = false
-        
-        var shouldAutoShowKeyboard = false
-        
-        init(text: Binding<String>) {
-            _text = text
+        init(wrapper: ModalTextViewWrapper) {
+            self.wrapper = wrapper
             super.init()
+            setupTextView()
+            listenToKeyboardNotification()
         }
         
         
-        func textViewDidChange(_ textView: UITextView) {
-            text = textView.text
+        func update(with wrapper: ModalTextViewWrapper) {
+            self.wrapper = wrapper
+            textView.text = wrapper.text
+            textView.isEditable = !wrapper.disableEditing
+            if !wrapper.disableEditing {
+                setActive(to: wrapper.isActive, for: textView)
+            }
         }
         
         func setupTextView() {
             textView.delegate = self
-            listenToKeyboardNotitication()
+            textView.font = .preferredFont(forTextStyle: .body)
         }
         
-        func listenToKeyboardNotitication() {
+        func textViewDidChange(_ textView: UITextView) {
+            wrapper.text = textView.text
+        }
+        
+        func textViewDidBeginEditing(_ textView: UITextView) {
+            wrapper.isActive = true
+        }
+        
+        func textViewDidEndEditing(_ textView: UITextView) {
+            wrapper.isActive = false
+        }
+        
+        func listenToKeyboardNotification() {
             let center = NotificationCenter.default
-            let keybordFrameDidChange = UIResponder.keyboardDidChangeFrameNotification
+            let keyboardFrameDidChange = UIResponder.keyboardDidChangeFrameNotification
             let keyboardDidHide = UIResponder.keyboardDidHideNotification
-            center.addObserver(self, selector: #selector(handleKeyboardFrameChanged), name: keybordFrameDidChange, object: nil)
+            center.addObserver(self, selector: #selector(handleKeyboardFrameChanged), name: keyboardFrameDidChange, object: nil)
             center.addObserver(self, selector: #selector(handleKeyboardDismissed), name: keyboardDidHide, object: nil)
         }
         

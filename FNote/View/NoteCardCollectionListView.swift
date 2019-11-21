@@ -18,6 +18,7 @@ struct NoteCardCollectionListView: View {
     @State private var modalTextFieldPlaceholder = ""
     @State private var modalTextFieldState = CreateUpdateSheetState.create
     @State private var showModalTextField = false
+    @State private var isModalTextFieldActive = false
     @State private var collectionToDelete: NoteCardCollection?
     @State private var showDeleteCollectionAlert = false
     @ObservedObject private var viewReloader = ViewForceReloader()
@@ -85,20 +86,27 @@ extension NoteCardCollectionListView {
         modalTextFieldDescription = ""
         modalTextFieldState = .create
         
+        isModalTextFieldActive = true
         showModalTextField = true
+    }
+    
+    func cancelCreateCollection() {
+        isModalTextFieldActive = false
+        showModalTextField = false
     }
     
     // commit new collection after creating it
     func commitCreateNewCollection() {
-        
         // checking for an empty name
         if collectionNewName.trimmed().isEmpty {
+            isModalTextFieldActive = false
             showModalTextField = false
             return
         }
         
         // checking for duplicate collection name
-        if NoteCardCollection.isNameExisted(name: collectionNewName, in: noteCardCollectionDataSource.createContext) {
+        let context = noteCardCollectionDataSource.createContext
+        if NoteCardCollection.isNameExisted(name: collectionNewName, in: context) {
             modalTextFieldDescription = "Collection name already exists."
             return
         }
@@ -118,7 +126,6 @@ extension NoteCardCollectionListView {
         switch saveResult {
         case .saved:
             fetchAllCollections()
-            showModalTextField = false
             
             // when user creates a new collection for the first time, that collection will
             // automatically be selected to show in the Note Cards tab
@@ -133,7 +140,10 @@ extension NoteCardCollectionListView {
         case .unchanged:
             break
         }
+        
         noteCardCollectionDataSource.discardNewObject()
+        isModalTextFieldActive = false
+        showModalTextField = false
     }
     
     func beginRenameCollection(_ collection: NoteCardCollection) {
@@ -147,12 +157,21 @@ extension NoteCardCollectionListView {
         modalTextFieldDescription = ""
         modalTextFieldState = .update
         
+        isModalTextFieldActive = true
         showModalTextField = true
     }
     
-    func commitRename() {
+    func cancelRenameCollection() {
+        noteCardCollectionDataSource.setUpdateObject(nil)
+        collectionToRename = nil
+        isModalTextFieldActive = false
+        showModalTextField = false
+    }
+    
+    func commitRenameCollection() {
         // cannot rename the collection the original name
         if collectionNewName == collectionToRename?.name || collectionNewName.trimmed().isEmpty {
+            isModalTextFieldActive = false
             showModalTextField = false
             return
         }
@@ -174,7 +193,6 @@ extension NoteCardCollectionListView {
             collectionToRename = nil
             noteCardCollectionDataSource.setUpdateObject(nil)
             fetchAllCollections()
-            showModalTextField = false
             
         case .failed:
             break
@@ -182,6 +200,9 @@ extension NoteCardCollectionListView {
         case .unchanged:
             break
         }
+        
+        isModalTextFieldActive = false
+        showModalTextField = false
     }
     
     func fetchAllCollections() {
@@ -200,19 +221,25 @@ extension NoteCardCollectionListView {
     
     func modalTextField() -> some View {
         let commit: () -> Void
+        let cancel: () -> Void
         
         switch modalTextFieldState {
-        case .create: commit = commitCreateNewCollection
-        case .update: commit = commitRename
+        case .create:
+            commit = commitCreateNewCollection
+            cancel = cancelCreateCollection
+        case .update:
+            commit = commitRenameCollection
+            cancel = cancelRenameCollection
         }
         
         return ModalTextField(
-            isActive: $showModalTextField,
+            isActive: $isModalTextFieldActive,
             text: $collectionNewName,
             prompt: modalTextFieldPrompt,
             placeholder: modalTextFieldPlaceholder,
             description: modalTextFieldDescription,
             descriptionColor: .red,
+            onCancel: cancel,
             onCommit: commit
         )
     }

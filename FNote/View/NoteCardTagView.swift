@@ -30,6 +30,9 @@ struct NoteCardTagView: View {
     /// A flag used to present or dismiss the rename or create sheet.
     @State private var showModalTextField = false
     
+    /// A flag used to handle modal text field keyboard.
+    @State private var isModalTextFieldActive = false
+    
     /// An action to perform when the done button is tapped.
     var onDone: (() -> Void)?
     
@@ -116,12 +119,13 @@ extension NoteCardTagView {
     
     func modalTextField() -> some View {
         ModalTextField(
-            isActive: $showModalTextField,
+            isActive: $isModalTextFieldActive,
             text: $modalTextFieldText,
             prompt: modalTextFieldPrompt,
             placeholder: modalTextFieldPlaceholder,
             description: modalTextFieldDescription,
             descriptionColor: .red,
+            onCancel: cancelCreateNewTag,
             onCommit: commitCreateNewTag
         )
     }
@@ -131,7 +135,13 @@ extension NoteCardTagView {
         modalTextFieldPlaceholder = "Tag Name"
         modalTextFieldText = ""
         modalTextFieldDescription = ""
+        isModalTextFieldActive = true
         showModalTextField = true
+    }
+    
+    func cancelCreateNewTag() {
+        isModalTextFieldActive = false
+        showModalTextField = false
     }
     
     func commitCreateNewTag() {
@@ -157,6 +167,7 @@ extension NoteCardTagView {
             tagDataSource.discardNewObject()
         }
         
+        isModalTextFieldActive = false
         dismissModalTextField()
     }
     

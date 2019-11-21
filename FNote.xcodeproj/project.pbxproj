@@ -30,7 +30,7 @@
 		B46B0F592364A0CE0074B71A /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B0F582364A0CD0074B71A /* SearchTextField.swift */; };
 		B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */; };
 		B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3404232E8214008B2088 /* ModalTextView.swift */; };
-		B46B3407232E8634008B2088 /* FirstTimeResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3406232E8634008B2088 /* FirstTimeResponder.swift */; };
+		B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3406232E8634008B2088 /* InputViewResponder.swift */; };
 		B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */; };
 		B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35B2326D988002D16A0 /* CoreDataStack.swift */; };
 		B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35D2326D9A7002D16A0 /* AppCache.swift */; };
@@ -99,7 +99,7 @@
 		B46B0F582364A0CD0074B71A /* SearchTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewWrapper.swift; sourceTree = "<group>"; };
 		B46B3404232E8214008B2088 /* ModalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextView.swift; sourceTree = "<group>"; };
-		B46B3406232E8634008B2088 /* FirstTimeResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstTimeResponder.swift; sourceTree = "<group>"; };
+		B46B3406232E8634008B2088 /* InputViewResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewResponder.swift; sourceTree = "<group>"; };
 		B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataStack+HistoryTracker.swift"; sourceTree = "<group>"; };
 		B499A35B2326D988002D16A0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		B499A35D2326D9A7002D16A0 /* AppCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCache.swift; sourceTree = "<group>"; };
@@ -323,7 +323,7 @@
 				B4C76DFA232C0A520033DDEA /* ModalTextFieldWrapper.swift */,
 				B4DF1AA72330180000F90D13 /* NoteCardNoteTextViewWrapper.swift */,
 				B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */,
-				B46B3406232E8634008B2088 /* FirstTimeResponder.swift */,
+				B46B3406232E8634008B2088 /* InputViewResponder.swift */,
 			);
 			path = UIView;
 			sourceTree = "<group>";
@@ -483,7 +483,7 @@
 				B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */,
 				B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */,
 				B40F09FD237CFC6600E4F7D3 /* UserSetting.swift in Sources */,
-				B46B3407232E8634008B2088 /* FirstTimeResponder.swift in Sources */,
+				B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */,
 				B411E04F2332F672008D99A0 /* NavigationStateHandler.swift in Sources */,
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
 				B499A3632326E518002D16A0 /* NoteCardCollectionView.swift in Sources */,

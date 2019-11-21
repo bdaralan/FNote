@@ -16,6 +16,7 @@ struct ProfileView: View {
     @ObservedObject var setting: UserSetting
     @State private var usernameToChange = ""
     @State private var showModalTextField = false
+    @State private var isModalTextFieldActive = false
     
     
     // MARK: Body
@@ -65,9 +66,11 @@ extension ProfileView {
     
     // set the pencil image to be able to edit the username
     var editPencil: some View {
-        Image(systemName: "pencil")
-            .offset(x: 25)
-            .onTapGesture(perform: beginEditingUsername)
+        Button(action: beginEditingUsername) {
+            Image(systemName: "pencil")
+                .font(Font.body.weight(.semibold))
+        }
+        .offset(x: 25)
     }
 }
 
@@ -135,18 +138,25 @@ extension ProfileView {
     
     // modalTextField
     func modalTextField() -> some View {
-        return ModalTextField(
-            isActive: $showModalTextField,
+        ModalTextField(
+            isActive: $isModalTextFieldActive,
             text: $usernameToChange,
             prompt: "Edit Username",
             placeholder: setting.username,
+            onCancel: cancelEditingUsername,
             onCommit: commitEditingUsername
         )
     }
     
     func beginEditingUsername() {
         usernameToChange = setting.username
+        isModalTextFieldActive = true
         showModalTextField = true
+    }
+    
+    func cancelEditingUsername() {
+        isModalTextFieldActive = false
+        showModalTextField = false
     }
     
     func commitEditingUsername() {
@@ -155,6 +165,7 @@ extension ProfileView {
             setting.username = newUsername
             setting.save()
         }
+        isModalTextFieldActive = false
         showModalTextField = false
     }
 }

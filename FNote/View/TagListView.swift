@@ -86,6 +86,7 @@ extension TagListView {
             placeholder: modalTextFieldPlaceholder,
             description: modalTextFieldDescription,
             descriptionColor: .red,
+            onCancel: cancelCreateNewTag,
             onCommit: commitCreateNewTag
         )
     }
@@ -101,6 +102,11 @@ extension TagListView {
         
         isModalTextFieldActive = true
         sheet = .createTag
+    }
+    
+    func cancelCreateNewTag() {
+        isModalTextFieldActive = false
+        sheet = nil
     }
     
     // commit new tag after creating it
@@ -160,6 +166,7 @@ extension TagListView {
             placeholder: modalTextFieldPlaceholder,
             description: modalTextFieldDescription,
             descriptionColor: .red,
+            onCancel: cancelRenameTag,
             onCommit: commitRename
         )
     }
@@ -176,6 +183,11 @@ extension TagListView {
         
         isModalTextFieldActive = true
         sheet = .renameTag
+    }
+    
+    func cancelRenameTag() {
+        isModalTextFieldActive = false
+        sheet = nil
     }
     
     func commitRename() {

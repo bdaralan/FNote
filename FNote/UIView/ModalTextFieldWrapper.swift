@@ -21,61 +21,63 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
     
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text)
+        Coordinator(wrapper: self)
     }
     
     func makeUIView(context: Context) -> UITextField {
-        let textField = UITextField()
-        let coordinator = context.coordinator
-        
-        coordinator.onCommit = onCommit
-        coordinator.configureTargetAndDelegate(for: textField)
-        
-        textField.font = .preferredFont(forTextStyle: .largeTitle)
-        textField.returnKeyType = .done
-        textField.clearButtonMode = .whileEditing
-        
-        return textField
+        context.coordinator.textField
     }
     
     func updateUIView(_ uiView: UITextField, context: Context) {
-        uiView.text = text
-        uiView.placeholder = placeholder
-        context.coordinator.handleFirstResponse(for: uiView, isActive: isActive)
+        context.coordinator.update(with: self)
     }
     
     
-    // MARK: Coordiantor
+    // MARK: Coordinator
     
-    class Coordinator: NSObject, UITextFieldDelegate, FirstTimeResponder {
+    class Coordinator: NSObject, UITextFieldDelegate, InputViewResponder {
         
-        @Binding var text: String
+        var wrapper: ModalTextFieldWrapper
         
-        var isActive = false
-                
-        var onCommit: (() -> Void)?
+        let textField = UITextField()
+
         
-        var shouldAutoShowKeyboard = false
-        
-        
-        init(text: Binding<String>) {
-            _text = text
+        init(wrapper: ModalTextFieldWrapper) {
+            self.wrapper = wrapper
+            super.init()
+            setupTextField()
         }
     
         
+        func update(with wrapper: ModalTextFieldWrapper) {
+            textField.text = wrapper.text
+            textField.placeholder = wrapper.placeholder
+            setActive(to: wrapper.isActive, for: textField)
+        }
+        
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-            onCommit?()
-            resignResponder(textField, reset: true)
+            wrapper.onCommit?()
             return true
         }
         
-        func configureTargetAndDelegate(for textField: UITextField) {
+        func textFieldDidBeginEditing(_ textField: UITextField) {
+            wrapper.isActive = true
+        }
+        
+        func textFieldDidEndEditing(_ textField: UITextField) {
+            wrapper.isActive = false
+        }
+        
+        func setupTextField() {
+            textField.font = .preferredFont(forTextStyle: .largeTitle)
+            textField.returnKeyType = .done
+            textField.clearButtonMode = .whileEditing
             textField.delegate = self
             textField.addTarget(self, action: #selector(handleEditingChanged), for: .editingChanged)
         }
         
         @objc private func handleEditingChanged(_ sender: UITextField) {
-            text = sender.text!
+            wrapper.text = sender.text!
         }
     }
 }

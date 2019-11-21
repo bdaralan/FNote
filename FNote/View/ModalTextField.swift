@@ -23,17 +23,33 @@ struct ModalTextField: View {
     
     var descriptionColor = Color.secondary
     
+    var onCancel: (() -> Void)?
+    
     var onCommit: (() -> Void)?
     
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(prompt)
-                .font(.largeTitle)
-                .bold()
-            ModalTextFieldWrapper(isActive: $isActive, text: $text, placeholder: placeholder, onCommit: onCommit)
+            HStack(alignment: .firstTextBaseline) {
+                Text(prompt)
+                    .font(.largeTitle)
+                    .bold()
+                if onCancel != nil {
+                    Spacer()
+                    Button("Cancel", action: onCancel!)
+                }
+            }
+            
+            ModalTextFieldWrapper(
+                isActive: $isActive,
+                text: $text,
+                placeholder: placeholder,
+                onCommit: onCommit
+            )
                 .fixedSize(horizontal: false, vertical: true)
+            
             Divider()
+            
             Text(description)
                 .foregroundColor(descriptionColor)
                 .padding(.vertical)
