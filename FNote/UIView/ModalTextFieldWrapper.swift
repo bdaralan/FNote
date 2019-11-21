@@ -50,6 +50,7 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
     
         
         func update(with wrapper: ModalTextFieldWrapper) {
+            self.wrapper = wrapper
             textField.text = wrapper.text
             textField.placeholder = wrapper.placeholder
             setActive(to: wrapper.isActive, for: textField)
