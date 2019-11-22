@@ -11,11 +11,6 @@ import SwiftUI
 struct NoteCardCollectionListView: View {
     
     @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
-    
-    @Binding var currentCollectionUUID: String?
-    
-    var onCollectionSelected: ((NoteCardCollection) -> Void)
-    
     @State private var collectionToRename: NoteCardCollection?
     @State private var collectionNewName = ""
     @State private var modalTextFieldDescription = ""
@@ -28,6 +23,10 @@ struct NoteCardCollectionListView: View {
     @State private var showDeleteCollectionAlert = false
     @ObservedObject private var viewReloader = ViewForceReloader()
     
+    var currentCollectionUUID: String? {
+        AppCache.currentCollectionUUID
+    }
+    
     
     // MARK: Body
     
@@ -35,7 +34,7 @@ struct NoteCardCollectionListView: View {
         NavigationView {
             List {
                 ForEach(noteCardCollectionDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { collection in
-                    Button(action: { self.onCollectionSelected(collection) }) {
+                    Button(action: { self.setCurrentCollection(collection) }) {
                         // call the collection view
                         NoteCardCollectionListRow(
                             collection: collection,
@@ -72,6 +71,12 @@ extension NoteCardCollectionListView {
                 Image(systemName: "trash")
             }
         }
+    }
+    
+    func setCurrentCollection(_ collection: NoteCardCollection) {
+        AppCache.currentCollectionUUID = collection.uuid
+        viewReloader.forceReload()
+        NotificationCenter.default.post(name: .appCurrentCollectionDidChange, object: collection)
     }
 }
 
@@ -140,7 +145,7 @@ extension NoteCardCollectionListView {
             // when user creates a new collection for the first time, that collection will
             // automatically be selected to show in the Note Cards tab
             if noteCardCollectionDataSource.fetchedResult.fetchedObjects?.count == 1 {
-                onCollectionSelected(collectionToSave)
+                setCurrentCollection(collectionToSave)
             }
             
         case .failed:
@@ -278,7 +283,7 @@ extension NoteCardCollectionListView {
     
     func commitDeleteCollection(_ collection: NoteCardCollection) {
         // check UUID for NoteCard view
-        if collection.uuid == AppCache.currentCollectionUUID {
+        if collection.uuid == currentCollectionUUID {
             AppCache.currentCollectionUUID = nil
         }
         
@@ -301,6 +306,6 @@ extension NoteCardCollectionListView {
 
 struct NoteCardCollectionListView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionListView(currentCollectionUUID: .constant(nil), onCollectionSelected: {})
+        NoteCardCollectionListView()
     }
 }

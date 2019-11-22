@@ -29,20 +29,22 @@ struct MainTabView: View {
     
     @State private var currentTabItem = Tab.card
     
-    @State private var selectedNoteCardID: String?
+    @State private var displayingNoteCardID: String?
     
     @State private var currentCollectionUUID: String?
     
     @State private var currentCollection: NoteCardCollection?
     
+    /// An observer that listen to remote data changed notification.
     let persistentStoreRemoteChangeObserver = NotificationObserver(name: .persistentStoreRemoteChange)
     
-    /// A notification observer that listen to current collection did change notification.
+    /// An observer that listen to current collection changed notification.
     let collectionChangedObserver = NotificationObserver(name: .appCurrentCollectionDidChange)
     
+    /// An observer that listen to collection deleted notification.
     let collectionDeletedObserver = NotificationObserver(name: .appCollectionDidDelete)
     
-    // Listener for the notification to request displaying notecard details
+    // An observer that listen to request displaying notecard details notification.
     let requestDisplayingNoteCardObserver = NotificationObserver(name: .requestDisplayingNoteCardDetail)
     
     
@@ -51,7 +53,7 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $currentTabItem) {
             if currentCollection != nil {
-                NoteCardCollectionView(collection: currentCollection!, selectedNoteCardID: $selectedNoteCardID)
+                NoteCardCollectionView(collection: currentCollection!, selectedNoteCardID: $displayingNoteCardID)
                     .environmentObject(noteCardDataSource)
                     .environmentObject(tagDataSource)
                     .tabItem(Tab.card.tabItem)
@@ -62,10 +64,7 @@ struct MainTabView: View {
                     .tag(Tab.card)
             }
             
-            NoteCardCollectionListView(
-                currentCollectionUUID: $currentCollectionUUID,
-                onCollectionSelected: setCurrentCollection
-            )
+            NoteCardCollectionListView()
                 .environmentObject(noteCardCollectionDataSource)
                 .tabItem(Tab.collection.tabItem)
                 .tag(Tab.collection)
@@ -125,11 +124,12 @@ extension MainTabView {
     /// Setup current collection observer action.
     func setupCollectionObserver() {
         collectionChangedObserver.onReceived = { notification in
-            if let collection = notification.object as? NoteCardCollection {
-                self.setCurrentCollection(collection)
-            } else {
+            guard let collection = notification.object as? NoteCardCollection else {
                 self.setCurrentCollection(nil)
+                return
             }
+            guard collection.uuid != self.currentCollectionUUID else { return }
+            self.setCurrentCollection(collection)
         }
         
         collectionDeletedObserver.onReceived = { notification in
@@ -147,21 +147,22 @@ extension MainTabView {
                 self.setCurrentCollection(collection)
             }
             self.currentTabItem = .card
-            self.selectedNoteCardID = noteCard.uuid
+            self.displayingNoteCardID = noteCard.uuid
         }
     }
     
     /// Set the current collection.
     /// - Parameter collection: The collection to be set.
     func setCurrentCollection(_ collection: NoteCardCollection?) {
+        AppCache.currentCollectionUUID = collection?.uuid
+        displayingNoteCardID = nil
+        
         guard let collection = collection else {
             currentCollection = nil
             currentCollectionUUID = nil
             noteCardDataSource.performFetch(NoteCard.requestNone())
             return
         }
-        
-        guard currentCollectionUUID != collection.uuid else { return }
         
         let context = noteCardDataSource.fetchedResult.managedObjectContext
         currentCollection = context.object(with: collection.objectID) as? NoteCardCollection

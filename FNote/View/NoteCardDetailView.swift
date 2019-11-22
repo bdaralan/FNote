@@ -30,6 +30,8 @@ struct NoteCardDetailView: View {
     
     @State private var showDeleteAlert = false
     
+    @State private var showNotePreviewActionSheet = false
+    
     let imageSize: CGFloat = 20
     
     
@@ -38,8 +40,12 @@ struct NoteCardDetailView: View {
     var body: some View {
         Form {
             nativeTranslationSection
-            relationshipTagSection
-            noteSection
+            detailSection
+            
+            if !noteCard.note.isEmpty {
+                notePreviewSection
+            }
+            
             actionSection
         }
         .sheet(item: $sheet, onDismiss: dismissSheet, content: presentationSheet)
@@ -48,12 +54,11 @@ struct NoteCardDetailView: View {
 }
 
 
-// MARK: - Form Section
+// MARK: - Native & Translation Section
 
 extension NoteCardDetailView {
     
     var nativeTranslationSection: some View {
-        // MARK: Native & Translation
         Section(header: Text("NATIVE & TRANSLATION").padding(.top, 20)) {
             VStack(alignment: .leading, spacing: 2) {
                 TextField("Native", text: $noteCard.native)
@@ -71,8 +76,14 @@ extension NoteCardDetailView {
             }
         }
     }
+}
+
+
+// MARK: - Detail Section
+
+extension NoteCardDetailView {
     
-    var relationshipTagSection: some View {
+    var detailSection: some View {
         Section(header: Text("RELATIONSHIPS & TAGS")) {
             // MARK: Formality
             HStack {
@@ -121,26 +132,65 @@ extension NoteCardDetailView {
                         .foregroundColor(.secondary)
                 }
             }
+            
+            // MARK: Note
+            Button(action: beginEditingNote) {
+                HStack {
+                    Image.noteCardNote
+                        .frame(width: imageSize, height: imageSize, alignment: .center)
+                        .foregroundColor(.primary)
+                    Text("Note")
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Text(noteCard.note.isEmpty ? "none" : "\(noteCard.note.count)")
+                        .foregroundColor(.secondary)
+                }
+            }
         }
     }
+}
+
+
+// MARK: Note Preview Section
+
+extension NoteCardDetailView {
     
-    var noteSection: some View {
-        // MARK: Note
-        Section(header: Text("NOTE")) {
+    var notePreviewSection: some View {
+        let header = Text("NOTE PREVIEW")
+        let footer = Text("Long press on the note to copy to clipboard")
+        return Section(header: header, footer: footer) {
             VStack {
-                Text(noteCard.note.isEmpty ? "⠂⠂⠂" : noteCard.note)
+                Text(noteCard.note)
                     .foregroundColor(noteCard.note.isEmpty ? .secondary : .primary)
             }
             .frame(maxWidth: .infinity, minHeight: 0, alignment: .leading)
-            .padding(.vertical, noteCard.note.isEmpty ? 0 : 6)
+            .padding(.vertical, 8)
             .contentShape(Rectangle())
             .onTapGesture(perform: beginEditingNote)
-            .onLongPressGesture(perform: copyNoteToClipboard)
+            .onLongPressGesture(perform: { self.showNotePreviewActionSheet = true })
+            .actionSheet(isPresented: $showNotePreviewActionSheet, content: notePreviewActionSheet)
         }
     }
     
+    func notePreviewActionSheet() -> ActionSheet {
+        let copy = ActionSheet.Button.default(Text("Copy to Clipboard"), action: copyNoteToClipboard)
+        let cancel = ActionSheet.Button.cancel()
+        let title = Text("Note Action")
+        return ActionSheet(title: title, message: nil, buttons: [copy, cancel])
+    }
+    
+    func copyNoteToClipboard() {
+        guard !noteCard.note.isEmpty else { return }
+        UIPasteboard.general.string = noteCard.note
+    }
+}
+
+
+// MARK: - Action Section
+
+extension NoteCardDetailView {
+    
     var actionSection: some View {
-        // MARK: Delete
         Section {
             Button(action: { self.showDeleteAlert = true }) {
                 Text("Delete")
@@ -226,11 +276,6 @@ extension NoteCardDetailView {
         isNoteEditingActive = false
         sheet = nil
     }
-    
-    func copyNoteToClipboard() {
-        guard !noteCard.note.isEmpty else { return }
-        UIPasteboard.general.string = noteCard.note
-    }
 }
 
 
@@ -284,8 +329,9 @@ extension NoteCardDetailView {
 extension NoteCardDetailView {
     
     func deleteAlert() -> Alert {
+        let collectionName = "'\(noteCard.collection!.name)'"
         let title = Text("Delete Note Card")
-        let message = Text("Delete note card from the collection.")
+        let message = Text("Delete note card from the \(collectionName) collection.")
         let delete = Alert.Button.destructive(Text("Delete"), action: onDelete)
         return Alert(title: title, message: message, primaryButton: .cancel(), secondaryButton: delete)
     }
