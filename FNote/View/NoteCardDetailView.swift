@@ -37,102 +37,10 @@ struct NoteCardDetailView: View {
     
     var body: some View {
         Form {
-            Section(header: Text("NATIVE & TRANSLATION").padding(.top, 20)) {
-                // MARK: Native & Translation
-                VStack(alignment: .leading, spacing: 2) {
-                    TextField("Native", text: $noteCard.native)
-                        .font(.title)
-                    Text("Native")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                VStack(alignment: .leading, spacing: 2) {
-                    TextField("Translation", text: $noteCard.translation)
-                        .font(.title)
-                    Text("Translation")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            
-            Section(header: Text("RELATIONSHIP & TAG")) {
-                // MARK: Formality
-                HStack {
-                    Image.noteCardFormality
-                        .frame(width: imageSize, height: imageSize, alignment: .center)
-                        .foregroundColor(noteCard.formality.color)
-                    Picker("Formality", selection: $noteCard.formality) {
-                        ForEach(NoteCard.Formality.allCases, id: \.self) { formality in
-                            Text(formality.title).tag(formality)
-                        }
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                }
-                
-                // MARK: Favorite
-                Toggle(isOn: $noteCard.isFavorited) {
-                    Image.noteCardFavorite(noteCard.isFavorited)
-                        .frame(width: imageSize, height: imageSize, alignment: .center)
-                    Text("Favorite")
-                }
-                
-                // MARK: Relationship
-                Button(action: beginEditingRelationship) {
-                    HStack {
-                        Image.noteCardRelationship
-                            .frame(width: imageSize, height: imageSize, alignment: .center)
-                            .foregroundColor(.primary)
-                        Text("Relationship")
-                            .foregroundColor(.primary)
-                        Spacer()
-                        Text(noteCard.relationships.isEmpty ? "none" : "\(noteCard.relationships.count)")
-                            .foregroundColor(.secondary)
-                    }
-                }
-                
-                // MARK: Tag
-                Button(action: beginEditingTag) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        HStack {
-                            Image.noteCardTag
-                                .frame(width: imageSize, height: imageSize, alignment: .center)
-                                .foregroundColor(.primary)
-                            Text("Tags")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Text("none")
-                                .foregroundColor(.secondary)
-                                .hidden(!noteCard.tags.isEmpty)
-                        }
-                        tagPillScrollView
-                            .onTapGesture(perform: beginEditingTag)
-                            .hidden(noteCard.tags.isEmpty)
-                    }
-                    .padding(.top, noteCard.tags.isEmpty ? 0 : 6)
-                }
-            }
-            
-            Section(header: Text("NOTE")) {
-                VStack {
-                    Text(noteCard.note.isEmpty ? "⠂⠂⠂" : noteCard.note)
-                        .foregroundColor(noteCard.note.isEmpty ? .secondary : .primary)
-                }
-                .frame(maxWidth: .infinity, minHeight: 0, alignment: .leading)
-                .padding(.vertical, noteCard.note.isEmpty ? 0 : 6)
-                .contentShape(Rectangle())
-                .onTapGesture(perform: beginEditingNote)
-                .onLongPressGesture(perform: copyNoteToClipboard)
-            }
-            
-            Section {
-                // MARK: Delete
-                Button(action: { self.showDeleteAlert = true }) {
-                    Text("Delete")
-                        .foregroundColor(.red)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                }
-                .hidden(onDelete == nil)
-            }
+            nativeTranslationSection
+            relationshipTagSection
+            noteSection
+            actionSection
         }
         .sheet(item: $sheet, onDismiss: dismissSheet, content: presentationSheet)
         .alert(isPresented: $showDeleteAlert, content: deleteAlert)
@@ -140,42 +48,107 @@ struct NoteCardDetailView: View {
 }
 
 
-// MARK: - Tag Pills Scroll View
+// MARK: - Form Section
 
 extension NoteCardDetailView {
     
-    /// A horizontal scroll view displaying note card's tags.
-    var tagPillScrollView: some View {
-        // these values attempt to make the scroll view sits at
-        // bottom of the row, but keep the tag pill visually in the center
-        //
-        // reason: make the bottom of the row the scroll area instead of
-        // button's tapping area
-        let scrollViewHeight: CGFloat = 40
-        let scrollViewOffsetY: CGFloat = 6
-        let scrollViewContentOffsetY = scrollViewOffsetY * -1.5
-        
-        let pillBackground = RoundedRectangle(cornerRadius: 20, style: .continuous)
-            .fill(Color.tagScrollPillBackground)
-        
-        let sortedTags = noteCard.tags.sorted(by: { $0.name < $1.name })
-        let scrollView = ScrollView(.horizontal, showsIndicators: false) {
+    var nativeTranslationSection: some View {
+        // MARK: Native & Translation
+        Section(header: Text("NATIVE & TRANSLATION").padding(.top, 20)) {
+            VStack(alignment: .leading, spacing: 2) {
+                TextField("Native", text: $noteCard.native)
+                    .font(.title)
+                Text("Native")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                TextField("Translation", text: $noteCard.translation)
+                    .font(.title)
+                Text("Translation")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+    
+    var relationshipTagSection: some View {
+        Section(header: Text("RELATIONSHIPS & TAGS")) {
+            // MARK: Formality
             HStack {
-                ForEach(sortedTags, id: \.self) { tag in
-                    Text(tag.name)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 4)
-                        .font(.callout)
+                Image.noteCardFormality
+                    .frame(width: imageSize, height: imageSize, alignment: .center)
+                    .foregroundColor(noteCard.formality.color)
+                Picker("", selection: $noteCard.formality) {
+                    ForEach(NoteCard.Formality.allCases, id: \.self) { formality in
+                        Text(formality.title).tag(formality)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+            }
+            
+            // MARK: Favorite
+            Toggle(isOn: $noteCard.isFavorited) {
+                Image.noteCardFavorite(noteCard.isFavorited)
+                    .frame(width: imageSize, height: imageSize, alignment: .center)
+                Text("Favorite")
+            }
+            
+            // MARK: Relationship
+            Button(action: beginEditingRelationship) {
+                HStack {
+                    Image.noteCardRelationship
+                        .frame(width: imageSize, height: imageSize, alignment: .center)
                         .foregroundColor(.primary)
-                        .background(pillBackground)
+                    Text("Relationships")
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Text(noteCard.relationships.isEmpty ? "none" : "\(noteCard.relationships.count)")
+                        .foregroundColor(.secondary)
                 }
             }
-            .offset(y: scrollViewContentOffsetY)
-            .frame(height: scrollViewHeight, alignment: .bottom)
+            
+            // MARK: Tag
+            Button(action: beginEditingTag) {
+                HStack {
+                    Image.noteCardTag
+                        .frame(width: imageSize, height: imageSize, alignment: .center)
+                        .foregroundColor(.primary)
+                    Text("Tags")
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Text(noteCard.tags.isEmpty ? "none" : "\(noteCard.tags.count)")
+                        .foregroundColor(.secondary)
+                }
+            }
         }
-        .offset(y: scrollViewOffsetY)
-        
-        return scrollView
+    }
+    
+    var noteSection: some View {
+        // MARK: Note
+        Section(header: Text("NOTE")) {
+            VStack {
+                Text(noteCard.note.isEmpty ? "⠂⠂⠂" : noteCard.note)
+                    .foregroundColor(noteCard.note.isEmpty ? .secondary : .primary)
+            }
+            .frame(maxWidth: .infinity, minHeight: 0, alignment: .leading)
+            .padding(.vertical, noteCard.note.isEmpty ? 0 : 6)
+            .contentShape(Rectangle())
+            .onTapGesture(perform: beginEditingNote)
+            .onLongPressGesture(perform: copyNoteToClipboard)
+        }
+    }
+    
+    var actionSection: some View {
+        // MARK: Delete
+        Section {
+            Button(action: { self.showDeleteAlert = true }) {
+                Text("Delete")
+                    .foregroundColor(.red)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            }
+            .hidden(onDelete == nil)
+        }
     }
 }
 

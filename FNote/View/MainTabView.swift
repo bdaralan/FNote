@@ -175,7 +175,7 @@ extension MainTabView {
         
         var title: String {
             switch self {
-            case .card: return "Card"
+            case .card: return "Cards"
             case .collection: return "Collections"
             case .tag: return "Tags"
             case .profile: return "Profile"
