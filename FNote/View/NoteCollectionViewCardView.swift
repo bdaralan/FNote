@@ -149,7 +149,7 @@ extension NoteCardView {
         return NavigationView {
             NoteCardScrollView(
                 noteCards: relationshipNoteCards,
-                onTap: { print($0.native) },
+                onTap: requestDisplayingNoteCard,
                 showQuickButtons: false,
                 searchModel: noteCardSearchModel
             )
@@ -173,6 +173,11 @@ extension NoteCardView {
         noteCardSearchModel.context = nil
         noteCardSearchModel.noteCardSearchOption = nil
         sheet = nil
+    }
+    
+    func requestDisplayingNoteCard(_ noteCard: NoteCard) {
+        donePreviewRelationships()
+        NotificationCenter.default.post(name: .requestDisplayingNoteCardDetail, object: noteCard)
     }
 }
 

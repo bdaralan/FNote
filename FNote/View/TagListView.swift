@@ -276,7 +276,7 @@ extension TagListView {
             NoteCardScrollView(
                 noteCards: previewNoteCards,
                 selectedCards: [],
-                onTap: nil,
+                onTap: requestDisplayingNoteCard,
                 showQuickButtons: false,
                 searchModel: noteCardPreviewSearchModel
             )
@@ -298,6 +298,11 @@ extension TagListView {
         noteCardPreviewSearchModel.context = nil
         noteCardPreviewSearchModel.noteCardSearchOption = nil
         sheet = nil
+    }
+    
+    func requestDisplayingNoteCard(_ noteCard: NoteCard) {
+        dismissNoteCardPreviewSheet()
+        NotificationCenter.default.post(name: .requestDisplayingNoteCardDetail, object: noteCard)
     }
 }
 

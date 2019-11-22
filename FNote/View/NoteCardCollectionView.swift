@@ -20,22 +20,16 @@ struct NoteCardCollectionView: View {
     /// The current note card collection user's selected.
     @ObservedObject var collection: NoteCardCollection
     
+    @Binding var selectedNoteCardID: String?
+    
     /// A flag used to show or hide create-new-note-card sheet.
     @State private var showCreateNewNoteCardSheet = false
-    
-    @State private var selectedNoteCardID: String?
         
     /// A view model used to handle search.
     @State private var  noteCardSearchModel = NoteCardSearchModel()
     
     /// A view reloader used to force reload view.
     @ObservedObject private var viewReloader = ViewForceReloader()
-    
-    /// A notification observer that listen to current collection did change notification.
-    let currentCollectionObserver = NotificationObserver(name: .appCurrentCollectionDidChange)
-    
-    // Listener for the notification to request displaying notecard details
-    let requestDisplayingNoteCardObserver = NotificationObserver(name: .requestDisplayingNoteCardDetail)
     
     /// The note cards to display.
     var noteCards: [NoteCard] {
@@ -168,21 +162,13 @@ extension NoteCardCollectionView {
     /// Prepare view and data when view appears.
     func setupView() {
         collection.objectWillChange.send()
-        setupRequestDisplayingNoteCardObserver()
         noteCardSearchModel.context = noteCardDataSource.updateContext
-    }
-    
-    func setupRequestDisplayingNoteCardObserver() {
-        requestDisplayingNoteCardObserver.onReceived = { notification in
-            guard let noteCard = notification.object as? NoteCard else { return }
-            self.selectedNoteCardID = noteCard.uuid
-        }
     }
 }
 
 
 struct NoteCardCollectionView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionView(collection: .init())
+        NoteCardCollectionView(collection: .init(), selectedNoteCardID: .constant(nil))
     }
 }

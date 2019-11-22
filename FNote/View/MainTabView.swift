@@ -29,6 +29,8 @@ struct MainTabView: View {
     
     @State private var currentTabItem = Tab.card
     
+    @State private var selectedNoteCardID: String?
+    
     @State private var currentCollectionUUID: String?
     
     @State private var currentCollection: NoteCardCollection?
@@ -40,13 +42,16 @@ struct MainTabView: View {
     
     let collectionDeletedObserver = NotificationObserver(name: .appCollectionDidDelete)
     
+    // Listener for the notification to request displaying notecard details
+    let requestDisplayingNoteCardObserver = NotificationObserver(name: .requestDisplayingNoteCardDetail)
+    
     
     // MARK: - Body
     
     var body: some View {
         TabView(selection: $currentTabItem) {
             if currentCollection != nil {
-                NoteCardCollectionView(collection: currentCollection!)
+                NoteCardCollectionView(collection: currentCollection!, selectedNoteCardID: $selectedNoteCardID)
                     .environmentObject(noteCardDataSource)
                     .environmentObject(tagDataSource)
                     .tabItem(Tab.card.tabItem)
@@ -57,7 +62,10 @@ struct MainTabView: View {
                     .tag(Tab.card)
             }
             
-            NoteCardCollectionListView()
+            NoteCardCollectionListView(
+                currentCollectionUUID: $currentCollectionUUID,
+                onCollectionSelected: setCurrentCollection
+            )
                 .environmentObject(noteCardCollectionDataSource)
                 .tabItem(Tab.collection.tabItem)
                 .tag(Tab.collection)
@@ -86,6 +94,7 @@ extension MainTabView {
     func setupView() {
         loadCurrentCollection()
         setupPersistentStoreRemoteChangeObserver()
+        setupRequestDisplayingNoteCardObserver()
         setupCollectionObserver()
     }
     
@@ -127,6 +136,18 @@ extension MainTabView {
             guard let collectionUUID = notification.object as? String else { return }
             guard collectionUUID == self.currentCollectionUUID else { return }
             self.setCurrentCollection(nil)
+        }
+    }
+    
+    func setupRequestDisplayingNoteCardObserver() {
+        requestDisplayingNoteCardObserver.onReceived = { notification in
+            guard let noteCard = notification.object as? NoteCard else { return }
+            guard let collection = noteCard.collection else { return }
+            if collection.uuid != self.currentCollectionUUID {
+                self.setCurrentCollection(collection)
+            }
+            self.currentTabItem = .card
+            self.selectedNoteCardID = noteCard.uuid
         }
     }
     

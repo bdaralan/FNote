@@ -11,6 +11,11 @@ import SwiftUI
 struct NoteCardCollectionListView: View {
     
     @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
+    
+    @Binding var currentCollectionUUID: String?
+    
+    var onCollectionSelected: ((NoteCardCollection) -> Void)
+    
     @State private var collectionToRename: NoteCardCollection?
     @State private var collectionNewName = ""
     @State private var modalTextFieldDescription = ""
@@ -23,15 +28,18 @@ struct NoteCardCollectionListView: View {
     @State private var showDeleteCollectionAlert = false
     @ObservedObject private var viewReloader = ViewForceReloader()
     
+    
+    // MARK: Body
+    
     var body: some View {
         NavigationView {
             List {
                 ForEach(noteCardCollectionDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { collection in
-                    Button(action: { self.selectCollection(collection: collection) }) {
+                    Button(action: { self.onCollectionSelected(collection) }) {
                         // call the collection view
                         NoteCardCollectionListRow(
                             collection: collection,
-                            showCheckmark: collection.uuid == AppCache.currentCollectionUUID
+                            showCheckmark: collection.uuid == self.currentCollectionUUID
                         )
                             .contextMenu(menuItems: { self.contextMenuItems(for: collection) })
                     }
@@ -46,6 +54,8 @@ struct NoteCardCollectionListView: View {
     }
 }
 
+
+// MARK: Context Menu Item
 
 extension NoteCardCollectionListView {
     
@@ -130,7 +140,7 @@ extension NoteCardCollectionListView {
             // when user creates a new collection for the first time, that collection will
             // automatically be selected to show in the Note Cards tab
             if noteCardCollectionDataSource.fetchedResult.fetchedObjects?.count == 1 {
-                selectCollection(collection: collectionToSave)
+                onCollectionSelected(collectionToSave)
             }
             
         case .failed:
@@ -212,13 +222,6 @@ extension NoteCardCollectionListView {
         viewReloader.forceReload()
     }
     
-    func selectCollection(collection: NoteCardCollection) {
-        // post a notification that a collection is selected
-        AppCache.currentCollectionUUID = collection.uuid
-        viewReloader.forceReload()
-        NotificationCenter.default.post(name: .appCurrentCollectionDidChange, object: collection)
-    }
-    
     func modalTextField() -> some View {
         let commit: () -> Void
         let cancel: () -> Void
@@ -298,6 +301,6 @@ extension NoteCardCollectionListView {
 
 struct NoteCardCollectionListView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionListView()
+        NoteCardCollectionListView(currentCollectionUUID: .constant(nil), onCollectionSelected: {})
     }
 }
