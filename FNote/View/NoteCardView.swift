@@ -85,7 +85,7 @@ extension NoteCardView {
     }
     
     var tagButton: some View {
-        Button(action: {}) {
+        Button(action: beginPreviewTags) {
             HStack {
                 Image.noteCardTag
                 Text("\(noteCard.tags.count)")
@@ -116,8 +116,8 @@ extension NoteCardView {
     
     var noteButton: some View {
         Button(action: beginPreviewNote) {
-            ZStack {
-                Rectangle() // tappable area
+            ZStack(alignment: .trailing) {
+                Rectangle() // invisible view for more tappable area
                     .fill(Color.clear)
                     .frame(width: 35, height: 35, alignment: .center)
                 Image.noteCardNote
@@ -180,7 +180,18 @@ extension NoteCardView {
     
     /// A sheet that previews the tags of the selected card.
     var tagPreviewSheet: some View {
-        Text("Tag Preview")
+        let doneNavItem = Button("Done", action: donePreviewNote)
+        return NavigationView {
+            List {
+                ForEach(Array(noteCard.tags), id: \.uuid) { tag in
+                    Text(tag.name)
+                        .foregroundColor(.primary)
+                }
+            }
+            .listStyle(GroupedListStyle())
+            .navigationBarTitle("Tags", displayMode: .inline)
+            .navigationBarItems(leading: doneNavItem)
+        }
     }
     
     // Action that goes in the quick button

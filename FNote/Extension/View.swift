@@ -15,7 +15,13 @@ extension View {
     }
     
     func hidden(_ condition: Bool) -> some View {
-        condition ? AnyView(EmptyView()) : AnyView(self)
+        Group {
+            if condition {
+                EmptyView()
+            } else {
+                self
+            }
+        }
     }
     
     func frameInfinity(alignment: Alignment) -> some View {

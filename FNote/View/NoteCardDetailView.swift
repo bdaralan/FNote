@@ -41,11 +41,7 @@ struct NoteCardDetailView: View {
         Form {
             nativeTranslationSection
             detailSection
-            
-            if !noteCard.note.isEmpty {
-                notePreviewSection
-            }
-            
+            notePreviewSection
             actionSection
         }
         .sheet(item: $sheet, onDismiss: dismissSheet, content: presentationSheet)
@@ -114,7 +110,7 @@ extension NoteCardDetailView {
                     Text("Relationships")
                         .foregroundColor(.primary)
                     Spacer()
-                    Text(noteCard.relationships.isEmpty ? "none" : "\(noteCard.relationships.count)")
+                    Text("\(noteCard.relationships.count)")
                         .foregroundColor(.secondary)
                 }
             }
@@ -128,7 +124,7 @@ extension NoteCardDetailView {
                     Text("Tags")
                         .foregroundColor(.primary)
                     Spacer()
-                    Text(noteCard.tags.isEmpty ? "none" : "\(noteCard.tags.count)")
+                    Text("\(noteCard.tags.count)")
                         .foregroundColor(.secondary)
                 }
             }
@@ -142,8 +138,11 @@ extension NoteCardDetailView {
                     Text("Note")
                         .foregroundColor(.primary)
                     Spacer()
-                    Text(noteCard.note.isEmpty ? "none" : "\(noteCard.note.count)")
-                        .foregroundColor(.secondary)
+                    HStack(spacing: 3) { // markdown logo with sf symbol
+                        Image(systemName: "m.square")
+                        Image(systemName: "arrow.down.square")
+                    }
+                    .foregroundColor(.secondary)
                 }
             }
         }
@@ -158,9 +157,10 @@ extension NoteCardDetailView {
     var notePreviewSection: some View {
         let header = Text("NOTE PREVIEW")
         let footer = Text("Long press on the note to copy to clipboard")
+        let note = noteCard.note.isEmpty ? " ᐧ  ᐧ  ᐧ" : noteCard.note
         return Section(header: header, footer: footer) {
             VStack {
-                Text(noteCard.note)
+                Text(note)
                     .foregroundColor(noteCard.note.isEmpty ? .secondary : .primary)
             }
             .frame(maxWidth: .infinity, minHeight: 0, alignment: .leading)

@@ -13,7 +13,7 @@ extension Image {
     
     static let noteCardFormality = Image(systemName: "hand.raised")
     
-    static let noteCardRelationship = Image(systemName: "circle.grid.hex")
+    static let noteCardRelationship = Image(systemName: "square.on.square")
     
     static let noteCardTag = Image(systemName: "tag")
     
