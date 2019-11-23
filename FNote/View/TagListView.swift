@@ -277,7 +277,7 @@ extension TagListView {
                 selectedCards: [],
                 showQuickButtons: false,
                 searchContext: tagDataSource.fetchedResult.managedObjectContext,
-                onTap: requestDisplayingNoteCard
+                onTap: handlePreviewNoteCardTapped
             )
                 .navigationBarTitle("Note Cards", displayMode: .inline)
                 .navigationBarItems(leading: doneNavItem)
@@ -294,7 +294,7 @@ extension TagListView {
         sheet = nil
     }
     
-    func requestDisplayingNoteCard(_ noteCard: NoteCard) {
+    func handlePreviewNoteCardTapped(_ noteCard: NoteCard) {
         dismissNoteCardPreviewSheet()
         NotificationCenter.default.post(name: .requestDisplayingNoteCardDetail, object: noteCard)
     }

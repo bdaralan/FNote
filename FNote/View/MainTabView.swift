@@ -75,8 +75,7 @@ struct MainTabView: View {
                 .tag(Tab.tag)
             
             ProfileView(setting: .current)
-                .environmentObject(noteCardCollectionDataSource)
-                .environmentObject(tagDataSource)
+                .environment(\.managedObjectContext, noteCardDataSource.fetchedResult.managedObjectContext)
                 .tabItem(Tab.profile.tabItem)
                 .tag(Tab.profile)
         }

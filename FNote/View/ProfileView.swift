@@ -11,12 +11,16 @@ import SwiftUI
 
 struct ProfileView: View {
     
-    @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
-    @EnvironmentObject var tagDataSource: TagDataSource
+    @Environment(\.managedObjectContext) var context
+    
     @ObservedObject var setting: UserSetting
+    
     @State private var usernameToChange = ""
-    @State private var showModalTextField = false
     @State private var isModalTextFieldActive = false
+    @State private var sheet: Sheet?
+    
+    @FetchRequest(fetchRequest: NoteCard.requestFavoriteCards())
+    var favoriteNoteCardResults
     
     
     // MARK: Body
@@ -35,7 +39,7 @@ struct ProfileView: View {
             }
             .navigationBarHidden(true) /* hide the nav bar */
             .navigationBarTitle("") /* SwiftUI bug: must set the title to something to hide the nav bar */
-            .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
+            .sheet(item: $sheet, onDismiss: dismissPresentationSheet, content: presentationSheet)
         }
     }
 }
@@ -79,14 +83,43 @@ extension ProfileView {
 
 extension ProfileView {
     
-    // FAVORITE CARDS
+    // MARK: Favorite Cards
     var favoriteCardSection: some View {
         Section {
-            Text("Favorite cards.")
+            Button("Favorite Cards", action: showFavoriteCardSheet)
+                .accentColor(.primary)
         }
     }
     
-    // COLOR SCHEMES
+    var favoriteCardSheet: some View {
+        let doneNavItem = Button("Done", action: dismissPresentationSheet)
+        return NavigationView {
+            NoteCardScrollView(
+                noteCards: Array(favoriteNoteCardResults),
+                selectedCards: [],
+                showQuickButtons: false,
+                searchContext: context,
+                onTap: handleFavoriteNoteCardTapped
+            )
+                .navigationBarTitle("Favorite Cards", displayMode: .inline)
+                .navigationBarItems(leading: doneNavItem)
+        }
+    }
+    
+    func showFavoriteCardSheet() {
+        sheet = .favoriteCard
+    }
+    
+    func dismissFavoriteCardSheet() {
+        sheet = nil
+    }
+    
+    func handleFavoriteNoteCardTapped(_ noteCard: NoteCard) {
+        dismissFavoriteCardSheet()
+        NotificationCenter.default.post(name: .requestDisplayingNoteCardDetail, object: noteCard)
+    }
+    
+    // MARK: Color Schemes
     var colorSchemeSection: some View {
         Section(header: Text("COLOR SCHEMES")) {
             createColorSchemeButton(action: { self.setColorScheme(to: .system) }, colorScheme: .system)
@@ -113,7 +146,7 @@ extension ProfileView {
         }
     }
     
-    // HELP SECTION
+    // MARK: Help
     var helpSection: some View {
         Section(footer: appVersionFooterText) {
             Text("Help")
@@ -132,12 +165,10 @@ extension ProfileView {
 }
 
 
-// MARK: - Sheet
-
+// MARK: - Editing Username Sheet
 extension ProfileView {
     
-    // modalTextField
-    func modalTextField() -> some View {
+    var editUsernameSheet: some View {
         ModalTextField(
             isActive: $isModalTextFieldActive,
             text: $usernameToChange,
@@ -151,12 +182,12 @@ extension ProfileView {
     func beginEditingUsername() {
         usernameToChange = setting.username
         isModalTextFieldActive = true
-        showModalTextField = true
+        sheet = .editUsername
     }
     
     func cancelEditingUsername() {
         isModalTextFieldActive = false
-        showModalTextField = false
+        sheet = nil
     }
     
     func commitEditingUsername() {
@@ -166,7 +197,34 @@ extension ProfileView {
             setting.save()
         }
         isModalTextFieldActive = false
-        showModalTextField = false
+        sheet = nil
+    }
+}
+
+
+// MARK: - Sheet
+
+extension ProfileView {
+    
+    enum Sheet: Identifiable {
+        case favoriteCard
+        case editUsername
+        
+        var id: Sheet { self }
+    }
+    
+    func presentationSheet(for sheet: Sheet) -> some View {
+        switch sheet {
+        case .editUsername:
+            return editUsernameSheet.eraseToAnyView()
+        case .favoriteCard:
+            return favoriteCardSheet.eraseToAnyView()
+        }
+    }
+    
+    func dismissPresentationSheet() {
+        dismissFavoriteCardSheet()
+        cancelEditingUsername()
     }
 }
 
