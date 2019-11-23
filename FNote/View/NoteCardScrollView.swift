@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 
 /// A scroll view for displaying a list of note cards.
@@ -20,23 +21,30 @@ struct NoteCardScrollView: View {
     /// Selected note cards.
     var selectedCards = [NoteCard]()
     
-    /// An action to perform when a card is selected.
-    var onTap: ((NoteCard) -> Void)?
-    
     /// A boolean to display quick buttons.
     var showQuickButtons = true
+    
+    /// The context used to search note cards.
+    var searchContext: NSManagedObjectContext?
+    
+    /// An action to perform when a card is selected.
+    var onTap: ((NoteCard) -> Void)?
     
     /// A model used for searching.
     ///
     /// If its context is `nil` the search field will not be shown.
-    @ObservedObject var searchModel = NoteCardSearchModel()
+    ///
+    /// - Note:
+    ///   - Need to declare as `@State` so that when when view reload `onTap`,
+    ///   the search text does not reset.
+    ///   - Use `viewReloader` to refresh the UI
+    @State private var searchModel = NoteCardSearchModel()
+    
+    @ObservedObject private var viewReloader = ViewForceReloader()
     
     var noteCardsToDisplay: [NoteCard] {
-        if searchModel.context != nil, searchModel.isActive {
-            return searchModel.searchFetchResult?.fetchedObjects ?? []
-        } else {
-            return noteCards
-        }
+        guard searchModel.context != nil, searchModel.isActive else { return noteCards }
+        return searchModel.matchedObjects
     }
     
     
@@ -45,13 +53,12 @@ struct NoteCardScrollView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: true) {
             VStack(spacing: 24) {
-                if searchModel.context != nil {
-                    SearchTextField(
-                        searchField: searchModel.searchField,
-                        searchOption: searchModel.searchOption,
-                        onCancel: searchModel.deactivate
-                    )
-                }
+                SearchTextField(
+                    searchField: searchModel.searchField,
+                    searchOption: searchModel.searchOption,
+                    onCancel: searchModel.deactivate
+                )
+                    .onReceive(searchModel.objectWillChange, perform: { _ in self.viewReloader.forceReload() })
                 
                 ForEach(noteCardsToDisplay, id: \.uuid) { noteCard in
                     NoteCardView(
@@ -59,17 +66,27 @@ struct NoteCardScrollView: View {
                         showQuickButtons: false,
                         cardBackground: self.selectedCards.contains(noteCard) ? .appAccent : nil
                     )
-                        .onTapGesture { self.onTap?(noteCard) }
+                        .onTapGesture(perform: { self.onTap?(noteCard) })
                 }
             }
             .padding()
+            .onAppear(perform: setupSearchModel)
         }
+    }
+}
+
+
+extension NoteCardScrollView {
+    
+    func setupSearchModel() {
+        searchModel.context = searchContext
+        searchModel.noteCardSearchOptions = [.include(noteCards)]
     }
 }
 
 
 struct NoteCardScrollView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardScrollView(noteCards: [], onTap: nil, searchModel: .init())
+        NoteCardScrollView(noteCards: [], onTap: nil)
     }
 }

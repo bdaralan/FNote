@@ -33,7 +33,7 @@ struct NoteCardCollectionListView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(noteCardCollectionDataSource.fetchedResult.fetchedObjects ?? [], id: \.uuid) { collection in
+                ForEach(noteCardCollectionDataSource.fetchedObjects, id: \.uuid) { collection in
                     Button(action: { self.setCurrentCollection(collection) }) {
                         // call the collection view
                         NoteCardCollectionListRow(
@@ -144,7 +144,7 @@ extension NoteCardCollectionListView {
             
             // when user creates a new collection for the first time, that collection will
             // automatically be selected to show in the Note Cards tab
-            if noteCardCollectionDataSource.fetchedResult.fetchedObjects?.count == 1 {
+            if noteCardCollectionDataSource.fetchedObjects.count == 1 {
                 setCurrentCollection(collectionToSave)
             }
             

@@ -21,7 +21,6 @@ struct TagListView: View {
     @State private var tagToDelete: Tag?
     @State private var showDeleteTagAlert = false
     @State private var previewNoteCards = [NoteCard]()
-    let noteCardPreviewSearchModel = NoteCardSearchModel()
     @ObservedObject private var viewReloader = ViewForceReloader()
     
     
@@ -30,7 +29,7 @@ struct TagListView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(tagDataSource.fetchedResult.fetchedObjects ?? [], id: \.self) { tag in
+                ForEach(tagDataSource.fetchedObjects, id: \.self) { tag in
                     Button(action: { self.showNoteCardPreviewSheet(for: tag) }) {
                         TagListRow(tag: tag)
                             .contextMenu(menuItems: { self.contextMenuItems(for: tag) })
@@ -276,9 +275,9 @@ extension TagListView {
             NoteCardScrollView(
                 noteCards: previewNoteCards,
                 selectedCards: [],
-                onTap: requestDisplayingNoteCard,
                 showQuickButtons: false,
-                searchModel: noteCardPreviewSearchModel
+                searchContext: tagDataSource.fetchedResult.managedObjectContext,
+                onTap: requestDisplayingNoteCard
             )
                 .navigationBarTitle("Note Cards", displayMode: .inline)
                 .navigationBarItems(leading: doneNavItem)
@@ -287,16 +286,11 @@ extension TagListView {
     
     func showNoteCardPreviewSheet(for tag: Tag) {
         previewNoteCards = tag.noteCards.sorted(by: { $0.translation < $1.translation })
-        noteCardPreviewSearchModel.context = tagDataSource.fetchedResult.managedObjectContext
-        noteCardPreviewSearchModel.noteCardSearchOption = .include(previewNoteCards)
         sheet = .noteCardPreview
     }
     
     func dismissNoteCardPreviewSheet() {
         previewNoteCards = []
-        noteCardPreviewSearchModel.deactivate()
-        noteCardPreviewSearchModel.context = nil
-        noteCardPreviewSearchModel.noteCardSearchOption = nil
         sheet = nil
     }
     

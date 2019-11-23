@@ -57,6 +57,16 @@ protocol ObjectDataSource: ObservableObject, NSFetchedResultsControllerDelegate 
 }
 
 
+// MARK: - Computed Property
+
+extension ObjectDataSource {
+    
+    var fetchedObjects: [Object] {
+        fetchedResult.fetchedObjects ?? []
+    }
+}
+
+
 // MARK: - Fetch Method
 
 extension ObjectDataSource {
@@ -78,7 +88,7 @@ extension ObjectDataSource {
     
     func refreshFetchedObjects(sendObjectWillChange: Bool = true) {
         if sendObjectWillChange {
-            fetchedResult.fetchedObjects?.forEach({ $0.objectWillChange.send() })
+            fetchedObjects.forEach({ $0.objectWillChange.send() })
         }
         fetchedResult.managedObjectContext.refreshAllObjects()
     }

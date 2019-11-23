@@ -26,9 +26,6 @@ struct NoteCardRelationshipView: View {
     
     @State private var noteCards = [NoteCard]()
     
-    /// A view model used to handle search.
-    let noteCardSearchModel = NoteCardSearchModel()
-    
     
     // MARK: Body
     // Displaying the notecards from the collection in a ScrollView using their id and NoteCardCollectionViewCard
@@ -38,9 +35,9 @@ struct NoteCardRelationshipView: View {
             NoteCardScrollView(
                 noteCards: noteCards,
                 selectedCards: Array(noteCard.relationships),
-                onTap: noteCardSelected,
                 showQuickButtons: false,
-                searchModel: noteCardSearchModel
+                searchContext: noteCard.managedObjectContext,
+                onTap: noteCardSelected
             )
                 .navigationBarTitle("Relationships", displayMode: .inline)
                 .navigationBarItems(leading: doneNavItem)
@@ -95,14 +92,8 @@ extension NoteCardRelationshipView {
 extension NoteCardRelationshipView {
 
     func setupView() {
-        // setup note cards
-        let allCards = noteCardDataSource.fetchedResult.fetchedObjects ?? []
-        let noteCardUUID = noteCard.uuid
-        noteCards = allCards.filter({ $0.uuid != noteCardUUID })
-        
-        // setup search model
-        noteCardSearchModel.context = noteCardDataSource.updateContext
-        noteCardSearchModel.noteCardSearchOption = .exclude([noteCard])
+        let allCards = noteCardDataSource.fetchedObjects
+        noteCards = allCards.filter({ $0.uuid != noteCard.uuid })
     }
 }
 

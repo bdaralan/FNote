@@ -33,11 +33,8 @@ struct NoteCardCollectionView: View {
     
     /// The note cards to display.
     var noteCards: [NoteCard] {
-        if noteCardSearchModel.isActive {
-            return noteCardSearchModel.searchFetchResult?.fetchedObjects ?? []
-        } else {
-            return noteCardDataSource.fetchedResult.fetchedObjects ?? []
-        }
+        guard noteCardSearchModel.isActive else { return noteCardDataSource.fetchedObjects }
+        return noteCardSearchModel.matchedObjects
     }
     
     // MARK: Body
@@ -163,6 +160,7 @@ extension NoteCardCollectionView {
     func setupView() {
         collection.objectWillChange.send()
         noteCardSearchModel.context = noteCardDataSource.updateContext
+        noteCardSearchModel.matchingCollectionUUID = collection.uuid
     }
 }
 

@@ -37,15 +37,13 @@ struct NoteCardTagView: View {
     var onDone: (() -> Void)?
     
     var includedTags: [Tag] {
-        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
-        return allTags.filter { tag in
+        tagDataSource.fetchedObjects.filter { tag in
             self.noteCard.tags.contains(where: { $0.uuid == tag.uuid })
         }
     }
     
     var excludedTags: [Tag] {
-        let allTags = tagDataSource.fetchedResult.fetchedObjects ?? []
-        return allTags.filter { tag in
+        tagDataSource.fetchedObjects.filter { tag in
             !self.noteCard.tags.contains(where: { $0.uuid == tag.uuid })
         }
     }
@@ -95,7 +93,7 @@ extension NoteCardTagView {
         if let tag = noteCard.tags.first(where: { $0.uuid == tag.uuid }) {
             noteCard.tags.remove(tag)
         
-        } else if let tag = tagDataSource.fetchedResult.fetchedObjects?.first(where: { $0.uuid == tag.uuid }) {
+        } else if let tag = tagDataSource.fetchedObjects.first(where: { $0.uuid == tag.uuid }) {
             let tagToAdd = tag.get(from: noteCard.managedObjectContext!)
             noteCard.tags.insert(tagToAdd)
         }

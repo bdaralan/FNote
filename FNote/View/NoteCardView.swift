@@ -27,9 +27,6 @@ struct NoteCardView: View {
 
     @State private var relationshipNoteCards = [NoteCard]()
     
-    /// A view model used to handle search.
-    let noteCardSearchModel = NoteCardSearchModel()
-    
     
     // MARK: Body
     
@@ -149,9 +146,9 @@ extension NoteCardView {
         return NavigationView {
             NoteCardScrollView(
                 noteCards: relationshipNoteCards,
-                onTap: requestDisplayingNoteCard,
                 showQuickButtons: false,
-                searchModel: noteCardSearchModel
+                searchContext: noteCard.managedObjectContext,
+                onTap: requestDisplayingNoteCard
             )
                 .navigationBarTitle("Relationships", displayMode: .inline)
                 .navigationBarItems(leading: doneNavItem)
@@ -162,16 +159,11 @@ extension NoteCardView {
     // Action that goes in the quick button
     func beginPreviewRelationships() {
         relationshipNoteCards = noteCard.relationships.sorted(by: { $0.translation < $1.translation })
-        noteCardSearchModel.context = noteCardDataSource.updateContext
-        noteCardSearchModel.noteCardSearchOption = .include(relationshipNoteCards)
         sheet = .relationship
     }
     
     func donePreviewRelationships() {
         relationshipNoteCards = []
-        noteCardSearchModel.deactivate()
-        noteCardSearchModel.context = nil
-        noteCardSearchModel.noteCardSearchOption = nil
         sheet = nil
     }
     

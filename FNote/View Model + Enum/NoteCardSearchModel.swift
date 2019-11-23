@@ -30,10 +30,24 @@ class NoteCardSearchModel: ObservableObject {
     
     @Published private(set) var searchOption: SearchOption
     
-    var noteCardSearchOption: NoteCardSearchOption?
+    /// A search option when performing search.
+    ///
+    /// The default is empty which means match all note cards.
+    var noteCardSearchOptions = [NoteCardSearchOption]()
+    
+    /// A constraint when performing search.
+    ///
+    /// The default is `nil` which means match all note cards.
+    /// Assign a collection's UUID to match only those in that collection.
+    var matchingCollectionUUID: String?
     
     var isActive: Bool {
         searchFetchResult != nil
+    }
+    
+    /// The objects matched the search condition.
+    var matchedObjects: [NoteCard] {
+        searchFetchResult?.fetchedObjects ?? []
     }
     
     
@@ -84,13 +98,6 @@ extension NoteCardSearchModel {
             return
         }
         
-        guard let collectionUUID = AppCache.currentCollectionUUID else {
-            // cancel the search if cannot get current collection ID
-            deactivate()
-            searchField.cancel()
-            return
-        }
-        
         // initialize searchFetchResult when start searching
         // only does so if there is text in the search text field
         // this prevents unnecessary fetching in the case where user
@@ -112,10 +119,10 @@ extension NoteCardSearchModel {
         let searchScope = NoteCardSearchScope.scope(withTitle: searchOption.selectedOptions.first!)!
         
         let request = NoteCard.requestNoteCards(
-            forCollectionUUID: collectionUUID,
-            searchText: searchText,
+            forCollectionUUID: matchingCollectionUUID,
+            search: searchText,
             scope: searchScope,
-            option: noteCardSearchOption
+            options: noteCardSearchOptions
         )
         
         searchFetchResult.fetchRequest.predicate = request.predicate
