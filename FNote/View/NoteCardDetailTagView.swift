@@ -1,5 +1,5 @@
 //
-//  NoteCardTagView.swift
+//  NoteCardDetailTagView.swift
 //  FNote
 //
 //  Created by Dara Beng on 9/27/19.
@@ -9,7 +9,7 @@
 import SwiftUI
 
 
-struct NoteCardTagView: View {
+struct NoteCardDetailTagView: View {
     
     @EnvironmentObject var tagDataSource: TagDataSource
     
@@ -80,7 +80,7 @@ struct NoteCardTagView: View {
 }
 
 
-extension NoteCardTagView {
+extension NoteCardDetailTagView {
     
     func tagRow(for tag: Tag) -> some View {
         Button(action: { self.tagRowSelected(tag) }) {
@@ -101,7 +101,7 @@ extension NoteCardTagView {
 }
 
 
-extension NoteCardTagView {
+extension NoteCardDetailTagView {
     
     var createNewTagNavItem: some View {
         Button(action: beginCreateNewTag) {
@@ -177,6 +177,6 @@ extension NoteCardTagView {
 
 struct NoteCardTagView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardTagView(noteCard: .init())
+        NoteCardDetailTagView(noteCard: .init())
     }
 }

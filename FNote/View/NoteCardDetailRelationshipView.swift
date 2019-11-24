@@ -9,7 +9,7 @@
 import SwiftUI
 
 
-struct NoteCardRelationshipView: View {
+struct NoteCardDetailRelationshipView: View {
     
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
     
@@ -50,7 +50,7 @@ struct NoteCardRelationshipView: View {
 
 // MARK: - Nav Items
 
-extension NoteCardRelationshipView {
+extension NoteCardDetailRelationshipView {
     
     var doneNavItem: some View {
         Button("Done", action: onDone ?? {})
@@ -61,7 +61,7 @@ extension NoteCardRelationshipView {
 
 // MARK: - Method
 
-extension NoteCardRelationshipView {
+extension NoteCardDetailRelationshipView {
     
     /// Add or remove the selected cards in the notecard's relationship set.
     func noteCardSelected(_ noteCard: NoteCard) {
@@ -89,7 +89,7 @@ extension NoteCardRelationshipView {
 
 // MARK: - Setup
 
-extension NoteCardRelationshipView {
+extension NoteCardDetailRelationshipView {
 
     func setupView() {
         let allCards = noteCardDataSource.fetchedObjects
@@ -100,6 +100,6 @@ extension NoteCardRelationshipView {
 
 struct NoteCardRelationshipView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardRelationshipView(noteCard: .init())
+        NoteCardDetailRelationshipView(noteCard: .init())
     }
 }

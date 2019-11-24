@@ -209,7 +209,7 @@ extension NoteCardDetailView {
     
     // View that uses the NoteCardRelationshipView
     var relationshipEditingSheet: some View {
-        NoteCardRelationshipView(noteCard: noteCard, onDone: doneEditingRelationship)
+        NoteCardDetailRelationshipView(noteCard: noteCard, onDone: doneEditingRelationship)
             .environmentObject(noteCardDataSource) // use the noteCardDataSource as the environment object
     }
     
@@ -228,7 +228,7 @@ extension NoteCardDetailView {
 extension NoteCardDetailView {
     
     var tagEditingSheet: some View {
-        NoteCardTagView(noteCard: noteCard, onDone: doneEditingTag)
+        NoteCardDetailTagView(noteCard: noteCard, onDone: doneEditingTag)
     }
     
     func beginEditingTag() {
