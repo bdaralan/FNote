@@ -116,7 +116,7 @@ extension ProfileView {
     
     func handleFavoriteNoteCardTapped(_ noteCard: NoteCard) {
         dismissFavoriteCardSheet()
-        NotificationCenter.default.post(name: .requestDisplayingNoteCardDetail, object: noteCard)
+        NotificationCenter.default.post(name: .requestDisplayingNoteCard, object: noteCard)
     }
     
     // MARK: Color Schemes

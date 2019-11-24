@@ -296,7 +296,7 @@ extension TagListView {
     
     func handlePreviewNoteCardTapped(_ noteCard: NoteCard) {
         dismissNoteCardPreviewSheet()
-        NotificationCenter.default.post(name: .requestDisplayingNoteCardDetail, object: noteCard)
+        NotificationCenter.default.post(name: .requestDisplayingNoteCard, object: noteCard)
     }
 }
 

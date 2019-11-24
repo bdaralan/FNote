@@ -30,6 +30,12 @@ class NoteCardSearchModel: ObservableObject {
     
     @Published private(set) var searchOption: SearchOption
     
+    /// A note cards to be used as a search results.
+    @Published private(set) var manualSearchResults = [NoteCard]()
+    
+    /// A flag used to indicate whether to show the search results.
+    @Published private(set) var isManualSearchResultsActive = false
+    
     /// A search option when performing search.
     ///
     /// The default is empty which means match all note cards.
@@ -42,12 +48,14 @@ class NoteCardSearchModel: ObservableObject {
     var matchingCollectionUUID: String?
     
     var isActive: Bool {
-        searchFetchResult != nil
+        searchFetchResult != nil || isManualSearchResultsActive
     }
     
     /// The objects matched the search condition.
-    var matchedObjects: [NoteCard] {
-        searchFetchResult?.fetchedObjects ?? []
+    ///
+    /// Returns the search results or
+    var searchResults: [NoteCard] {
+        isManualSearchResultsActive ? manualSearchResults : searchFetchResult?.fetchedObjects ?? []
     }
     
     
@@ -59,9 +67,21 @@ class NoteCardSearchModel: ObservableObject {
     }
     
     
-    func deactivate() {
+    func reset() {
         searchFetchResult = nil
-        searchOption.selectedOptions = [searchOption.options.first!]
+        manualSearchResults = []
+        isManualSearchResultsActive = false
+        setupSearchOption()
+    }
+    
+    func setManualResults(noteCards: [NoteCard]) {
+        objectWillChange.send()
+        
+        let results = noteCards.compactMap({ context?.object(with: $0.objectID) as? NoteCard })
+        manualSearchResults = results
+        isManualSearchResultsActive = !results.isEmpty
+        setupSearchOption()
+        searchField.searchText = searchOption.selectedOptions.first ?? "lookup mode | active"
     }
 }
 
@@ -73,14 +93,31 @@ extension NoteCardSearchModel {
     private func setupSearchField() {
         searchField.onSearchTextDebounced = { [weak self] searchText in
             guard let self = self else { return }
+            guard !self.isManualSearchResultsActive else {
+                if searchText.isEmpty {
+                    self.searchField.cancel()
+                }
+                return
+            }
             self.fetchNoteCards(searchText: searchText)
         }
     }
     
     private func setupSearchOption() {
-        let options = [NoteCardSearchScope.translationOrNative, .note, .tag, .translation, .native]
-        searchOption.options = options.map({ $0.title })
-        searchOption.selectedOptions = [searchOption.options.first!]
+        let searchOptions: [String]
+        let selectedOptions: [String]
+        
+        if isManualSearchResultsActive {
+            searchOptions = ["lookup mode | active"]
+            selectedOptions = searchOptions
+        } else {
+            let options = [NoteCardSearchScope.translationOrNative, .note, .tag, .translation, .native]
+            searchOptions = options.map({ $0.title })
+            selectedOptions = [searchOptions.first!]
+        }
+        
+        searchOption.options = searchOptions
+        searchOption.selectedOptions = selectedOptions
         searchOption.allowsMultipleSelections = false
         searchOption.allowsEmptySelection = false
         

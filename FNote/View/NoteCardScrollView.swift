@@ -44,7 +44,7 @@ struct NoteCardScrollView: View {
     
     var noteCardsToDisplay: [NoteCard] {
         guard searchModel.context != nil, searchModel.isActive else { return noteCards }
-        return searchModel.matchedObjects
+        return searchModel.searchResults
     }
     
     
@@ -56,7 +56,7 @@ struct NoteCardScrollView: View {
                 SearchTextField(
                     searchField: searchModel.searchField,
                     searchOption: searchModel.searchOption,
-                    onCancel: searchModel.deactivate
+                    onCancel: searchModel.reset
                 )
                     .onReceive(searchModel.objectWillChange, perform: { _ in self.viewReloader.forceReload() })
                 

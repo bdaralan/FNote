@@ -22,11 +22,11 @@ struct NoteCardCollectionView: View {
     
     @Binding var selectedNoteCardID: String?
     
+    /// A view model used to handle search.
+    @ObservedObject var  noteCardSearchModel: NoteCardSearchModel
+    
     /// A flag used to show or hide create-new-note-card sheet.
     @State private var showCreateNewNoteCardSheet = false
-        
-    /// A view model used to handle search.
-    @State private var  noteCardSearchModel = NoteCardSearchModel()
     
     /// A view reloader used to force reload view.
     @ObservedObject private var viewReloader = ViewForceReloader()
@@ -34,7 +34,7 @@ struct NoteCardCollectionView: View {
     /// The note cards to display.
     var noteCards: [NoteCard] {
         guard noteCardSearchModel.isActive else { return noteCardDataSource.fetchedObjects }
-        return noteCardSearchModel.matchedObjects
+        return noteCardSearchModel.searchResults
     }
     
     // MARK: Body
@@ -46,9 +46,9 @@ struct NoteCardCollectionView: View {
                     SearchTextField(
                         searchField: noteCardSearchModel.searchField,
                         searchOption: noteCardSearchModel.searchOption,
-                        onCancel: noteCardSearchModel.deactivate
+                        onCancel: noteCardSearchModel.reset
                     )
-                        .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
+//                        .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
                     
                     ForEach(noteCards, id: \.uuid) { noteCard in
                         NoteCardViewNavigationLink(
@@ -167,6 +167,6 @@ extension NoteCardCollectionView {
 
 struct NoteCardCollectionView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionView(collection: .init(), selectedNoteCardID: .constant(nil))
+        NoteCardCollectionView(collection: .init(), selectedNoteCardID: .constant(nil), noteCardSearchModel: .init())
     }
 }

@@ -169,7 +169,7 @@ extension NoteCardView {
     
     func requestDisplayingNoteCard(_ noteCard: NoteCard) {
         donePreviewRelationships()
-        NotificationCenter.default.post(name: .requestDisplayingNoteCardDetail, object: noteCard)
+        NotificationCenter.default.post(name: .requestDisplayingNoteCard, object: noteCard)
     }
 }
 

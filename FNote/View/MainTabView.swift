@@ -37,6 +37,8 @@ struct MainTabView: View {
     
     @State private var hasCreateNoteCardCollectionRequest = false
     
+    let noteCardSearchModel = NoteCardSearchModel()
+    
     /// An observer that listen to remote data changed notification.
     let persistentStoreRemoteChangeObserver = NotificationObserver(name: .persistentStoreRemoteChange)
     
@@ -47,7 +49,7 @@ struct MainTabView: View {
     let collectionDeletedObserver = NotificationObserver(name: .appCollectionDidDelete)
     
     // An observer that listen to request displaying notecard details notification.
-    let requestDisplayingNoteCardObserver = NotificationObserver(name: .requestDisplayingNoteCardDetail)
+    let requestDisplayingNoteCardObserver = NotificationObserver(name: .requestDisplayingNoteCard)
     
     
     // MARK: - Body
@@ -55,7 +57,11 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $currentTabItem) {
             if currentCollection != nil {
-                NoteCardCollectionView(collection: currentCollection!, selectedNoteCardID: $displayingNoteCardID)
+                NoteCardCollectionView(
+                    collection: currentCollection!,
+                    selectedNoteCardID: $displayingNoteCardID,
+                    noteCardSearchModel: noteCardSearchModel
+                )
                     .environmentObject(noteCardDataSource)
                     .environmentObject(tagDataSource)
                     .tabItem(Tab.card.tabItem)
@@ -162,7 +168,7 @@ extension MainTabView {
                 self.setCurrentCollection(collection)
             }
             self.currentTabItem = .card
-            self.displayingNoteCardID = noteCard.uuid
+            self.noteCardSearchModel.setManualResults(noteCards: [noteCard])
         }
     }
     
