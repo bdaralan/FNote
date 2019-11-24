@@ -192,6 +192,7 @@ extension NoteCardView {
             .navigationBarTitle("Tags", displayMode: .inline)
             .navigationBarItems(leading: doneNavItem)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     // Action that goes in the quick button

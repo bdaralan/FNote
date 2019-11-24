@@ -11,6 +11,7 @@ import SwiftUI
 struct NoteCardCollectionListView: View {
     
     @EnvironmentObject var noteCardCollectionDataSource: NoteCardCollectionDataSource
+    @Binding var hasCreateCollectionRequest: Bool
     @State private var collectionToRename: NoteCardCollection?
     @State private var collectionNewName = ""
     @State private var modalTextFieldDescription = ""
@@ -22,7 +23,7 @@ struct NoteCardCollectionListView: View {
     @State private var collectionToDelete: NoteCardCollection?
     @State private var showDeleteCollectionAlert = false
     @ObservedObject private var viewReloader = ViewForceReloader()
-    
+        
     var currentCollectionUUID: String? {
         AppCache.currentCollectionUUID
     }
@@ -47,7 +48,7 @@ struct NoteCardCollectionListView: View {
             .navigationBarTitle("Collections")
             .navigationBarItems(trailing: createCollectionNavItem)  /* place nav bar item - trailing */
         }
-        .onAppear(perform: fetchAllCollections)
+        .onAppear(perform: setupView)
         .sheet(isPresented: $showModalTextField, content: modalTextField) /* place sheet */
         .alert(isPresented: $showDeleteCollectionAlert, content: { self.deleteCollectionAlert })
     }
@@ -144,7 +145,9 @@ extension NoteCardCollectionListView {
             
             // when user creates a new collection for the first time, that collection will
             // automatically be selected to show in the Note Cards tab
-            if noteCardCollectionDataSource.fetchedObjects.count == 1 {
+            let isOnlyCollection = noteCardCollectionDataSource.fetchedObjects.count == 1
+            let isNoCollectionSelected = AppCache.currentCollectionUUID == nil
+            if isOnlyCollection || isNoCollectionSelected {
                 setCurrentCollection(collectionToSave)
             }
             
@@ -218,13 +221,6 @@ extension NoteCardCollectionListView {
         
         isModalTextFieldActive = false
         showModalTextField = false
-    }
-    
-    func fetchAllCollections() {
-        // create a fetch request
-        let request = NoteCardCollection.requestAllCollections()
-        noteCardCollectionDataSource.performFetch(request)
-        viewReloader.forceReload()
     }
     
     func modalTextField() -> some View {
@@ -304,8 +300,27 @@ extension NoteCardCollectionListView {
 }
 
 
+extension NoteCardCollectionListView {
+    
+    func setupView() {
+        fetchAllCollections()
+        if hasCreateCollectionRequest {
+            hasCreateCollectionRequest = false
+            beginCreateNewCollection()
+        }
+    }
+    
+    func fetchAllCollections() {
+        // create a fetch request
+        let request = NoteCardCollection.requestAllCollections()
+        noteCardCollectionDataSource.performFetch(request)
+        viewReloader.forceReload()
+    }
+}
+
+
 struct NoteCardCollectionListView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionListView()
+        NoteCardCollectionListView(hasCreateCollectionRequest: .constant(false))
     }
 }

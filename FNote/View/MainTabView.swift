@@ -35,6 +35,8 @@ struct MainTabView: View {
     
     @State private var currentCollection: NoteCardCollection?
     
+    @State private var hasCreateNoteCardCollectionRequest = false
+    
     /// An observer that listen to remote data changed notification.
     let persistentStoreRemoteChangeObserver = NotificationObserver(name: .persistentStoreRemoteChange)
     
@@ -59,18 +61,21 @@ struct MainTabView: View {
                     .tabItem(Tab.card.tabItem)
                     .tag(Tab.card)
             } else {
-                Text("No Collection")
-                    .tabItem(Tab.card.tabItem)
-                    .tag(Tab.card)
+                NavigationView {
+                    CreateNoteCardCollectionGuideView(action: requestCreatingNoteCardCollection)
+                        .navigationBarTitle("FNote")
+                }
+                .tabItem(Tab.card.tabItem)
+                .tag(Tab.card)
             }
             
-            NoteCardCollectionListView()
+            NoteCardCollectionListView(hasCreateCollectionRequest: $hasCreateNoteCardCollectionRequest)
                 .environmentObject(noteCardCollectionDataSource)
                 .tabItem(Tab.collection.tabItem)
                 .tag(Tab.collection)
             
             TagListView()
-            .environmentObject(tagDataSource)
+                .environmentObject(tagDataSource)
                 .tabItem(Tab.tag.tabItem)
                 .tag(Tab.tag)
             
@@ -81,6 +86,17 @@ struct MainTabView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear(perform: setupView)
+    }
+}
+
+
+// MARK: - Method
+
+extension MainTabView {
+    
+    func requestCreatingNoteCardCollection() {
+        currentTabItem = .collection
+        hasCreateNoteCardCollectionRequest = true
     }
 }
 
