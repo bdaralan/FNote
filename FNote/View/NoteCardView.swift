@@ -213,8 +213,8 @@ extension NoteCardView {
     /// A sheet that previews note of the selected card.
     var notePreviewSheet: some View {
         ModalTextView(
-            isActive: $isNoteEditingActive,
             text: $noteCard.note,
+            isFirstResponder: $isNoteEditingActive,
             prompt: "Notes",
             onCommit: donePreviewNote,
             disableEditing: true

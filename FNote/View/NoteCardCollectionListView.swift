@@ -237,8 +237,8 @@ extension NoteCardCollectionListView {
         }
         
         return ModalTextField(
-            isActive: $isModalTextFieldActive,
             text: $collectionNewName,
+            isFirstResponder: $isModalTextFieldActive,
             prompt: modalTextFieldPrompt,
             placeholder: modalTextFieldPlaceholder,
             description: modalTextFieldDescription,

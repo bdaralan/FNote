@@ -30,7 +30,7 @@ struct NoteCardCollectionView: View {
     
     /// A view reloader used to force reload view.
     @ObservedObject private var viewReloader = ViewForceReloader()
-    
+        
     /// The note cards to display.
     var noteCards: [NoteCard] {
         guard noteCardSearchModel.isActive else { return noteCardDataSource.fetchedObjects }
@@ -48,7 +48,6 @@ struct NoteCardCollectionView: View {
                         searchOption: noteCardSearchModel.searchOption,
                         onCancel: noteCardSearchModel.reset
                     )
-//                        .onReceive(noteCardSearchModel.objectWillChange, perform: viewReloader.forceReload)
                     
                     ForEach(noteCards, id: \.uuid) { noteCard in
                         NoteCardViewNavigationLink(

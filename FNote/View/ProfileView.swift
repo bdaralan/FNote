@@ -170,8 +170,8 @@ extension ProfileView {
     
     var editUsernameSheet: some View {
         ModalTextField(
-            isActive: $isModalTextFieldActive,
             text: $usernameToChange,
+            isFirstResponder: $isModalTextFieldActive,
             prompt: "Edit Username",
             placeholder: setting.username,
             onCancel: cancelEditingUsername,

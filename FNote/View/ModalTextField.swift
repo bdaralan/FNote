@@ -10,10 +10,10 @@ import SwiftUI
 
 
 struct ModalTextField: View {
-        
-    @Binding var isActive: Bool
     
     @Binding var text: String
+    
+    @Binding var isFirstResponder: Bool
     
     var prompt: String
     
@@ -41,7 +41,7 @@ struct ModalTextField: View {
             }
             
             ModalTextFieldWrapper(
-                isActive: $isActive,
+                isActive: $isFirstResponder,
                 text: $text,
                 placeholder: placeholder,
                 onCommit: onCommit

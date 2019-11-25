@@ -14,11 +14,12 @@ protocol InputViewResponder {}
 
 extension InputViewResponder {
     
-    func setActive(to active: Bool, for responder: UIView) {
-        if active {
+    func handleFirstResponder(for responder: UIView, isFirstResponder: Bool) {
+        if isFirstResponder {
             guard !responder.isFirstResponder, responder.window != nil else { return }
             responder.becomeFirstResponder()
         } else {
+            guard responder.isFirstResponder else { return }
             responder.resignFirstResponder()
         }
     }

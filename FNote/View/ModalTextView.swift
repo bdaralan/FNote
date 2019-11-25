@@ -9,10 +9,10 @@
 import SwiftUI
 
 struct ModalTextView: View {
-        
-    @Binding var isActive: Bool
     
     @Binding var text: String
+    
+    @Binding var isFirstResponder: Bool
     
     var prompt: String
     
@@ -32,7 +32,7 @@ struct ModalTextView: View {
                     Text("Done").bold()
                 }
             }
-            ModalTextViewWrapper(text: $text, isActive: $isActive, disableEditing: disableEditing)
+            ModalTextViewWrapper(text: $text, isFirstResponder: $isFirstResponder, disableEditing: disableEditing)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding(.vertical, 20)
@@ -53,6 +53,6 @@ extension ModalTextView {
 
 struct ModalTextView_Previews: PreviewProvider {
     static var previews: some View {
-        ModalTextView(isActive: .constant(true), text: .constant("Hello"), prompt: "Prompt")
+        ModalTextView(text: .constant("Hello"), isFirstResponder: .constant(true), prompt: "Prompt")
     }
 }

@@ -16,7 +16,7 @@ struct NoteCardDetailView: View {
     @EnvironmentObject var tagDataSource: TagDataSource
     
     @ObservedObject var noteCard: NoteCard
-    
+        
     /// An action to perform when delete button is tapped.
     ///
     /// The delete button is hidden if this value is `nil`.
@@ -31,6 +31,8 @@ struct NoteCardDetailView: View {
     @State private var showDeleteAlert = false
     
     @State private var showNotePreviewActionSheet = false
+    
+//    @State private var isNativeTextFieldActive = false
     
     let imageSize: CGFloat = 20
     
@@ -57,6 +59,13 @@ extension NoteCardDetailView {
     var nativeTranslationSection: some View {
         Section(header: Text("NATIVE & TRANSLATION").padding(.top, 20)) {
             VStack(alignment: .leading, spacing: 2) {
+//                TextFieldWrapper(
+//                    text: $noteCard.native,
+//                    isFirstResponder: $isNativeTextFieldActive,
+//                    placeholder: "Native",
+//                    onEditingChanged: nil,
+//                    configure: setupNativeTranslationTextField
+//                )
                 TextField("Native", text: $noteCard.native)
                     .font(.title)
                 Text("Native")
@@ -247,8 +256,8 @@ extension NoteCardDetailView {
     
     var noteEditingSheet: some View {
         ModalTextView(
-            isActive: $isNoteEditingActive,
             text: $noteCard.note,
+            isFirstResponder: $isNoteEditingActive,
             prompt: "Note",
             onCommit: commitEditingNote
         )
@@ -320,6 +329,16 @@ extension NoteCardDetailView {
         case nil:
             return {}
         }
+    }
+}
+
+
+// MARK: - Setup
+
+extension NoteCardDetailView {
+    
+    func setupNativeTranslationTextField(_ textField: UITextField) {
+        textField.font = .preferredFont(forTextStyle: .title1)
     }
 }
 

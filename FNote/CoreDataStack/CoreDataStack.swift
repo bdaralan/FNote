@@ -21,16 +21,16 @@ class CoreDataStack: NSObject {
     let historyTracker: CoreDataStackHistoryTracker
     
     var mainContext: NSManagedObjectContext {
-        persistentContainer.viewContext
+        // auto merge new changes when store gets new updates
+        let context = persistentContainer.viewContext
+        context.automaticallyMergesChangesFromParent = true
+        return context
     }
     
     
     private override init() {
         // use CloudKit container
         persistentContainer = NSPersistentCloudKitContainer(name: "FNote")
-        
-        // auto merge new changes when store gets new updates
-        persistentContainer.viewContext.automaticallyMergesChangesFromParent = true
         
         // turn on history tracking and listen to remote change notification
         let storeDescription = persistentContainer.persistentStoreDescriptions.first!
@@ -46,7 +46,6 @@ class CoreDataStack: NSObject {
         historyTracker = CoreDataStackHistoryTracker(historyTokenDataKey: "CoreDataStack.HistoryTracker")
         
         super.init()
-        
         AppCache.ubiquityIdentityToken = FileManager.default.ubiquityIdentityToken
         setupUserIdentityChangeNotification()
     }

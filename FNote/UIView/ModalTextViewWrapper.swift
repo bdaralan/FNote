@@ -13,7 +13,7 @@ struct ModalTextViewWrapper: UIViewRepresentable {
     
     @Binding var text: String
     
-    @Binding var isActive: Bool
+    @Binding var isFirstResponder: Bool
     
     var disableEditing = false
     
@@ -53,7 +53,7 @@ struct ModalTextViewWrapper: UIViewRepresentable {
             textView.text = wrapper.text
             textView.isEditable = !wrapper.disableEditing
             if !wrapper.disableEditing {
-                setActive(to: wrapper.isActive, for: textView)
+                handleFirstResponder(for: textView, isFirstResponder: wrapper.isFirstResponder)
             }
         }
         
@@ -67,11 +67,11 @@ struct ModalTextViewWrapper: UIViewRepresentable {
         }
         
         func textViewDidBeginEditing(_ textView: UITextView) {
-            wrapper.isActive = true
+            wrapper.isFirstResponder = true
         }
         
         func textViewDidEndEditing(_ textView: UITextView) {
-            wrapper.isActive = false
+            wrapper.isFirstResponder = false
         }
         
         func listenToKeyboardNotification() {

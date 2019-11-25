@@ -53,7 +53,7 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
             self.wrapper = wrapper
             textField.text = wrapper.text
             textField.placeholder = wrapper.placeholder
-            setActive(to: wrapper.isActive, for: textField)
+            handleFirstResponder(for: textField, isFirstResponder: wrapper.isActive)
         }
         
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {

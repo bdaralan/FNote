@@ -117,8 +117,8 @@ extension NoteCardDetailTagView {
     
     func modalTextField() -> some View {
         ModalTextField(
-            isActive: $isModalTextFieldActive,
             text: $modalTextFieldText,
+            isFirstResponder: $isModalTextFieldActive,
             prompt: modalTextFieldPrompt,
             placeholder: modalTextFieldPlaceholder,
             description: modalTextFieldDescription,

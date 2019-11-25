@@ -79,8 +79,8 @@ extension TagListView {
     
     var createTagSheet: some View {
         ModalTextField(
-            isActive: $isModalTextFieldActive,
             text: $tagNewName,
+            isFirstResponder: $isModalTextFieldActive,
             prompt: modalTextFieldPrompt,
             placeholder: modalTextFieldPlaceholder,
             description: modalTextFieldDescription,
@@ -159,8 +159,8 @@ extension TagListView {
     
     var renameTagSheet: some View {
         ModalTextField(
-            isActive: $isModalTextFieldActive,
             text: $tagNewName,
+            isFirstResponder: $isModalTextFieldActive,
             prompt: modalTextFieldPrompt,
             placeholder: modalTextFieldPlaceholder,
             description: modalTextFieldDescription,
