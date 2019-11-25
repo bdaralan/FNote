@@ -21,14 +21,14 @@ struct CreateNoteCardCollectionGuideView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 150, height: 150)
-                    .foregroundColor(Color(UIColor.quaternaryLabel))
+                    .foregroundColor(Color(UIColor.tertiaryLabel))
             }
             .buttonStyle(PlainButtonStyle())
             VStack(spacing: 8) {
                 Text("No collection selected")
                 Text("Select or create a new collection")
             }
-            .foregroundColor(Color(UIColor.tertiaryLabel))
+            .foregroundColor(.secondary)
         }
     }
 }
