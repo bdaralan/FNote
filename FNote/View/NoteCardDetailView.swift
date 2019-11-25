@@ -165,7 +165,7 @@ extension NoteCardDetailView {
     
     var notePreviewSection: some View {
         let header = Text("NOTE PREVIEW")
-        let footer = Text("Long press on the note to copy to clipboard")
+        let footer = Text("Press and hold on the note to copy to clipboard")
         let note = noteCard.note.isEmpty ? " ᐧ  ᐧ  ᐧ" : noteCard.note
         return Section(header: header, footer: footer) {
             VStack {
