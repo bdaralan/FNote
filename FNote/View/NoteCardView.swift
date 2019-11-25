@@ -181,9 +181,10 @@ extension NoteCardView {
     /// A sheet that previews the tags of the selected card.
     var tagPreviewSheet: some View {
         let doneNavItem = Button("Done", action: donePreviewNote)
+        let tags = noteCard.tags.sorted(by: { $0.name < $1.name })
         return NavigationView {
             List {
-                ForEach(Array(noteCard.tags), id: \.uuid) { tag in
+                ForEach(tags, id: \.uuid) { tag in
                     Text(tag.name)
                         .foregroundColor(.primary)
                 }
