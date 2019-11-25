@@ -22,6 +22,9 @@ struct NoteCardCollectionView: View {
     
     @Binding var selectedNoteCardID: String?
     
+    /// A note card being viewed or edited in NoteCardDetailView.
+    @State private var editingNoteCard: NoteCard?
+    
     /// A view model used to handle search.
     @ObservedObject var  noteCardSearchModel: NoteCardSearchModel
     
@@ -30,6 +33,8 @@ struct NoteCardCollectionView: View {
     
     /// A view reloader used to force reload view.
     @ObservedObject private var viewReloader = ViewForceReloader()
+    
+    @State private var showDiscardChangesAlert = false
         
     /// The note cards to display.
     var noteCards: [NoteCard] {
@@ -53,7 +58,8 @@ struct NoteCardCollectionView: View {
                         NoteCardViewNavigationLink(
                             noteCard: noteCard,
                             selectedNoteCardID: self.$selectedNoteCardID,
-                            onDeleted: self.viewReloader.forceReload
+                            onDeleted: self.viewReloader.forceReload,
+                            onViewNoteCardDetail: { self.editingNoteCard = $0 }
                         )
                     }
                 }
@@ -62,6 +68,7 @@ struct NoteCardCollectionView: View {
             .navigationBarTitle(collection.name)
             .navigationBarItems(trailing: createNewNoteCardNavItem)
             .onAppear(perform: setupView)
+            .alert(isPresented: $showDiscardChangesAlert, content: { self.discardNoteCardChangesAlert })
             .sheet(
                 isPresented: $showCreateNewNoteCardSheet,
                 onDismiss: cancelCreateNewNoteCard,
@@ -151,6 +158,50 @@ extension NoteCardCollectionView {
 }
 
 
+// MARK: - NoteCard Discard Alert
+
+extension NoteCardCollectionView {
+    
+    var discardNoteCardChangesAlert: Alert {
+        // can unwrap this one because `checkUnsavedChanges` already check
+        let noteCard = editingNoteCard!
+        
+        let revert = Alert.Button.default(Text("Revert"), action: discardNoteCardChanges)
+        
+        if noteCard.isValid() {
+            let title = Text("Unsaved Changes")
+            let message = Text("There are unsaved changes.\nWould you like to save the changes?")
+            let save = Alert.Button.default(Text("Save").bold(), action: saveNoteCardChanges)
+            return Alert(title: title, message: message, primaryButton: revert, secondaryButton: save)
+        } else {
+            let title = Text("Invalid Input")
+            let message = Text("Your changes have not been saved. After dismissing this message all unsaved changes will be reverted.")
+            return Alert(title: title, message: message, dismissButton: revert)
+        }
+    }
+    
+    /// Check and show discard alert if there are unsaved changes.
+    func checkNoteCardUnsavedChanges() {
+        guard let noteCard = editingNoteCard else { return }
+        guard noteCard.hasChangedValues() else { return }
+        showDiscardChangesAlert = true
+    }
+    
+    func discardNoteCardChanges() {
+        guard let noteCard = editingNoteCard else { return }
+        editingNoteCard = nil
+        noteCard.objectWillChange.send() // tell the UI to refresh
+        noteCardDataSource.discardUpdateContext()
+    }
+    
+    func saveNoteCardChanges() {
+        guard let noteCard = editingNoteCard else { return }
+        editingNoteCard = nil
+        noteCard.objectWillChange.send() // tell the UI to refresh
+        noteCardDataSource.saveUpdateContext()
+    }
+}
+
 // MARK: - Setup & Fetch Method
 
 extension NoteCardCollectionView {
@@ -160,6 +211,7 @@ extension NoteCardCollectionView {
         collection.objectWillChange.send()
         noteCardSearchModel.context = noteCardDataSource.updateContext
         noteCardSearchModel.matchingCollectionUUID = collection.uuid
+        checkNoteCardUnsavedChanges()
     }
 }
 

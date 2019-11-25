@@ -22,14 +22,15 @@ struct NoteCardViewNavigationLink: View {
     @State private var showDiscardAlert = false
     
     var onDeleted: (() -> Void)?
+    
+    var onViewNoteCardDetail: ((NoteCard) -> Void)?
         
     
     var body: some View {
         NavigationLink(destination: noteCardView, tag: noteCard.uuid, selection: $selectedNoteCardID) {
             NoteCardView(noteCard: noteCard)
         }
-        .buttonStyle(NoteCardNavigationButtonStyle())
-        .alert(isPresented: $showDiscardAlert, content: { self.discardAlert })
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -40,7 +41,7 @@ extension NoteCardViewNavigationLink {
         NoteCardDetailView(noteCard: noteCard, onDelete: deleteCard)
             .navigationBarTitle("Note Card", displayMode: .inline)
             .navigationBarItems(trailing: saveNavItem)
-            .onDisappear(perform: checkUnsavedChanges)
+            .onAppear(perform: { self.onViewNoteCardDetail?(self.noteCard) })
     }
     
     var saveNavItem: some View {
@@ -59,36 +60,6 @@ extension NoteCardViewNavigationLink {
     func saveChanges() {
         noteCard.objectWillChange.send() // tell the UI to refresh
         noteCardDataSource.saveUpdateContext()
-    }
-    
-    func discardChanges() {
-        noteCard.objectWillChange.send() // tell the UI to refresh
-        noteCardDataSource.discardUpdateContext()
-    }
-}
-
-
-extension NoteCardViewNavigationLink {
-    
-    var discardAlert: Alert {
-        let revert = Alert.Button.default(Text("Revert"), action: discardChanges)
-        
-        if noteCard.isValid() {
-            let title = Text("Unsaved Changes")
-            let message = Text("There are unsaved changes.\nWould you like to save the changes?")
-            let save = Alert.Button.default(Text("Save").bold(), action: saveChanges)
-            return Alert(title: title, message: message, primaryButton: revert, secondaryButton: save)
-        } else {
-            let title = Text("Invalid Input")
-            let message = Text("Your changes have not been saved. After dismissing this message all unsaved changes will be reverted.")
-            return Alert(title: title, message: message, dismissButton: revert)
-        }
-    }
-    
-    /// Check and show discard alert if there are unsaved changes.
-    func checkUnsavedChanges() {
-        guard noteCard.hasChangedValues() else { return }
-        showDiscardAlert = true
     }
 }
 
