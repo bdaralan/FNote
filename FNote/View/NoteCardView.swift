@@ -36,6 +36,7 @@ struct NoteCardView: View {
                 Text(noteCard.native)
                     .font(.title)
                     .foregroundColor(.primary)
+                    .lineLimit(1)
                 if showQuickButtons && !noteCard.note.isEmpty {
                     Spacer()
                     noteButton
@@ -48,6 +49,7 @@ struct NoteCardView: View {
             Text(noteCard.translation)
                 .font(.headline)
                 .foregroundColor(.primary)
+                .lineLimit(1)
             
             if showQuickButtons {
                 HStack (alignment: .center) {
