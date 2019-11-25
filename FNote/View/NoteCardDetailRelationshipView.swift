@@ -39,7 +39,7 @@ struct NoteCardDetailRelationshipView: View {
                 searchContext: noteCard.managedObjectContext,
                 onTap: noteCardSelected
             )
-                .navigationBarTitle("Relationships", displayMode: .inline)
+                .navigationBarTitle("Links", displayMode: .inline)
                 .navigationBarItems(leading: doneNavItem)
         }
         .navigationViewStyle(StackNavigationViewStyle())

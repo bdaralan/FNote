@@ -116,7 +116,7 @@ extension NoteCardDetailView {
                     Image.noteCardRelationship
                         .frame(width: imageSize, height: imageSize, alignment: .center)
                         .foregroundColor(.primary)
-                    Text("Relationships")
+                    Text("Links")
                         .foregroundColor(.primary)
                     Spacer()
                     Text("\(noteCard.relationships.count)")

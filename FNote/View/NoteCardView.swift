@@ -150,7 +150,7 @@ extension NoteCardView {
                 searchContext: noteCard.managedObjectContext,
                 onTap: requestDisplayingNoteCard
             )
-                .navigationBarTitle("Relationships", displayMode: .inline)
+                .navigationBarTitle("Links", displayMode: .inline)
                 .navigationBarItems(leading: doneNavItem)
         }
         .navigationViewStyle(StackNavigationViewStyle())
