@@ -137,7 +137,7 @@ extension MainTabView {
             case .tag:
                 self.tagDataSource.refreshFetchedObjects()
             case .profile:
-                break
+                self.noteCardDataSource.refreshFetchedObjects()
             }
         }
     }
