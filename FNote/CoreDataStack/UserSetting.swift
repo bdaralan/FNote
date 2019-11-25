@@ -60,6 +60,12 @@ class UserSetting: ObservableObject, Codable {
             window.overrideUserInterfaceStyle = interface
         }
     }
+    
+    func update(with setting: UserSetting) {
+        objectWillChange.send()
+        colorScheme = setting.colorScheme
+        username = setting.username
+    }
 }
 
 
@@ -69,11 +75,10 @@ extension UserSetting {
     
     /// Setup setting publishers.
     private func setupPublishers() {
-        let color = $colorScheme.eraseToAnyPublisher()
+        let colorCancellable = $colorScheme.eraseToAnyPublisher()
             .receive(on: DispatchQueue.main)
             .sink { _ in self.applyColorScheme() }
-        
-        cancellables.append(color)
+        cancellables.append(colorCancellable)
     }
     
     func listenToRemoteChange() {
@@ -84,10 +89,9 @@ extension UserSetting {
     }
     
     @objc private func handleRemoteChange() {
-        objectWillChange.send()
-        let updatedSetting = UserSetting.load()
-        UserSetting.current.username = updatedSetting.username
-        print("handleRemoteChange")
+        let updated = UserSetting.load()
+        let current = UserSetting.current
+        current.update(with: updated)
     }
 }
 

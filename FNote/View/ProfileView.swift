@@ -18,6 +18,7 @@ struct ProfileView: View {
     @State private var usernameToChange = ""
     @State private var isModalTextFieldActive = false
     @State private var sheet: Sheet?
+    @ObservedObject private var viewReloader = ViewForceReloader()
     
     @FetchRequest(fetchRequest: NoteCard.requestFavoriteCards())
     var favoriteNoteCardResults
@@ -121,7 +122,7 @@ extension ProfileView {
     
     // MARK: Color Schemes
     var colorSchemeSection: some View {
-        Section(header: Text("COLOR SCHEMES")) {
+        Section(header: Text("APPEARANCE")) {
             createColorSchemeButton(action: { self.setColorScheme(to: .system) }, colorScheme: .system)
             createColorSchemeButton(action: { self.setColorScheme(to: .alwaysLight) }, colorScheme: .alwaysLight)
             createColorSchemeButton(action: { self.setColorScheme(to: .alwaysDark) }, colorScheme: .alwaysDark)
