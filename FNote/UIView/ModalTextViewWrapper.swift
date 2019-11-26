@@ -50,10 +50,15 @@ struct ModalTextViewWrapper: UIViewRepresentable {
         
         func update(with wrapper: ModalTextViewWrapper) {
             self.wrapper = wrapper
-            textView.text = wrapper.text
+            
             textView.isEditable = !wrapper.disableEditing
+            
             if !wrapper.disableEditing {
                 handleFirstResponder(for: textView, isFirstResponder: wrapper.isFirstResponder)
+            }
+            
+            if textView.text != wrapper.text {
+                textView.text = wrapper.text
             }
         }
         

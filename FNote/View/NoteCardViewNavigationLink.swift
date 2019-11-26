@@ -30,7 +30,7 @@ struct NoteCardViewNavigationLink: View {
         NavigationLink(destination: noteCardView, tag: noteCard.uuid, selection: $selectedNoteCardID) {
             NoteCardView(noteCard: noteCard)
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(NoteCardNavigationButtonStyle())
     }
 }
 

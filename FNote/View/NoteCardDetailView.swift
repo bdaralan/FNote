@@ -22,6 +22,9 @@ struct NoteCardDetailView: View {
     /// The delete button is hidden if this value is `nil`.
     var onDelete: (() -> Void)?
     
+    /// A string used to hold note card's note with model text view.
+    @State private var noteCardNote = ""
+    
     /// A flag to control note model text field keyboard.
     @State private var isNoteEditingActive = true
     
@@ -256,7 +259,7 @@ extension NoteCardDetailView {
     
     var noteEditingSheet: some View {
         ModalTextView(
-            text: $noteCard.note,
+            text: $noteCardNote,
             isFirstResponder: $isNoteEditingActive,
             prompt: "Note",
             onCommit: commitEditingNote
@@ -276,12 +279,13 @@ extension NoteCardDetailView {
     }
     
     func beginEditingNote() {
+        noteCardNote = noteCard.note
         isNoteEditingActive = true
         sheet = .note
     }
     
     func commitEditingNote() {
-        noteCard.note = noteCard.note.trimmed()
+        noteCard.note = noteCardNote.trimmed()
         isNoteEditingActive = false
         sheet = nil
     }
