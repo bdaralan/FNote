@@ -27,7 +27,7 @@ struct NoteCardViewNavigationLink: View {
         
     
     var body: some View {
-        NavigationLink(destination: noteCardView, tag: noteCard.uuid, selection: $selectedNoteCardID) {
+        NavigationLink(destination: noteCardDetailView, tag: noteCard.uuid, selection: $selectedNoteCardID) {
             NoteCardView(noteCard: noteCard)
         }
         .buttonStyle(NoteCardNavigationButtonStyle())
@@ -37,7 +37,7 @@ struct NoteCardViewNavigationLink: View {
 
 extension NoteCardViewNavigationLink {
     
-    var noteCardView: some View {
+    var noteCardDetailView: some View {
         NoteCardDetailView(noteCard: noteCard, onDelete: deleteCard)
             .navigationBarTitle("Note Card", displayMode: .inline)
             .navigationBarItems(trailing: saveNavItem)

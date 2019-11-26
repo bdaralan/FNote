@@ -70,7 +70,12 @@ extension CoreDataStack {
         let cachedToken = AppCache.ubiquityIdentityToken
         let currentToken = FileManager.default.ubiquityIdentityToken
         
-        AppCache.ubiquityIdentityToken = currentToken // update cache
+        // update cache
+        if currentToken == nil {
+            AppCache.ubiquityIdentityToken = nil
+        } else {
+            AppCache.ubiquityIdentityToken = currentToken
+        }
         
         switch (cachedToken == nil, currentToken == nil) {
             

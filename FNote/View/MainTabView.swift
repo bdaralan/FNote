@@ -37,10 +37,14 @@ struct MainTabView: View {
     
     @State private var hasCreateNoteCardCollectionRequest = false
     
+    @State private var isInvalidUser = FileManager.default.ubiquityIdentityToken == nil
+        
     let noteCardSearchModel = NoteCardSearchModel()
     
     /// An observer that listen to remote data changed notification.
     let persistentStoreRemoteChangeObserver = NotificationObserver(name: .persistentStoreRemoteChange)
+    
+    let coreDataStackChangedObserver = NotificationObserver(name: CoreDataStack.nCoreDataStackDidChange)
     
     /// An observer that listen to current collection changed notification.
     let collectionChangedObserver = NotificationObserver(name: .appCurrentCollectionDidChange)
@@ -68,7 +72,10 @@ struct MainTabView: View {
                     .tag(Tab.card)
             } else {
                 NavigationView {
-                    CreateNoteCardCollectionGuideView(action: requestCreatingNoteCardCollection)
+                    CreateNoteCardCollectionGuideView(
+                        isInvalidUser: isInvalidUser,
+                        action: requestCreatingNoteCardCollection
+                    )
                         .navigationBarTitle("FNote")
                 }
                 .tabItem(Tab.card.tabItem)
@@ -92,6 +99,7 @@ struct MainTabView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear(perform: setupView)
+        .disabled(isInvalidUser)
     }
 }
 
@@ -112,33 +120,45 @@ extension MainTabView {
 extension MainTabView {
     
     func setupView() {
-        loadCurrentCollection()
         setupPersistentStoreRemoteChangeObserver()
+        setupCoreDataStackChangedObserver()
         setupRequestDisplayingNoteCardObserver()
         setupCollectionObserver()
+        checkUserStatus()
+        loadCurrentCollection()
     }
     
     func setupPersistentStoreRemoteChangeObserver() {
-        persistentStoreRemoteChangeObserver.onReceived = refreshFetchedObjects
+        persistentStoreRemoteChangeObserver.onReceived = { notification in
+            let history = CoreDataStack.current.historyTracker
+            guard let newHistoryToken = history.token(fromRemoteChange: notification) else { return }
+            guard !newHistoryToken.isEqual(history.lastToken) else { return }
+            history.updateLastToken(newHistoryToken)
+            DispatchQueue.main.async {
+                self.refreshFetchedObjects()
+            }
+        }
     }
     
-    func refreshFetchedObjects(withRemoteChange notification: Notification) {
-        let history = CoreDataStack.current.historyTracker
-        guard let newHistoryToken = history.token(fromRemoteChange: notification) else { return }
-        guard !newHistoryToken.isEqual(history.lastToken) else { return }
-        history.updateLastToken(newHistoryToken)
-        
-        DispatchQueue.main.async {
-            switch self.currentTabItem {
-            case .card:
-                self.noteCardDataSource.refreshFetchedObjects()
-            case .collection:
-                self.noteCardCollectionDataSource.refreshFetchedObjects()
-            case .tag:
-                self.tagDataSource.refreshFetchedObjects()
-            case .profile:
-                self.noteCardDataSource.refreshFetchedObjects()
+    func setupCoreDataStackChangedObserver() {
+        coreDataStackChangedObserver.onReceived = { notification in
+            DispatchQueue.main.async {
+                self.checkUserStatus()
+                self.refreshFetchedObjects()
             }
+        }
+    }
+    
+    func refreshFetchedObjects() {
+        switch currentTabItem {
+        case .card:
+            noteCardDataSource.refreshFetchedObjects()
+        case .collection:
+            noteCardCollectionDataSource.refreshFetchedObjects()
+        case .tag:
+            tagDataSource.refreshFetchedObjects()
+        case .profile:
+            noteCardDataSource.refreshFetchedObjects()
         }
     }
     
@@ -201,6 +221,26 @@ extension MainTabView {
             setCurrentCollection(collection)
         } else {
             setCurrentCollection(nil)
+        }
+    }
+}
+
+
+// MARK: - Alert
+
+extension MainTabView {
+    
+    func invalidUserAlert() -> Alert {
+        let title = Text("No Account Detected")
+        let message = Text("Please sign in your Apple ID in Settings.")
+        let dismiss = Alert.Button.default(Text("OK"))
+        return Alert(title: title, message: message, dismissButton: dismiss)
+    }
+    
+    func checkUserStatus() {
+        isInvalidUser = FileManager.default.ubiquityIdentityToken == nil
+        if isInvalidUser {
+            currentTabItem = .card
         }
     }
 }
