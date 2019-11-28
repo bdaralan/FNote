@@ -11,6 +11,7 @@ import SwiftUI
 
 struct ProfileView: View {
     
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.managedObjectContext) var context
     
     @ObservedObject var setting: UserSetting
@@ -59,7 +60,7 @@ extension ProfileView {
                 .aspectRatio(contentMode: .fit)
                 .clipShape(Circle())
                 .shadow(radius: 10)
-                .overlay(Circle().stroke(Color.black, lineWidth: 2))
+                .overlay(Circle().stroke(colorScheme == .dark ? Color.white : .black, lineWidth: 2))
             
             // grab username
             Text(setting.username)
