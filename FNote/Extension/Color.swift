@@ -23,5 +23,5 @@ extension Color {
 
 extension UIColor {
     
-    static let appAccent = UIColor(named: "app-accent-color")
+    static let appAccent = UIColor(named: "app-accent-color")!
 }

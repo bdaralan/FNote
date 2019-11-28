@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -31,6 +31,7 @@
 		B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */; };
 		B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3404232E8214008B2088 /* ModalTextView.swift */; };
 		B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3406232E8634008B2088 /* InputViewResponder.swift */; };
+		B4928E8C239054FF0060AD45 /* Down in Frameworks */ = {isa = PBXBuildFile; productRef = B4928E8B239054FF0060AD45 /* Down */; };
 		B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */; };
 		B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35B2326D988002D16A0 /* CoreDataStack.swift */; };
 		B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35D2326D9A7002D16A0 /* AppCache.swift */; };
@@ -146,6 +147,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B4928E8C239054FF0060AD45 /* Down in Frameworks */,
 				B4AFD4522360B1B3004BAA9B /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -356,6 +358,9 @@
 			dependencies = (
 			);
 			name = FNote;
+			packageProductDependencies = (
+				B4928E8B239054FF0060AD45 /* Down */,
+			);
 			productName = FNote;
 			productReference = B4BB116D23145DC400A380AA /* FNote.app */;
 			productType = "com.apple.product-type.application";
@@ -406,6 +411,9 @@
 				Base,
 			);
 			mainGroup = B4BB116423145DC400A380AA;
+			packageReferences = (
+				B4928E8A239054FF0060AD45 /* XCRemoteSwiftPackageReference "Down" */,
+			);
 			productRefGroup = B4BB116E23145DC400A380AA /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -757,6 +765,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B4928E8A239054FF0060AD45 /* XCRemoteSwiftPackageReference "Down" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/iwasrobbed/Down.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B4928E8B239054FF0060AD45 /* Down */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B4928E8A239054FF0060AD45 /* XCRemoteSwiftPackageReference "Down" */;
+			productName = Down;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		B4BB117423145DC400A380AA /* FNote.xcdatamodeld */ = {

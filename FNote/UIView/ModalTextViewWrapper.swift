@@ -7,15 +7,20 @@
 //
 
 import SwiftUI
+import Down
 
 
 struct ModalTextViewWrapper: UIViewRepresentable {
+    
+    @Environment(\.colorScheme) var colorScheme
     
     @Binding var text: String
     
     @Binding var isFirstResponder: Bool
     
     var disableEditing = false
+    
+    var renderMarkdown = false
     
     
     func makeCoordinator() -> Coordinator {
@@ -49,6 +54,10 @@ struct ModalTextViewWrapper: UIViewRepresentable {
         
         
         func update(with wrapper: ModalTextViewWrapper) {
+            let sameText = textView.text == wrapper.text
+            let sameColorScheme = self.wrapper.colorScheme == wrapper.colorScheme
+            let shouldUpdateText = !sameText || !sameColorScheme
+            
             self.wrapper = wrapper
             
             textView.isEditable = !wrapper.disableEditing
@@ -57,14 +66,38 @@ struct ModalTextViewWrapper: UIViewRepresentable {
                 handleFirstResponder(for: textView, isFirstResponder: wrapper.isFirstResponder)
             }
             
-            if textView.text != wrapper.text {
+            guard shouldUpdateText else { return }
+            let renderMarkdown = wrapper.renderMarkdown
+            let colorScheme = wrapper.colorScheme
+            
+            if renderMarkdown, let markdown = createMarkdown(from: wrapper.text, colorScheme: colorScheme) {
+                textView.attributedText = markdown
+            } else {
                 textView.text = wrapper.text
             }
+        }
+        
+        func createMarkdown(from string: String, colorScheme: ColorScheme) -> NSAttributedString? {
+            var config = DownStylerConfiguration()
+            
+            switch colorScheme {
+            case .dark:
+                config.colors = DarkColorCollection()
+            case .light:
+                config.colors = LightColorCollection()
+            @unknown default:
+                config.colors = LightColorCollection()
+            }
+            
+            let styler = DownStyler(configuration: config)
+            let down = Down(markdownString: string)
+            return try? down.toAttributedString(.default, styler: styler)
         }
         
         func setupTextView() {
             textView.delegate = self
             textView.font = .preferredFont(forTextStyle: .body)
+            textView.dataDetectorTypes = .all
         }
         
         func textViewDidChange(_ textView: UITextView) {
@@ -102,4 +135,40 @@ struct ModalTextViewWrapper: UIViewRepresentable {
             }
         }
     }
+}
+
+
+// MARK: - Markdown Color
+
+struct DarkColorCollection: ColorCollection {
+    
+    static let offWhiteColor = UIColor(white: 0.8, alpha: 1)
+    
+    var heading1: DownColor = offWhiteColor
+    var heading2: DownColor = offWhiteColor
+    var heading3: DownColor = offWhiteColor
+    var body: DownColor = offWhiteColor
+    var code: DownColor = offWhiteColor
+    var link: DownColor = .appAccent
+    var quote: DownColor = offWhiteColor
+    var quoteStripe: DownColor = offWhiteColor
+    var thematicBreak: DownColor = offWhiteColor
+    var listItemPrefix: DownColor = offWhiteColor
+    var codeBlockBackground: DownColor = .lightGray
+}
+
+
+struct LightColorCollection: ColorCollection {
+    
+    var heading1: DownColor = .black
+    var heading2: DownColor = .black
+    var heading3: DownColor = .black
+    var body: DownColor = .black
+    var code: DownColor = .black
+    var link: DownColor = .appAccent
+    var quote: DownColor = .black
+    var quoteStripe: DownColor = .black
+    var thematicBreak: DownColor = .black
+    var listItemPrefix: DownColor = .black
+    var codeBlockBackground: DownColor = .lightGray
 }

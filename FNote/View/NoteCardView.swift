@@ -220,7 +220,8 @@ extension NoteCardView {
             isFirstResponder: $isNoteEditingActive,
             prompt: "Notes",
             onCommit: donePreviewNote,
-            disableEditing: true
+            disableEditing: true,
+            renderMarkdown: true
         )
     }
     

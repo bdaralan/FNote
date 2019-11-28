@@ -20,6 +20,8 @@ struct ModalTextView: View {
     
     var disableEditing = false
     
+    var renderMarkdown = false
+    
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -32,7 +34,12 @@ struct ModalTextView: View {
                     Text("Done").bold()
                 }
             }
-            ModalTextViewWrapper(text: $text, isFirstResponder: $isFirstResponder, disableEditing: disableEditing)
+            ModalTextViewWrapper(
+                text: $text,
+                isFirstResponder: $isFirstResponder,
+                disableEditing: disableEditing,
+                renderMarkdown: renderMarkdown
+            )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding(.vertical, 20)

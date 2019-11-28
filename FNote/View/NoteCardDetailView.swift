@@ -26,16 +26,12 @@ struct NoteCardDetailView: View {
     @State private var noteCardNote = ""
     
     /// A flag to control note model text field keyboard.
-    @State private var isNoteEditingActive = true
+    @State private var isNoteTextViewFirstResponder = true
     
     /// A sheet to indicate when presentation sheet to show.
     @State private var sheet: Sheet?
     
     @State private var showDeleteAlert = false
-    
-    @State private var showNotePreviewActionSheet = false
-    
-//    @State private var isNativeTextFieldActive = false
     
     let imageSize: CGFloat = 20
     
@@ -45,8 +41,9 @@ struct NoteCardDetailView: View {
     var body: some View {
         Form {
             nativeTranslationSection
-            detailSection
-            notePreviewSection
+            formalityFavoriteSection
+            linkTagSection
+            noteSection
             actionSection
         }
         .sheet(item: $sheet, onDismiss: dismissSheet, content: presentationSheet)
@@ -62,13 +59,6 @@ extension NoteCardDetailView {
     var nativeTranslationSection: some View {
         Section(header: Text("NATIVE & TRANSLATION").padding(.top, 20)) {
             VStack(alignment: .leading, spacing: 2) {
-//                TextFieldWrapper(
-//                    text: $noteCard.native,
-//                    isFirstResponder: $isNativeTextFieldActive,
-//                    placeholder: "Native",
-//                    onEditingChanged: nil,
-//                    configure: setupNativeTranslationTextField
-//                )
                 TextField("Native", text: $noteCard.native)
                     .font(.title)
                 Text("Native")
@@ -91,8 +81,8 @@ extension NoteCardDetailView {
 
 extension NoteCardDetailView {
     
-    var detailSection: some View {
-        Section(header: Text("RELATIONSHIPS & TAGS")) {
+    var formalityFavoriteSection: some View {
+        Section(header: Text("FORMALITY & FAVORITE")) {
             // MARK: Formality
             HStack {
                 Image.noteCardFormality
@@ -112,7 +102,11 @@ extension NoteCardDetailView {
                     .frame(width: imageSize, height: imageSize, alignment: .center)
                 Text("Favorite")
             }
-            
+        }
+    }
+    
+    var linkTagSection: some View {
+        Section(header: Text("LINKS & TAGS")) {
             // MARK: Relationship
             Button(action: beginEditingRelationship) {
                 HStack {
@@ -140,8 +134,14 @@ extension NoteCardDetailView {
                         .foregroundColor(.secondary)
                 }
             }
-            
-            // MARK: Note
+        }
+    }
+    
+    var noteSection: some View {
+        // MARK: Note
+        let header = Text("NOTE")
+        let footer = Text("Support simple markdown markup such as title, italic, bold, bullet, and link.")
+        return Section(header: header, footer: footer) {
             Button(action: beginEditingNote) {
                 HStack {
                     Image.noteCardNote
@@ -158,42 +158,6 @@ extension NoteCardDetailView {
                 }
             }
         }
-    }
-}
-
-
-// MARK: Note Preview Section
-
-extension NoteCardDetailView {
-    
-    var notePreviewSection: some View {
-        let header = Text("NOTE PREVIEW")
-        let footer = Text("Press and hold on the note to copy to clipboard")
-        let note = noteCard.note.isEmpty ? " ᐧ  ᐧ  ᐧ" : noteCard.note
-        return Section(header: header, footer: footer) {
-            VStack {
-                Text(note)
-                    .foregroundColor(noteCard.note.isEmpty ? .secondary : .primary)
-            }
-            .frame(maxWidth: .infinity, minHeight: 0, alignment: .leading)
-            .padding(.vertical, 8)
-            .contentShape(Rectangle())
-            .onTapGesture(perform: beginEditingNote)
-            .onLongPressGesture(perform: { self.showNotePreviewActionSheet = true })
-            .actionSheet(isPresented: $showNotePreviewActionSheet, content: notePreviewActionSheet)
-        }
-    }
-    
-    func notePreviewActionSheet() -> ActionSheet {
-        let copy = ActionSheet.Button.default(Text("Copy to Clipboard"), action: copyNoteToClipboard)
-        let cancel = ActionSheet.Button.cancel()
-        let title = Text("Note Action")
-        return ActionSheet(title: title, message: nil, buttons: [copy, cancel])
-    }
-    
-    func copyNoteToClipboard() {
-        guard !noteCard.note.isEmpty else { return }
-        UIPasteboard.general.string = noteCard.note
     }
 }
 
@@ -260,17 +224,10 @@ extension NoteCardDetailView {
     var noteEditingSheet: some View {
         ModalTextView(
             text: $noteCardNote,
-            isFirstResponder: $isNoteEditingActive,
+            isFirstResponder: $isNoteTextViewFirstResponder,
             prompt: "Note",
             onCommit: commitEditingNote
         )
-    }
-    
-    var emptyNotePlaceholderText: some View {
-        Text(noteCard.note.isEmpty ? ". . ." : "")
-            .font(.body)
-            .padding(6)
-            .foregroundColor(.secondary)
     }
     
     func rowImage(systemName: String) -> some View {
@@ -280,13 +237,13 @@ extension NoteCardDetailView {
     
     func beginEditingNote() {
         noteCardNote = noteCard.note
-        isNoteEditingActive = true
+        isNoteTextViewFirstResponder = true
         sheet = .note
     }
     
     func commitEditingNote() {
         noteCard.note = noteCardNote.trimmed()
-        isNoteEditingActive = false
+        isNoteTextViewFirstResponder = false
         sheet = nil
     }
 }
