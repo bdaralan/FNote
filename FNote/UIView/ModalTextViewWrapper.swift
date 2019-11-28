@@ -82,11 +82,11 @@ struct ModalTextViewWrapper: UIViewRepresentable {
             
             switch colorScheme {
             case .dark:
-                config.colors = DarkColorCollection()
+                config.colors = DarkSchemeColorCollection()
             case .light:
-                config.colors = LightColorCollection()
+                config.colors = LightSchemeColorCollection()
             @unknown default:
-                config.colors = LightColorCollection()
+                config.colors = LightSchemeColorCollection()
             }
             
             let styler = DownStyler(configuration: config)
@@ -140,26 +140,22 @@ struct ModalTextViewWrapper: UIViewRepresentable {
 
 // MARK: - Markdown Color
 
-struct DarkColorCollection: ColorCollection {
-    
-    static let offWhiteColor = UIColor(white: 0.8, alpha: 1)
-    
-    var heading1: DownColor = offWhiteColor
-    var heading2: DownColor = offWhiteColor
-    var heading3: DownColor = offWhiteColor
-    var body: DownColor = offWhiteColor
-    var code: DownColor = offWhiteColor
+struct DarkSchemeColorCollection: ColorCollection {
+    var heading1: DownColor = .offWhite
+    var heading2: DownColor = .offWhite
+    var heading3: DownColor = .offWhite
+    var body: DownColor = .offWhite
+    var code: DownColor = .offWhite
     var link: DownColor = .appAccent
-    var quote: DownColor = offWhiteColor
-    var quoteStripe: DownColor = offWhiteColor
-    var thematicBreak: DownColor = offWhiteColor
-    var listItemPrefix: DownColor = offWhiteColor
+    var quote: DownColor = .offWhite
+    var quoteStripe: DownColor = .offWhite
+    var thematicBreak: DownColor = .offWhite
+    var listItemPrefix: DownColor = .offWhite
     var codeBlockBackground: DownColor = .lightGray
 }
 
 
-struct LightColorCollection: ColorCollection {
-    
+struct LightSchemeColorCollection: ColorCollection {
     var heading1: DownColor = .black
     var heading2: DownColor = .black
     var heading3: DownColor = .black
