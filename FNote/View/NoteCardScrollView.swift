@@ -64,7 +64,7 @@ struct NoteCardScrollView: View {
                     NoteCardView(
                         noteCard: noteCard,
                         showQuickButtons: false,
-                        cardBackground: self.selectedCards.contains(noteCard) ? .appAccent : nil
+                        showSelection: self.selectedCards.contains(noteCard)
                     )
                         .onTapGesture(perform: { self.onTap?(noteCard) })
                 }

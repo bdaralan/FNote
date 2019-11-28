@@ -16,7 +16,7 @@ struct NoteCardView: View {
     
     var showQuickButtons: Bool = true
     
-    var cardBackground: Color?
+    var showSelection = false
     
     @ObservedObject private var viewReloader = ViewForceReloader()
     
@@ -65,8 +65,9 @@ struct NoteCardView: View {
             }
         }
         .padding()
-        .background(cardBackground ?? .noteCardBackground)
+        .background(Color.noteCardBackground)
         .cornerRadius(15)
+        .overlay(selectionBorder)
         .shadow(color: Color.primary.opacity(0.1), radius: 1, x: -1, y: 1)
         .sheet(item: $sheet, onDismiss: dismissSheet, content: previewSheet)
     }
@@ -74,6 +75,12 @@ struct NoteCardView: View {
 
 
 extension NoteCardView {
+    
+    var selectionBorder: some View {
+        RoundedRectangle(cornerRadius: 15)
+            .stroke(Color.appAccent, lineWidth: 2)
+            .opacity(showSelection ? 1 : 0)
+    }
     
     var relationshipButton: some View {
         Button(action: beginPreviewRelationships) {
