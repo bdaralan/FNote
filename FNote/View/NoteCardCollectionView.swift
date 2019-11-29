@@ -90,6 +90,7 @@ extension NoteCardCollectionView {
             Image(systemName: "plus")
                 .imageScale(.large)
         }
+        .buttonStyle(NavigationItemIconStyle())
     }
     
     /// A sheet view for creating new note card.

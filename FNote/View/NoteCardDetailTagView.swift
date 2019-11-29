@@ -108,6 +108,7 @@ extension NoteCardDetailTagView {
             Image(systemName: "plus")
                 .imageScale(.large)
         }
+        .buttonStyle(NavigationItemIconStyle())
     }
     
     var doneNavItem: some View {

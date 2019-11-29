@@ -90,6 +90,7 @@ extension NoteCardCollectionListView {
             Image(systemName: "plus")
                 .imageScale(.large)
         }
+        .buttonStyle(NavigationItemIconStyle())
     }
     
     func beginCreateNewCollection() {

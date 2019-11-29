@@ -32,6 +32,7 @@
 		B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3404232E8214008B2088 /* ModalTextView.swift */; };
 		B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3406232E8634008B2088 /* InputViewResponder.swift */; };
 		B4928E8C239054FF0060AD45 /* Down in Frameworks */ = {isa = PBXBuildFile; productRef = B4928E8B239054FF0060AD45 /* Down */; };
+		B4928E8E2390B0980060AD45 /* NavigationItemIconStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4928E8D2390B0980060AD45 /* NavigationItemIconStyle.swift */; };
 		B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */; };
 		B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35B2326D988002D16A0 /* CoreDataStack.swift */; };
 		B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35D2326D9A7002D16A0 /* AppCache.swift */; };
@@ -102,6 +103,7 @@
 		B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewWrapper.swift; sourceTree = "<group>"; };
 		B46B3404232E8214008B2088 /* ModalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextView.swift; sourceTree = "<group>"; };
 		B46B3406232E8634008B2088 /* InputViewResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewResponder.swift; sourceTree = "<group>"; };
+		B4928E8D2390B0980060AD45 /* NavigationItemIconStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationItemIconStyle.swift; sourceTree = "<group>"; };
 		B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataStack+HistoryTracker.swift"; sourceTree = "<group>"; };
 		B499A35B2326D988002D16A0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		B499A35D2326D9A7002D16A0 /* AppCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCache.swift; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 				B411E0502332F6B4008D99A0 /* NotificationObserver.swift */,
 				B4D73419233F36FE00A3958A /* NavigationBarBackButton.swift */,
 				B45A49FE2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift */,
+				B4928E8D2390B0980060AD45 /* NavigationItemIconStyle.swift */,
 			);
 			path = "View Modifier + Utility";
 			sourceTree = "<group>";
@@ -457,6 +460,7 @@
 				65F373A6232981C6002CD331 /* NoteCardCollectionListView.swift in Sources */,
 				B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */,
 				B4FFEB29234ED2AA00B4550F /* Image.swift in Sources */,
+				B4928E8E2390B0980060AD45 /* NavigationItemIconStyle.swift in Sources */,
 				B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */,
 				B40BB61C2335BFED00E2F98B /* TagListView.swift in Sources */,
 				B411E04D2332F60F008D99A0 /* ViewForceReloader.swift in Sources */,

@@ -75,6 +75,7 @@ extension TagListView {
             Image(systemName: "plus")
                 .imageScale(.large)
         }
+        .buttonStyle(NavigationItemIconStyle())
     }
     
     var createTagSheet: some View {
