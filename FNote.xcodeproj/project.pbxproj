@@ -59,7 +59,7 @@
 		B4C76DFB232C0A520033DDEA /* ModalTextFieldWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C76DFA232C0A520033DDEA /* ModalTextFieldWrapper.swift */; };
 		B4D73417233F074E00A3958A /* NoteCardDetailTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D73416233F074E00A3958A /* NoteCardDetailTagView.swift */; };
 		B4D7341A233F36FE00A3958A /* NavigationBarBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D73419233F36FE00A3958A /* NavigationBarBackButton.swift */; };
-		B4DD491F238A5ED300D183CF /* CreateNoteCardCollectionGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DD491E238A5ED300D183CF /* CreateNoteCardCollectionGuideView.swift */; };
+		B4DD491F238A5ED300D183CF /* WelcomeGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */; };
 		B4E41E5623354B720057EB0A /* NoteCardViewNavigationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */; };
 		B4EE3ECC2329D86500CC40B7 /* ModalTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */; };
 		B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EEF32B235D99B400869567 /* ModalDragHandle.swift */; };
@@ -135,7 +135,7 @@
 		B4C76DFA232C0A520033DDEA /* ModalTextFieldWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextFieldWrapper.swift; sourceTree = "<group>"; };
 		B4D73416233F074E00A3958A /* NoteCardDetailTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardDetailTagView.swift; sourceTree = "<group>"; };
 		B4D73419233F36FE00A3958A /* NavigationBarBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarBackButton.swift; sourceTree = "<group>"; };
-		B4DD491E238A5ED300D183CF /* CreateNoteCardCollectionGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNoteCardCollectionGuideView.swift; sourceTree = "<group>"; };
+		B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeGuideView.swift; sourceTree = "<group>"; };
 		B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardViewNavigationLink.swift; sourceTree = "<group>"; };
 		B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextField.swift; sourceTree = "<group>"; };
 		B4EEF32B235D99B400869567 /* ModalDragHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalDragHandle.swift; sourceTree = "<group>"; };
@@ -340,7 +340,7 @@
 			children = (
 				B4EEF32B235D99B400869567 /* ModalDragHandle.swift */,
 				B46B0F582364A0CD0074B71A /* SearchTextField.swift */,
-				B4DD491E238A5ED300D183CF /* CreateNoteCardCollectionGuideView.swift */,
+				B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */,
 			);
 			path = "View Component";
 			sourceTree = "<group>";
@@ -480,7 +480,7 @@
 				B4EE3ECC2329D86500CC40B7 /* ModalTextField.swift in Sources */,
 				B4FFEB27234ED0CE00B4550F /* Color.swift in Sources */,
 				B46B0F592364A0CE0074B71A /* SearchTextField.swift in Sources */,
-				B4DD491F238A5ED300D183CF /* CreateNoteCardCollectionGuideView.swift in Sources */,
+				B4DD491F238A5ED300D183CF /* WelcomeGuideView.swift in Sources */,
 				B45A49FF2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift in Sources */,
 				650D14E92332B96100B6E2BF /* View.swift in Sources */,
 				B4BAC54323205022007EAF15 /* NoteCardDataSource.swift in Sources */,

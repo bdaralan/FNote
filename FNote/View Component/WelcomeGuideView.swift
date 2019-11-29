@@ -1,5 +1,5 @@
 //
-//  CreateNoteCardCollectionGuideView.swift
+//  WelcomeGuideView.swift
 //  FNote
 //
 //  Created by Dara Beng on 11/23/19.
@@ -9,7 +9,7 @@
 import SwiftUI
 
 
-struct CreateNoteCardCollectionGuideView: View {
+struct WelcomeGuideView: View {
     
     var isInvalidUser = false
     
@@ -24,11 +24,15 @@ struct CreateNoteCardCollectionGuideView: View {
     }
     
     var firstString: String {
-        isInvalidUser ? "No Account Detected" : "No collection selected"
+        isInvalidUser ? "No iCloud Detected" : "No collection selected"
     }
     
     var secondString: String {
-        isInvalidUser ? "Please sign in your Apple ID in Settings." : "Select or create a new collection"
+        let invalidUserMessage = """
+        Please make sure your Apple ID is logged in
+        and FNote is turned on in iCloud Settings.
+        """
+        return isInvalidUser ? invalidUserMessage : "Select or create a new collection"
     }
     
     
@@ -49,6 +53,7 @@ struct CreateNoteCardCollectionGuideView: View {
                 Text(secondString)
             }
             .foregroundColor(.secondary)
+            .multilineTextAlignment(.center)
         }
     }
 }
@@ -56,6 +61,6 @@ struct CreateNoteCardCollectionGuideView: View {
 
 struct CreateNoteCardCollectionGuideView_Previews: PreviewProvider {
     static var previews: some View {
-        CreateNoteCardCollectionGuideView()
+        WelcomeGuideView()
     }
 }

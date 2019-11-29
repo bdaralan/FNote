@@ -72,7 +72,7 @@ struct MainTabView: View {
                     .tag(Tab.card)
             } else {
                 NavigationView {
-                    CreateNoteCardCollectionGuideView(
+                    WelcomeGuideView(
                         isInvalidUser: isInvalidUser,
                         action: requestCreatingNoteCardCollection
                     )
