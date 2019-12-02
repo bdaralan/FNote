@@ -140,7 +140,7 @@ extension NoteCardDetailView {
     var noteSection: some View {
         // MARK: Note
         let header = Text("NOTE")
-        let footer = Text("Support simple markdown markup such as title, italic, bold, bullet, and link.")
+        let footer = Text("Supports simple Markdown markup language features such as headings, emphasis, lists, and hyperlinks.")
         return Section(header: header, footer: footer) {
             Button(action: beginEditingNote) {
                 HStack {

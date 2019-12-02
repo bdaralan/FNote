@@ -106,6 +106,7 @@ extension ProfileView {
                 .navigationBarTitle("Favorite Cards", displayMode: .inline)
                 .navigationBarItems(leading: doneNavItem)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     func showFavoriteCardSheet() {
