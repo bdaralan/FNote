@@ -38,6 +38,8 @@ struct MainTabView: View {
     @State private var hasCreateNoteCardCollectionRequest = false
     
     @State private var isInvalidUser = FileManager.default.ubiquityIdentityToken == nil
+    
+    @ObservedObject private var viewReloader = ViewForceReloader()
         
     let noteCardSearchModel = NoteCardSearchModel()
     
@@ -153,13 +155,18 @@ extension MainTabView {
         switch currentTabItem {
         case .card:
             noteCardDataSource.refreshFetchedObjects()
+            noteCardDataSource.performFetch()
         case .collection:
             noteCardCollectionDataSource.refreshFetchedObjects()
+            noteCardCollectionDataSource.performFetch()
         case .tag:
             tagDataSource.refreshFetchedObjects()
+            tagDataSource.performFetch()
         case .profile:
             noteCardDataSource.refreshFetchedObjects()
+            noteCardDataSource.performFetch()
         }
+        viewReloader.forceReload()
     }
     
     /// Setup current collection observer action.

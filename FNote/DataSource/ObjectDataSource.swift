@@ -167,13 +167,15 @@ extension ObjectDataSource {
     func delete(_ object: Object, saveContext: Bool) {
         guard let context = object.managedObjectContext else { return }
         guard context === parentContext || context === updateContext else { return }
-        context.delete(object)
-        
-        guard saveContext else { return }
-        context.quickSave()
-        
-        guard context === updateContext else { return }
-        parentContext.quickSave()
+        context.performAndWait {
+            context.delete(object)
+            
+            guard saveContext else { return }
+            context.quickSave()
+            
+            guard context === self.updateContext else { return }
+            self.parentContext.quickSave()
+        }
     }
 }
 

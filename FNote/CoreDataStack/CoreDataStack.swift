@@ -23,6 +23,7 @@ class CoreDataStack: NSObject {
     var mainContext: NSManagedObjectContext {
         // auto merge new changes when store gets new updates
         let context = persistentContainer.viewContext
+        context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
         context.automaticallyMergesChangesFromParent = true
         return context
     }
