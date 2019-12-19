@@ -91,7 +91,7 @@ struct ModalTextViewWrapper: UIViewRepresentable {
             
             let styler = DownStyler(configuration: config)
             let down = Down(markdownString: string)
-            return try? down.toAttributedString(.default, styler: styler)
+            return try? down.toAttributedString(.hardBreaks, styler: styler)
         }
         
         func setupTextView() {
