@@ -22,6 +22,8 @@ struct NoteCardDetailView: View {
     /// The delete button is hidden if this value is `nil`.
     var onDelete: (() -> Void)?
     
+    var onCollectionChanged: ((NoteCardCollection) -> Void)?
+    
     /// A string used to hold note card's note with model text view.
     @State private var noteCardNote = ""
     
@@ -140,7 +142,7 @@ extension NoteCardDetailView {
     var noteSection: some View {
         // MARK: Note
         let header = Text("NOTE")
-        let footer = Text("Supports simple Markdown markup language features such as headings, emphasis, lists, and hyperlinks.")
+        let footer = Text("Supports simple Markdown markup language features such as headings, emphasis, lists, and hyperlinks.\n")
         return Section(header: header, footer: footer) {
             Button(action: beginEditingNote) {
                 HStack {
@@ -167,7 +169,16 @@ extension NoteCardDetailView {
 extension NoteCardDetailView {
     
     var actionSection: some View {
-        Section {
+        Section(header: Text("ACTIONS")) {
+            Button(action: beginChangeCollection) {
+                Text("Move")
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .opacity(noteCard.hasChangedValues() ? 0.3 : 1)
+            }
+            .hidden(onCollectionChanged == nil)
+            .disabled(noteCard.hasChangedValues())
+            
             Button(action: { self.showDeleteAlert = true }) {
                 Text("Delete")
                     .foregroundColor(.red)
@@ -249,6 +260,46 @@ extension NoteCardDetailView {
 }
 
 
+// MARK: - Change Collection Sheet
+
+extension NoteCardDetailView {
+    
+    func changeCollectionSheet() -> some View {
+        let context = noteCard.managedObjectContext!
+        let fetchRequest = NoteCardCollection.requestAllCollections()
+        let collections = try? context.fetch(fetchRequest)
+        let collectionsToShow = collections?.filter({ $0.uuid != noteCard.collection?.uuid }) ?? []
+        let doneNavItem = Button("Done") {
+            self.sheet = nil
+        }
+        return NavigationView {
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(collectionsToShow, id: \.uuid) { collection in
+                        NoteCardCollectionListRow(collection: collection, showCheckmark: false)
+                            .onTapGesture(perform: { self.commitChangeCollection(collection) })
+                    }
+                }
+                .padding()
+            }
+            .navigationBarTitle("Move To", displayMode: .inline)
+            .navigationBarItems(leading: doneNavItem)
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
+    }
+    
+    func beginChangeCollection() {
+        sheet = .changeCollection
+    }
+    
+    func commitChangeCollection(_ collection: NoteCardCollection) {
+        noteCard.collection = collection
+        onCollectionChanged?(collection)
+        sheet = nil
+    }
+}
+
+
 // MARK: - Presentation Sheet
 
 extension NoteCardDetailView {
@@ -257,6 +308,7 @@ extension NoteCardDetailView {
         case relationship
         case tag
         case note
+        case changeCollection
         
         var id: Sheet { self }
     }
@@ -276,6 +328,10 @@ extension NoteCardDetailView {
         case .note:
             return noteEditingSheet
                 .eraseToAnyView()
+            
+        case .changeCollection:
+            return changeCollectionSheet()
+                .eraseToAnyView()
         }
     }
     
@@ -287,6 +343,8 @@ extension NoteCardDetailView {
             return doneEditingTag
         case .note:
             return commitEditingNote
+        case .changeCollection:
+            return {}
         case nil:
             return {}
         }

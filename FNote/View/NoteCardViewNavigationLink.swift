@@ -38,7 +38,11 @@ struct NoteCardViewNavigationLink: View {
 extension NoteCardViewNavigationLink {
     
     var noteCardDetailView: some View {
-        NoteCardDetailView(noteCard: noteCard, onDelete: deleteCard)
+        NoteCardDetailView(
+            noteCard: noteCard,
+            onDelete: deleteCard,
+            onCollectionChanged: noteCardCollectionChanged
+        )
             .navigationBarTitle("Note Card", displayMode: .inline)
             .navigationBarItems(trailing: saveNavItem)
             .onAppear(perform: { self.onViewNoteCardDetail?(self.noteCard) })
@@ -60,6 +64,11 @@ extension NoteCardViewNavigationLink {
     func saveChanges() {
         noteCard.objectWillChange.send() // tell the UI to refresh
         noteCardDataSource.saveUpdateContext()
+    }
+    
+    func noteCardCollectionChanged(_ collection: NoteCardCollection) {
+        saveChanges()
+        selectedNoteCardID = nil
     }
 }
 
