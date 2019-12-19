@@ -62,17 +62,19 @@ class CoreDataStack: NSObject {
 
 extension CoreDataStack {
     
+    /// A notification posted when the current core data stack changed.
+    /// Notification's object is the new `CoreDataStack`.
     static let nCoreDataStackDidChange = Notification.Name("CoreDataStack.nCoreDataStackDidChange")
     
     
     func setupUserIdentityChangeNotification() {
         let notificationCenter = NotificationCenter.default
         let notification = Notification.Name.NSUbiquityIdentityDidChange
-        let handler = #selector(userIdentifyChanged(_:))
+        let handler = #selector(handleUserIdentifyChanged)
         notificationCenter.addObserver(self, selector: handler, name: notification, object: nil)
     }
     
-    @objc func userIdentifyChanged(_ notification: Notification) {
+    @objc func handleUserIdentifyChanged(_ notification: Notification) {
         let cachedToken = AppCache.ubiquityIdentityToken
         let currentToken = FileManager.default.ubiquityIdentityToken
         
@@ -86,17 +88,18 @@ extension CoreDataStack {
         switch (cachedToken == nil, currentToken == nil) {
             
         case (false, true), (true, false):
-            reloadCoreDataStore()
+            switchCurrentCoreDataStack()
             
         case (false, false) where !cachedToken!.isEqual(currentToken!):
-            reloadCoreDataStore()
+            switchCurrentCoreDataStack()
             
         default: break
         }
     }
     
-    func reloadCoreDataStore() {
-        CoreDataStack.current = CoreDataStack()
-        NotificationCenter.default.post(name: CoreDataStack.nCoreDataStackDidChange, object: nil)
+    func switchCurrentCoreDataStack() {
+        let currentStack = CoreDataStack()
+        CoreDataStack.current = currentStack
+        NotificationCenter.default.post(name: CoreDataStack.nCoreDataStackDidChange, object: currentStack)
     }
 }
