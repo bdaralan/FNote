@@ -83,6 +83,10 @@ class NoteCardSearchModel: ObservableObject {
         setupSearchOption()
         searchField.searchText = searchOption.selectedOptions.first ?? "lookup mode | active"
     }
+    
+    func refetchNoteCards() {
+        fetchNoteCards(searchText: searchField.searchText)
+    }
 }
 
 

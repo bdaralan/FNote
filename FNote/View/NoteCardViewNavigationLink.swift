@@ -19,11 +19,14 @@ struct NoteCardViewNavigationLink: View {
     /// The UUID of the note card to be pushed onto the navigation view.
     @Binding var selectedNoteCardID: String?
     
-    @State private var showDiscardAlert = false
+    @State private var showChangeCollectionAlert = false
+    @State private var newCollectionToChange: NoteCardCollection?
     
     var onDeleted: (() -> Void)?
     
     var onViewNoteCardDetail: ((NoteCard) -> Void)?
+    
+    var onCollectionChanged: ((NoteCardCollection) -> Void)?
         
     
     var body: some View {
@@ -41,10 +44,11 @@ extension NoteCardViewNavigationLink {
         NoteCardDetailView(
             noteCard: noteCard,
             onDelete: deleteCard,
-            onCollectionChanged: noteCardCollectionChanged
+            onCollectionChange: beginChangeCollection
         )
             .navigationBarTitle("Note Card", displayMode: .inline)
             .navigationBarItems(trailing: saveNavItem)
+            .alert(isPresented: $showChangeCollectionAlert, content: changeCollectionConfirmAlert)
             .onAppear(perform: { self.onViewNoteCardDetail?(self.noteCard) })
     }
     
@@ -65,10 +69,37 @@ extension NoteCardViewNavigationLink {
         noteCard.objectWillChange.send() // tell the UI to refresh
         noteCardDataSource.saveUpdateContext()
     }
+}
+
+
+extension NoteCardViewNavigationLink {
     
-    func noteCardCollectionChanged(_ collection: NoteCardCollection) {
+    func changeCollectionConfirmAlert() -> Alert {
+        let newCollectionName = newCollectionToChange?.name ?? ""
+        let title = Text("Move Note Card")
+        let message = Text("All note card's links will be removed once moved to '\(newCollectionName)' collection.")
+        let cancel = Alert.Button.cancel(cancelChangeCollection)
+        let move = Alert.Button.default(Text("Move"), action: commitChangeCollection)
+        return Alert(title: title, message: message, primaryButton: cancel, secondaryButton: move)
+    }
+    
+    func beginChangeCollection(with collection: NoteCardCollection) {
+        newCollectionToChange = collection
+        showChangeCollectionAlert = true
+    }
+    
+    func commitChangeCollection() {
+        guard let collection = newCollectionToChange, !noteCard.hasChangedValues() else { return }
+        noteCard.collection = collection
+        noteCard.relationships.removeAll()
         saveChanges()
-        selectedNoteCardID = nil
+        showChangeCollectionAlert = false
+        onCollectionChanged?(collection)
+    }
+    
+    func cancelChangeCollection() {
+        newCollectionToChange = nil
+        showChangeCollectionAlert = false
     }
 }
 

@@ -22,7 +22,7 @@ struct NoteCardDetailView: View {
     /// The delete button is hidden if this value is `nil`.
     var onDelete: (() -> Void)?
     
-    var onCollectionChanged: ((NoteCardCollection) -> Void)?
+    var onCollectionChange: ((NoteCardCollection) -> Void)?
     
     /// A string used to hold note card's note with model text view.
     @State private var noteCardNote = ""
@@ -176,7 +176,7 @@ extension NoteCardDetailView {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     .opacity(noteCard.hasChangedValues() ? 0.3 : 1)
             }
-            .hidden(onCollectionChanged == nil)
+            .hidden(onCollectionChange == nil)
             .disabled(noteCard.hasChangedValues())
             
             Button(action: { self.showDeleteAlert = true }) {
@@ -293,8 +293,7 @@ extension NoteCardDetailView {
     }
     
     func commitChangeCollection(_ collection: NoteCardCollection) {
-        noteCard.collection = collection
-        onCollectionChanged?(collection)
+        onCollectionChange?(collection)
         sheet = nil
     }
 }

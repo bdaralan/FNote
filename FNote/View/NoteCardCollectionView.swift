@@ -59,7 +59,8 @@ struct NoteCardCollectionView: View {
                             noteCard: noteCard,
                             selectedNoteCardID: self.$selectedNoteCardID,
                             onDeleted: self.viewReloader.forceReload,
-                            onViewNoteCardDetail: { self.editingNoteCard = $0 }
+                            onViewNoteCardDetail: { self.editingNoteCard = $0 },
+                            onCollectionChanged: self.handleNoteCardCollectionChanged
                         )
                     }
                 }
@@ -200,6 +201,19 @@ extension NoteCardCollectionView {
         editingNoteCard = nil
         noteCard.objectWillChange.send() // tell the UI to refresh
         noteCardDataSource.saveUpdateContext()
+    }
+}
+
+
+// MARK: - Note Card Collection Change
+
+extension NoteCardCollectionView {
+    
+    func handleNoteCardCollectionChanged(_ collection: NoteCardCollection) {
+        selectedNoteCardID = nil
+        if noteCardSearchModel.isActive {
+            noteCardSearchModel.refetchNoteCards()
+        }
     }
 }
 
