@@ -28,13 +28,15 @@ struct TagListView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                ForEach(tagDataSource.fetchedObjects, id: \.self) { tag in
-                    Button(action: { self.showNoteCardPreviewSheet(for: tag) }) {
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(tagDataSource.fetchedObjects, id: \.self) { tag in
                         TagListRow(tag: tag)
+                            .onTapGesture(perform: { self.showNoteCardPreviewSheet(for: tag) })
                             .contextMenu(menuItems: { self.contextMenuItems(for: tag) })
                     }
                 }
+                .padding()
             }
             .navigationBarTitle("Tags") /* nav bar title goes here */
             .navigationBarItems(trailing: createTagNavItem) /* nav bar button goes here */
@@ -286,6 +288,7 @@ extension TagListView {
                 .navigationBarTitle("Note Cards", displayMode: .inline)
                 .navigationBarItems(leading: doneNavItem)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     func showNoteCardPreviewSheet(for tag: Tag) {

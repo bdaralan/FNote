@@ -21,6 +21,11 @@ struct TagListRow: View {
                 .foregroundColor(.secondary)
                 .font(.subheadline)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .padding()
+        .background(Color.noteCardBackground)
+        .cornerRadius(10)
+        .shadow(color: Color.primary.opacity(0.1), radius: 1, x: -1, y: 1)
     }
 }
 

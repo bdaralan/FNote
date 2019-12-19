@@ -33,17 +33,18 @@ struct NoteCardCollectionListView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                ForEach(noteCardCollectionDataSource.fetchedObjects, id: \.uuid) { collection in
-                    Button(action: { self.setCurrentCollection(collection) }) {
-                        // call the collection view
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(noteCardCollectionDataSource.fetchedObjects, id: \.uuid) { collection in
                         NoteCardCollectionListRow(
                             collection: collection,
                             showCheckmark: collection.uuid == self.currentCollectionUUID
                         )
+                            .onTapGesture(perform: { self.setCurrentCollection(collection) })
                             .contextMenu(menuItems: { self.contextMenuItems(for: collection) })
                     }
                 }
+                .padding()
             }
             .navigationBarTitle("Collections")
             .navigationBarItems(trailing: createCollectionNavItem)  /* place nav bar item - trailing */

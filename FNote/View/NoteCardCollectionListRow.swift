@@ -23,16 +23,19 @@ struct NoteCardCollectionListRow: View {
                 Text(self.showCollectionCount(count: collection.noteCards.count))
                     .foregroundColor(.secondary)
                     .font(.subheadline )
-                
             }
             
+            Spacer()
+            
             if showCheckmark {
-                Spacer()
                 Image(systemName: "checkmark")
-                    .transition(.scale)
-                    .animation(.easeInOut(duration: 0.3))
+                    .transition(AnyTransition.scale.animation(Animation.easeInOut(duration: 0.15)))
             }
         }
+        .padding()
+        .background(Color.noteCardBackground)
+        .cornerRadius(10)
+        .shadow(color: Color.primary.opacity(0.1), radius: 1, x: -1, y: 1)
     }
 }
 
