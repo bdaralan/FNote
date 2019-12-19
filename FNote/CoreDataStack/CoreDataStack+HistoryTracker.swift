@@ -12,15 +12,14 @@ import CoreData
 class CoreDataStackHistoryTracker {
     
     /// The key for the token value stored in `UserDefaults`.
-    let historyTokenDataKey: String
+    private let historyTokenDataKey: String
 
     /// The last history token stored in `UserDefaults`.
-    private(set) lazy var lastToken: NSPersistentHistoryToken? = {
+    var lastToken: NSPersistentHistoryToken? {
         guard let tokenData = UserDefaults.standard.data(forKey: historyTokenDataKey) else { return nil }
         let token = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSPersistentHistoryToken.self, from: tokenData)
         return token
-    }()
-    
+    }
     
     /// Create a history tracker object with a key.
     /// - Parameter historyTokenDataKey: The key for the token value stored in `UserDefaults`.
@@ -37,9 +36,17 @@ class CoreDataStackHistoryTracker {
         do {
             let tokenData = try NSKeyedArchiver.archivedData(withRootObject: token, requiringSecureCoding: true)
             UserDefaults.standard.setValue(tokenData, forKey: historyTokenDataKey)
-            lastToken = token
         } catch {
             print("🧨 cannot archive Persistent History Token 💣")
+        }
+    }
+    
+    func deleteHistory(before token: NSPersistentHistoryToken, context: NSManagedObjectContext) {
+        let deleteHistoryRequest = NSPersistentHistoryChangeRequest.deleteHistory(before: token)
+        do {
+            try context.execute(deleteHistoryRequest)
+        } catch {
+            print("failed to delete core data history with token: \(token)")
         }
     }
     

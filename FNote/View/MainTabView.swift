@@ -137,36 +137,46 @@ extension MainTabView {
             guard !newHistoryToken.isEqual(history.lastToken) else { return }
             history.updateLastToken(newHistoryToken)
             DispatchQueue.main.async {
-                self.refreshFetchedObjects()
+                self.refreshFetchedObjects(for: self.currentTabItem)
             }
         }
+    }
+    
+    func refreshFetchedObjects(for tab: Tab) {
+        switch tab {
+        
+        case .card:
+            noteCardDataSource.refreshFetchedObjects(sendChange: true)
+            noteCardDataSource.performFetch()
+            tagDataSource.refreshFetchedObjects(sendChange: true)
+            tagDataSource.performFetch()
+        
+        case .collection:
+            noteCardCollectionDataSource.refreshFetchedObjects(sendChange: true)
+            noteCardCollectionDataSource.performFetch()
+        
+        case .tag:
+            tagDataSource.refreshFetchedObjects(sendChange: true)
+            tagDataSource.performFetch()
+        
+        case .profile:
+            noteCardDataSource.refreshFetchedObjects(sendChange: true)
+            noteCardDataSource.performFetch()
+        }
+        
+        viewReloader.forceReload()
     }
     
     func setupCoreDataStackChangedObserver() {
         coreDataStackChangedObserver.onReceived = { notification in
             DispatchQueue.main.async {
                 self.checkUserStatus()
-                self.refreshFetchedObjects()
+                self.noteCardCollectionDataSource.performFetch()
+                self.tagDataSource.performFetch()
+                self.noteCardDataSource.performFetch()
+                self.viewReloader.forceReload()
             }
         }
-    }
-    
-    func refreshFetchedObjects() {
-        switch currentTabItem {
-        case .card:
-            noteCardDataSource.refreshFetchedObjects()
-            noteCardDataSource.performFetch()
-        case .collection:
-            noteCardCollectionDataSource.refreshFetchedObjects()
-            noteCardCollectionDataSource.performFetch()
-        case .tag:
-            tagDataSource.refreshFetchedObjects()
-            tagDataSource.performFetch()
-        case .profile:
-            noteCardDataSource.refreshFetchedObjects()
-            noteCardDataSource.performFetch()
-        }
-        viewReloader.forceReload()
     }
     
     /// Setup current collection observer action.
@@ -248,6 +258,7 @@ extension MainTabView {
         isInvalidUser = FileManager.default.ubiquityIdentityToken == nil
         if isInvalidUser {
             currentTabItem = .card
+            setCurrentCollection(nil)
         }
     }
 }

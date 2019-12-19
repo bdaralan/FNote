@@ -49,6 +49,11 @@ class CoreDataStack: NSObject {
         super.init()
         AppCache.ubiquityIdentityToken = FileManager.default.ubiquityIdentityToken
         setupUserIdentityChangeNotification()
+        
+        // delete old history
+        if let lastToken = historyTracker.lastToken {
+            historyTracker.deleteHistory(before: lastToken, context: mainContext)
+        }
     }
 }
 
