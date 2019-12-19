@@ -314,6 +314,7 @@ extension NoteCardCollectionListView {
     func fetchAllCollections() {
         // create a fetch request
         let request = NoteCardCollection.requestAllCollections()
+        noteCardCollectionDataSource.refreshFetchedObjects(sendChange: true)
         noteCardCollectionDataSource.performFetch(request)
         viewReloader.forceReload()
     }

@@ -343,7 +343,7 @@ extension TagListView {
     func fetchAllTags() {
         // create a fetch request
         let request = Tag.requestAllTags()
-        
+        tagDataSource.refreshFetchedObjects(sendChange: true)
         tagDataSource.performFetch(request)
         viewReloader.forceReload()
     }
