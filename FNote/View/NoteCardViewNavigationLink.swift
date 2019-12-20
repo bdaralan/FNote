@@ -19,6 +19,9 @@ struct NoteCardViewNavigationLink: View {
     /// The UUID of the note card to be pushed onto the navigation view.
     @Binding var selectedNoteCardID: String?
     
+    @State private var showDeleteCollectionAlert = false
+    
+    @State private var showChangeCollectionSheet = false
     @State private var showChangeCollectionAlert = false
     @State private var newCollectionToChange: NoteCardCollection?
     
@@ -32,6 +35,7 @@ struct NoteCardViewNavigationLink: View {
     var body: some View {
         NavigationLink(destination: noteCardDetailView, tag: noteCard.uuid, selection: $selectedNoteCardID) {
             NoteCardView(noteCard: noteCard)
+                .contextMenu(menuItems: contextMenuItems)
         }
         .buttonStyle(NoteCardNavigationButtonStyle())
     }
@@ -40,15 +44,29 @@ struct NoteCardViewNavigationLink: View {
 
 extension NoteCardViewNavigationLink {
     
+    func contextMenuItems() -> some View {
+        Group {
+            Button(action: beginChangeCollection) {
+                Text("Move")
+                Image(systemName: "folder")
+            }
+            Button(action: showDeleteNoteCardAlert) {
+                Text("Delete")
+                Image(systemName: "trash")
+            }
+        }
+        .alert(isPresented: $showDeleteCollectionAlert, content: deleteNoteCardAlert)
+        .sheet(isPresented: $showChangeCollectionSheet, content: changeCollectionSheet)
+    }
+}
+
+
+extension NoteCardViewNavigationLink {
+    
     var noteCardDetailView: some View {
-        NoteCardDetailView(
-            noteCard: noteCard,
-            onDelete: deleteCard,
-            onCollectionChange: beginChangeCollection
-        )
+        NoteCardDetailView(noteCard: noteCard)
             .navigationBarTitle("Note Card", displayMode: .inline)
             .navigationBarItems(trailing: saveNavItem)
-            .alert(isPresented: $showChangeCollectionAlert, content: changeCollectionConfirmAlert)
             .onAppear(perform: { self.onViewNoteCardDetail?(self.noteCard) })
     }
     
@@ -60,11 +78,6 @@ extension NoteCardViewNavigationLink {
         .hidden(!noteCard.hasChangedValues())
     }
     
-    func deleteCard() {
-        noteCardDataSource.delete(noteCard, saveContext: true)
-        onDeleted?()
-    }
-    
     func saveChanges() {
         noteCard.objectWillChange.send() // tell the UI to refresh
         noteCardDataSource.saveUpdateContext()
@@ -72,9 +85,46 @@ extension NoteCardViewNavigationLink {
 }
 
 
+// MARK: Change Collection Sheet
+
 extension NoteCardViewNavigationLink {
     
-    func changeCollectionConfirmAlert() -> Alert {
+    func changeCollectionSheet() -> some View {
+        let context = noteCard.managedObjectContext!
+        let fetchRequest = NoteCardCollection.requestAllCollections()
+        let collections = try? context.fetch(fetchRequest)
+        let collectionsToShow = collections?.filter({ $0.uuid != noteCard.collection?.uuid }) ?? []
+        let doneNavItem = Button("Done") {
+            self.showChangeCollectionSheet = false
+        }
+        return NavigationView {
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(collectionsToShow, id: \.uuid) { collection in
+                        NoteCardCollectionListRow(collection: collection, showCheckmark: false)
+                            .onTapGesture(perform: { self.confirmChangeCollection(collection) })
+                    }
+                }
+                .padding()
+            }
+            .navigationBarTitle("Move To", displayMode: .inline)
+            .navigationBarItems(leading: doneNavItem)
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
+        .alert(isPresented: $showChangeCollectionAlert, content: changeCollectionAlert)
+    }
+    
+    func beginChangeCollection() {
+        showChangeCollectionSheet = true
+    }
+}
+
+
+// MARK: - Change Collection Alert
+
+extension NoteCardViewNavigationLink {
+    
+    func changeCollectionAlert() -> Alert {
         let newCollectionName = newCollectionToChange?.name ?? ""
         let title = Text("Move Note Card")
         let message = Text("All note card's links will be removed once moved to '\(newCollectionName)' collection.")
@@ -83,7 +133,7 @@ extension NoteCardViewNavigationLink {
         return Alert(title: title, message: message, primaryButton: cancel, secondaryButton: move)
     }
     
-    func beginChangeCollection(with collection: NoteCardCollection) {
+    func confirmChangeCollection(_ collection: NoteCardCollection) {
         newCollectionToChange = collection
         showChangeCollectionAlert = true
     }
@@ -93,13 +143,41 @@ extension NoteCardViewNavigationLink {
         noteCard.collection = collection
         noteCard.relationships.removeAll()
         saveChanges()
-        showChangeCollectionAlert = false
         onCollectionChanged?(collection)
+        
+        newCollectionToChange = nil
+        showChangeCollectionAlert = false
+        showChangeCollectionSheet = false
     }
     
     func cancelChangeCollection() {
         newCollectionToChange = nil
         showChangeCollectionAlert = false
+        showChangeCollectionSheet = false
+    }
+}
+
+
+// MARK: - Delete Note Card Alert
+
+extension NoteCardViewNavigationLink {
+    
+    func deleteNoteCardAlert() -> Alert {
+        let collectionName = "'\(noteCard.collection!.name)'"
+        let title = Text("Delete Note Card")
+        let message = Text("Delete note card from the \(collectionName) collection.")
+        let delete = Alert.Button.destructive(Text("Delete"), action: commitDeleteNoteCard)
+        return Alert(title: title, message: message, primaryButton: .cancel(), secondaryButton: delete)
+    }
+    
+    func showDeleteNoteCardAlert() {
+        showDeleteCollectionAlert = true
+    }
+    
+    func commitDeleteNoteCard() {
+        noteCardDataSource.delete(noteCard, saveContext: true)
+        onDeleted?()
+        showDeleteCollectionAlert = false
     }
 }
 

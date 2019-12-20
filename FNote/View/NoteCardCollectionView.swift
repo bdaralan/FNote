@@ -58,7 +58,7 @@ struct NoteCardCollectionView: View {
                         NoteCardViewNavigationLink(
                             noteCard: noteCard,
                             selectedNoteCardID: self.$selectedNoteCardID,
-                            onDeleted: self.viewReloader.forceReload,
+                            onDeleted: self.handleNoteCardDeleted,
                             onViewNoteCardDetail: { self.editingNoteCard = $0 },
                             onCollectionChanged: self.handleNoteCardCollectionChanged
                         )
@@ -205,12 +205,18 @@ extension NoteCardCollectionView {
 }
 
 
-// MARK: - Note Card Collection Change
+// MARK: - Note Card Navigation Link
 
 extension NoteCardCollectionView {
     
+    func handleNoteCardDeleted() {
+        viewReloader.forceReload()
+        if noteCardSearchModel.isActive {
+            noteCardSearchModel.refetchNoteCards()
+        }
+    }
+    
     func handleNoteCardCollectionChanged(_ collection: NoteCardCollection) {
-        selectedNoteCardID = nil
         if noteCardSearchModel.isActive {
             noteCardSearchModel.refetchNoteCards()
         }

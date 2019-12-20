@@ -16,13 +16,6 @@ struct NoteCardDetailView: View {
     @EnvironmentObject var tagDataSource: TagDataSource
     
     @ObservedObject var noteCard: NoteCard
-        
-    /// An action to perform when delete button is tapped.
-    ///
-    /// The delete button is hidden if this value is `nil`.
-    var onDelete: (() -> Void)?
-    
-    var onCollectionChange: ((NoteCardCollection) -> Void)?
     
     /// A string used to hold note card's note with model text view.
     @State private var noteCardNote = ""
@@ -32,9 +25,7 @@ struct NoteCardDetailView: View {
     
     /// A sheet to indicate when presentation sheet to show.
     @State private var sheet: Sheet?
-    
-    @State private var showDeleteAlert = false
-    
+        
     let imageSize: CGFloat = 20
     
     
@@ -46,10 +37,8 @@ struct NoteCardDetailView: View {
             formalityFavoriteSection
             linkTagSection
             noteSection
-            actionSection
         }
         .sheet(item: $sheet, onDismiss: dismissSheet, content: presentationSheet)
-        .alert(isPresented: $showDeleteAlert, content: deleteAlert)
     }
 }
 
@@ -168,25 +157,26 @@ extension NoteCardDetailView {
 
 extension NoteCardDetailView {
     
-    var actionSection: some View {
-        Section(header: Text("ACTIONS")) {
-            Button(action: beginChangeCollection) {
-                Text("Move")
-                    .foregroundColor(.primary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .opacity(noteCard.hasChangedValues() ? 0.3 : 1)
-            }
-            .hidden(onCollectionChange == nil)
-            .disabled(noteCard.hasChangedValues())
-            
-            Button(action: { self.showDeleteAlert = true }) {
-                Text("Delete")
-                    .foregroundColor(.red)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            }
-            .hidden(onDelete == nil)
-        }
-    }
+//    var actionSection: some View {
+//        Section(header: Text("ACTIONS")) {
+//            Button(action: beginChangeCollection) {
+//                Text("Move")
+//                    .foregroundColor(.appAccent)
+//                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+//                    .opacity(noteCard.hasChangedValues() ? 0.3 : 1)
+//            }
+//            .disabled(noteCard.hasChangedValues())
+//            .hidden(onCollectionChange == nil)
+//
+//            Button(action: { self.showDeleteAlert = true }) {
+//                Text("Delete")
+//                    .foregroundColor(.red)
+//                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+//            }
+//            .hidden(onDelete == nil)
+//        }
+//        .hidden(onDelete == nil && onCollectionChange == nil)
+//    }
 }
 
 
@@ -260,45 +250,6 @@ extension NoteCardDetailView {
 }
 
 
-// MARK: - Change Collection Sheet
-
-extension NoteCardDetailView {
-    
-    func changeCollectionSheet() -> some View {
-        let context = noteCard.managedObjectContext!
-        let fetchRequest = NoteCardCollection.requestAllCollections()
-        let collections = try? context.fetch(fetchRequest)
-        let collectionsToShow = collections?.filter({ $0.uuid != noteCard.collection?.uuid }) ?? []
-        let doneNavItem = Button("Done") {
-            self.sheet = nil
-        }
-        return NavigationView {
-            ScrollView {
-                VStack(spacing: 16) {
-                    ForEach(collectionsToShow, id: \.uuid) { collection in
-                        NoteCardCollectionListRow(collection: collection, showCheckmark: false)
-                            .onTapGesture(perform: { self.commitChangeCollection(collection) })
-                    }
-                }
-                .padding()
-            }
-            .navigationBarTitle("Move To", displayMode: .inline)
-            .navigationBarItems(leading: doneNavItem)
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-    }
-    
-    func beginChangeCollection() {
-        sheet = .changeCollection
-    }
-    
-    func commitChangeCollection(_ collection: NoteCardCollection) {
-        onCollectionChange?(collection)
-        sheet = nil
-    }
-}
-
-
 // MARK: - Presentation Sheet
 
 extension NoteCardDetailView {
@@ -307,7 +258,6 @@ extension NoteCardDetailView {
         case relationship
         case tag
         case note
-        case changeCollection
         
         var id: Sheet { self }
     }
@@ -327,10 +277,6 @@ extension NoteCardDetailView {
         case .note:
             return noteEditingSheet
                 .eraseToAnyView()
-            
-        case .changeCollection:
-            return changeCollectionSheet()
-                .eraseToAnyView()
         }
     }
     
@@ -342,8 +288,6 @@ extension NoteCardDetailView {
             return doneEditingTag
         case .note:
             return commitEditingNote
-        case .changeCollection:
-            return {}
         case nil:
             return {}
         }
@@ -357,20 +301,6 @@ extension NoteCardDetailView {
     
     func setupNativeTranslationTextField(_ textField: UITextField) {
         textField.font = .preferredFont(forTextStyle: .title1)
-    }
-}
-
-
-// MARK: - Alert
-
-extension NoteCardDetailView {
-    
-    func deleteAlert() -> Alert {
-        let collectionName = "'\(noteCard.collection!.name)'"
-        let title = Text("Delete Note Card")
-        let message = Text("Delete note card from the \(collectionName) collection.")
-        let delete = Alert.Button.destructive(Text("Delete"), action: onDelete)
-        return Alert(title: title, message: message, primaryButton: .cancel(), secondaryButton: delete)
     }
 }
 
