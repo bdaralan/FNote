@@ -64,7 +64,7 @@ extension NoteCardViewNavigationLink {
 extension NoteCardViewNavigationLink {
     
     var noteCardDetailView: some View {
-        NoteCardDetailView(noteCard: noteCard)
+        NoteCardDetailView(noteCard: noteCard, collectionToAssign: .constant(nil))
             .navigationBarTitle("Note Card", displayMode: .inline)
             .navigationBarItems(trailing: saveNavItem)
             .onAppear(perform: { self.onViewNoteCardDetail?(self.noteCard) })
@@ -93,25 +93,16 @@ extension NoteCardViewNavigationLink {
         let context = noteCard.managedObjectContext!
         let fetchRequest = NoteCardCollection.requestAllCollections()
         let collections = try? context.fetch(fetchRequest)
-        let collectionsToShow = collections?.filter({ $0.uuid != noteCard.collection?.uuid }) ?? []
-        let doneNavItem = Button("Done") {
-            self.showChangeCollectionSheet = false
-        }
-        return NavigationView {
-            ScrollView {
-                VStack(spacing: 16) {
-                    ForEach(collectionsToShow, id: \.uuid) { collection in
-                        NoteCardCollectionListRow(collection: collection, showCheckmark: false)
-                            .onTapGesture(perform: { self.confirmChangeCollection(collection) })
-                    }
-                }
-                .padding()
-            }
-            .navigationBarTitle("Move To", displayMode: .inline)
-            .navigationBarItems(leading: doneNavItem)
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-        .alert(isPresented: $showChangeCollectionAlert, content: changeCollectionAlert)
+        let disableCollections = noteCard.collection != nil ? [noteCard.collection!] : []
+        
+        return NoteCardCollectionSelectionView(
+            title: "Move To",
+            collections: collections ?? [],
+            disableCollections: disableCollections,
+            onSelected: confirmChangeCollection,
+            onDone: cancelChangeCollection
+        )
+            .alert(isPresented: $showChangeCollectionAlert, content: changeCollectionAlert)
     }
     
     func beginChangeCollection() {

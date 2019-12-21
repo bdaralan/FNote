@@ -17,6 +17,13 @@ struct NoteCardDetailView: View {
     
     @ObservedObject var noteCard: NoteCard
     
+    /// A collection to assign to `noteCard`.
+    ///
+    /// - Important:
+    ///   - Should only use this property when creating a new note card.
+    ///   - Set this property will add change-collection section to the form.
+    @Binding var collectionToAssign: NoteCardCollection?
+    
     /// A string used to hold note card's note with model text view.
     @State private var noteCardNote = ""
     
@@ -33,6 +40,9 @@ struct NoteCardDetailView: View {
     
     var body: some View {
         Form {
+            if collectionToAssign != nil {
+                changeCollectionSection
+            }
             nativeTranslationSection
             formalityFavoriteSection
             linkTagSection
@@ -43,12 +53,36 @@ struct NoteCardDetailView: View {
 }
 
 
+// MARK: - Collection Selection Section
+
+extension NoteCardDetailView {
+    
+    var changeCollectionSection: some View {
+        let collectionName = collectionToAssign?.name ?? "???"
+        let cardCount = collectionToAssign?.noteCards.count ?? 0
+        let plural = cardCount == 1 ? "" : "S"
+        
+        return Section(header: Text("COLLECTION").padding(.top, 24)) {
+            Button(action: beginChangeCollection) {
+                HStack {
+                    Text(collectionName)
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Text("\(cardCount) CARD\(plural)")
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+    }
+}
+
+
 // MARK: - Native & Translation Section
 
 extension NoteCardDetailView {
     
     var nativeTranslationSection: some View {
-        Section(header: Text("NATIVE & TRANSLATION").padding(.top, 20)) {
+        Section(header: Text("NATIVE & TRANSLATION").padding(.top, collectionToAssign == nil ? 24 : 0)) {
             VStack(alignment: .leading, spacing: 2) {
                 TextField("Native", text: $noteCard.native)
                     .font(.title)
@@ -153,30 +187,35 @@ extension NoteCardDetailView {
 }
 
 
-// MARK: - Action Section
+// MARK: - Choose Collection Sheet
 
 extension NoteCardDetailView {
     
-//    var actionSection: some View {
-//        Section(header: Text("ACTIONS")) {
-//            Button(action: beginChangeCollection) {
-//                Text("Move")
-//                    .foregroundColor(.appAccent)
-//                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-//                    .opacity(noteCard.hasChangedValues() ? 0.3 : 1)
-//            }
-//            .disabled(noteCard.hasChangedValues())
-//            .hidden(onCollectionChange == nil)
-//
-//            Button(action: { self.showDeleteAlert = true }) {
-//                Text("Delete")
-//                    .foregroundColor(.red)
-//                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-//            }
-//            .hidden(onDelete == nil)
-//        }
-//        .hidden(onDelete == nil && onCollectionChange == nil)
-//    }
+    var changeCollectionSheet: some View {
+        let context = noteCard.managedObjectContext!
+        let collections = try? context.fetch(NoteCardCollection.requestAllCollections())
+        let disableCollections = collectionToAssign != nil ? [collectionToAssign!] : []
+        return NoteCardCollectionSelectionView(
+            title: "Choose Collection",
+            collections: collections ?? [],
+            disableCollections: disableCollections,
+            onSelected: commitChangeCollection,
+            onDone: dismissSheet
+        )
+    }
+    
+    func beginChangeCollection() {
+        sheet = .changeCollection
+    }
+    
+    func commitChangeCollection(_ collection: NoteCardCollection) {
+        collectionToAssign = collection
+        sheet = nil
+    }
+    
+    func dismissChangeCollectionSheet() {
+        sheet = nil
+    }
 }
 
 
@@ -258,6 +297,7 @@ extension NoteCardDetailView {
         case relationship
         case tag
         case note
+        case changeCollection
         
         var id: Sheet { self }
     }
@@ -277,6 +317,10 @@ extension NoteCardDetailView {
         case .note:
             return noteEditingSheet
                 .eraseToAnyView()
+            
+        case .changeCollection:
+            return changeCollectionSheet
+                .eraseToAnyView()
         }
     }
     
@@ -288,6 +332,8 @@ extension NoteCardDetailView {
             return doneEditingTag
         case .note:
             return commitEditingNote
+        case .changeCollection:
+            return dismissChangeCollectionSheet
         case nil:
             return {}
         }
@@ -307,6 +353,6 @@ extension NoteCardDetailView {
 
 struct NoteCardView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardDetailView(noteCard: .init())
+        NoteCardDetailView(noteCard: .init(), collectionToAssign: .constant(nil))
     }
 }

@@ -31,6 +31,9 @@ struct NoteCardCollectionView: View {
     /// A flag used to show or hide create-new-note-card sheet.
     @State private var showCreateNewNoteCardSheet = false
     
+    /// A note card collection to assign to the new note card.
+    @State private var collectionToAssign: NoteCardCollection?
+    
     /// A view reloader used to force reload view.
     @ObservedObject private var viewReloader = ViewForceReloader()
     
@@ -107,17 +110,19 @@ extension NoteCardCollectionView {
         }
         
         return NavigationView {
-            NoteCardDetailView(noteCard: noteCardDataSource.newObject!)
+            NoteCardDetailView(noteCard: noteCardDataSource.newObject!, collectionToAssign: $collectionToAssign)
                 .environmentObject(noteCardDataSource)
                 .environmentObject(tagDataSource)
                 .navigationBarTitle("New Note Card", displayMode: .inline)
                 .navigationBarItems(leading: cancelButton, trailing: createButton)
+                .onDisappear(perform: { self.collectionToAssign = nil })
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
     
     /// Start creating new note card.
     func beginCreateNewNoteCard() {
+        collectionToAssign = collection.get(from: noteCardDataSource.createContext)
         noteCardDataSource.prepareNewObject()
         showCreateNewNoteCardSheet = true
     }
@@ -128,8 +133,7 @@ extension NoteCardCollectionView {
         // then assign it to the new note card's collection
         // will unwrapped optional values because they must exist
         let newNoteCard = noteCardDataSource.newObject!
-        let collectionInCreateContext = collection.get(from: noteCardDataSource.createContext)
-        newNoteCard.collection = collectionInCreateContext
+        newNoteCard.collection = collectionToAssign
     
         let saveResult = noteCardDataSource.saveNewObject()
         
