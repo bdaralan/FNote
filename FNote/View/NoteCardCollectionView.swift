@@ -22,8 +22,8 @@ struct NoteCardCollectionView: View {
     
     @Binding var selectedNoteCardID: String?
     
-    /// A note card being viewed or edited in NoteCardDetailView.
-    @State private var editingNoteCard: NoteCard?
+    /// A note card pushed to navigation stack and viewed in NoteCardDetailView.
+    @State private var noteCardToViewDetail: NoteCard?
     
     /// A view model used to handle search.
     @ObservedObject var  noteCardSearchModel: NoteCardSearchModel
@@ -62,7 +62,8 @@ struct NoteCardCollectionView: View {
                             noteCard: noteCard,
                             selectedNoteCardID: self.$selectedNoteCardID,
                             onDeleted: self.handleNoteCardDeleted,
-                            onViewNoteCardDetail: { self.editingNoteCard = $0 },
+                            onPushed: { self.noteCardToViewDetail = noteCard },
+                            onPopped: self.checkNoteCardUnsavedChanges,
                             onCollectionChanged: self.handleNoteCardCollectionChanged
                         )
                     }
@@ -170,7 +171,7 @@ extension NoteCardCollectionView {
     
     var discardNoteCardChangesAlert: Alert {
         // can unwrap this one because `checkUnsavedChanges` already check
-        let noteCard = editingNoteCard!
+        let noteCard = noteCardToViewDetail!
         
         let revert = Alert.Button.default(Text("Revert"), action: discardNoteCardChanges)
         
@@ -188,23 +189,27 @@ extension NoteCardCollectionView {
     
     /// Check and show discard alert if there are unsaved changes.
     func checkNoteCardUnsavedChanges() {
-        guard let noteCard = editingNoteCard else { return }
-        guard noteCard.hasChangedValues() else { return }
-        showDiscardChangesAlert = true
+        guard let noteCard = noteCardToViewDetail else { return }
+        if noteCard.hasChangedValues() {
+            showDiscardChangesAlert = true
+        } else {
+            noteCardDataSource.discardUpdateContext()
+            noteCardToViewDetail = nil
+        }
     }
     
     func discardNoteCardChanges() {
-        guard let noteCard = editingNoteCard else { return }
-        editingNoteCard = nil
+        guard let noteCard = noteCardToViewDetail else { return }
         noteCard.objectWillChange.send() // tell the UI to refresh
         noteCardDataSource.discardUpdateContext()
+        noteCardToViewDetail = nil
     }
     
     func saveNoteCardChanges() {
-        guard let noteCard = editingNoteCard else { return }
-        editingNoteCard = nil
+        guard let noteCard = noteCardToViewDetail else { return }
         noteCard.objectWillChange.send() // tell the UI to refresh
         noteCardDataSource.saveUpdateContext()
+        noteCardToViewDetail = nil
     }
 }
 

@@ -27,7 +27,8 @@ struct NoteCardViewNavigationLink: View {
     
     var onDeleted: (() -> Void)?
     
-    var onViewNoteCardDetail: ((NoteCard) -> Void)?
+    var onPushed: (() -> Void)?
+    var onPopped: (() -> Void)?
     
     var onCollectionChanged: ((NoteCardCollection) -> Void)?
         
@@ -67,7 +68,8 @@ extension NoteCardViewNavigationLink {
         NoteCardDetailView(noteCard: noteCard, collectionToAssign: .constant(nil))
             .navigationBarTitle("Note Card", displayMode: .inline)
             .navigationBarItems(trailing: saveNavItem)
-            .onAppear(perform: { self.onViewNoteCardDetail?(self.noteCard) })
+            .onAppear(perform: onPushed)
+            .onDisappear(perform: onPopped)
     }
     
     var saveNavItem: some View {
