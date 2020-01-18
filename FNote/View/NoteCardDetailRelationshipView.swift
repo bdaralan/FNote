@@ -54,7 +54,7 @@ extension NoteCardDetailRelationshipView {
     
     var doneNavItem: some View {
         Button("Done", action: onDone ?? {})
-            .hidden(onDone == nil)
+            .opacity(onDone == nil ? 0 : 1)
     }
 }
 

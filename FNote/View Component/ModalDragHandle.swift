@@ -19,7 +19,7 @@ struct ModalDragHandle: View {
         RoundedRectangle(cornerRadius: 2, style: .continuous)
             .frame(width: 50, height: 4, alignment: .center)
             .foregroundColor(.primary)
-            .hidden(hideOnLandscape && verticalSizeClass == .compact)
+            .opacity((hideOnLandscape && verticalSizeClass == .compact) ? 0 : 1)
     }
 }
 

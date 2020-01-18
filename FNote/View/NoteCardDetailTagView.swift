@@ -53,21 +53,24 @@ struct NoteCardDetailTagView: View {
         NavigationView {
             List {
                 Section(header: Text("SELECTED TAGS").padding(.top, 20)) {
-                    ForEach(includedTags, id: \.uuid) { tag in
-                        self.tagRow(for: tag)
-                    }
-                    Text("none")
+                    if noteCard.tags.isEmpty {
+                        Text("none")
                         .foregroundColor(.secondary)
-                        .hidden(!noteCard.tags.isEmpty)
+                    } else {
+                        ForEach(includedTags, id: \.uuid) { tag in
+                            self.tagRow(for: tag)
+                        }
+                    }
                 }
                 
                 Section(header: Text("TAGS")) {
-                    ForEach(excludedTags, id: \.uuid) { tag in
-                        self.tagRow(for: tag)
+                    if excludedTags.isEmpty {
+                        Text("none").foregroundColor(.secondary)
+                    } else {
+                        ForEach(excludedTags, id: \.uuid) { tag in
+                            self.tagRow(for: tag)
+                        }
                     }
-                    Text("none")
-                        .foregroundColor(.secondary)
-                        .hidden(!excludedTags.isEmpty)
                 }
             }
             .listStyle(GroupedListStyle())
@@ -113,7 +116,7 @@ extension NoteCardDetailTagView {
     
     var doneNavItem: some View {
         Button("Done", action: onDone ?? {})
-            .hidden(onDone == nil)
+            .opacity(onDone == nil ? 0 : 1)
     }
     
     func modalTextField() -> some View {

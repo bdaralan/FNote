@@ -77,7 +77,7 @@ extension NoteCardViewNavigationLink {
             Text("Save").bold()
         }
         .disabled(!noteCard.isValid())
-        .hidden(!noteCard.hasChangedValues())
+        .opacity(noteCard.hasChangedValues() ? 1 : 0)
     }
     
     func saveChanges() {
