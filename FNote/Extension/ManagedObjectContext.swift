@@ -39,3 +39,9 @@ extension NSManagedObject {
         context.object(with: objectID) as! Self
     }
 }
+
+
+extension NSManagedObjectContext {
+    
+    static let sample = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+}

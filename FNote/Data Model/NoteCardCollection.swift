@@ -59,6 +59,10 @@ extension NoteCardCollection {
 
 extension NoteCardCollection {
     
+    @nonobjc class func fetchRequest() -> NSFetchRequest<NoteCardCollection> {
+        return NSFetchRequest<NoteCardCollection>(entityName: "NoteCardCollection")
+    }
+    
     static func requestCollection(withUUID uuid: String) -> NSFetchRequest<NoteCardCollection> {
         let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
         let collectionUUID = #keyPath(NoteCardCollection.uuid)
@@ -95,20 +99,9 @@ extension NoteCardCollection {
 
 extension NoteCardCollection {
     
-    @nonobjc class func fetchRequest() -> NSFetchRequest<NoteCardCollection> {
-        return NSFetchRequest<NoteCardCollection>(entityName: "NoteCardCollection")
-    }
-
-    @objc(addNoteCardsObject:)
-    @NSManaged func addToNoteCards(_ value: NoteCard)
-
-    @objc(removeNoteCardsObject:)
-    @NSManaged func removeFromNoteCards(_ value: NoteCard)
-
-    @objc(addNoteCards:)
-    @NSManaged func addToNoteCards(_ values: NSSet)
-
-    @objc(removeNoteCards:)
-    @NSManaged func removeFromNoteCards(_ values: NSSet)
-
+    static let sample: NoteCardCollection = {
+        let collection = NoteCardCollection(context: .sample)
+        collection.name = "Sample Collection"
+        return collection
+    }()
 }

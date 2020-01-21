@@ -61,12 +61,14 @@ struct NoteCardScrollView: View {
                     .onReceive(searchModel.objectWillChange, perform: { _ in self.viewReloader.forceReload() })
                 
                 ForEach(noteCardsToDisplay, id: \.uuid) { noteCard in
-                    NoteCardView(
-                        noteCard: noteCard,
-                        showQuickButtons: false,
-                        showSelection: self.selectedCards.contains(noteCard)
-                    )
-                        .onTapGesture(perform: { self.onTap?(noteCard) })
+                    NoteCardCellWrapper(noteCard: noteCard, style: .short)
+                        .frame(height: NoteCardCell.Style.short.height)
+//                    NoteCardView(
+//                        noteCard: noteCard,
+//                        showQuickButtons: false,
+//                        showSelection: self.selectedCards.contains(noteCard)
+//                    )
+//                        .onTapGesture(perform: { self.onTap?(noteCard) })
                 }
             }
             .padding()

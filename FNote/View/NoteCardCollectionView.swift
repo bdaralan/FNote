@@ -12,6 +12,8 @@ import SwiftUI
 /// A view that displays note cards of the current selected note-card collection.
 struct NoteCardCollectionView: View {
     
+    var viewModel: NoteCardCollectionViewModel
+    
     /// A data source used to CRUD note card.
     @EnvironmentObject var noteCardDataSource: NoteCardDataSource
     
@@ -49,38 +51,47 @@ struct NoteCardCollectionView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: true) {
-                VStack(spacing: 24) {
-                    SearchTextField(
-                        searchField: noteCardSearchModel.searchField,
-                        searchOption: noteCardSearchModel.searchOption,
-                        onCancel: noteCardSearchModel.reset
-                    )
+            NoteCardCollectionViewWrapper(viewModel: viewModel)
+//                .frame(maxWidth: .infinity, maxHeight: .infinity)
+//            ScrollView(.vertical, showsIndicators: true) {
+//                VStack {
                     
-                    ForEach(noteCards, id: \.uuid) { noteCard in
-                        NoteCardViewNavigationLink(
-                            noteCard: noteCard,
-                            selectedNoteCardID: self.$selectedNoteCardID,
-                            onDeleted: self.handleNoteCardDeleted,
-                            onPushed: { self.noteCardToViewDetail = noteCard },
-                            onPopped: self.checkNoteCardUnsavedChanges,
-                            onCollectionChanged: self.handleNoteCardCollectionChanged
-                        )
-                    }
-                }
-                .padding()
-            }
+//                    SearchTextField(
+//                        searchField: noteCardSearchModel.searchField,
+//                        searchOption: noteCardSearchModel.searchOption,
+//                        onCancel: noteCardSearchModel.reset
+//                    )
+//                        .padding(.horizontal, 8)
+                    
+//                    ForEach(noteCards, id: \.uuid) { noteCard in
+////                        NoteCardViewNavigationLink(
+////                            noteCard: noteCard,
+////                            selectedNoteCardID: self.$selectedNoteCardID,
+////                            onDeleted: self.handleNoteCardDeleted,
+////                            onPushed: { self.noteCardToViewDetail = noteCard },
+////                            onPopped: self.checkNoteCardUnsavedChanges,
+////                            onCollectionChanged: self.handleNoteCardCollectionChanged
+////                        )
+//                        NoteCardCellWrapper(
+//                            noteCard: noteCard,
+//                            onQuickButtonTapped: { print($0) }
+//                        )
+//                            .frame(height: NoteCardCell.Style.regular.height)
+//                    }
+//                }
+//                .padding()
+//            }
             .navigationBarTitle(collection.name)
             .navigationBarItems(trailing: createNewNoteCardNavItem)
             .onAppear(perform: setupView)
-            .alert(isPresented: $showDiscardChangesAlert, content: { self.discardNoteCardChangesAlert })
-            .sheet(
-                isPresented: $showCreateNewNoteCardSheet,
-                onDismiss: cancelCreateNewNoteCard,
-                content: createNewNoteCardSheet
-            )
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .alert(isPresented: $showDiscardChangesAlert, content: { self.discardNoteCardChangesAlert })
+        .sheet(
+            isPresented: $showCreateNewNoteCardSheet,
+            onDismiss: cancelCreateNewNoteCard,
+            content: createNewNoteCardSheet
+        )
     }
 }
 
@@ -248,6 +259,6 @@ extension NoteCardCollectionView {
 
 struct NoteCardCollectionView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionView(collection: .init(), selectedNoteCardID: .constant(nil), noteCardSearchModel: .init())
+        NoteCardCollectionView(viewModel: .init(), collection: .init(), selectedNoteCardID: .constant(nil), noteCardSearchModel: .init())
     }
 }

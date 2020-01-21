@@ -8,15 +8,16 @@
 
 import SwiftUI
 
+
 struct ModalTextView: View {
     
     @Binding var text: String
     
     @Binding var isFirstResponder: Bool
     
-    var prompt: String
+    var title: String
     
-    var onCommit: (() -> Void) = {}
+    var onDone: (() -> Void)
     
     var disableEditing = false
     
@@ -26,11 +27,11 @@ struct ModalTextView: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack(alignment: .firstTextBaseline) {
-                Text(prompt)
+                Text(title)
                     .font(.largeTitle)
                     .bold()
                 Spacer()
-                Button(action: onCommit) {
+                Button(action: onDone) {
                     Text("Done").bold()
                 }
             }
@@ -60,6 +61,11 @@ extension ModalTextView {
 
 struct ModalTextView_Previews: PreviewProvider {
     static var previews: some View {
-        ModalTextView(text: .constant("Hello"), isFirstResponder: .constant(true), prompt: "Prompt")
+        ModalTextView(
+            text: .constant("Hello"),
+            isFirstResponder: .constant(true),
+            title: "Title",
+            onDone: {}
+        )
     }
 }

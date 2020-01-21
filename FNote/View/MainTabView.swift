@@ -11,6 +11,8 @@ import SwiftUI
 
 struct MainTabView: View {
     
+    @State private var noteCardCollectionViewModel = NoteCardCollectionViewModel()
+    
     @ObservedObject var noteCardCollectionDataSource: NoteCardCollectionDataSource = {
         let dataSource = NoteCardCollectionDataSource(parentContext: CoreDataStack.current.mainContext)
         return dataSource
@@ -64,6 +66,7 @@ struct MainTabView: View {
         TabView(selection: $currentTabItem) {
             if currentCollection != nil {
                 NoteCardCollectionView(
+                    viewModel: noteCardCollectionViewModel,
                     collection: currentCollection!,
                     selectedNoteCardID: $displayingNoteCardID,
                     noteCardSearchModel: noteCardSearchModel
@@ -128,6 +131,8 @@ extension MainTabView {
         setupCollectionObserver()
         checkUserStatus()
         loadCurrentCollection()
+        
+        noteCardCollectionViewModel.noteCards = noteCardDataSource.fetchedObjects
     }
     
     func setupPersistentStoreRemoteChangeObserver() {

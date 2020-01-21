@@ -24,9 +24,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         setting.listenToRemoteChange()
         NSUbiquitousKeyValueStore.default.synchronize()
         
-        let mainTabView = MainTabView()
+//        let mainTabView = MainTabView()
+//
+//        window.rootViewController = UIHostingController(rootView: mainTabView)
+//        window.makeKeyAndVisible()
         
-        window.rootViewController = UIHostingController(rootView: mainTabView)
+        let homeView = HomeView()
+            .environment(\.managedObjectContext, CoreDataStack.current.mainContext)
+        let rootViewCV = UIHostingController(rootView: homeView)
+        window.rootViewController = rootViewCV
         window.makeKeyAndVisible()
         
         window.tintColor = .appAccent

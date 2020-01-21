@@ -225,8 +225,8 @@ extension NoteCardView {
         ModalTextView(
             text: $noteCard.note,
             isFirstResponder: $isNoteEditingActive,
-            prompt: "Notes",
-            onCommit: donePreviewNote,
+            title: "Notes",
+            onDone: donePreviewNote,
             disableEditing: true,
             renderMarkdown: true
         )

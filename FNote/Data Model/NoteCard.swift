@@ -74,6 +74,10 @@ extension NoteCard {
 
 extension NoteCard {
     
+    @nonobjc class func fetchRequest() -> NSFetchRequest<NoteCard> {
+        return NSFetchRequest<NoteCard>(entityName: "NoteCard")
+    }
+    
     /// A request to fetch no note cards.
     static func requestNone() -> NSFetchRequest<NoteCard> {
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
@@ -242,52 +246,18 @@ extension NoteCard {
         }
         
         var color: Color {
+            Color(uiColor)
+        }
+        
+        var uiColor: UIColor {
             switch self {
-            case .unspecified: return .primary
-            case .informal: return .red
-            case .neutral: return .orange
-            case .formal: return .green
+            case .unspecified: return UIColor(named: "note-card-divider")!
+            case .informal: return .systemRed
+            case .neutral: return .systemOrange
+            case .formal: return .systemGreen
             }
         }
     }
-}
-
-
-extension NoteCard {
-    
-    @nonobjc class func fetchRequest() -> NSFetchRequest<NoteCard> {
-        return NSFetchRequest<NoteCard>(entityName: "NoteCard")
-    }
-    
-    @objc(addRelationshipsObject:)
-    @NSManaged public func addToRelationships(_ value: NoteCard)
-    
-    @objc(removeRelationshipsObject:)
-    @NSManaged public func removeFromRelationships(_ value: NoteCard)
-    
-    @objc(addRelationships:)
-    @NSManaged public func addToRelationships(_ values: NSSet)
-    
-    @objc(removeRelationships:)
-    @NSManaged public func removeFromRelationships(_ values: NSSet)
-    
-}
-
-
-extension NoteCard {
-    
-    @objc(addTagsObject:)
-    @NSManaged public func addToTags(_ value: Tag)
-    
-    @objc(removeTagsObject:)
-    @NSManaged public func removeFromTags(_ value: Tag)
-    
-    @objc(addTags:)
-    @NSManaged public func addToTags(_ values: NSSet)
-    
-    @objc(removeTags:)
-    @NSManaged public func removeFromTags(_ values: NSSet)
-    
 }
 
 
@@ -306,4 +276,11 @@ extension NoteCard {
         
         return notes
     }
+    
+    static let sample: NoteCard = {
+        let card = NoteCard(context: .sample)
+        card.native = "Native"
+        card.translation = "Translation"
+        return card
+    }()
 }

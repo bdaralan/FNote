@@ -265,8 +265,8 @@ extension NoteCardDetailView {
         ModalTextView(
             text: $noteCardNote,
             isFirstResponder: $isNoteTextViewFirstResponder,
-            prompt: "Note",
-            onCommit: commitEditingNote
+            title: "Note",
+            onDone: commitEditingNote
         )
     }
     
