@@ -263,9 +263,9 @@ extension NoteCardDetailView {
     
     var noteEditingSheet: some View {
         ModalTextView(
+            title: "Note",
             text: $noteCardNote,
             isFirstResponder: $isNoteTextViewFirstResponder,
-            title: "Note",
             onDone: commitEditingNote
         )
     }

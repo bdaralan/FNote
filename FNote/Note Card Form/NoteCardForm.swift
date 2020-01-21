@@ -56,7 +56,7 @@ struct NoteCardForm: View {
                     SegmentControlWrapper(
                         selectedIndex: $viewModel.formality,
                         segments: viewModel.formalities,
-                        selectedTintColor: viewModel.formalitySegmentColor
+                        selectedColor: viewModel.selectedFormality.uiColor
                     )
                     
                     // MARK: Favorite
@@ -151,12 +151,12 @@ extension NoteCardForm {
         switch sheet {
         case .note:
             return ModalTextView(
+                title: "Note",
                 text: $viewModel.note,
                 isFirstResponder: $isNoteTextViewFirstResponder,
-                title: "Note",
                 onDone: commitEditNote,
-                disableEditing: false,
-                renderMarkdown: false
+                disableEditing: true,
+                renderMarkdown: true
             )
         }
     }

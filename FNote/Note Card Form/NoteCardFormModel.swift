@@ -48,11 +48,6 @@ class NoteCardFormModel: ObservableObject {
         NoteCard.Formality(rawValue: Int64(formality)) ?? .unspecified
     }
     
-    var formalitySegmentColor: UIColor? {
-        let formality = selectedFormality
-        return formality == .unspecified ? nil : formality.uiColor
-    }
-    
     var selectedCollectionNoteCardCount: String {
         let count = selectedCollection.noteCards.count
         let card = count == 1 ? "CARD" : "CARDS"

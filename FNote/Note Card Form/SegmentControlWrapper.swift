@@ -17,7 +17,7 @@ struct SegmentControlWrapper: UIViewRepresentable {
     
     var segments: [String]
     
-    var selectedTintColor: UIColor?
+    var selectedColor: UIColor?
     
     
     // MARK: Make View
@@ -65,10 +65,19 @@ extension SegmentControlWrapper.Coordinator {
     func update(with wrapper: SegmentControlWrapper) {
         self.wrapper = wrapper
         segmentControl.selectedSegmentIndex = wrapper.selectedIndex
-        segmentControl.selectedSegmentTintColor = wrapper.selectedTintColor
+        updateSegmentSelectedColor()
     }
     
     @objc private func handleSegmentChanged() {
         wrapper.selectedIndex = segmentControl.selectedSegmentIndex
+    }
+    
+    private func updateSegmentSelectedColor() {
+        if let color = wrapper.selectedColor {
+            let attribute: [NSAttributedString.Key: Any] = [.foregroundColor: color]
+            segmentControl.setTitleTextAttributes(attribute, for: .selected)
+        } else {
+            segmentControl.setTitleTextAttributes(nil, for: .selected)
+        }
     }
 }

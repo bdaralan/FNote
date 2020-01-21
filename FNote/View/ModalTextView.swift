@@ -11,11 +11,11 @@ import SwiftUI
 
 struct ModalTextView: View {
     
+    var title: String
+    
     @Binding var text: String
     
     @Binding var isFirstResponder: Bool
-    
-    var title: String
     
     var onDone: (() -> Void)
     
@@ -62,9 +62,9 @@ extension ModalTextView {
 struct ModalTextView_Previews: PreviewProvider {
     static var previews: some View {
         ModalTextView(
+            title: "Title",
             text: .constant("Hello"),
             isFirstResponder: .constant(true),
-            title: "Title",
             onDone: {}
         )
     }
