@@ -61,10 +61,7 @@ extension HomeNoteCardView {
 extension HomeNoteCardView {
     
     var createNoteCardNavItem: some View {
-        Button(action: beginCreateNoteCard) {
-            Image(systemName: "plus")
-                .imageScale(.large)
-        }
+        NavigationBarButton(imageName: "plus", action: beginCreateNoteCard)
     }
     
     func beginCreateNoteCard() {

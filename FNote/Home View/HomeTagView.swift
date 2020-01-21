@@ -81,10 +81,7 @@ extension HomeTagView {
 extension HomeTagView {
     
     var createTagNavItem: some View {
-        Button(action: beginCreateTag) {
-            Image(systemName: "plus")
-                .imageScale(.large)
-        }
+        NavigationBarButton(imageName: "plus", action: beginCreateTag)
     }
     
     func beginCreateTag() {

@@ -19,6 +19,7 @@
 		B40056EE23D6B9C400997216 /* ModalTextFieldModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056ED23D6B9C300997216 /* ModalTextFieldModel.swift */; };
 		B40056F023D6C26500997216 /* HomeTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056EF23D6C26500997216 /* HomeTagView.swift */; };
 		B40056F323D6C82900997216 /* ModalTextViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056F223D6C82900997216 /* ModalTextViewModel.swift */; };
+		B40056F523D6CC8600997216 /* NavigationBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056F423D6CC8600997216 /* NavigationBarButton.swift */; };
 		B402F62E234093C200EC0A77 /* CreateUpdateSheetState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B402F62D234093C200EC0A77 /* CreateUpdateSheetState.swift */; };
 		B40B519C2335C2D6002DA41D /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40B519B2335C2D6002DA41D /* NotificationName.swift */; };
 		B40BB61C2335BFED00E2F98B /* TagListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40BB61B2335BFED00E2F98B /* TagListView.swift */; };
@@ -108,6 +109,7 @@
 		B40056ED23D6B9C300997216 /* ModalTextFieldModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextFieldModel.swift; sourceTree = "<group>"; };
 		B40056EF23D6C26500997216 /* HomeTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTagView.swift; sourceTree = "<group>"; };
 		B40056F223D6C82900997216 /* ModalTextViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewModel.swift; sourceTree = "<group>"; };
+		B40056F423D6CC8600997216 /* NavigationBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarButton.swift; sourceTree = "<group>"; };
 		B402F62D234093C200EC0A77 /* CreateUpdateSheetState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateSheetState.swift; sourceTree = "<group>"; };
 		B40B519B2335C2D6002DA41D /* NotificationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
 		B40BB61B2335BFED00E2F98B /* TagListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListView.swift; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 				B4EEF32B235D99B400869567 /* ModalDragHandle.swift */,
 				656AC27D236A11AE0038F301 /* NoteCardCollectionRow.swift */,
 				656AC281236A1AA30038F301 /* TagRow.swift */,
+				B40056F423D6CC8600997216 /* NavigationBarButton.swift */,
 			);
 			path = "Reusable View";
 			sourceTree = "<group>";
@@ -586,6 +589,7 @@
 				B4D7341A233F36FE00A3958A /* NavigationBarBackButton.swift in Sources */,
 				66F9A744237C8E3F007D2330 /* NoteCardScrollView.swift in Sources */,
 				65F373A023289D4C002CD331 /* NoteCardCollectionDataSource.swift in Sources */,
+				B40056F523D6CC8600997216 /* NavigationBarButton.swift in Sources */,
 				B411E0512332F6B4008D99A0 /* NotificationObserver.swift in Sources */,
 				B4EE3ECC2329D86500CC40B7 /* ModalTextField.swift in Sources */,
 				B4FFEB27234ED0CE00B4550F /* Color.swift in Sources */,
