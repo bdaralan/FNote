@@ -120,16 +120,7 @@ extension NoteCardDetailTagView {
     }
     
     func modalTextField() -> some View {
-        ModalTextField(
-            text: $modalTextFieldText,
-            isFirstResponder: $isModalTextFieldActive,
-            prompt: modalTextFieldPrompt,
-            placeholder: modalTextFieldPlaceholder,
-            description: modalTextFieldDescription,
-            descriptionColor: .red,
-            onCancel: cancelCreateNewTag,
-            onCommit: commitCreateNewTag
-        )
+        ModalTextField(viewModel: .constant(.init()))
     }
     
     func beginCreateNewTag() {

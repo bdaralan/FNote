@@ -27,7 +27,7 @@ struct NoteCardCollectionSelectionView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     ForEach(collections, id: \.uuid) { collection in
-                        NoteCardCollectionListRow(collection: collection, showCheckmark: false)
+                        NoteCardCollectionRow(collection: collection, showCheckmark: false)
                             .onTapGesture(perform: { self.onSelected(collection) })
                             .disabled(self.disableCollections.contains(collection))
                             .opacity(self.disableCollections.contains(collection) ? 0.4 : 1)

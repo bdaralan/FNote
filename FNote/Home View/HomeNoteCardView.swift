@@ -15,18 +15,13 @@ struct HomeNoteCardView: View {
     var viewModel: NoteCardCollectionViewModel
     
     var collection: NoteCardCollection
+    var allCollections: [NoteCardCollection]
+    var allTags: [Tag]
     
     var updateContext: NSManagedObjectContext
     
     @State private var sheet: Sheet?
     @State private var noteCardFormModel: NoteCardFormModel?
-    
-    @FetchRequest(fetchRequest: NoteCardCollection.requestAllCollections())
-    private var allCollections
-    
-    @FetchRequest(fetchRequest: Tag.requestAllTags())
-    private var allTags
-    
     
     var body: some View {
         NavigationView {
@@ -75,9 +70,9 @@ extension HomeNoteCardView {
     func beginCreateNoteCard() {
         noteCardFormModel = .init(context: updateContext, collection: collection)
         
-        noteCardFormModel?.selectableCollections = Array(allCollections)
+        noteCardFormModel?.selectableCollections = allCollections
         noteCardFormModel?.selectableRelationships = Array(collection.noteCards)
-        noteCardFormModel?.selectableTags = Array(allTags)
+        noteCardFormModel?.selectableTags = allTags
         
         noteCardFormModel?.onCancel = cancelCreateNoteCard
         noteCardFormModel?.onCommit = commitCreateNoteCard
@@ -111,9 +106,9 @@ extension HomeNoteCardView {
         guard let collection = noteCard.collection else { return }
         noteCardFormModel = .init(context: updateContext, collection: collection)
         
-        noteCardFormModel?.selectableCollections = Array(allCollections)
+        noteCardFormModel?.selectableCollections = allCollections
         noteCardFormModel?.selectableRelationships = Array(collection.noteCards)
-        noteCardFormModel?.selectableTags = Array(allTags)
+        noteCardFormModel?.selectableTags = allTags
         
         noteCardFormModel?.onCancel = cancelEditNoteCard
         noteCardFormModel?.onCommit = { self.commitEditNoteCard(noteCard) }
@@ -140,6 +135,12 @@ extension HomeNoteCardView {
 
 struct HomeNoteCardView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeNoteCardView(viewModel: .init(), collection: .sample, updateContext: .sample)
+        HomeNoteCardView(
+            viewModel: .init(),
+            collection: .sample,
+            allCollections: [],
+            allTags: [],
+            updateContext: .sample
+        )
     }
 }

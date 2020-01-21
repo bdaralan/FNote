@@ -36,7 +36,7 @@ struct NoteCardCollectionListView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     ForEach(noteCardCollectionDataSource.fetchedObjects, id: \.uuid) { collection in
-                        NoteCardCollectionListRow(
+                        NoteCardCollectionRow(
                             collection: collection,
                             showCheckmark: collection.uuid == self.currentCollectionUUID
                         )
@@ -226,28 +226,29 @@ extension NoteCardCollectionListView {
     }
     
     func modalTextField() -> some View {
-        let commit: () -> Void
-        let cancel: () -> Void
+//        let commit: () -> Void
+//        let cancel: () -> Void
+//
+//        switch modalTextFieldState {
+//        case .create:
+//            commit = commitCreateNewCollection
+//            cancel = cancelCreateCollection
+//        case .update:
+//            commit = commitRenameCollection
+//            cancel = cancelRenameCollection
+//        }
         
-        switch modalTextFieldState {
-        case .create:
-            commit = commitCreateNewCollection
-            cancel = cancelCreateCollection
-        case .update:
-            commit = commitRenameCollection
-            cancel = cancelRenameCollection
-        }
-        
-        return ModalTextField(
-            text: $collectionNewName,
-            isFirstResponder: $isModalTextFieldActive,
-            prompt: modalTextFieldPrompt,
-            placeholder: modalTextFieldPlaceholder,
-            description: modalTextFieldDescription,
-            descriptionColor: .red,
-            onCancel: cancel,
-            onCommit: commit
-        )
+        return ModalTextField(viewModel: .constant(.init()))
+//        return ModalTextField(
+//            text: $collectionNewName,
+//            isFirstResponder: $isModalTextFieldActive,
+//            prompt: modalTextFieldPrompt,
+//            placeholder: modalTextFieldPlaceholder,
+//            description: modalTextFieldDescription,
+//            descriptionColor: .red,
+//            onCancel: cancel,
+//            onCommit: commit
+//        )
     }
 }
 

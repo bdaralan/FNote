@@ -262,12 +262,13 @@ extension NoteCardDetailView {
 extension NoteCardDetailView {
     
     var noteEditingSheet: some View {
-        ModalTextView(
-            title: "Note",
-            text: $noteCardNote,
-            isFirstResponder: $isNoteTextViewFirstResponder,
-            onDone: commitEditingNote
-        )
+        ModalTextView(viewModel: .constant(.init()))
+//        ModalTextView(
+//            title: "Note",
+//            text: $noteCardNote,
+//            isFirstResponder: $isNoteTextViewFirstResponder,
+//            onDone: commitEditingNote
+//        )
     }
     
     func rowImage(systemName: String) -> some View {

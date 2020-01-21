@@ -14,7 +14,7 @@ struct NoteCardForm: View {
     @ObservedObject var viewModel: NoteCardFormModel
     
     @State private var sheet: Sheet?
-    @State private var isNoteTextViewFirstResponder = false
+    @State private var modalTextViewModel = ModalTextViewModel()
     
     
     var body: some View {
@@ -150,14 +150,7 @@ extension NoteCardForm {
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
         case .note:
-            return ModalTextView(
-                title: "Note",
-                text: $viewModel.note,
-                isFirstResponder: $isNoteTextViewFirstResponder,
-                onDone: commitEditNote,
-                disableEditing: true,
-                renderMarkdown: true
-            )
+            return ModalTextView(viewModel: $modalTextViewModel)
         }
     }
 }
@@ -167,7 +160,12 @@ extension NoteCardForm {
 extension NoteCardForm {
     
     func beginEditNote() {
-        isNoteTextViewFirstResponder = true
+        modalTextViewModel.title = "Note"
+        modalTextViewModel.text = viewModel.note
+        
+        modalTextViewModel.isFirstResponder = true
+        modalTextViewModel.onCommit = commitEditNote
+        
         sheet = .note
     }
     

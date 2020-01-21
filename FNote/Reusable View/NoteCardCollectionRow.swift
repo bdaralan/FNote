@@ -1,5 +1,5 @@
 //
-//  NoteCardCollectionListRow.swift
+//  NoteCardCollectionRow.swift
 //  FNote
 //
 //  Created by Brittney Witts on 10/30/19.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct NoteCardCollectionListRow: View {
+struct NoteCardCollectionRow: View {
     
     @ObservedObject var collection: NoteCardCollection
     
@@ -39,7 +39,7 @@ struct NoteCardCollectionListRow: View {
     }
 }
 
-extension NoteCardCollectionListRow {
+extension NoteCardCollectionRow {
     
     func showCollectionCount(count: Int) -> String {
         if count == 1 {
@@ -52,6 +52,6 @@ extension NoteCardCollectionListRow {
 
 struct NoteCardCollectionListRow_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardCollectionListRow(collection: .init(), showCheckmark: true)
+        NoteCardCollectionRow(collection: .init(), showCheckmark: true)
     }
 }

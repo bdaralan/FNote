@@ -8,6 +8,7 @@
 
 import SwiftUI
 
+
 struct ModalDragHandle: View {
     
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -22,6 +23,7 @@ struct ModalDragHandle: View {
             .opacity((hideOnLandscape && verticalSizeClass == .compact) ? 0 : 1)
     }
 }
+
 
 struct ModalDragHandle_Previews: PreviewProvider {
     static var previews: some View {

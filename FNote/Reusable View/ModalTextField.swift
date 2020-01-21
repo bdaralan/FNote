@@ -11,47 +11,33 @@ import SwiftUI
 
 struct ModalTextField: View {
     
-    @Binding var text: String
-    
-    @Binding var isFirstResponder: Bool
-    
-    var prompt: String
-    
-    var placeholder: String
-    
-    var description = ""
-    
-    var descriptionColor = Color.secondary
-    
-    var onCancel: (() -> Void)?
-    
-    var onCommit: (() -> Void)?
+    @Binding var viewModel: ModalTextFieldModel
     
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack(alignment: .firstTextBaseline) {
-                Text(prompt)
+                Text(viewModel.title)
                     .font(.largeTitle)
                     .bold()
-                if onCancel != nil {
+                if viewModel.onCancel != nil {
                     Spacer()
-                    Button("Cancel", action: onCancel!)
+                    Button("Cancel", action: viewModel.onCancel!)
                 }
             }
             
             ModalTextFieldWrapper(
-                isActive: $isFirstResponder,
-                text: $text,
-                placeholder: placeholder,
-                onCommit: onCommit
+                isActive: $viewModel.isFirstResponder,
+                text: $viewModel.text,
+                placeholder: viewModel.placeholder,
+                onCommit: viewModel.onCommit
             )
                 .fixedSize(horizontal: false, vertical: true)
             
             Divider()
             
-            Text(description)
-                .foregroundColor(descriptionColor)
+            Text(viewModel.prompt)
+                .foregroundColor(viewModel.promptColor ?? .secondary)
                 .padding(.vertical)
                 .padding(.vertical)
         }
@@ -66,6 +52,6 @@ struct ModalTextField: View {
 extension ModalTextField {
     var dragHandle: some View {
             ModalDragHandle(hideOnLandscape: true)
-            .padding(.top, 8)
+                .padding(.top, 8)
     }
 }

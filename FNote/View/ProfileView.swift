@@ -172,14 +172,15 @@ extension ProfileView {
 extension ProfileView {
     
     var editUsernameSheet: some View {
-        ModalTextField(
-            text: $usernameToChange,
-            isFirstResponder: $isModalTextFieldActive,
-            prompt: "Edit Username",
-            placeholder: setting.username,
-            onCancel: cancelEditingUsername,
-            onCommit: commitEditingUsername
-        )
+        ModalTextField(viewModel: .constant(.init()))
+//        ModalTextField(
+//            text: $usernameToChange,
+//            isFirstResponder: $isModalTextFieldActive,
+//            prompt: "Edit Username",
+//            placeholder: setting.username,
+//            onCancel: cancelEditingUsername,
+//            onCommit: commitEditingUsername
+//        )
     }
     
     func beginEditingUsername() {

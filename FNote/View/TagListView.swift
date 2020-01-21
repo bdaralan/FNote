@@ -31,7 +31,7 @@ struct TagListView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     ForEach(tagDataSource.fetchedObjects, id: \.self) { tag in
-                        TagListRow(tag: tag)
+                        TagRow(tag: tag)
                             .onTapGesture(perform: { self.showNoteCardPreviewSheet(for: tag) })
                             .contextMenu(menuItems: { self.contextMenuItems(for: tag) })
                     }
@@ -81,16 +81,17 @@ extension TagListView {
     }
     
     var createTagSheet: some View {
-        ModalTextField(
-            text: $tagNewName,
-            isFirstResponder: $isModalTextFieldActive,
-            prompt: modalTextFieldPrompt,
-            placeholder: modalTextFieldPlaceholder,
-            description: modalTextFieldDescription,
-            descriptionColor: .red,
-            onCancel: cancelCreateNewTag,
-            onCommit: commitCreateNewTag
-        )
+        ModalTextField(viewModel: .constant(.init()))
+//        ModalTextField(
+//            text: $tagNewName,
+//            isFirstResponder: $isModalTextFieldActive,
+//            prompt: modalTextFieldPrompt,
+//            placeholder: modalTextFieldPlaceholder,
+//            description: modalTextFieldDescription,
+//            descriptionColor: .red,
+//            onCancel: cancelCreateNewTag,
+//            onCommit: commitCreateNewTag
+//        )
     }
     
     func beginCreateNewTag() {
@@ -161,16 +162,17 @@ extension TagListView {
 extension TagListView {
     
     var renameTagSheet: some View {
-        ModalTextField(
-            text: $tagNewName,
-            isFirstResponder: $isModalTextFieldActive,
-            prompt: modalTextFieldPrompt,
-            placeholder: modalTextFieldPlaceholder,
-            description: modalTextFieldDescription,
-            descriptionColor: .red,
-            onCancel: cancelRenameTag,
-            onCommit: commitRename
-        )
+        ModalTextField(viewModel: .constant(.init()))
+//        ModalTextField(
+//            text: $tagNewName,
+//            isFirstResponder: $isModalTextFieldActive,
+//            prompt: modalTextFieldPrompt,
+//            placeholder: modalTextFieldPlaceholder,
+//            description: modalTextFieldDescription,
+//            descriptionColor: .red,
+//            onCancel: cancelRenameTag,
+//            onCommit: commitRename
+//        )
     }
     
     func beginRenameTag(_ tag: Tag) {

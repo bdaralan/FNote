@@ -11,35 +11,25 @@ import SwiftUI
 
 struct ModalTextView: View {
     
-    var title: String
-    
-    @Binding var text: String
-    
-    @Binding var isFirstResponder: Bool
-    
-    var onDone: (() -> Void)
-    
-    var disableEditing = false
-    
-    var renderMarkdown = false
+    @Binding var viewModel: ModalTextViewModel
     
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack(alignment: .firstTextBaseline) {
-                Text(title)
+                Text(viewModel.title)
                     .font(.largeTitle)
                     .bold()
                 Spacer()
-                Button(action: onDone) {
+                Button(action: viewModel.onCommit ?? {}) {
                     Text("Done").bold()
                 }
             }
             ModalTextViewWrapper(
-                text: $text,
-                isFirstResponder: $isFirstResponder,
-                disableEditing: disableEditing,
-                renderMarkdown: renderMarkdown
+                text: $viewModel.text,
+                isFirstResponder: $viewModel.isFirstResponder,
+                disableEditing: viewModel.disableEditing,
+                renderMarkdown: viewModel.renderMarkdown
             )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -61,11 +51,6 @@ extension ModalTextView {
 
 struct ModalTextView_Previews: PreviewProvider {
     static var previews: some View {
-        ModalTextView(
-            title: "Title",
-            text: .constant("Hello"),
-            isFirstResponder: .constant(true),
-            onDone: {}
-        )
+        ModalTextView(viewModel: .constant(.init()))
     }
 }

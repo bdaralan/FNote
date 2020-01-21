@@ -222,14 +222,15 @@ extension NoteCardView {
     
     /// A sheet that previews note of the selected card.
     var notePreviewSheet: some View {
-        ModalTextView(
-            title: "Notes",
-            text: $noteCard.note,
-            isFirstResponder: $isNoteEditingActive,
-            onDone: donePreviewNote,
-            disableEditing: true,
-            renderMarkdown: true
-        )
+        ModalTextView(viewModel: .constant(.init()))
+//        ModalTextView(
+//            title: "Notes",
+//            text: $noteCard.note,
+//            isFirstResponder: $isNoteEditingActive,
+//            onDone: donePreviewNote,
+//            disableEditing: true,
+//            renderMarkdown: true
+//        )
     }
     
     // Action that goes in the quick button

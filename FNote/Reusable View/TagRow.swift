@@ -1,5 +1,5 @@
 //
-//  TagListRow.swift
+//  TagRow.swift
 //  FNote
 //
 //  Created by Andrew Flores on 10/30/19.
@@ -8,9 +8,11 @@
 
 import SwiftUI
 
-struct TagListRow: View {
+
+struct TagRow: View {
     
     @ObservedObject var tag: Tag
+    
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -29,7 +31,8 @@ struct TagListRow: View {
     }
 }
 
-extension TagListRow {
+
+extension TagRow {
     
     func showTagCount(count: Int) -> String {
         if count == 1 {
@@ -40,8 +43,9 @@ extension TagListRow {
     }
 }
 
+
 struct TagListRow_Previews: PreviewProvider {
     static var previews: some View {
-        TagListRow(tag: .init())
+        TagRow(tag: .init())
     }
 }
