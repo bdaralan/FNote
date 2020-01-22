@@ -74,6 +74,22 @@ extension NoteCard {
 
 extension NoteCard {
     
+    func addRelationships(_ noteCards: [NoteCard]) {
+        for noteCard in noteCards where noteCard !== self {
+            relationships.insert(noteCard)
+        }
+    }
+    
+    func addTags(_ tags: [Tag]) {
+        for tag in tags {
+            self.tags.insert(tag)
+        }
+    }
+}
+
+
+extension NoteCard {
+    
     @nonobjc class func fetchRequest() -> NSFetchRequest<NoteCard> {
         return NSFetchRequest<NoteCard>(entityName: "NoteCard")
     }
@@ -114,6 +130,8 @@ extension NoteCard {
     ///   - uuid: The collection UUID.
     ///   - predicate: A predicate to match either the `translation` or `native`.
     static func requestNoteCards(forCollectionUUID uuid: String, predicate: String = "") -> NSFetchRequest<NoteCard> {
+        guard !uuid.trimmed().isEmpty else { return NoteCard.requestNone() }
+        
         let collectionUUID = #keyPath(NoteCard.collection.uuid)
         let native = #keyPath(NoteCard.native)
         let translation = #keyPath(NoteCard.translation)

@@ -51,14 +51,16 @@ struct NoteCardForm: View {
                     }
                 }
                 
-                Section(header: Text("FORMALITY & FAVORITE")) {
+                Section(header: Text("FORMALITY")) {
                     // MARK: Formality
                     SegmentControlWrapper(
                         selectedIndex: $viewModel.formality,
                         segments: viewModel.formalities,
                         selectedColor: viewModel.selectedFormality.uiColor
                     )
-                    
+                }
+                
+                Section {
                     // MARK: Favorite
                     Toggle(isOn: $viewModel.isFavorite) {
                         Image.noteCardFavorite(viewModel.isFavorite)
@@ -116,6 +118,7 @@ struct NoteCardForm: View {
             .navigationBarTitle(Text(viewModel.navigationTitle), displayMode: .inline)
             .sheet(item: $sheet, content: presentationSheet)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
@@ -177,6 +180,6 @@ extension NoteCardForm {
 
 struct NoteCardForm_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardForm(viewModel: .init(context: .sample, collection: .sample))
+        NoteCardForm(viewModel: .init(collection: .sample))
     }
 }

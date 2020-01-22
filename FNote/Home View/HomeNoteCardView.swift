@@ -12,13 +12,11 @@ import CoreData
 
 struct HomeNoteCardView: View {
     
+    @EnvironmentObject var appState: AppState
+    
     var viewModel: NoteCardCollectionViewModel
     
     var collection: NoteCardCollection
-    var allCollections: [NoteCardCollection]
-    var allTags: [Tag]
-    
-    var updateContext: NSManagedObjectContext
     
     @State private var sheet: Sheet?
     @State private var noteCardFormModel: NoteCardFormModel?
@@ -29,10 +27,10 @@ struct HomeNoteCardView: View {
                 .navigationBarTitle(Text(collection.name), displayMode: .large)
                 .navigationBarItems(trailing: createNoteCardNavItem)
                 .edgesIgnoringSafeArea(.all)
-                .onAppear(perform: setupViewModelActions)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, content: presentationSheet)
+        .onAppear(perform: setupOnAppear)
     }
 }
 
@@ -52,6 +50,11 @@ extension HomeNoteCardView {
             return NoteCardForm(viewModel: noteCardFormModel!)
         }
     }
+    
+    func setupOnAppear() {
+        viewModel.noteCards = appState.currenNoteCards
+        viewModel.onNoteCardSelected = beginEditNoteCard
+    }
 }
 
 
@@ -65,11 +68,11 @@ extension HomeNoteCardView {
     }
     
     func beginCreateNoteCard() {
-        noteCardFormModel = .init(context: updateContext, collection: collection)
+        noteCardFormModel = .init(collection: collection)
         
-        noteCardFormModel?.selectableCollections = allCollections
-        noteCardFormModel?.selectableRelationships = Array(collection.noteCards)
-        noteCardFormModel?.selectableTags = allTags
+        noteCardFormModel?.selectableCollections = appState.collections
+        noteCardFormModel?.selectableRelationships = appState.currenNoteCards
+        noteCardFormModel?.selectableTags = appState.tags
         
         noteCardFormModel?.onCancel = cancelCreateNoteCard
         noteCardFormModel?.onCommit = commitCreateNoteCard
@@ -86,7 +89,21 @@ extension HomeNoteCardView {
     }
     
     func commitCreateNoteCard() {
-        sheet = nil
+        guard let createInfo = noteCardFormModel?.createNoteCardCUDRequest() else { return }
+        let result = appState.createNoteCard(with: createInfo)
+        
+        switch result {
+        case .created(_, let childContext):
+            childContext.quickSave()
+            childContext.parent?.quickSave()
+            sheet = nil
+        
+        case .failed: // TODO: show alert
+            sheet = nil
+        
+        case .updated, .deleted:
+            fatalError("🧨 hmm... tried to \(result) object in commitCreateNoteCard method 💣")
+        }
     }
 }
 
@@ -95,17 +112,13 @@ extension HomeNoteCardView {
 
 extension HomeNoteCardView {
     
-    func setupViewModelActions() {
-        viewModel.onNoteCardSelected = beginEditNoteCard
-    }
-    
     func beginEditNoteCard(_ noteCard: NoteCard) {
         guard let collection = noteCard.collection else { return }
-        noteCardFormModel = .init(context: updateContext, collection: collection)
+        noteCardFormModel = .init(collection: collection)
         
-        noteCardFormModel?.selectableCollections = allCollections
-        noteCardFormModel?.selectableRelationships = Array(collection.noteCards)
-        noteCardFormModel?.selectableTags = allTags
+        noteCardFormModel?.selectableCollections = appState.collections
+        noteCardFormModel?.selectableRelationships = appState.currenNoteCards
+        noteCardFormModel?.selectableTags = appState.tags
         
         noteCardFormModel?.onCancel = cancelEditNoteCard
         noteCardFormModel?.onCommit = { self.commitEditNoteCard(noteCard) }
@@ -132,12 +145,6 @@ extension HomeNoteCardView {
 
 struct HomeNoteCardView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeNoteCardView(
-            viewModel: .init(),
-            collection: .sample,
-            allCollections: [],
-            allTags: [],
-            updateContext: .sample
-        )
+        HomeNoteCardView(viewModel: .init(), collection: .sample)
     }
 }

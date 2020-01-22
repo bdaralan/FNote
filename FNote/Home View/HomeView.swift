@@ -11,23 +11,16 @@ import SwiftUI
 
 struct HomeView: View {
     
+    @EnvironmentObject var appState: AppState
+    
     @State private var currentTab = MainTabView.Tab.card
     
     @State private var noteCardCollectionViewModel = NoteCardCollectionViewModel()
     
     @State private var currentCollectionID: String? = AppCache.currentCollectionUUID
     
-    @FetchRequest(fetchRequest: NoteCard.requestNoteCards(forCollectionUUID: AppCache.currentCollectionUUID ?? ""))
-    var noteCards
-    
-    @FetchRequest(fetchRequest: NoteCardCollection.requestAllCollections())
-    var collections
-    
     @FetchRequest(fetchRequest: NoteCardCollection.requestCollection(withUUID: AppCache.currentCollectionUUID ?? ""))
     var collection
-    
-    @FetchRequest(fetchRequest: Tag.requestAllTags())
-    var tags
     
     
     var body: some View {
@@ -36,17 +29,14 @@ struct HomeView: View {
             // MARK: Card Tab
             HomeNoteCardView(
                 viewModel: noteCardCollectionViewModel,
-                collection: Array(collection).first!,
-                allCollections: Array(collections),
-                allTags: Array(tags),
-                updateContext: CoreDataStack.current.mainContext
+                collection: Array(collection).first!
             )
                 .tabItem(MainTabView.Tab.card.tabItem)
                 .tag(MainTabView.Tab.card)
             
             // MARK: Collection Tab
             HomeNoteCardCollectionView(
-                collections: Array(collections),
+                collections: appState.collections,
                 currentCollectionID: $currentCollectionID,
                 onCurrentCollectionChanged: nil
             )
@@ -54,7 +44,7 @@ struct HomeView: View {
                 .tag(MainTabView.Tab.collection)
             
             // MARK: Tag Tab
-            HomeTagView(tags: Array(tags))
+            HomeTagView(tags: appState.tags)
                 .tabItem(MainTabView.Tab.tag.tabItem)
                 .tag(MainTabView.Tab.tag)
             
@@ -67,7 +57,7 @@ struct HomeView: View {
 extension HomeView {
     
     func setupHomeViewAppear() {
-        noteCardCollectionViewModel.noteCards = Array(noteCards)
+        
     }
 }
 

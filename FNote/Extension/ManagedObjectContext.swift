@@ -10,6 +10,9 @@
 import CoreData
 
 
+typealias ManagedObjectChildContext = NSManagedObjectContext
+
+
 extension NSManagedObjectContext {
     
     /// Create a child context and set itself as the parent.

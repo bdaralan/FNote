@@ -19,19 +19,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
+        // setup setting
         let setting = UserSetting.current
         setting.applyColorScheme()
         setting.listenToRemoteChange()
         NSUbiquitousKeyValueStore.default.synchronize()
         
-//        let mainTabView = MainTabView()
-//
-//        window.rootViewController = UIHostingController(rootView: mainTabView)
-//        window.makeKeyAndVisible()
+        // setup app state
+        let parentContext = CoreDataStack.current.mainContext
+        let appState = AppState(parentContext: parentContext)
+        appState.setCurrentCollectionFetchOption("need and actual option object")
         
+        // setup home view
         let homeView = HomeView()
-            .environment(\.managedObjectContext, CoreDataStack.current.mainContext)
+            .environment(\.managedObjectContext, appState.parentContext)
+            .environmentObject(appState)
+        
         let rootViewCV = UIHostingController(rootView: homeView)
+        
         window.rootViewController = rootViewCV
         window.makeKeyAndVisible()
         

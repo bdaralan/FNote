@@ -9,10 +9,8 @@
 import UIKit
 import CoreData
 
+
 class NoteCardFormModel: ObservableObject {
-    
-    // MARK: Required Property
-    var context: NSManagedObjectContext
     
     // MARK: Object Property
     @Published var native = ""
@@ -55,14 +53,26 @@ class NoteCardFormModel: ObservableObject {
     }
     
     // MARK: Constructor
-    init(context: NSManagedObjectContext, collection: NoteCardCollection) {
-        self.context = context
-        selectedCollection = collection.get(from: context)
+    init(collection: NoteCardCollection) {
+        selectedCollection = collection
     }
 }
 
 
 extension NoteCardFormModel {
+    
+    func createNoteCardCUDRequest() -> NoteCardCUDRequest {
+        NoteCardCUDRequest(
+            collection: selectedCollection,
+            native: native,
+            translation: translation,
+            formality: selectedFormality,
+            isFavorite: isFavorite,
+            note: note,
+            relationships: selectedRelationships,
+            tags: selectableTags
+        )
+    }
     
     func update(with noteCard: NoteCard) {
         native = noteCard.native
@@ -77,24 +87,24 @@ extension NoteCardFormModel {
     }
     
     func apply(to noteCard: NoteCard) {
-        let noteCard = noteCard.get(from: context)
-        
-        noteCard.native = native
-        noteCard.translation = translation
-        noteCard.formality = selectedFormality
-        noteCard.isFavorited = isFavorite
-        noteCard.note = note
-        
-        noteCard.collection = selectedCollection
-        
-        selectedRelationships.forEach { relationship in
-            let relationship = relationship.get(from: context)
-            noteCard.relationships.insert(relationship)
-        }
-        
-        selectedTags.forEach { tag in
-            let tag = tag.get(from: context)
-            noteCard.tags.insert(tag)
-        }
+//        let noteCard = noteCard.get(from: context)
+//        
+//        noteCard.native = native
+//        noteCard.translation = translation
+//        noteCard.formality = selectedFormality
+//        noteCard.isFavorited = isFavorite
+//        noteCard.note = note
+//        
+//        noteCard.collection = selectedCollection
+//        
+//        selectedRelationships.forEach { relationship in
+//            let relationship = relationship.get(from: context)
+//            noteCard.relationships.insert(relationship)
+//        }
+//        
+//        selectedTags.forEach { tag in
+//            let tag = tag.get(from: context)
+//            noteCard.tags.insert(tag)
+//        }
     }
 }

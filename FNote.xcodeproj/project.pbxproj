@@ -40,6 +40,11 @@
 		B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */; };
 		B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3404232E8214008B2088 /* ModalTextView.swift */; };
 		B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3406232E8634008B2088 /* InputViewResponder.swift */; };
+		B4816A6923D8D73C006485F7 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4816A6823D8D73C006485F7 /* AppState.swift */; };
+		B4816A6B23D912E9006485F7 /* ObjectCUDRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4816A6A23D912E9006485F7 /* ObjectCUDRequest.swift */; };
+		B4816A6D23D91327006485F7 /* NoteCardCUDRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4816A6C23D91327006485F7 /* NoteCardCUDRequest.swift */; };
+		B4816A6F23D91341006485F7 /* NoteCardCollectionCUDRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4816A6E23D91341006485F7 /* NoteCardCollectionCUDRequest.swift */; };
+		B4816A7123D91354006485F7 /* TagCUDRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4816A7023D91354006485F7 /* TagCUDRequest.swift */; };
 		B4928E8C239054FF0060AD45 /* Down in Frameworks */ = {isa = PBXBuildFile; productRef = B4928E8B239054FF0060AD45 /* Down */; };
 		B4928E8E2390B0980060AD45 /* NavigationItemIconStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4928E8D2390B0980060AD45 /* NavigationItemIconStyle.swift */; };
 		B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */; };
@@ -130,6 +135,11 @@
 		B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewWrapper.swift; sourceTree = "<group>"; };
 		B46B3404232E8214008B2088 /* ModalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextView.swift; sourceTree = "<group>"; };
 		B46B3406232E8634008B2088 /* InputViewResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewResponder.swift; sourceTree = "<group>"; };
+		B4816A6823D8D73C006485F7 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		B4816A6A23D912E9006485F7 /* ObjectCUDRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectCUDRequest.swift; sourceTree = "<group>"; };
+		B4816A6C23D91327006485F7 /* NoteCardCUDRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCUDRequest.swift; sourceTree = "<group>"; };
+		B4816A6E23D91341006485F7 /* NoteCardCollectionCUDRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionCUDRequest.swift; sourceTree = "<group>"; };
+		B4816A7023D91354006485F7 /* TagCUDRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCUDRequest.swift; sourceTree = "<group>"; };
 		B4928E8D2390B0980060AD45 /* NavigationItemIconStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationItemIconStyle.swift; sourceTree = "<group>"; };
 		B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataStack+HistoryTracker.swift"; sourceTree = "<group>"; };
 		B499A35B2326D988002D16A0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
@@ -257,6 +267,17 @@
 			path = "FN View & Controller";
 			sourceTree = "<group>";
 		};
+		B4816A6723D8D71D006485F7 /* App State */ = {
+			isa = PBXGroup;
+			children = (
+				B4816A6823D8D73C006485F7 /* AppState.swift */,
+				B4816A6C23D91327006485F7 /* NoteCardCUDRequest.swift */,
+				B4816A6E23D91341006485F7 /* NoteCardCollectionCUDRequest.swift */,
+				B4816A7023D91354006485F7 /* TagCUDRequest.swift */,
+			);
+			path = "App State";
+			sourceTree = "<group>";
+		};
 		B499A3572326D932002D16A0 /* CoreDataStack */ = {
 			isa = PBXGroup;
 			children = (
@@ -313,6 +334,7 @@
 			isa = PBXGroup;
 			children = (
 				B4A0CE9823D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift */,
+				B4816A6A23D912E9006485F7 /* ObjectCUDRequest.swift */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -383,6 +405,7 @@
 		B4BB116F23145DC400A380AA /* FNote */ = {
 			isa = PBXGroup;
 			children = (
+				B4816A6723D8D71D006485F7 /* App State */,
 				B49C4C6823D628520030D9B2 /* Home View */,
 				B49C4C6B23D638EC0030D9B2 /* NoteCard Form */,
 				B4113FB723D2D507004E70DC /* NoteCard Collection View */,
@@ -556,7 +579,9 @@
 			files = (
 				B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */,
 				B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */,
+				B4816A6B23D912E9006485F7 /* ObjectCUDRequest.swift in Sources */,
 				665C7EB923209B4D000BFD9F /* TagDataSource.swift in Sources */,
+				B4816A6923D8D73C006485F7 /* AppState.swift in Sources */,
 				668E537523297FDB0095DD71 /* NoteCardView.swift in Sources */,
 				B466BAFD23333DF5007DD130 /* ProfileView.swift in Sources */,
 				65F373A6232981C6002CD331 /* NoteCardCollectionListView.swift in Sources */,
@@ -566,6 +591,7 @@
 				B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */,
 				B49C4C7123D65C850030D9B2 /* HomeNoteCardView.swift in Sources */,
 				B4A0CE9923D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift in Sources */,
+				B4816A6D23D91327006485F7 /* NoteCardCUDRequest.swift in Sources */,
 				B49C4C6F23D64AFB0030D9B2 /* SegmentControlWrapper.swift in Sources */,
 				B40BB61C2335BFED00E2F98B /* TagListView.swift in Sources */,
 				B411E04D2332F60F008D99A0 /* ViewForceReloader.swift in Sources */,
@@ -620,11 +646,13 @@
 				B40F09FD237CFC6600E4F7D3 /* UserSetting.swift in Sources */,
 				B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */,
 				B411E04F2332F672008D99A0 /* NavigationStateHandler.swift in Sources */,
+				B4816A6F23D91341006485F7 /* NoteCardCollectionCUDRequest.swift in Sources */,
 				B40056EE23D6B9C400997216 /* ModalTextFieldModel.swift in Sources */,
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
 				B499A3632326E518002D16A0 /* NoteCardCollectionView.swift in Sources */,
 				B45A4A032368A2810079D8DE /* NoteCardSearchScope.swift in Sources */,
 				B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */,
+				B4816A7123D91354006485F7 /* TagCUDRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
