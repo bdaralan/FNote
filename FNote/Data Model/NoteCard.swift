@@ -80,6 +80,15 @@ extension NoteCard {
             self.tags.insert(tag)
         }
     }
+    
+    func setTags(_ tags: Set<Tag>) {
+        self.tags = tags
+    }
+    
+    func setRelationships(_ relationships: Set<NoteCard>) {
+        self.relationships = relationships
+        self.relationships.remove(self)
+    }
 }
 
 

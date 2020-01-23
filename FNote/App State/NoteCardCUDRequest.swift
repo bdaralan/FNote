@@ -35,8 +35,14 @@ class NoteCardCUDRequest: ObjectCUDRequest {
     
     func changeContext(_ context: ManagedObjectChildContext) {
         collection = collection.get(from: context)
-        relationships = Set(relationships.map({ $0.get(from: context) }))
-        tags = Set(tags.map({ $0.get(from: context) }))
+        
+        var relationshipsInContext = Set<NoteCard>()
+        relationships.forEach({ relationshipsInContext.insert($0.get(from: context)) })
+        relationships = relationshipsInContext
+        
+        var tagsInContext = Set<Tag>()
+        tags.forEach({ tagsInContext.insert($0.get(from: context)) })
+        tags = tagsInContext
     }
     
     func update(_ object: NoteCard) {
@@ -46,7 +52,7 @@ class NoteCardCUDRequest: ObjectCUDRequest {
         object.formality = formality
         object.isFavorited = isFavorite
         object.note = note
-        object.addRelationships(relationships)
-        object.addTags(tags)
+        object.setRelationships(relationships)
+        object.setTags(tags)
     }
 }

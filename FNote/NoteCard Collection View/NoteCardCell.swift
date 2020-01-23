@@ -87,6 +87,16 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         layoutIfNeeded()
     }
     
+    func showCellBorder(_ show: Bool) {
+        contentView.layer.borderColor = UIColor.appAccent.cgColor
+        contentView.layer.borderWidth = show ? 3 : 0
+    }
+    
+    func disableCell(_ disabled: Bool) {
+        isUserInteractionEnabled = disabled ? false : true
+        contentView.layer.opacity = disabled ? 0.4 : 1
+    }
+    
     @objc private func handleQuickButtonTapped(_ sender: UIButton) {
         guard let noteCard = object else { return }
         let type: QuickButtonType

@@ -27,9 +27,13 @@ class NoteCardFormModel: ObservableObject {
     @Published var selectedRelationships: Set<NoteCard> = []
     @Published var selectedTags: Set<Tag> = []
     
+    var selectedNoteCard: NoteCard?
+    
     // MARK: Action
-    var onTagSelected: ((Tag) -> Void)?
     var onCollectionSelected: ((NoteCardCollection) -> Void)?
+    var onRelationshipSelected: ((NoteCard) -> Void)?
+    var onTagSelected: ((Tag) -> Void)?
+    
     
     var onCancel: (() -> Void)?
     var onCommit: (() -> Void)?
@@ -41,6 +45,9 @@ class NoteCardFormModel: ObservableObject {
     
     /// Used to control NavigationLink
     @Published var isSelectingTag = false
+    
+    /// Used to control NavigationLink
+    @Published var isSelectingRelationship = false
     
     var canCommit: Bool {
         return !translation.trimmed().isEmpty
@@ -65,8 +72,9 @@ class NoteCardFormModel: ObservableObject {
     }
     
     // MARK: Constructor
-    init(collection: NoteCardCollection) {
+    init(collection: NoteCardCollection, noteCard: NoteCard? = nil) {
         selectedCollection = collection
+        self.selectedNoteCard = noteCard
     }
 }
 

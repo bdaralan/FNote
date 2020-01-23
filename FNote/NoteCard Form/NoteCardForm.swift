@@ -15,6 +15,7 @@ struct NoteCardForm: View {
     
     @State private var sheet: Sheet?
     @State private var modalTextViewModel = ModalTextViewModel()
+    @State private var relationshipViewModel = NoteCardCollectionViewModel()
     
     
     var body: some View {
@@ -72,7 +73,10 @@ struct NoteCardForm: View {
                     }
                     
                     // MARK: Relationship
-                    NavigationLink(destination: Color.green) {
+                    NavigationLink(
+                        destination: NoteCardFormRelationshipSelectionView(viewModel: relationshipViewModel),
+                        isActive: $viewModel.isSelectingRelationship
+                    ) {
                         HStack {
                             Image.noteCardRelationship
                                 .frame(width: 20, height: 20, alignment: .center)
@@ -84,6 +88,7 @@ struct NoteCardForm: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+                    .onReceive(viewModel.$isSelectingRelationship, perform: handleRelationshipViewPushed)
                     
                     // MARK: Tag
                     NavigationLink(
@@ -172,6 +177,7 @@ extension NoteCardForm {
 
 
 // MARK: - Note
+
 extension NoteCardForm {
     
     func beginEditNote() {
@@ -187,6 +193,51 @@ extension NoteCardForm {
     func commitEditNote() {
         viewModel.note = modalTextViewModel.text
         sheet = nil
+    }
+}
+
+
+// MARK: - Relationship
+
+extension NoteCardForm {
+    
+    func handleRelationshipViewPushed(_ isPushed: Bool) {
+        if isPushed {
+            beginEditRelationship()
+        } else {
+            commitEditRelationship()
+        }
+    }
+    
+    func handleRelationshipNoteCardSelected(_ noteCard: NoteCard) {
+        if relationshipViewModel.borderedNoteCardIDs.contains(noteCard.uuid) {
+            relationshipViewModel.borderedNoteCardIDs.remove(noteCard.uuid)
+        } else {
+            relationshipViewModel.borderedNoteCardIDs.insert(noteCard.uuid)
+        }
+        viewModel.onRelationshipSelected?(noteCard)
+    }
+    
+    func beginEditRelationship() {
+        relationshipViewModel.noteCards = viewModel.selectableRelationships
+        relationshipViewModel.cellStyle = .short
+        
+        viewModel.selectedRelationships.forEach { noteCard in
+            relationshipViewModel.borderedNoteCardIDs.insert(noteCard.uuid)
+        }
+    
+        if let noteCard = viewModel.selectedNoteCard {
+            relationshipViewModel.disableNoteCardIDs.insert(noteCard.uuid)
+        }
+        
+        relationshipViewModel.onNoteCardSelected = handleRelationshipNoteCardSelected
+    }
+    
+    func commitEditRelationship() {
+        relationshipViewModel.noteCards = []
+        relationshipViewModel.borderedNoteCardIDs = []
+        relationshipViewModel.disableNoteCardIDs = []
+        relationshipViewModel.onNoteCardSelected = nil
     }
 }
 

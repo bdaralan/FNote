@@ -22,11 +22,21 @@ class NoteCardCollectionViewModel: NSObject {
     
     var dataSource: DiffableDataSource!
     
+    var cellStyle: NoteCardCell.Style = .regular
+    
+    var borderedNoteCardIDs: Set<String> = []
+    var disableNoteCardIDs: Set<String> = []
+    
     
     // MARK: Action
     
     var onNoteCardSelected: ((NoteCard) -> Void)?
     var onNoteCardQuickButtonTapped: ((NoteCardCell.QuickButtonType, NoteCard) -> Void)?
+    
+    
+    // MARK: Reference
+    
+    private weak var collectionView: UICollectionView?
     
     private let cellID = "NoteCardCellID"
     
@@ -50,7 +60,9 @@ extension NoteCardCollectionViewModel: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let noteCard = dataSource.itemIdentifier(for: indexPath) else { return }
+        guard let cell = collectionView.cellForItem(at: indexPath) as? NoteCardCell else { return }
         onNoteCardSelected?(noteCard)
+        cell.showCellBorder(borderedNoteCardIDs.contains(noteCard.uuid))
     }
 }
 
@@ -60,6 +72,7 @@ extension NoteCardCollectionViewModel: UICollectionViewDelegate {
 extension NoteCardCollectionViewModel: CollectionViewCompositionalDataSource {
     
     func setupCollectionView(_ collectionView: UICollectionView) {
+        self.collectionView = collectionView
         collectionView.collectionViewLayout = createCompositionalLayout()
         collectionView.register(NoteCardCell.self, forCellWithReuseIdentifier: cellID)
         collectionView.delegate = self
@@ -69,6 +82,9 @@ extension NoteCardCollectionViewModel: CollectionViewCompositionalDataSource {
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, noteCard in
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellID, for: indexPath) as! NoteCardCell
             cell.reload(with: noteCard)
+            cell.setCellStyle(self.cellStyle)
+            cell.showCellBorder(self.borderedNoteCardIDs.contains(noteCard.uuid))
+            cell.disableCell(self.disableNoteCardIDs.contains(noteCard.uuid))
             cell.onQuickButtonTapped = self.onNoteCardQuickButtonTapped
             return cell
         }
@@ -85,7 +101,7 @@ extension NoteCardCollectionViewModel: CollectionViewCompositionalDataSource {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let height = NoteCardCell.Style.regular.height
+        let height = cellStyle.height
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(height))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
         

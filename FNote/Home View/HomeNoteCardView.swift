@@ -21,6 +21,7 @@ struct HomeNoteCardView: View {
     @State private var sheet: Sheet?
     @State private var noteCardFormModel: NoteCardFormModel?
     
+    
     var body: some View {
         NavigationView {
             NoteCardCollectionViewWrapper(viewModel: viewModel)
@@ -79,12 +80,16 @@ extension HomeNoteCardView {
         formModel.onCancel = cancelCreateNoteCard
         formModel.onCommit = commitCreateNoteCard
         
-        formModel.onTagSelected = { tag in
-            self.handleNoteCardFormTagSelected(tag, formModel: formModel)
-        }
-        
         formModel.onCollectionSelected = { collection in
             self.handleNoteCardFormCollectionSelected(collection, formModel: formModel)
+        }
+        
+        formModel.onRelationshipSelected = { relationship in
+            self.handleNoteCardFormRelationshipSelected(relationship, formModel: formModel)
+        }
+        
+        formModel.onTagSelected = { tag in
+            self.handleNoteCardFormTagSelected(tag, formModel: formModel)
         }
         
         noteCardFormModel?.commitTitle = "Create"
@@ -113,7 +118,7 @@ extension HomeNoteCardView {
     
     func beginEditNoteCard(_ noteCard: NoteCard) {
         guard let collection = noteCard.collection else { return }
-        let formModel = NoteCardFormModel(collection: collection)
+        let formModel = NoteCardFormModel(collection: collection, noteCard: noteCard)
         noteCardFormModel = formModel
         
         formModel.selectableCollections = appState.collections
@@ -123,12 +128,16 @@ extension HomeNoteCardView {
         formModel.onCancel = cancelEditNoteCard
         formModel.onCommit = { self.commitEditNoteCard(noteCard) }
         
-        formModel.onTagSelected = { tag in
-            self.handleNoteCardFormTagSelected(tag, formModel: formModel)
-        }
-        
         formModel.onCollectionSelected = { collection in
             self.handleNoteCardFormCollectionSelected(collection, formModel: formModel)
+        }
+        
+        formModel.onRelationshipSelected = { relationship in
+            self.handleNoteCardFormRelationshipSelected(relationship, formModel: formModel)
+        }
+        
+        formModel.onTagSelected = { tag in
+            self.handleNoteCardFormTagSelected(tag, formModel: formModel)
         }
         
         formModel.update(with: noteCard)
@@ -174,17 +183,26 @@ extension HomeNoteCardView {
 
 extension HomeNoteCardView {
     
+    func handleNoteCardFormCollectionSelected(_ collection: NoteCardCollection, formModel: NoteCardFormModel) {
+        formModel.selectedCollection = collection
+        formModel.isSelectingCollection = false
+    }
+    
+    func handleNoteCardFormRelationshipSelected(_ relationship: NoteCard, formModel: NoteCardFormModel) {
+        formModel.objectWillChange.send()
+        if formModel.selectedRelationships.contains(relationship) {
+            formModel.selectedRelationships.remove(relationship)
+        } else {
+            formModel.selectedRelationships.insert(relationship)
+        }
+    }
+    
     func handleNoteCardFormTagSelected(_ tag: Tag, formModel: NoteCardFormModel) {
         if formModel.selectedTags.contains(tag) {
             formModel.selectedTags.remove(tag)
         } else {
             formModel.selectedTags.insert(tag)
         }
-    }
-    
-    func handleNoteCardFormCollectionSelected(_ collection: NoteCardCollection, formModel: NoteCardFormModel) {
-        formModel.selectedCollection = collection
-        formModel.isSelectingCollection = false
     }
     
     func handleNoteCardCUDResult(_ result: ObjectCUDResult<NoteCard>) {
