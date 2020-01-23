@@ -11,9 +11,7 @@ import SwiftUI
 
 struct HomeNoteCardCollectionView: View {
     
-    var collections: [NoteCardCollection]
-    
-    @Binding var currentCollectionID: String?
+    @EnvironmentObject var appState: AppState
     
     var onCurrentCollectionChanged: ((NoteCardCollection) -> Void)?
     
@@ -26,10 +24,10 @@ struct HomeNoteCardCollectionView: View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 16) {
-                    ForEach(collections) { collection in
+                    ForEach(appState.collections) { collection in
                         NoteCardCollectionRow(
                             collection: collection,
-                            showCheckmark: collection.uuid == self.currentCollectionID
+                            showCheckmark: collection === self.appState.currentCollection
                         )
                             .onTapGesture(perform: { self.handleNoteCardCollectionSelected(collection) })
                             .contextMenu(menuItems: { self.contextMenuItems(for: collection) })
@@ -139,9 +137,7 @@ extension HomeNoteCardCollectionView {
 extension HomeNoteCardCollectionView {
     
     func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
-        AppCache.currentCollectionUUID = collection.uuid
-        currentCollectionID = collection.uuid
-        onCurrentCollectionChanged?(collection)
+        appState.setCurrentCollection(collection)
     }
 }
 
@@ -149,6 +145,6 @@ extension HomeNoteCardCollectionView {
 struct HomeNoteCardCollectionView_Previews: PreviewProvider {
     static let samples = [NoteCardCollection.sample, .sample, .sample]
     static var previews: some View {
-        HomeNoteCardCollectionView(collections: samples, currentCollectionID: .constant(nil))
+        HomeNoteCardCollectionView()
     }
 }

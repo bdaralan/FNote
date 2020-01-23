@@ -28,11 +28,6 @@ class Tag: NSManagedObject, Identifiable, ObjectValidatable {
         uuid = UUID().uuidString
     }
     
-    override func willChangeValue(forKey key: String) {
-        super.willChangeValue(forKey: key)
-        objectWillChange.send()
-    }
-    
     override func willSave() {
         if !isDeleted {
             validateData()
@@ -63,6 +58,10 @@ extension Tag {
 
 extension Tag {
     
+    @nonobjc class func fetchRequest() -> NSFetchRequest<Tag> {
+        return NSFetchRequest<Tag>(entityName: "Tag")
+    }
+    
     static func requestAllTags() -> NSFetchRequest<Tag> {
         let request = Tag.fetchRequest() as NSFetchRequest<Tag>
         let tagName = #keyPath(Tag.name)
@@ -88,22 +87,9 @@ extension Tag {
 }
 
 
-extension Tag {
+extension Collection where Element == Tag {
     
-    @nonobjc class func fetchRequest() -> NSFetchRequest<Tag> {
-        return NSFetchRequest<Tag>(entityName: "Tag")
+    func sortedByName() -> [Tag] {
+        self.sorted(by: { $0.name < $1.name })
     }
-
-    @objc(addNoteCardsObject:)
-    @NSManaged func addToNoteCards(_ value: NoteCard)
-
-    @objc(removeNoteCardsObject:)
-    @NSManaged func removeFromNoteCards(_ value: NoteCard)
-
-    @objc(addNoteCards:)
-    @NSManaged func addToNoteCards(_ values: NSSet)
-
-    @objc(removeNoteCards:)
-    @NSManaged func removeFromNoteCards(_ values: NSSet)
-
 }

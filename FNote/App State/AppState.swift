@@ -33,6 +33,7 @@ class AppState: ObservableObject {
     }
     
     @Published private(set) var currentCollectionID: String? = AppCache.currentCollectionUUID
+    private(set) lazy var currentCollection = collections.first(where: { $0.uuid == currentCollectionID })
     
     
     // MARK: Fetch Controller
@@ -85,17 +86,21 @@ extension AppState {
     
     func setCurrentCollection(_ collection: NoteCardCollection?) {
         currentCollectionID = collection?.uuid
+        currentCollection = collection
         AppCache.currentCollectionUUID = collection?.uuid
+        fetchCurrentNoteCards()
     }
     
-    func setCurrentCollectionFetchOption(_ option: String) {
-        guard let collectionID = currentCollectionID else {
-            return
+    func fetchCurrentNoteCards(with option: String = "") { // TODO: Implement filter & sort
+        let newRequest: NSFetchRequest<NoteCard>
+        
+        if let collection = currentCollection {
+            newRequest = NoteCard.requestNoteCards(forCollectionUUID: collection.uuid)
+        } else {
+            newRequest = NoteCard.requestNone()
         }
         
         let currentRequest = currentNoteCardsFetchController.fetchRequest
-        let newRequest = NoteCard.requestNoteCards(forCollectionUUID: collectionID)
-        
         currentRequest.predicate = newRequest.predicate
         currentRequest.sortDescriptors = newRequest.sortDescriptors
         

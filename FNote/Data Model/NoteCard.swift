@@ -36,11 +36,6 @@ class NoteCard: NSManagedObject, ObjectValidatable {
         uuid = UUID().uuidString
     }
     
-    override func willChangeValue(forKey key: String) {
-        super.willChangeValue(forKey: key)
-        objectWillChange.send()
-    }
-    
     override func willSave() {
         if !isDeleted {
             validateData()
@@ -74,13 +69,13 @@ extension NoteCard {
 
 extension NoteCard {
     
-    func addRelationships(_ noteCards: [NoteCard]) {
+    func addRelationships(_ noteCards: Set<NoteCard>) {
         for noteCard in noteCards where noteCard !== self {
             relationships.insert(noteCard)
         }
     }
     
-    func addTags(_ tags: [Tag]) {
+    func addTags(_ tags: Set<Tag>) {
         for tag in tags {
             self.tags.insert(tag)
         }

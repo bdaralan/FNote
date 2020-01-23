@@ -17,10 +17,11 @@ class NoteCardCUDRequest: ObjectCUDRequest {
     var formality: NoteCard.Formality
     var isFavorite: Bool
     var note: String
-    var relationships: [NoteCard]
-    var tags: [Tag]
+    var relationships: Set<NoteCard>
+    var tags: Set<Tag>
     
-    init(collection: NoteCardCollection, native: String, translation: String, formality: NoteCard.Formality, isFavorite: Bool, note: String, relationships: [NoteCard], tags: [Tag]) {
+    
+    init(collection: NoteCardCollection, native: String, translation: String, formality: NoteCard.Formality, isFavorite: Bool, note: String, relationships: Set<NoteCard>, tags: Set<Tag>) {
         self.collection = collection
         self.native = native
         self.translation = translation
@@ -31,16 +32,18 @@ class NoteCardCUDRequest: ObjectCUDRequest {
         self.tags = tags
     }
     
+    
     func changeContext(_ context: ManagedObjectChildContext) {
         collection = collection.get(from: context)
-        relationships = relationships.map({ $0.get(from: context) })
-        tags = tags.map({ $0.get(from: context) })
+        relationships = Set(relationships.map({ $0.get(from: context) }))
+        tags = Set(tags.map({ $0.get(from: context) }))
     }
     
     func update(_ object: NoteCard) {
         object.collection = collection
         object.native = native
         object.translation = translation
+        object.formality = formality
         object.isFavorited = isFavorite
         object.note = note
         object.addRelationships(relationships)

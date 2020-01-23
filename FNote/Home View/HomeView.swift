@@ -19,27 +19,27 @@ struct HomeView: View {
     
     @State private var currentCollectionID: String? = AppCache.currentCollectionUUID
     
-    @FetchRequest(fetchRequest: NoteCardCollection.requestCollection(withUUID: AppCache.currentCollectionUUID ?? ""))
-    var collection
-    
     
     var body: some View {
         TabView(selection: $currentTab) {
             
             // MARK: Card Tab
-            HomeNoteCardView(
-                viewModel: noteCardCollectionViewModel,
-                collection: Array(collection).first!
-            )
-                .tabItem(MainTabView.Tab.card.tabItem)
-                .tag(MainTabView.Tab.card)
+            if appState.currentCollection != nil {
+                HomeNoteCardView(
+                    viewModel: noteCardCollectionViewModel,
+                    collection: appState.currentCollection!
+                )
+                    .tabItem(MainTabView.Tab.card.tabItem)
+                    .tag(MainTabView.Tab.card)
+            
+            } else {
+                WelcomeGuideView()
+                    .tabItem(MainTabView.Tab.card.tabItem)
+                    .tag(MainTabView.Tab.card)
+            }
             
             // MARK: Collection Tab
-            HomeNoteCardCollectionView(
-                collections: appState.collections,
-                currentCollectionID: $currentCollectionID,
-                onCurrentCollectionChanged: nil
-            )
+            HomeNoteCardCollectionView()
                 .tabItem(MainTabView.Tab.collection.tabItem)
                 .tag(MainTabView.Tab.collection)
             
@@ -49,14 +49,14 @@ struct HomeView: View {
                 .tag(MainTabView.Tab.tag)
             
         }
-        .onAppear(perform: setupHomeViewAppear)
+        .onAppear(perform: setupOnAppear)
     }
 }
 
 
 extension HomeView {
     
-    func setupHomeViewAppear() {
+    func setupOnAppear() {
         
     }
 }

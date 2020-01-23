@@ -54,6 +54,7 @@ extension HomeNoteCardView {
     func setupOnAppear() {
         viewModel.noteCards = appState.currenNoteCards
         viewModel.onNoteCardSelected = beginEditNoteCard
+        viewModel.onNoteCardQuickButtonTapped = handleNoteCardQuickButtonTapped
     }
 }
 
@@ -68,43 +69,40 @@ extension HomeNoteCardView {
     }
     
     func beginCreateNoteCard() {
-        noteCardFormModel = .init(collection: collection)
+        let formModel = NoteCardFormModel(collection: collection)
+        noteCardFormModel = formModel
         
-        noteCardFormModel?.selectableCollections = appState.collections
-        noteCardFormModel?.selectableRelationships = appState.currenNoteCards
-        noteCardFormModel?.selectableTags = appState.tags
+        formModel.selectableCollections = appState.collections
+        formModel.selectableRelationships = appState.currenNoteCards
+        formModel.selectableTags = appState.tags
         
-        noteCardFormModel?.onCancel = cancelCreateNoteCard
-        noteCardFormModel?.onCommit = commitCreateNoteCard
+        formModel.onCancel = cancelCreateNoteCard
+        formModel.onCommit = commitCreateNoteCard
+        
+        formModel.onTagSelected = { tag in
+            self.handleNoteCardFormTagSelected(tag, formModel: formModel)
+        }
+        
+        formModel.onCollectionSelected = { collection in
+            self.handleNoteCardFormCollectionSelected(collection, formModel: formModel)
+        }
         
         noteCardFormModel?.commitTitle = "Create"
-        noteCardFormModel?.navigationTitle = "New Note Card"
+        noteCardFormModel?.navigationTitle = "New Card"
         
         sheet = .noteCardForm
-    }
-    
-    func cancelCreateNoteCard() {
-        noteCardFormModel = nil
-        sheet = nil
     }
     
     func commitCreateNoteCard() {
         guard let formModel = noteCardFormModel else { return }
         let createRequest = formModel.createNoteCardCUDRequest()
         let result = appState.createNoteCard(with: createRequest)
-        
-        switch result {
-        case .created(_, let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            sheet = nil
-        
-        case .failed: // TODO: show alert
-            sheet = nil
-        
-        case .updated, .deleted:
-            fatalError("🧨 hmm... tried to \(result) object in commitCreateNoteCard method 🧨")
-        }
+        handleNoteCardCUDResult(result)
+    }
+    
+    func cancelCreateNoteCard() {
+        noteCardFormModel = nil
+        sheet = nil
     }
 }
 
@@ -115,20 +113,29 @@ extension HomeNoteCardView {
     
     func beginEditNoteCard(_ noteCard: NoteCard) {
         guard let collection = noteCard.collection else { return }
-        noteCardFormModel = .init(collection: collection)
+        let formModel = NoteCardFormModel(collection: collection)
+        noteCardFormModel = formModel
         
-        noteCardFormModel?.selectableCollections = appState.collections
-        noteCardFormModel?.selectableRelationships = appState.currenNoteCards
-        noteCardFormModel?.selectableTags = appState.tags
+        formModel.selectableCollections = appState.collections
+        formModel.selectableRelationships = appState.currenNoteCards
+        formModel.selectableTags = appState.tags
         
-        noteCardFormModel?.onCancel = cancelEditNoteCard
-        noteCardFormModel?.onCommit = { self.commitEditNoteCard(noteCard) }
+        formModel.onCancel = cancelEditNoteCard
+        formModel.onCommit = { self.commitEditNoteCard(noteCard) }
         
-        noteCardFormModel?.update(with: noteCard)
-        noteCardFormModel?.commitTitle = "Update"
-        noteCardFormModel?.navigationTitle = "Note Card Detail"
-        noteCardFormModel?.nativePlaceholder = noteCard.native
-        noteCardFormModel?.translationPlaceholder = noteCard.translation
+        formModel.onTagSelected = { tag in
+            self.handleNoteCardFormTagSelected(tag, formModel: formModel)
+        }
+        
+        formModel.onCollectionSelected = { collection in
+            self.handleNoteCardFormCollectionSelected(collection, formModel: formModel)
+        }
+        
+        formModel.update(with: noteCard)
+        formModel.commitTitle = "Update"
+        formModel.navigationTitle = "Card Detail"
+        formModel.nativePlaceholder = noteCard.native
+        formModel.translationPlaceholder = noteCard.translation
         
         sheet = .noteCardForm
     }
@@ -139,7 +146,71 @@ extension HomeNoteCardView {
     }
     
     func commitEditNoteCard(_ noteCard: NoteCard) {
-        sheet = nil
+        guard let formModel = noteCardFormModel else { return }
+        let request = formModel.createNoteCardCUDRequest()
+        let result = appState.updateNoteCard(noteCard, with: request)
+        handleNoteCardCUDResult(result)
+    }
+    
+    func handleNoteCardQuickButtonTapped(_ button: NoteCardCell.QuickButtonType, noteCard: NoteCard) {
+        switch button {
+        case .relationship: break
+        
+        case .tag: break
+        
+        case .favorite:
+            noteCard.isFavorited.toggle()
+            noteCard.managedObjectContext?.quickSave()
+        
+        case .note: break
+        
+        case .more: break
+        }
+    }
+}
+
+
+// MARK: - Form Model Handler
+
+extension HomeNoteCardView {
+    
+    func handleNoteCardFormTagSelected(_ tag: Tag, formModel: NoteCardFormModel) {
+        if formModel.selectedTags.contains(tag) {
+            formModel.selectedTags.remove(tag)
+        } else {
+            formModel.selectedTags.insert(tag)
+        }
+    }
+    
+    func handleNoteCardFormCollectionSelected(_ collection: NoteCardCollection, formModel: NoteCardFormModel) {
+        formModel.selectedCollection = collection
+        formModel.isSelectingCollection = false
+    }
+    
+    func handleNoteCardCUDResult(_ result: ObjectCUDResult<NoteCard>) {
+        switch result {
+        case .created(_, let childContext):
+            childContext.quickSave()
+            childContext.parent?.quickSave()
+            appState.fetchCurrentNoteCards()
+            viewModel.updateSnapshot(with: appState.currenNoteCards, animated: true)
+            sheet = nil
+            
+        case .updated(let noteCard, let childContext):
+            childContext.quickSave()
+            childContext.parent?.quickSave()
+            if noteCard.collection?.uuid != collection.uuid {
+                appState.fetchCurrentNoteCards()
+                viewModel.updateSnapshot(with: appState.currenNoteCards, animated: true)
+            }
+            sheet = nil
+            
+        case .failed: // TODO: show alert if needed
+            sheet = nil
+            
+        case .deleted:
+            fatalError("🧨 hmm... tried to delete object in commitCreateNoteCard method 🧨")
+        }
     }
 }
 

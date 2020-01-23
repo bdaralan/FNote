@@ -26,14 +26,19 @@ class NoteCardCollectionViewModel: NSObject {
     // MARK: Action
     
     var onNoteCardSelected: ((NoteCard) -> Void)?
+    var onNoteCardQuickButtonTapped: ((NoteCardCell.QuickButtonType, NoteCard) -> Void)?
     
     private let cellID = "NoteCardCellID"
     
     
-    func updateSnapshot(animated: Bool, completion: (() -> Void)?) {
+    func updateSnapshot(with noteCards: [NoteCard]? = nil, animated: Bool, completion: (() -> Void)? = nil) {
+        if let noteCards = noteCards {
+            self.noteCards = noteCards
+        }
+        
         var snapshot = Snapshot()
         snapshot.appendSections([0])
-        snapshot.appendItems(noteCards, toSection: 0)
+        snapshot.appendItems(self.noteCards, toSection: 0)
         dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
     }
 }
@@ -59,9 +64,12 @@ extension NoteCardCollectionViewModel: CollectionViewCompositionalDataSource {
         collectionView.register(NoteCardCell.self, forCellWithReuseIdentifier: cellID)
         collectionView.delegate = self
         
+        collectionView.alwaysBounceVertical = true
+        
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, noteCard in
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellID, for: indexPath) as! NoteCardCell
             cell.reload(with: noteCard)
+            cell.onQuickButtonTapped = self.onNoteCardQuickButtonTapped
             return cell
         }
     }

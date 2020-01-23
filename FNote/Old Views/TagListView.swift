@@ -258,9 +258,9 @@ extension TagListView {
     
     func commitDeleteTag(_ tag: Tag) {
         // delete
-        for noteCard in tag.noteCards {
-            tag.removeFromNoteCards(noteCard)
-        }
+//        for noteCard in tag.noteCards {
+//            tag.removeFromNoteCards(noteCard)
+//        }
         tagDataSource.delete(tag, saveContext: true)
         tagToDelete = nil
         

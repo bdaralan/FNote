@@ -24,17 +24,29 @@ class NoteCardFormModel: ObservableObject {
     @Published var selectableTags: [Tag] = []
     
     @Published var selectedCollection: NoteCardCollection
-    @Published var selectedRelationships: [NoteCard] = []
-    @Published var selectedTags: [Tag] = []
+    @Published var selectedRelationships: Set<NoteCard> = []
+    @Published var selectedTags: Set<Tag> = []
     
     // MARK: Action
-    var onTagSelected: (() -> Void)?
-    var onCollectionSelected: (() -> Void)?
+    var onTagSelected: ((Tag) -> Void)?
+    var onCollectionSelected: ((NoteCardCollection) -> Void)?
     
     var onCancel: (() -> Void)?
     var onCommit: (() -> Void)?
     
     // MARK: UI Property
+    
+    /// Used to control NavigationLink
+    @Published var isSelectingCollection = false
+    
+    /// Used to control NavigationLink
+    @Published var isSelectingTag = false
+    
+    var canCommit: Bool {
+        return !translation.trimmed().isEmpty
+            && !native.trimmed().isEmpty
+    }
+    
     var nativePlaceholder = "안영"
     var translationPlaceholder = "Hi"
     var commitTitle = "Commit"
@@ -70,19 +82,20 @@ extension NoteCardFormModel {
             isFavorite: isFavorite,
             note: note,
             relationships: selectedRelationships,
-            tags: selectableTags
+            tags: selectedTags
         )
     }
     
     func update(with noteCard: NoteCard) {
+        selectedCollection = noteCard.collection!
+        
         native = noteCard.native
         translation = noteCard.translation
         formality = Int(noteCard.formality.rawValue)
         isFavorite = noteCard.isFavorited
         note = noteCard.note
         
-        selectedCollection = noteCard.collection!
-        selectedRelationships = Array(noteCard.relationships)
-        selectedTags = Array(noteCard.tags)
+        selectedRelationships = noteCard.relationships
+        selectedTags = noteCard.tags
     }
 }

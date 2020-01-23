@@ -28,12 +28,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // setup app state
         let parentContext = CoreDataStack.current.mainContext
         let appState = AppState(parentContext: parentContext)
-        appState.setCurrentCollectionFetchOption("need and actual option object")
+        appState.fetchCurrentNoteCards()
         
         // setup home view
         let homeView = HomeView()
-            .environment(\.managedObjectContext, appState.parentContext)
             .environmentObject(appState)
+            .environment(\.managedObjectContext, appState.parentContext)
         
         let rootViewCV = UIHostingController(rootView: homeView)
         

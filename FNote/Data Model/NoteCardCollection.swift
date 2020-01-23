@@ -23,11 +23,6 @@ class NoteCardCollection: NSManagedObject, Identifiable, ObjectValidatable {
         uuid = UUID().uuidString
     }
     
-    override func willChangeValue(forKey key: String) {
-        super.willChangeValue(forKey: key)
-        objectWillChange.send()
-    }
-    
     override func willSave() {
         if !isDeleted {
             validateData()

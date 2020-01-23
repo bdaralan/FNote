@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Combine
 
 
 class NoteCardCell: FNCollectionViewCell<NoteCard> {
@@ -35,6 +36,8 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     
     private(set) var style: Style = .regular
     
+    private var cancellable: AnyCancellable?
+    
     
     // MARK: Constraints
     
@@ -56,6 +59,13 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         noteButton.isEnabled = !object.note.isEmpty
         relationshipButton.isEnabled = !object.relationships.isEmpty
         tagButton.isEnabled = !object.tags.isEmpty
+        
+        cancellable = object
+            .objectWillChange
+            .eraseToAnyPublisher()
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: DispatchQueue.main, options: nil)
+            .sink { [weak self] _ in self?.reload(with: object) }
     }
     
     func setCellStyle(_ style: Style) {
@@ -81,7 +91,7 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         guard let noteCard = object else { return }
         let type: QuickButtonType
         switch sender {
-        case relationshipButton: type = .link
+        case relationshipButton: type = .relationship
         case tagButton: type = .tag
         case favoriteButton: type = .favorite
         case noteButton: type = .note
@@ -184,7 +194,7 @@ extension NoteCardCell {
     }
     
     enum QuickButtonType {
-        case link
+        case relationship
         case tag
         case favorite
         case note

@@ -40,7 +40,10 @@ struct NoteCardForm: View {
                 
                 // MARK: Collection
                 Section(header: Text("COLLECTION")) {
-                    NavigationLink(destination: Color.red) {
+                    NavigationLink(
+                        destination: NoteCardFormCollectionSelectionView(formModel: viewModel),
+                        isActive: $viewModel.isSelectingCollection
+                    ) {
                         HStack {
                             Text(viewModel.selectedCollection.name)
                                 .foregroundColor(.primary)
@@ -68,8 +71,8 @@ struct NoteCardForm: View {
                         Text("Favorite")
                     }
                     
-                    // MARK: Link
-                    NavigationLink(destination: Color.orange) {
+                    // MARK: Relationship
+                    NavigationLink(destination: Color.green) {
                         HStack {
                             Image.noteCardRelationship
                                 .frame(width: 20, height: 20, alignment: .center)
@@ -83,7 +86,10 @@ struct NoteCardForm: View {
                     }
                     
                     // MARK: Tag
-                    NavigationLink(destination: Color.red) {
+                    NavigationLink(
+                        destination: NoteCardFormTagSelectionView(formModel: viewModel),
+                        isActive: $viewModel.isSelectingTag
+                    ) {
                         HStack {
                             Image.noteCardTag
                                 .frame(width: 20, height: 20, alignment: .center)
@@ -116,7 +122,7 @@ struct NoteCardForm: View {
             }
             .navigationBarItems(leading: cancelNavItem, trailing: commitNavItem)
             .navigationBarTitle(Text(viewModel.navigationTitle), displayMode: .inline)
-            .sheet(item: $sheet, content: presentationSheet)
+            .sheet(item: $sheet, onDismiss: handleSheetDismissed, content: presentationSheet)
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -136,7 +142,7 @@ extension NoteCardForm {
         Button(action: viewModel.onCommit ?? {}) {
             Text(viewModel.commitTitle).bold()
         }
-        .disabled(viewModel.onCommit == nil)
+        .disabled(viewModel.onCommit == nil || !viewModel.canCommit)
     }
 }
 
@@ -156,6 +162,12 @@ extension NoteCardForm {
             return ModalTextView(viewModel: $modalTextViewModel)
         }
     }
+    
+    func handleSheetDismissed() {
+        if modalTextViewModel.onCommit != nil {
+            viewModel.note = modalTextViewModel.text
+        }
+    }
 }
 
 
@@ -173,6 +185,7 @@ extension NoteCardForm {
     }
     
     func commitEditNote() {
+        viewModel.note = modalTextViewModel.text
         sheet = nil
     }
 }
