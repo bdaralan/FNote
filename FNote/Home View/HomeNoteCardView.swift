@@ -78,7 +78,7 @@ extension HomeNoteCardView {
         noteCardFormModel?.onCommit = commitCreateNoteCard
         
         noteCardFormModel?.commitTitle = "Create"
-        noteCardFormModel?.navigationTitle = "Create Note Card"
+        noteCardFormModel?.navigationTitle = "New Note Card"
         
         sheet = .noteCardForm
     }
@@ -89,8 +89,9 @@ extension HomeNoteCardView {
     }
     
     func commitCreateNoteCard() {
-        guard let createInfo = noteCardFormModel?.createNoteCardCUDRequest() else { return }
-        let result = appState.createNoteCard(with: createInfo)
+        guard let formModel = noteCardFormModel else { return }
+        let createRequest = formModel.createNoteCardCUDRequest()
+        let result = appState.createNoteCard(with: createRequest)
         
         switch result {
         case .created(_, let childContext):
@@ -102,7 +103,7 @@ extension HomeNoteCardView {
             sheet = nil
         
         case .updated, .deleted:
-            fatalError("🧨 hmm... tried to \(result) object in commitCreateNoteCard method 💣")
+            fatalError("🧨 hmm... tried to \(result) object in commitCreateNoteCard method 🧨")
         }
     }
 }

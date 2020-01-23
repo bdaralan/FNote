@@ -23,14 +23,14 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     let nativeLabel = UILabel(text: "Native")
     let dividerLine = UIView()
     
-    let linkButton = UIButton(type: .system)
+    let relationshipButton = UIButton(type: .system)
     let tagButton = UIButton(type: .system)
     let favoriteButton = UIButton(type: .system)
     let noteButton = UIButton(type: .system)
     let moreButton = UIButton(type: .system)
     
     var quickButtons: [UIButton] {
-        [linkButton, tagButton, favoriteButton, noteButton, moreButton]
+        [relationshipButton, tagButton, favoriteButton, noteButton, moreButton]
     }
     
     private(set) var style: Style = .regular
@@ -50,6 +50,12 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         translationLabel.text = object.translation
         nativeLabel.text = object.native
         dividerLine.backgroundColor = object.formality.uiColor
+        
+        let imageName = object.isFavorited ? "star.fill" : "star"
+        favoriteButton.setImage(createQuickButtonImage(systemName: imageName), for: .normal)
+        noteButton.isEnabled = !object.note.isEmpty
+        relationshipButton.isEnabled = !object.relationships.isEmpty
+        tagButton.isEnabled = !object.tags.isEmpty
     }
     
     func setCellStyle(_ style: Style) {
@@ -75,7 +81,7 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         guard let noteCard = object else { return }
         let type: QuickButtonType
         switch sender {
-        case linkButton: type = .link
+        case relationshipButton: type = .link
         case tagButton: type = .tag
         case favoriteButton: type = .favorite
         case noteButton: type = .note
@@ -108,7 +114,7 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         
         dividerLine.backgroundColor = NoteCard.Formality.unspecified.uiColor
         
-        linkButton.setImage(createQuickButtonImage(systemName: "square.on.square"), for: .normal)
+        relationshipButton.setImage(createQuickButtonImage(systemName: "square.on.square"), for: .normal)
         tagButton.setImage(createQuickButtonImage(systemName: "tag"), for: .normal)
         favoriteButton.setImage(createQuickButtonImage(systemName: "star"), for: .normal)
         noteButton.setImage(createQuickButtonImage(systemName: "doc.plaintext"), for: .normal)
@@ -133,7 +139,7 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         quickButtonStackView.axis = .horizontal
         quickButtonStackView.spacing = 0
         quickButtonStackView.distribution = .fillEqually
-        quickButtonStackView.addArrangedSubviews(linkButton, tagButton, favoriteButton, noteButton, moreButton)
+        quickButtonStackView.addArrangedSubviews(relationshipButton, tagButton, favoriteButton, noteButton, moreButton)
         
         let sharedConstraints = [
             labelStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),

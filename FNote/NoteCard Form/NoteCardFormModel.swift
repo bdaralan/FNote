@@ -85,26 +85,4 @@ extension NoteCardFormModel {
         selectedRelationships = Array(noteCard.relationships)
         selectedTags = Array(noteCard.tags)
     }
-    
-    func apply(to noteCard: NoteCard) {
-//        let noteCard = noteCard.get(from: context)
-//        
-//        noteCard.native = native
-//        noteCard.translation = translation
-//        noteCard.formality = selectedFormality
-//        noteCard.isFavorited = isFavorite
-//        noteCard.note = note
-//        
-//        noteCard.collection = selectedCollection
-//        
-//        selectedRelationships.forEach { relationship in
-//            let relationship = relationship.get(from: context)
-//            noteCard.relationships.insert(relationship)
-//        }
-//        
-//        selectedTags.forEach { tag in
-//            let tag = tag.get(from: context)
-//            noteCard.tags.insert(tag)
-//        }
-    }
 }
