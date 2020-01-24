@@ -23,9 +23,12 @@ struct HomeTagView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 16) {
                     ForEach(tags) { tag in
-                        TagRow(tag: tag)
+                        TagRow(
+                            tag: tag,
+                            contextMenus: [.rename, .delete],
+                            onContextMenuSelected: self.handleContextMenuSelected
+                        )
                             .onTapGesture(perform: { self.handleTagSelected(tag) })
-                            .contextMenu(menuItems: { self.contextMenuItems(for: tag) })
                     }
                 }
                 .padding()
@@ -52,25 +55,6 @@ extension HomeTagView {
         switch sheet {
         case .modalTextField:
             return ModalTextField(viewModel: $modalTextFieldModel)
-        }
-    }
-}
-
-
-// MARK: - Context Menu
-
-extension HomeTagView {
-    
-    func contextMenuItems(for tag: Tag) -> some View {
-        Group {
-            Button(action: { self.beginRenameTag(tag) }) {
-                Text("Rename")
-                Image(systemName: "square.and.pencil")
-            }
-            Button(action: {}) {
-                Text("Delete")
-                Image(systemName: "trash")
-            }
         }
     }
 }
@@ -140,6 +124,10 @@ extension HomeTagView {
 extension HomeTagView {
     
     func handleTagSelected(_ tag: Tag) {
+        
+    }
+    
+    func handleContextMenuSelected(_ menu: TagRow.ContextMenu, tag: Tag) {
         
     }
 }

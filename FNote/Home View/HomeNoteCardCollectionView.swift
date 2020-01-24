@@ -27,10 +27,11 @@ struct HomeNoteCardCollectionView: View {
                     ForEach(appState.collections) { collection in
                         NoteCardCollectionRow(
                             collection: collection,
-                            showCheckmark: collection === self.appState.currentCollection
+                            checked: collection === self.appState.currentCollection,
+                            contextMenus: [.rename, .delete],
+                            onContextMenuSelected: self.handleContextMenuSelected
                         )
                             .onTapGesture(perform: { self.handleNoteCardCollectionSelected(collection) })
-                            .contextMenu(menuItems: { self.contextMenuItems(for: collection) })
                     }
                 }
                 .padding()
@@ -62,20 +63,20 @@ extension HomeNoteCardCollectionView {
 }
 
 
-// MARK: Context Menu
+// MARK: - Action
 
 extension HomeNoteCardCollectionView {
     
-    func contextMenuItems(for collection: NoteCardCollection) -> some View {
-        Group {
-            Button(action: { self.beginRenameNoteCardCollection(collection) }) {
-                Text("Rename")
-                Image(systemName: "square.and.pencil")
-            }
-            Button(action: {}) {
-                Text("Delete")
-                Image(systemName: "trash")
-            }
+    func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
+        appState.setCurrentCollection(collection)
+    }
+    
+    func handleContextMenuSelected(_ menu: NoteCardCollectionRow.ContextMenu, collection: NoteCardCollection) {
+        switch menu {
+        case .rename:
+            beginRenameNoteCardCollection(collection)
+        case .delete:
+            beginDeleteNoteCardCollection(collection)
         }
     }
 }
@@ -132,12 +133,12 @@ extension HomeNoteCardCollectionView {
 }
 
 
-// MARK: - Action
+// MARK: - Delete Collection
 
 extension HomeNoteCardCollectionView {
     
-    func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
-        appState.setCurrentCollection(collection)
+    func beginDeleteNoteCardCollection(_ collection: NoteCardCollection) {
+        
     }
 }
 

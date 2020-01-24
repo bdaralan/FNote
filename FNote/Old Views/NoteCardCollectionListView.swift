@@ -35,10 +35,10 @@ struct NoteCardCollectionListView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 16) {
-                    ForEach(noteCardCollectionDataSource.fetchedObjects, id: \.uuid) { collection in
+                    ForEach(noteCardCollectionDataSource.fetchedObjects) { collection in
                         NoteCardCollectionRow(
                             collection: collection,
-                            showCheckmark: collection.uuid == self.currentCollectionUUID
+                            checked: collection.uuid == self.currentCollectionUUID
                         )
                             .onTapGesture(perform: { self.setCurrentCollection(collection) })
                             .contextMenu(menuItems: { self.contextMenuItems(for: collection) })

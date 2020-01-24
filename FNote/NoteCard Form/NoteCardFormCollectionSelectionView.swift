@@ -18,7 +18,7 @@ struct NoteCardFormCollectionSelectionView: View {
         ScrollView(.vertical, showsIndicators: true) {
             VStack(spacing: 16) {
                 ForEach(formModel.selectableCollections) { collection in
-                    NoteCardCollectionRow(collection: collection, showCheckmark: false)
+                    NoteCardCollectionRow(collection: collection)
                         .onTapGesture(perform: { self.formModel.onCollectionSelected?(collection) })
                         .disabled(collection === self.formModel.selectedCollection)
                         .opacity(collection === self.formModel.selectedCollection ? 0.5 : 1)
