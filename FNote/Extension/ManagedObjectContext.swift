@@ -15,6 +15,8 @@ typealias ManagedObjectChildContext = NSManagedObjectContext
 
 extension NSManagedObjectContext {
     
+    static let sample = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+    
     /// Create a child context and set itself as the parent.
     func newChildContext(type: NSManagedObjectContextConcurrencyType = .mainQueueConcurrencyType, mergesChangesFromParent: Bool = true) -> NSManagedObjectContext {
         let context = NSManagedObjectContext(concurrencyType: type)
@@ -41,10 +43,4 @@ extension NSManagedObject {
     func get(from context: NSManagedObjectContext) -> Self {
         context.object(with: objectID) as! Self
     }
-}
-
-
-extension NSManagedObjectContext {
-    
-    static let sample = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
 }

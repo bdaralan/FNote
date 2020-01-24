@@ -1,19 +1,19 @@
 //
-//  NoteCardCollectionViewWrapper.swift
+//  CollectionViewWrapper.swift
 //  FNote
 //
-//  Created by Dara Beng on 1/19/20.
+//  Created by Dara Beng on 1/24/20.
 //  Copyright © 2020 Dara Beng. All rights reserved.
 //
 
 import SwiftUI
 
 
-struct NoteCardCollectionViewWrapper: UIViewRepresentable {
+struct CollectionViewWrapper: UIViewRepresentable {
     
     // MARK: Property
         
-    var viewModel: NoteCardCollectionViewModel
+    var viewModel: CollectionViewCompositionalViewModel
     
     
     // MARK: Make View
@@ -34,20 +34,20 @@ struct NoteCardCollectionViewWrapper: UIViewRepresentable {
 
 // MARK: - Coordinator
 
-extension NoteCardCollectionViewWrapper {
+extension CollectionViewWrapper {
     
     class Coordinator: NSObject {
         
-        var wrapper: NoteCardCollectionViewWrapper
+        var wrapper: CollectionViewWrapper
         
         let collectionView: UICollectionView
         
-        var viewModel: NoteCardCollectionViewModel {
+        var viewModel: CollectionViewCompositionalViewModel {
             wrapper.viewModel
         }
         
         
-        init(wrapper: NoteCardCollectionViewWrapper) {
+        init(wrapper: CollectionViewWrapper) {
             self.wrapper = wrapper
             collectionView = .init(frame: .zero, collectionViewLayout: .init())
             collectionView.backgroundColor = .clear
@@ -62,9 +62,9 @@ extension NoteCardCollectionViewWrapper {
 
 // MARK: - Coordinator Method
 
-extension NoteCardCollectionViewWrapper.Coordinator {
+extension CollectionViewWrapper.Coordinator {
     
-    func update(with wrapper: NoteCardCollectionViewWrapper) {
+    func update(with wrapper: CollectionViewWrapper) {
         self.wrapper = wrapper
     }
 }

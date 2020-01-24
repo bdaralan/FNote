@@ -24,7 +24,7 @@ struct HomeNoteCardView: View {
     
     var body: some View {
         NavigationView {
-            NoteCardCollectionViewWrapper(viewModel: viewModel)
+            CollectionViewWrapper(viewModel: viewModel)
                 .navigationBarTitle(Text(collection.name), displayMode: .large)
                 .navigationBarItems(trailing: createNoteCardNavItem)
                 .edgesIgnoringSafeArea(.all)
@@ -228,7 +228,8 @@ extension HomeNoteCardView {
             childContext.quickSave()
             childContext.parent?.quickSave()
             appState.fetchCurrentNoteCards()
-            viewModel.updateSnapshot(with: appState.currenNoteCards, animated: true)
+            viewModel.noteCards = appState.currenNoteCards
+            viewModel.updateSnapshot(animated: true)
             sheet = nil
             
         case .updated(let noteCard, let childContext):
@@ -236,7 +237,8 @@ extension HomeNoteCardView {
             childContext.parent?.quickSave()
             if noteCard.collection?.uuid != collection.uuid {
                 appState.fetchCurrentNoteCards()
-                viewModel.updateSnapshot(with: appState.currenNoteCards, animated: true)
+                viewModel.noteCards = appState.currenNoteCards
+                viewModel.updateSnapshot(animated: true)
             }
             sheet = nil
             

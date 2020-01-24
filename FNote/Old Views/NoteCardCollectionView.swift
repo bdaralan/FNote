@@ -51,7 +51,7 @@ struct NoteCardCollectionView: View {
     
     var body: some View {
         NavigationView {
-            NoteCardCollectionViewWrapper(viewModel: viewModel)
+            CollectionViewWrapper(viewModel: viewModel)
 //                .frame(maxWidth: .infinity, maxHeight: .infinity)
 //            ScrollView(.vertical, showsIndicators: true) {
 //                VStack {

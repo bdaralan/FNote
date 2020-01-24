@@ -14,7 +14,7 @@ struct NoteCardFormRelationshipSelectionView: View {
     var viewModel: NoteCardCollectionViewModel
     
     var body: some View {
-        NoteCardCollectionViewWrapper(viewModel: viewModel)
+        CollectionViewWrapper(viewModel: viewModel)
             .navigationBarTitle("Relationships")
     }
 }

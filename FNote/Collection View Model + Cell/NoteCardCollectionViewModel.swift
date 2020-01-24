@@ -9,7 +9,7 @@
 import UIKit
 
 
-class NoteCardCollectionViewModel: NSObject {
+class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSource, CollectionViewCompositionalViewModel {
     
     typealias DataSourceSection = Int
     
@@ -43,14 +43,10 @@ class NoteCardCollectionViewModel: NSObject {
     private let cellID = "NoteCardCellID"
     
     
-    func updateSnapshot(with noteCards: [NoteCard]? = nil, animated: Bool, completion: (() -> Void)? = nil) {
-        if let noteCards = noteCards {
-            self.noteCards = noteCards
-        }
-        
+    func updateSnapshot(animated: Bool, completion: (() -> Void)? = nil) {
         var snapshot = Snapshot()
         snapshot.appendSections([0])
-        snapshot.appendItems(self.noteCards, toSection: 0)
+        snapshot.appendItems(noteCards, toSection: 0)
         dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
     }
 }
@@ -99,7 +95,7 @@ extension NoteCardCollectionViewModel {
 
 // MARK: - Collection Diff Data Source
 
-extension NoteCardCollectionViewModel: CollectionViewCompositionalDataSource {
+extension NoteCardCollectionViewModel {
     
     func setupCollectionView(_ collectionView: UICollectionView) {
         self.collectionView = collectionView
