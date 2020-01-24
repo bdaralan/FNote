@@ -63,15 +63,16 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
             .objectWillChange
             .eraseToAnyPublisher()
             .subscribe(on: DispatchQueue.global(qos: .background))
-            .receive(on: DispatchQueue.main, options: nil)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in self?.reload(with: object) }
     }
     
     func setCellStyle(_ style: Style) {
         let isRegularInactive = regularStyleConstraints.map({ $0.isActive }).contains(false)
         let isShortInactive = shortStyleConstraints.map({ $0.isActive }).contains(false)
+        let hasNoConstraints = isRegularInactive && isShortInactive
         
-        guard self.style != style || (isRegularInactive && isShortInactive) else { return }
+        guard self.style != style || hasNoConstraints else { return }
         NSLayoutConstraint.deactivate(regularStyleConstraints)
         NSLayoutConstraint.deactivate(shortStyleConstraints)
         
@@ -83,6 +84,7 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
             NSLayoutConstraint.activate(shortStyleConstraints)
             quickButtonStackView.isHidden = true
         }
+        
         layoutIfNeeded()
     }
     
@@ -118,13 +120,13 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     override func setupCell() {
         super.setupCell()
         
-        contentView.backgroundColor = UIColor(named: "note-card-background")
-        contentView.layer.masksToBounds = false
-        contentView.layer.cornerRadius = 15
-        contentView.layer.shadowColor = UIColor.label.cgColor
-        contentView.layer.shadowOpacity = 0.1
-        contentView.layer.shadowRadius = 1
-        contentView.layer.shadowOffset = .init(width: -1, height: 1)
+        backgroundColor = UIColor(named: "note-card-background")
+        layer.masksToBounds = false
+        layer.cornerRadius = 15
+        layer.shadowColor = UIColor.label.cgColor
+        layer.shadowOpacity = 0.1
+        layer.shadowRadius = 1
+        layer.shadowOffset = .init(width: -1, height: 1)
         
         nativeLabel.font = .preferredFont(forTextStyle: .title3)
         

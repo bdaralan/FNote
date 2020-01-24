@@ -87,6 +87,7 @@
 		B4D7341A233F36FE00A3958A /* NavigationBarBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D73419233F36FE00A3958A /* NavigationBarBackButton.swift */; };
 		B4DD491F238A5ED300D183CF /* WelcomeGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */; };
 		B4E41E5623354B720057EB0A /* NoteCardViewNavigationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */; };
+		B4EC398123DB7AD90011569C /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EC398023DB7AD90011569C /* Alert.swift */; };
 		B4EE3ECC2329D86500CC40B7 /* ModalTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */; };
 		B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EEF32B235D99B400869567 /* ModalDragHandle.swift */; };
 		B4F395DB238BC39C006DA683 /* TextFieldWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F395DA238BC39C006DA683 /* TextFieldWrapper.swift */; };
@@ -189,6 +190,7 @@
 		B4D73419233F36FE00A3958A /* NavigationBarBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarBackButton.swift; sourceTree = "<group>"; };
 		B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeGuideView.swift; sourceTree = "<group>"; };
 		B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardViewNavigationLink.swift; sourceTree = "<group>"; };
+		B4EC398023DB7AD90011569C /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextField.swift; sourceTree = "<group>"; };
 		B4EEF32B235D99B400869567 /* ModalDragHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalDragHandle.swift; sourceTree = "<group>"; };
 		B4F395DA238BC39C006DA683 /* TextFieldWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldWrapper.swift; sourceTree = "<group>"; };
@@ -374,6 +376,7 @@
 				B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */,
 				B4BAC54423206B28007EAF15 /* String.swift */,
 				650D14E82332B96100B6E2BF /* View.swift */,
+				B4EC398023DB7AD90011569C /* Alert.swift */,
 				B40B519B2335C2D6002DA41D /* NotificationName.swift */,
 				B4FFEB26234ED0CE00B4550F /* Color.swift */,
 				B4FFEB28234ED2AA00B4550F /* Image.swift */,
@@ -420,6 +423,7 @@
 				B4113FB723D2D507004E70DC /* NoteCard Collection View */,
 				B4A0CE9723D4B51F003A4D83 /* Protocol */,
 				B4113FBA23D2D7BE004E70DC /* FN View & Controller */,
+				B4EC397F23DB7AB60011569C /* Alert View */,
 				B40056F123D6C65B00997216 /* Reusable View */,
 				B4BAC5272320400A007EAF15 /* Data Model */,
 				B4BAC52123203F58007EAF15 /* DataSource */,
@@ -468,6 +472,13 @@
 				B4F395DA238BC39C006DA683 /* TextFieldWrapper.swift */,
 			);
 			path = UIView;
+			sourceTree = "<group>";
+		};
+		B4EC397F23DB7AB60011569C /* Alert View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Alert View";
 			sourceTree = "<group>";
 		};
 		B4EEF32A235D997200869567 /* View Component */ = {
@@ -649,6 +660,7 @@
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,
 				B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */,
 				B4F395DB238BC39C006DA683 /* TextFieldWrapper.swift in Sources */,
+				B4EC398123DB7AD90011569C /* Alert.swift in Sources */,
 				B4D73417233F074E00A3958A /* NoteCardDetailTagView.swift in Sources */,
 				B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */,
 				B4153C592329843F00496E38 /* NoteCardDetailView.swift in Sources */,
