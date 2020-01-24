@@ -54,6 +54,8 @@ struct HomeView: View {
 }
 
 
+// MARK: - On Appear
+
 extension HomeView {
     
     func setupOnAppear() {

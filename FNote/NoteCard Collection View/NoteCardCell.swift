@@ -209,5 +209,17 @@ extension NoteCardCell {
     
     enum ContextMenu {
         case delete
+        
+        var title: String {
+            switch self {
+            case .delete: return "Delete"
+            }
+        }
+        
+        var image: UIImage {
+            switch self {
+            case .delete: return UIImage(systemName: "trash")!
+            }
+        }
     }
 }

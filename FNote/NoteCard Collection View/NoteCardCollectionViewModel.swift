@@ -26,13 +26,14 @@ class NoteCardCollectionViewModel: NSObject {
     
     var borderedNoteCardIDs: Set<String> = []
     var disableNoteCardIDs: Set<String> = []
+    var contextMenus: Set<NoteCardCell.ContextMenu> = []
     
     
     // MARK: Action
     
     var onNoteCardSelected: ((NoteCard) -> Void)?
     var onNoteCardQuickButtonTapped: ((NoteCardCell.QuickButtonType, NoteCard) -> Void)?
-    var onContextMenuSelected: ((NoteCardCell.ContextMenu) -> Void)?
+    var onContextMenuSelected: ((NoteCardCell.ContextMenu, NoteCard) -> Void)?
     
     
     // MARK: Reference
@@ -67,8 +68,9 @@ extension NoteCardCollectionViewModel: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard !contextMenus.isEmpty else { return nil }
         guard let noteCard = dataSource.itemIdentifier(for: indexPath) else { return nil }
-        return createContextMenu(for: noteCard)
+        return createContextMenuConfiguration(for: noteCard)
     }
 }
 
@@ -77,25 +79,20 @@ extension NoteCardCollectionViewModel: UICollectionViewDelegate {
 
 extension NoteCardCollectionViewModel {
     
-    func createContextMenu(for noteCard: NoteCard) -> UIContextMenuConfiguration? {
-        let delete = UIAction(
-            title: "Delete",
-            image: UIImage(systemName: "trash"),
-            attributes: .destructive,
-            handler: contextMenuDeleteAction
-        )
-        
-        let menu = UIMenu(title: "", options: .displayInline, children: [delete])
-        
+    private func createContextMenuConfiguration(for noteCard: NoteCard) -> UIContextMenuConfiguration? {
+        let actions = contextMenus.map({ createContextMenuAction(for: $0, with: noteCard) })
         let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { someElement in
-            menu
+            UIMenu(title: "", options: .displayInline, children: actions)
         }
-        
         return configuration
     }
     
-    func contextMenuDeleteAction(_ action: UIAction) {
-        onContextMenuSelected?(.delete)
+    private func createContextMenuAction(for menu: NoteCardCell.ContextMenu, with noteCard: NoteCard) -> UIAction {
+        let attribute: UIMenuElement.Attributes = menu == .delete ? .destructive : .init()
+        let action = UIAction(title: menu.title, image: menu.image, attributes: attribute) { action in
+            self.onContextMenuSelected?(menu, noteCard)
+        }
+        return action
     }
 }
 

@@ -51,14 +51,21 @@ extension HomeNoteCardView {
             return NoteCardForm(viewModel: noteCardFormModel!)
         }
     }
+}
+
+
+// MARK: - On Appear
+
+extension HomeNoteCardView {
     
     func setupOnAppear() {
+        viewModel.contextMenus = [.delete]
         viewModel.noteCards = appState.currenNoteCards
         viewModel.onNoteCardSelected = beginEditNoteCard
         viewModel.onNoteCardQuickButtonTapped = handleNoteCardQuickButtonTapped
+        viewModel.onContextMenuSelected = handleContextMenuSelected
     }
 }
-
 
 
 // MARK: - Create Note Card
@@ -172,6 +179,18 @@ extension HomeNoteCardView {
             noteCard.managedObjectContext?.quickSave()
         
         case .note: break
+        }
+    }
+}
+
+
+// MARK: - Note Card Context Menu
+
+extension HomeNoteCardView {
+    
+    func handleContextMenuSelected(_ menu: NoteCardCell.ContextMenu, noteCard: NoteCard) {
+        switch menu {
+        case .delete: print("📝 implement delete note card 📝")
         }
     }
 }
