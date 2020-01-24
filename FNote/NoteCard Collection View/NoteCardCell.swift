@@ -28,10 +28,9 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     let tagButton = UIButton(type: .system)
     let favoriteButton = UIButton(type: .system)
     let noteButton = UIButton(type: .system)
-    let moreButton = UIButton(type: .system)
     
     var quickButtons: [UIButton] {
-        [relationshipButton, tagButton, favoriteButton, noteButton, moreButton]
+        [relationshipButton, tagButton, favoriteButton, noteButton]
     }
     
     private(set) var style: Style = .regular
@@ -105,7 +104,6 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         case tagButton: type = .tag
         case favoriteButton: type = .favorite
         case noteButton: type = .note
-        case moreButton: type = .more
         default: fatalError("🧨 handleQuickButtonTapped unknown button type 💣")
         }
         
@@ -138,7 +136,6 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         tagButton.setImage(createQuickButtonImage(systemName: "tag"), for: .normal)
         favoriteButton.setImage(createQuickButtonImage(systemName: "star"), for: .normal)
         noteButton.setImage(createQuickButtonImage(systemName: "doc.plaintext"), for: .normal)
-        moreButton.setImage(createQuickButtonImage(systemName: "ellipsis.circle"), for: .normal)
         
         for button in quickButtons {
             button.addTarget(self, action: #selector(handleQuickButtonTapped), for: .touchUpInside)
@@ -159,7 +156,7 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         quickButtonStackView.axis = .horizontal
         quickButtonStackView.spacing = 0
         quickButtonStackView.distribution = .fillEqually
-        quickButtonStackView.addArrangedSubviews(relationshipButton, tagButton, favoriteButton, noteButton, moreButton)
+        quickButtonStackView.addArrangedSubviews(relationshipButton, tagButton, favoriteButton, noteButton)
         
         let sharedConstraints = [
             labelStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
@@ -208,6 +205,9 @@ extension NoteCardCell {
         case tag
         case favorite
         case note
-        case more
+    }
+    
+    enum ContextMenu {
+        case delete
     }
 }

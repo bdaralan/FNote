@@ -172,8 +172,6 @@ extension HomeNoteCardView {
             noteCard.managedObjectContext?.quickSave()
         
         case .note: break
-        
-        case .more: break
         }
     }
 }

@@ -32,6 +32,7 @@ class NoteCardCollectionViewModel: NSObject {
     
     var onNoteCardSelected: ((NoteCard) -> Void)?
     var onNoteCardQuickButtonTapped: ((NoteCardCell.QuickButtonType, NoteCard) -> Void)?
+    var onContextMenuSelected: ((NoteCardCell.ContextMenu) -> Void)?
     
     
     // MARK: Reference
@@ -63,6 +64,38 @@ extension NoteCardCollectionViewModel: UICollectionViewDelegate {
         guard let cell = collectionView.cellForItem(at: indexPath) as? NoteCardCell else { return }
         onNoteCardSelected?(noteCard)
         cell.showCellBorder(borderedNoteCardIDs.contains(noteCard.uuid))
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let noteCard = dataSource.itemIdentifier(for: indexPath) else { return nil }
+        return createContextMenu(for: noteCard)
+    }
+}
+
+
+// MARk: - Context Menu
+
+extension NoteCardCollectionViewModel {
+    
+    func createContextMenu(for noteCard: NoteCard) -> UIContextMenuConfiguration? {
+        let delete = UIAction(
+            title: "Delete",
+            image: UIImage(systemName: "trash"),
+            attributes: .destructive,
+            handler: contextMenuDeleteAction
+        )
+        
+        let menu = UIMenu(title: "", options: .displayInline, children: [delete])
+        
+        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { someElement in
+            menu
+        }
+        
+        return configuration
+    }
+    
+    func contextMenuDeleteAction(_ action: UIAction) {
+        onContextMenuSelected?(.delete)
     }
 }
 
