@@ -21,6 +21,8 @@ struct HomeNoteCardView: View {
     @State private var sheet: Sheet?
     @State private var noteCardFormModel: NoteCardFormModel?
     
+    @State private var noteCardToDelete: NoteCard?
+    
     
     var body: some View {
         NavigationView {
@@ -31,12 +33,13 @@ struct HomeNoteCardView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, content: presentationSheet)
+        .alert(item: $noteCardToDelete, content: deleteNoteCardAlert)
         .onAppear(perform: setupOnAppear)
     }
 }
 
 
-// MARK: - Sheet
+// MARK: - Sheet & Alert
 
 extension HomeNoteCardView {
     
@@ -184,13 +187,47 @@ extension HomeNoteCardView {
 }
 
 
+// MARK: _ Delete Note Card
+
+extension HomeNoteCardView {
+    
+    func deleteNoteCardAlert(_ noteCard: NoteCard) -> Alert {
+        Alert.DeleteNoteCard(noteCard, onCancel: cancelDeleteNoteCard, onDelete: commitDeleteNoteCard)
+    }
+    
+    func cancelDeleteNoteCard() {
+        noteCardToDelete = nil
+    }
+    
+    func commitDeleteNoteCard() {
+        guard let noteCardToDelete = noteCardToDelete else { return }
+        let result = appState.deleteObject(noteCardToDelete)
+        switch result {
+        case .deleted(let childContext):
+            childContext.quickSave()
+            childContext.parent?.quickSave()
+            appState.fetchCurrentNoteCards()
+            viewModel.noteCards = appState.currenNoteCards
+            viewModel.updateSnapshot(animated: true)
+            
+        case .failed: // TODO: inform user if needed
+            break
+            
+        case .created, .updated:
+            fatalError("🧨 hmm... tried to \(result) object in commitDeleteNoteCard method 🧨")
+        }
+    }
+}
+
+
 // MARK: - Note Card Context Menu
 
 extension HomeNoteCardView {
     
     func handleContextMenuSelected(_ menu: NoteCardCell.ContextMenu, noteCard: NoteCard) {
         switch menu {
-        case .delete: print("📝 implement delete note card 📝")
+        case .delete:
+            noteCardToDelete = noteCard
         }
     }
 }

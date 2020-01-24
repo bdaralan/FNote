@@ -35,7 +35,8 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     
     private(set) var style: Style = .regular
     
-    private var cancellable: AnyCancellable?
+    /// A subscription for note card's `objectWillChange`.
+    private var subscription: AnyCancellable?
     
     
     // MARK: Constraints
@@ -59,12 +60,21 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         relationshipButton.isEnabled = !object.relationships.isEmpty
         tagButton.isEnabled = !object.tags.isEmpty
         
-        cancellable = object
+        setupSubscription()
+    }
+    
+    private func setupSubscription() {
+        subscription = object?
             .objectWillChange
             .eraseToAnyPublisher()
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in self?.reload(with: object) }
+            .sink(receiveValue: { [weak self] a in
+                guard let self = self else { return }
+                guard let object = self.object else { return }
+                guard object.managedObjectContext != nil else { return }
+                self.reload(with: object)
+            })
     }
     
     func setCellStyle(_ style: Style) {

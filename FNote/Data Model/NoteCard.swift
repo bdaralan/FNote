@@ -12,7 +12,7 @@ import CoreData
 import SwiftUI
 
 
-class NoteCard: NSManagedObject, ObjectValidatable {
+class NoteCard: NSManagedObject, ObjectValidatable, Identifiable {
     
     @NSManaged private(set) var uuid: String
     @NSManaged var native: String
