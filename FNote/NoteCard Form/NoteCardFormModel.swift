@@ -23,7 +23,7 @@ class NoteCardFormModel: ObservableObject {
     @Published var selectableRelationships: [NoteCard] = []
     @Published var selectableTags: [Tag] = []
     
-    @Published var selectedCollection: NoteCardCollection
+    @Published var selectedCollection: NoteCardCollection?
     @Published var selectedRelationships: Set<NoteCard> = []
     @Published var selectedTags: Set<Tag> = []
     
@@ -66,14 +66,19 @@ class NoteCardFormModel: ObservableObject {
     }
     
     var selectedCollectionNoteCardCount: String {
-        let count = selectedCollection.noteCards.count
+        let count = selectedCollection?.noteCards.count ?? 0
         let card = count == 1 ? "CARD" : "CARDS"
         return "\(count) \(card)"
     }
     
     // MARK: Constructor
-    init(collection: NoteCardCollection, noteCard: NoteCard? = nil) {
-        selectedCollection = collection
+    
+    /// Construct model with collection and note card.
+    /// - Parameters:
+    ///   - collection: The selected collection.
+    ///   - noteCard: The note card currently working on.
+    init(collection: NoteCardCollection? = nil, noteCard: NoteCard? = nil) {
+        self.selectedCollection = collection
         self.selectedNoteCard = noteCard
     }
 }
@@ -81,9 +86,10 @@ class NoteCardFormModel: ObservableObject {
 
 extension NoteCardFormModel {
     
-    func createNoteCardCUDRequest() -> NoteCardCUDRequest {
-        NoteCardCUDRequest(
-            collection: selectedCollection,
+    func createNoteCardCUDRequest() -> NoteCardCUDRequest? {
+        guard let collection = selectedCollection else { return nil }
+        return NoteCardCUDRequest(
+            collection: collection,
             native: native,
             translation: translation,
             formality: selectedFormality,

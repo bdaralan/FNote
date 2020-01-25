@@ -51,14 +51,22 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         super.reload(with: object)
         
         translationLabel.text = object.translation
+        
         nativeLabel.text = object.native
+        
         dividerLine.backgroundColor = object.formality.uiColor
         
         let imageName = object.isFavorited ? "star.fill" : "star"
         favoriteButton.setImage(createQuickButtonImage(systemName: imageName), for: .normal)
-        noteButton.isEnabled = !object.note.isEmpty
-        relationshipButton.isEnabled = !object.relationships.isEmpty
-        tagButton.isEnabled = !object.tags.isEmpty
+        
+        noteButton.isUserInteractionEnabled = !object.note.isEmpty
+        noteButton.tintColor = object.note.isEmpty ? .quaternaryLabel : .secondaryLabel
+        
+        relationshipButton.isUserInteractionEnabled = !object.relationships.isEmpty
+        relationshipButton.tintColor = object.relationships.isEmpty ? .quaternaryLabel : .secondaryLabel
+        
+        tagButton.isUserInteractionEnabled = !object.tags.isEmpty
+        tagButton.tintColor = object.tags.isEmpty ? .quaternaryLabel : .secondaryLabel
         
         setupSubscription()
     }

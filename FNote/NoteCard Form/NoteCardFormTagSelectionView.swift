@@ -13,11 +13,22 @@ struct NoteCardFormTagSelectionView: View {
     
     @ObservedObject var formModel: NoteCardFormModel
     
+    var showSelectedHeader = true
+    var showUnselectedSection = true
+    
+    var selectedHeader: String {
+        showSelectedHeader ? "SELECTED TAGS" : ""
+    }
+    
+    var selectedHeaderPadding: CGFloat {
+        showSelectedHeader ? 24 : 0
+    }
+    
     
     var body: some View {
         List {
             // MARK: Selected Section
-            Section(header: Text("SELECTED TAGS").padding(.top, 24)) {
+            Section(header: Text(selectedHeader).padding(.top, selectedHeaderPadding)) {
                 ForEach(formModel.selectedTags.sortedByName()) { tag in
                     Button(action: { self.formModel.onTagSelected?(tag) }) {
                         Text(tag.name)
@@ -31,24 +42,27 @@ struct NoteCardFormTagSelectionView: View {
                 }
             }
             
-            // MARK: Unselected Section
-            Section(header: Text("UNSELECTED TAGS")) {
-                ForEach(formModel.selectableTags.sortedByName()) { tag in
-                    if !self.formModel.selectedTags.contains(tag) {
-                        Button(action: { self.formModel.onTagSelected?(tag) }) {
-                            Text(tag.name)
-                                .foregroundColor(.primary)
+            if showUnselectedSection {
+                // MARK: Unselected Section
+                Section(header: Text("UNSELECTED TAGS")) {
+                    ForEach(formModel.selectableTags.sortedByName()) { tag in
+                        if !self.formModel.selectedTags.contains(tag) {
+                            Button(action: { self.formModel.onTagSelected?(tag) }) {
+                                Text(tag.name)
+                                    .foregroundColor(.primary)
+                            }
                         }
                     }
-                }
-                
-                if formModel.selectedTags.isSuperset(of: formModel.selectableTags) {
-                    Text("None")
-                        .foregroundColor(.secondary)
+                    
+                    if formModel.selectedTags.isSuperset(of: formModel.selectableTags) {
+                        Text("None")
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
         }
         .navigationBarTitle("Tags")
+        .listStyle(GroupedListStyle())
     }
 }
 

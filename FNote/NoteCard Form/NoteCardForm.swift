@@ -46,8 +46,8 @@ struct NoteCardForm: View {
                         isActive: $viewModel.isSelectingCollection
                     ) {
                         HStack {
-                            Text(viewModel.selectedCollection.name)
-                                .foregroundColor(.primary)
+                            Text(viewModel.selectedCollection?.name ?? "None")
+                                .foregroundColor(viewModel.selectedCollection == nil ? .secondary : .primary)
                             Spacer()
                             Text(viewModel.selectedCollectionNoteCardCount)
                                 .foregroundColor(.secondary)

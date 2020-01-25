@@ -20,6 +20,9 @@ struct HomeNoteCardView: View {
     
     @State private var sheet: Sheet?
     @State private var noteCardFormModel: NoteCardFormModel?
+    @State private var relationshipViewModel: NoteCardCollectionViewModel?
+    @State private var tagViewModel: NoteCardFormModel?
+    @State private var textViewModel = ModalTextViewModel()
     
     @State private var noteCardToDelete: NoteCard?
     
@@ -32,7 +35,7 @@ struct HomeNoteCardView: View {
                 .edgesIgnoringSafeArea(.all)
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .sheet(item: $sheet, content: presentationSheet)
+        .sheet(item: $sheet, onDismiss: presentationSheetDismissed, content: presentationSheet)
         .alert(item: $noteCardToDelete, content: deleteNoteCardAlert)
         .onAppear(perform: setupOnAppear)
     }
@@ -46,13 +49,51 @@ extension HomeNoteCardView {
     enum Sheet: Identifiable {
         var id: Self { self }
         case noteCardForm
+        case noteCardRelationship
+        case noteCardTag
+        case noteCardNote
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
         case .noteCardForm:
             return NoteCardForm(viewModel: noteCardFormModel!)
+                .eraseToAnyView()
+            
+        case .noteCardRelationship:
+            let doneNavItem = Button("Done", action: { self.sheet = nil })
+            return NavigationView {
+                NoteCardFormRelationshipSelectionView(viewModel: relationshipViewModel!)
+                    .navigationBarTitle("Relationships", displayMode: .inline)
+                    .navigationBarItems(trailing: doneNavItem)
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .eraseToAnyView()
+            
+        case .noteCardTag:
+            let doneNavItem = Button("Done", action: { self.sheet = nil })
+            return NavigationView {
+                NoteCardFormTagSelectionView(
+                    formModel: tagViewModel!,
+                    showSelectedHeader: false,
+                    showUnselectedSection: false
+                )
+                    .navigationBarTitle("Tags", displayMode: .inline)
+                    .navigationBarItems(trailing: doneNavItem)
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .eraseToAnyView()
+            
+        case .noteCardNote:
+            return ModalTextView(viewModel: $textViewModel)
+                .eraseToAnyView()
         }
+    }
+    
+    func presentationSheetDismissed() {
+        noteCardFormModel = nil
+        relationshipViewModel = nil
+        tagViewModel = nil
     }
 }
 
@@ -110,13 +151,12 @@ extension HomeNoteCardView {
     
     func commitCreateNoteCard() {
         guard let formModel = noteCardFormModel else { return }
-        let createRequest = formModel.createNoteCardCUDRequest()
+        guard let createRequest = formModel.createNoteCardCUDRequest() else { return }
         let result = appState.createNoteCard(with: createRequest)
         handleNoteCardCUDResult(result)
     }
     
     func cancelCreateNoteCard() {
-        noteCardFormModel = nil
         sheet = nil
     }
 }
@@ -160,34 +200,19 @@ extension HomeNoteCardView {
     }
     
     func cancelEditNoteCard() {
-        noteCardFormModel = nil
         sheet = nil
     }
     
     func commitEditNoteCard(_ noteCard: NoteCard) {
         guard let formModel = noteCardFormModel else { return }
-        let request = formModel.createNoteCardCUDRequest()
+        guard let request = formModel.createNoteCardCUDRequest() else { return }
         let result = appState.updateNoteCard(noteCard, with: request)
         handleNoteCardCUDResult(result)
-    }
-    
-    func handleNoteCardQuickButtonTapped(_ button: NoteCardCell.QuickButtonType, noteCard: NoteCard) {
-        switch button {
-        case .relationship: break
-        
-        case .tag: break
-        
-        case .favorite:
-            noteCard.isFavorited.toggle()
-            noteCard.managedObjectContext?.quickSave()
-        
-        case .note: break
-        }
     }
 }
 
 
-// MARK: _ Delete Note Card
+// MARK: - Delete Note Card
 
 extension HomeNoteCardView {
     
@@ -215,6 +240,44 @@ extension HomeNoteCardView {
             
         case .created, .updated:
             fatalError("🧨 hmm... tried to \(result) object in commitDeleteNoteCard method 🧨")
+        }
+    }
+}
+
+
+// MARK: - Note Card Quick Button
+
+extension HomeNoteCardView {
+    
+    func handleNoteCardQuickButtonTapped(_ button: NoteCardCell.QuickButtonType, noteCard: NoteCard) {
+        switch button {
+        case .relationship:
+            relationshipViewModel = .init()
+            let noteCards = noteCard.relationships.sorted(by: { $0.translation < $1.translation })
+            relationshipViewModel?.noteCards = noteCards
+            relationshipViewModel?.cellStyle = .short
+            relationshipViewModel?.onNoteCardSelected = { print($0.native) }
+            sheet = .noteCardRelationship
+        
+        case .tag:
+            tagViewModel = .init(collection: collection)
+            tagViewModel?.selectedTags = noteCard.tags
+            sheet = .noteCardTag
+        
+        case .favorite:
+            noteCard.isFavorited.toggle()
+            noteCard.managedObjectContext?.quickSave()
+        
+        case .note:
+            textViewModel = .init()
+            textViewModel.renderMarkdown = true
+            textViewModel.disableEditing = true
+            textViewModel.title = "Note"
+            textViewModel.text = noteCard.note
+            textViewModel.onCommit = {
+                self.sheet = nil
+            }
+            sheet = .noteCardNote
         }
     }
 }
