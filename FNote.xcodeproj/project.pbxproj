@@ -10,32 +10,18 @@
 		650D14E92332B96100B6E2BF /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650D14E82332B96100B6E2BF /* View.swift */; };
 		656AC27E236A11AE0038F301 /* NoteCardCollectionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656AC27D236A11AE0038F301 /* NoteCardCollectionRow.swift */; };
 		656AC282236A1AA30038F301 /* TagRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656AC281236A1AA30038F301 /* TagRow.swift */; };
-		65F373A023289D4C002CD331 /* NoteCardCollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F3739F23289D4C002CD331 /* NoteCardCollectionDataSource.swift */; };
-		65F373A6232981C6002CD331 /* NoteCardCollectionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F373A5232981C6002CD331 /* NoteCardCollectionListView.swift */; };
-		665C7EB923209B4D000BFD9F /* TagDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C7EB823209B4D000BFD9F /* TagDataSource.swift */; };
-		668E537523297FDB0095DD71 /* NoteCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668E537423297FDB0095DD71 /* NoteCardView.swift */; };
-		66B945B72357A1C2003147AA /* NoteCardDetailRelationshipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B945B62357A1C2003147AA /* NoteCardDetailRelationshipView.swift */; };
-		66F9A744237C8E3F007D2330 /* NoteCardScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F9A743237C8E3F007D2330 /* NoteCardScrollView.swift */; };
 		B40056EE23D6B9C400997216 /* ModalTextFieldModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056ED23D6B9C300997216 /* ModalTextFieldModel.swift */; };
 		B40056F023D6C26500997216 /* HomeTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056EF23D6C26500997216 /* HomeTagView.swift */; };
 		B40056F323D6C82900997216 /* ModalTextViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056F223D6C82900997216 /* ModalTextViewModel.swift */; };
 		B40056F523D6CC8600997216 /* NavigationBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056F423D6CC8600997216 /* NavigationBarButton.swift */; };
-		B402F62E234093C200EC0A77 /* CreateUpdateSheetState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B402F62D234093C200EC0A77 /* CreateUpdateSheetState.swift */; };
 		B40B519C2335C2D6002DA41D /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40B519B2335C2D6002DA41D /* NotificationName.swift */; };
-		B40BB61C2335BFED00E2F98B /* TagListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40BB61B2335BFED00E2F98B /* TagListView.swift */; };
 		B40F09FD237CFC6600E4F7D3 /* UserSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40F09FC237CFC6600E4F7D3 /* UserSetting.swift */; };
 		B4113FB923D2D539004E70DC /* NoteCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4113FB823D2D539004E70DC /* NoteCardCell.swift */; };
 		B4113FBC23D2D7D9004E70DC /* FNCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4113FBB23D2D7D9004E70DC /* FNCollectionViewCell.swift */; };
 		B4113FBE23D2DA5E004E70DC /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4113FBD23D2DA5E004E70DC /* UIView.swift */; };
 		B4113FE023D2E046004E70DC /* NoteCardCellWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4113FDF23D2E046004E70DC /* NoteCardCellWrapper.swift */; };
-		B411E04D2332F60F008D99A0 /* ViewForceReloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E04C2332F60F008D99A0 /* ViewForceReloader.swift */; };
-		B411E04F2332F672008D99A0 /* NavigationStateHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E04E2332F672008D99A0 /* NavigationStateHandler.swift */; };
 		B411E0512332F6B4008D99A0 /* NotificationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E0502332F6B4008D99A0 /* NotificationObserver.swift */; };
-		B4153C592329843F00496E38 /* NoteCardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4153C582329843F00496E38 /* NoteCardDetailView.swift */; };
-		B4270C9A23ADB5F2003BE97E /* NoteCardCollectionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4270C9923ADB5F2003BE97E /* NoteCardCollectionSelectionView.swift */; };
-		B45A49FF2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A49FE2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift */; };
 		B45A4A032368A2810079D8DE /* NoteCardSearchScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */; };
-		B466BAFD23333DF5007DD130 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B466BAFC23333DF5007DD130 /* ProfileView.swift */; };
 		B46B0F592364A0CE0074B71A /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B0F582364A0CD0074B71A /* SearchTextField.swift */; };
 		B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */; };
 		B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3404232E8214008B2088 /* ModalTextView.swift */; };
@@ -49,13 +35,9 @@
 		B48AC69923D9445A0033DF6F /* NoteCardFormTagSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48AC69823D9445A0033DF6F /* NoteCardFormTagSelectionView.swift */; };
 		B48AC69D23D971390033DF6F /* NoteCardFormRelationshipSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48AC69C23D971390033DF6F /* NoteCardFormRelationshipSelectionView.swift */; };
 		B4928E8C239054FF0060AD45 /* Down in Frameworks */ = {isa = PBXBuildFile; productRef = B4928E8B239054FF0060AD45 /* Down */; };
-		B4928E8E2390B0980060AD45 /* NavigationItemIconStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4928E8D2390B0980060AD45 /* NavigationItemIconStyle.swift */; };
 		B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */; };
 		B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35B2326D988002D16A0 /* CoreDataStack.swift */; };
 		B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35D2326D9A7002D16A0 /* AppCache.swift */; };
-		B499A3602326DA27002D16A0 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35F2326DA27002D16A0 /* MainTabView.swift */; };
-		B499A3632326E518002D16A0 /* NoteCardCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A3622326E518002D16A0 /* NoteCardCollectionView.swift */; };
-		B499A3652326E8B7002D16A0 /* CoreDataStack+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A3642326E8B7002D16A0 /* CoreDataStack+Extension.swift */; };
 		B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C6923D628760030D9B2 /* HomeView.swift */; };
 		B49C4C6D23D6390A0030D9B2 /* NoteCardForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C6C23D6390A0030D9B2 /* NoteCardForm.swift */; };
 		B49C4C6F23D64AFB0030D9B2 /* SegmentControlWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C6E23D64AFB0030D9B2 /* SegmentControlWrapper.swift */; };
@@ -67,12 +49,10 @@
 		B4AFD4522360B1B3004BAA9B /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AFD4512360B1B3004BAA9B /* CloudKit.framework */; };
 		B4B49B602378CCF90086B8B5 /* NoteCardSearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B49B5F2378CCF90086B8B5 /* NoteCardSearchModel.swift */; };
 		B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */; };
-		B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */; };
 		B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5342320405B007EAF15 /* NoteCard.swift */; };
 		B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */; };
 		B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5382320405B007EAF15 /* Tag.swift */; };
 		B4BAC541232041FE007EAF15 /* ObjectValidatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC540232041FE007EAF15 /* ObjectValidatable.swift */; };
-		B4BAC54323205022007EAF15 /* NoteCardDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC54223205022007EAF15 /* NoteCardDataSource.swift */; };
 		B4BAC54523206B28007EAF15 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC54423206B28007EAF15 /* String.swift */; };
 		B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BB117023145DC400A380AA /* AppDelegate.swift */; };
 		B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BB117223145DC400A380AA /* SceneDelegate.swift */; };
@@ -84,10 +64,7 @@
 		B4C76DFB232C0A520033DDEA /* ModalTextFieldWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C76DFA232C0A520033DDEA /* ModalTextFieldWrapper.swift */; };
 		B4D240D723DBD1EE005B4066 /* NoteCardCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D240D623DBD1EE005B4066 /* NoteCardCollectionCell.swift */; };
 		B4D240D923DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D240D823DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift */; };
-		B4D73417233F074E00A3958A /* NoteCardDetailTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D73416233F074E00A3958A /* NoteCardDetailTagView.swift */; };
-		B4D7341A233F36FE00A3958A /* NavigationBarBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D73419233F36FE00A3958A /* NavigationBarBackButton.swift */; };
 		B4DD491F238A5ED300D183CF /* WelcomeGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */; };
-		B4E41E5623354B720057EB0A /* NoteCardViewNavigationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */; };
 		B4EC398123DB7AD90011569C /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EC398023DB7AD90011569C /* Alert.swift */; };
 		B4EC398423DB88460011569C /* CollectionViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EC398323DB88460011569C /* CollectionViewWrapper.swift */; };
 		B4EC398623DB88E40011569C /* CollectionViewCompositionalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EC398523DB88E40011569C /* CollectionViewCompositionalViewModel.swift */; };
@@ -112,32 +89,18 @@
 		650D14E82332B96100B6E2BF /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		656AC27D236A11AE0038F301 /* NoteCardCollectionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionRow.swift; sourceTree = "<group>"; };
 		656AC281236A1AA30038F301 /* TagRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagRow.swift; sourceTree = "<group>"; };
-		65F3739F23289D4C002CD331 /* NoteCardCollectionDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionDataSource.swift; sourceTree = "<group>"; };
-		65F373A5232981C6002CD331 /* NoteCardCollectionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionListView.swift; sourceTree = "<group>"; };
-		665C7EB823209B4D000BFD9F /* TagDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDataSource.swift; sourceTree = "<group>"; };
-		668E537423297FDB0095DD71 /* NoteCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardView.swift; sourceTree = "<group>"; };
-		66B945B62357A1C2003147AA /* NoteCardDetailRelationshipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardDetailRelationshipView.swift; sourceTree = "<group>"; };
-		66F9A743237C8E3F007D2330 /* NoteCardScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardScrollView.swift; sourceTree = "<group>"; };
 		B40056ED23D6B9C300997216 /* ModalTextFieldModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextFieldModel.swift; sourceTree = "<group>"; };
 		B40056EF23D6C26500997216 /* HomeTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTagView.swift; sourceTree = "<group>"; };
 		B40056F223D6C82900997216 /* ModalTextViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewModel.swift; sourceTree = "<group>"; };
 		B40056F423D6CC8600997216 /* NavigationBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarButton.swift; sourceTree = "<group>"; };
-		B402F62D234093C200EC0A77 /* CreateUpdateSheetState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUpdateSheetState.swift; sourceTree = "<group>"; };
 		B40B519B2335C2D6002DA41D /* NotificationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
-		B40BB61B2335BFED00E2F98B /* TagListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListView.swift; sourceTree = "<group>"; };
 		B40F09FC237CFC6600E4F7D3 /* UserSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSetting.swift; sourceTree = "<group>"; };
 		B4113FB823D2D539004E70DC /* NoteCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCell.swift; sourceTree = "<group>"; };
 		B4113FBB23D2D7D9004E70DC /* FNCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FNCollectionViewCell.swift; sourceTree = "<group>"; };
 		B4113FBD23D2DA5E004E70DC /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		B4113FDF23D2E046004E70DC /* NoteCardCellWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCellWrapper.swift; sourceTree = "<group>"; };
-		B411E04C2332F60F008D99A0 /* ViewForceReloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewForceReloader.swift; sourceTree = "<group>"; };
-		B411E04E2332F672008D99A0 /* NavigationStateHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationStateHandler.swift; sourceTree = "<group>"; };
 		B411E0502332F6B4008D99A0 /* NotificationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObserver.swift; sourceTree = "<group>"; };
-		B4153C582329843F00496E38 /* NoteCardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardDetailView.swift; sourceTree = "<group>"; };
-		B4270C9923ADB5F2003BE97E /* NoteCardCollectionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionSelectionView.swift; sourceTree = "<group>"; };
-		B45A49FE2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardNavigationButtonStyle.swift; sourceTree = "<group>"; };
 		B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchScope.swift; sourceTree = "<group>"; };
-		B466BAFC23333DF5007DD130 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		B46B0F582364A0CD0074B71A /* SearchTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewWrapper.swift; sourceTree = "<group>"; };
 		B46B3404232E8214008B2088 /* ModalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextView.swift; sourceTree = "<group>"; };
@@ -150,13 +113,9 @@
 		B48AC69623D93C150033DF6F /* NoteCardFormCollectionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardFormCollectionSelectionView.swift; sourceTree = "<group>"; };
 		B48AC69823D9445A0033DF6F /* NoteCardFormTagSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardFormTagSelectionView.swift; sourceTree = "<group>"; };
 		B48AC69C23D971390033DF6F /* NoteCardFormRelationshipSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardFormRelationshipSelectionView.swift; sourceTree = "<group>"; };
-		B4928E8D2390B0980060AD45 /* NavigationItemIconStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationItemIconStyle.swift; sourceTree = "<group>"; };
 		B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataStack+HistoryTracker.swift"; sourceTree = "<group>"; };
 		B499A35B2326D988002D16A0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		B499A35D2326D9A7002D16A0 /* AppCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCache.swift; sourceTree = "<group>"; };
-		B499A35F2326DA27002D16A0 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
-		B499A3622326E518002D16A0 /* NoteCardCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionView.swift; sourceTree = "<group>"; };
-		B499A3642326E8B7002D16A0 /* CoreDataStack+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataStack+Extension.swift"; sourceTree = "<group>"; };
 		B49C4C6923D628760030D9B2 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B49C4C6C23D6390A0030D9B2 /* NoteCardForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardForm.swift; sourceTree = "<group>"; };
 		B49C4C6E23D64AFB0030D9B2 /* SegmentControlWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentControlWrapper.swift; sourceTree = "<group>"; };
@@ -169,12 +128,10 @@
 		B4AFD4512360B1B3004BAA9B /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B4B49B5F2378CCF90086B8B5 /* NoteCardSearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchModel.swift; sourceTree = "<group>"; };
 		B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedObjectContext.swift; sourceTree = "<group>"; };
-		B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDataSource.swift; sourceTree = "<group>"; };
 		B4BAC5342320405B007EAF15 /* NoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCard.swift; sourceTree = "<group>"; };
 		B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollection.swift; sourceTree = "<group>"; };
 		B4BAC5382320405B007EAF15 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		B4BAC540232041FE007EAF15 /* ObjectValidatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectValidatable.swift; sourceTree = "<group>"; };
-		B4BAC54223205022007EAF15 /* NoteCardDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardDataSource.swift; sourceTree = "<group>"; };
 		B4BAC54423206B28007EAF15 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		B4BB116D23145DC400A380AA /* FNote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FNote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4BB117023145DC400A380AA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -190,10 +147,7 @@
 		B4C76DFA232C0A520033DDEA /* ModalTextFieldWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextFieldWrapper.swift; sourceTree = "<group>"; };
 		B4D240D623DBD1EE005B4066 /* NoteCardCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionCell.swift; sourceTree = "<group>"; };
 		B4D240D823DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionCollectionViewModel.swift; sourceTree = "<group>"; };
-		B4D73416233F074E00A3958A /* NoteCardDetailTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardDetailTagView.swift; sourceTree = "<group>"; };
-		B4D73419233F36FE00A3958A /* NavigationBarBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarBackButton.swift; sourceTree = "<group>"; };
 		B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeGuideView.swift; sourceTree = "<group>"; };
-		B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardViewNavigationLink.swift; sourceTree = "<group>"; };
 		B4EC398023DB7AD90011569C /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		B4EC398323DB88460011569C /* CollectionViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewWrapper.swift; sourceTree = "<group>"; };
 		B4EC398523DB88E40011569C /* CollectionViewCompositionalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCompositionalViewModel.swift; sourceTree = "<group>"; };
@@ -227,51 +181,40 @@
 		B40056F123D6C65B00997216 /* Reusable View */ = {
 			isa = PBXGroup;
 			children = (
-				B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */,
-				B40056ED23D6B9C300997216 /* ModalTextFieldModel.swift */,
-				B46B3404232E8214008B2088 /* ModalTextView.swift */,
-				B40056F223D6C82900997216 /* ModalTextViewModel.swift */,
-				B4EEF32B235D99B400869567 /* ModalDragHandle.swift */,
+				B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */,
 				656AC27D236A11AE0038F301 /* NoteCardCollectionRow.swift */,
 				656AC281236A1AA30038F301 /* TagRow.swift */,
 				B40056F423D6CC8600997216 /* NavigationBarButton.swift */,
-				B46B0F582364A0CD0074B71A /* SearchTextField.swift */,
-				B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */,
 			);
 			path = "Reusable View";
 			sourceTree = "<group>";
 		};
-		B402F62A234087F900EC0A77 /* View Model + Enum */ = {
+		B402F62A234087F900EC0A77 /* Search View + Model */ = {
 			isa = PBXGroup;
 			children = (
-				B402F62D234093C200EC0A77 /* CreateUpdateSheetState.swift */,
-				B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */,
+				B46B0F582364A0CD0074B71A /* SearchTextField.swift */,
 				B4B49B5F2378CCF90086B8B5 /* NoteCardSearchModel.swift */,
+				B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */,
 			);
-			path = "View Model + Enum";
+			path = "Search View + Model";
 			sourceTree = "<group>";
 		};
-		B40BB6172335B11900E2F98B /* View Modifier + Utility */ = {
+		B40BB6172335B11900E2F98B /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				B411E04C2332F60F008D99A0 /* ViewForceReloader.swift */,
-				B411E04E2332F672008D99A0 /* NavigationStateHandler.swift */,
 				B411E0502332F6B4008D99A0 /* NotificationObserver.swift */,
-				B4D73419233F36FE00A3958A /* NavigationBarBackButton.swift */,
-				B45A49FE2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift */,
-				B4928E8D2390B0980060AD45 /* NavigationItemIconStyle.swift */,
 			);
-			path = "View Modifier + Utility";
+			path = Utility;
 			sourceTree = "<group>";
 		};
 		B4113FB723D2D507004E70DC /* Collection View Model + Cell */ = {
 			isa = PBXGroup;
 			children = (
 				B4A0CE9523D4AB57003A4D83 /* NoteCardCollectionViewModel.swift */,
-				B4D240D823DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift */,
 				B4113FB823D2D539004E70DC /* NoteCardCell.swift */,
-				B4D240D623DBD1EE005B4066 /* NoteCardCollectionCell.swift */,
 				B4113FDF23D2E046004E70DC /* NoteCardCellWrapper.swift */,
+				B4D240D823DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift */,
+				B4D240D623DBD1EE005B4066 /* NoteCardCollectionCell.swift */,
 			);
 			path = "Collection View Model + Cell";
 			sourceTree = "<group>";
@@ -301,30 +244,10 @@
 			children = (
 				B499A35B2326D988002D16A0 /* CoreDataStack.swift */,
 				B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */,
-				B499A3642326E8B7002D16A0 /* CoreDataStack+Extension.swift */,
 				B499A35D2326D9A7002D16A0 /* AppCache.swift */,
 				B40F09FC237CFC6600E4F7D3 /* UserSetting.swift */,
 			);
 			path = CoreDataStack;
-			sourceTree = "<group>";
-		};
-		B499A35A2326D972002D16A0 /* Old Views */ = {
-			isa = PBXGroup;
-			children = (
-				B499A35F2326DA27002D16A0 /* MainTabView.swift */,
-				B499A3622326E518002D16A0 /* NoteCardCollectionView.swift */,
-				B40BB61B2335BFED00E2F98B /* TagListView.swift */,
-				B466BAFC23333DF5007DD130 /* ProfileView.swift */,
-				66F9A743237C8E3F007D2330 /* NoteCardScrollView.swift */,
-				668E537423297FDB0095DD71 /* NoteCardView.swift */,
-				B4153C582329843F00496E38 /* NoteCardDetailView.swift */,
-				B4E41E5523354B720057EB0A /* NoteCardViewNavigationLink.swift */,
-				66B945B62357A1C2003147AA /* NoteCardDetailRelationshipView.swift */,
-				B4D73416233F074E00A3958A /* NoteCardDetailTagView.swift */,
-				B4270C9923ADB5F2003BE97E /* NoteCardCollectionSelectionView.swift */,
-				65F373A5232981C6002CD331 /* NoteCardCollectionListView.swift */,
-			);
-			path = "Old Views";
 			sourceTree = "<group>";
 		};
 		B49C4C6823D628520030D9B2 /* Home View */ = {
@@ -343,10 +266,10 @@
 			children = (
 				B49C4C6C23D6390A0030D9B2 /* NoteCardForm.swift */,
 				B49C4C7223D69E6C0030D9B2 /* NoteCardFormModel.swift */,
-				B49C4C6E23D64AFB0030D9B2 /* SegmentControlWrapper.swift */,
 				B48AC69623D93C150033DF6F /* NoteCardFormCollectionSelectionView.swift */,
 				B48AC69C23D971390033DF6F /* NoteCardFormRelationshipSelectionView.swift */,
 				B48AC69823D9445A0033DF6F /* NoteCardFormTagSelectionView.swift */,
+				B49C4C6E23D64AFB0030D9B2 /* SegmentControlWrapper.swift */,
 			);
 			path = "NoteCard Form";
 			sourceTree = "<group>";
@@ -359,18 +282,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B4BAC52123203F58007EAF15 /* DataSource */ = {
-			isa = PBXGroup;
-			children = (
-				B4BAC52523203F96007EAF15 /* ObjectDataSource.swift */,
-				B4BAC540232041FE007EAF15 /* ObjectValidatable.swift */,
-				B4BAC54223205022007EAF15 /* NoteCardDataSource.swift */,
-				665C7EB823209B4D000BFD9F /* TagDataSource.swift */,
-				65F3739F23289D4C002CD331 /* NoteCardCollectionDataSource.swift */,
-			);
-			path = DataSource;
-			sourceTree = "<group>";
-		};
 		B4BAC52223203F60007EAF15 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -378,10 +289,10 @@
 				B4BAC54423206B28007EAF15 /* String.swift */,
 				650D14E82332B96100B6E2BF /* View.swift */,
 				B4EC398023DB7AD90011569C /* Alert.swift */,
-				B40B519B2335C2D6002DA41D /* NotificationName.swift */,
 				B4FFEB26234ED0CE00B4550F /* Color.swift */,
 				B4FFEB28234ED2AA00B4550F /* Image.swift */,
 				B4113FBD23D2DA5E004E70DC /* UIView.swift */,
+				B40B519B2335C2D6002DA41D /* NotificationName.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -392,6 +303,7 @@
 				B4BAC5342320405B007EAF15 /* NoteCard.swift */,
 				B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */,
 				B4BAC5382320405B007EAF15 /* Tag.swift */,
+				B4BAC540232041FE007EAF15 /* ObjectValidatable.swift */,
 			);
 			path = "Data Model";
 			sourceTree = "<group>";
@@ -426,11 +338,9 @@
 				B4113FBA23D2D7BE004E70DC /* FN View & Controller */,
 				B40056F123D6C65B00997216 /* Reusable View */,
 				B4BAC5272320400A007EAF15 /* Data Model */,
-				B4BAC52123203F58007EAF15 /* DataSource */,
-				B499A35A2326D972002D16A0 /* Old Views */,
-				B4C76DF9232C0A180033DDEA /* UIView */,
-				B402F62A234087F900EC0A77 /* View Model + Enum */,
-				B40BB6172335B11900E2F98B /* View Modifier + Utility */,
+				B4C76DF9232C0A180033DDEA /* Text Field Wrapper */,
+				B402F62A234087F900EC0A77 /* Search View + Model */,
+				B40BB6172335B11900E2F98B /* Utility */,
 				B4BAC52223203F60007EAF15 /* Extension */,
 				B499A3572326D932002D16A0 /* CoreDataStack */,
 				B4BB117023145DC400A380AA /* AppDelegate.swift */,
@@ -462,15 +372,20 @@
 			path = FNoteTests;
 			sourceTree = "<group>";
 		};
-		B4C76DF9232C0A180033DDEA /* UIView */ = {
+		B4C76DF9232C0A180033DDEA /* Text Field Wrapper */ = {
 			isa = PBXGroup;
 			children = (
+				B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */,
+				B40056ED23D6B9C300997216 /* ModalTextFieldModel.swift */,
 				B4C76DFA232C0A520033DDEA /* ModalTextFieldWrapper.swift */,
+				B46B3404232E8214008B2088 /* ModalTextView.swift */,
+				B40056F223D6C82900997216 /* ModalTextViewModel.swift */,
 				B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */,
+				B4EEF32B235D99B400869567 /* ModalDragHandle.swift */,
 				B46B3406232E8634008B2088 /* InputViewResponder.swift */,
 				B4F395DA238BC39C006DA683 /* TextFieldWrapper.swift */,
 			);
-			path = UIView;
+			path = "Text Field Wrapper";
 			sourceTree = "<group>";
 		};
 		B4EC398223DB88350011569C /* Collection View Wrapper */ = {
@@ -593,32 +508,21 @@
 				B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */,
 				B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */,
 				B4816A6B23D912E9006485F7 /* ObjectCUDRequest.swift in Sources */,
-				665C7EB923209B4D000BFD9F /* TagDataSource.swift in Sources */,
 				B4816A6923D8D73C006485F7 /* AppState.swift in Sources */,
-				668E537523297FDB0095DD71 /* NoteCardView.swift in Sources */,
-				B466BAFD23333DF5007DD130 /* ProfileView.swift in Sources */,
-				65F373A6232981C6002CD331 /* NoteCardCollectionListView.swift in Sources */,
 				B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */,
 				B4FFEB29234ED2AA00B4550F /* Image.swift in Sources */,
 				B4EC398623DB88E40011569C /* CollectionViewCompositionalViewModel.swift in Sources */,
-				B4928E8E2390B0980060AD45 /* NavigationItemIconStyle.swift in Sources */,
 				B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */,
 				B4D240D723DBD1EE005B4066 /* NoteCardCollectionCell.swift in Sources */,
 				B49C4C7123D65C850030D9B2 /* HomeNoteCardView.swift in Sources */,
 				B4A0CE9923D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift in Sources */,
 				B4816A6D23D91327006485F7 /* NoteCardCUDRequest.swift in Sources */,
 				B49C4C6F23D64AFB0030D9B2 /* SegmentControlWrapper.swift in Sources */,
-				B40BB61C2335BFED00E2F98B /* TagListView.swift in Sources */,
-				B411E04D2332F60F008D99A0 /* ViewForceReloader.swift in Sources */,
 				656AC282236A1AA30038F301 /* TagRow.swift in Sources */,
 				B4113FBE23D2DA5E004E70DC /* UIView.swift in Sources */,
 				B49C4C7823D6B0AC0030D9B2 /* HomeNoteCardCollectionView.swift in Sources */,
 				B48AC69723D93C150033DF6F /* NoteCardFormCollectionSelectionView.swift in Sources */,
-				B402F62E234093C200EC0A77 /* CreateUpdateSheetState.swift in Sources */,
-				B4E41E5623354B720057EB0A /* NoteCardViewNavigationLink.swift in Sources */,
-				B499A3602326DA27002D16A0 /* MainTabView.swift in Sources */,
 				B49C4C6D23D6390A0030D9B2 /* NoteCardForm.swift in Sources */,
-				B4BAC52623203F96007EAF15 /* ObjectDataSource.swift in Sources */,
 				B40056F323D6C82900997216 /* ModalTextViewModel.swift in Sources */,
 				B40056F023D6C26500997216 /* HomeTagView.swift in Sources */,
 				B4BB117623145DC400A380AA /* FNote.xcdatamodeld in Sources */,
@@ -627,28 +531,20 @@
 				B4113FB923D2D539004E70DC /* NoteCardCell.swift in Sources */,
 				B49C4C7323D69E6C0030D9B2 /* NoteCardFormModel.swift in Sources */,
 				656AC27E236A11AE0038F301 /* NoteCardCollectionRow.swift in Sources */,
-				66B945B72357A1C2003147AA /* NoteCardDetailRelationshipView.swift in Sources */,
-				B4D7341A233F36FE00A3958A /* NavigationBarBackButton.swift in Sources */,
 				B4D240D923DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift in Sources */,
-				66F9A744237C8E3F007D2330 /* NoteCardScrollView.swift in Sources */,
 				B48AC69923D9445A0033DF6F /* NoteCardFormTagSelectionView.swift in Sources */,
-				65F373A023289D4C002CD331 /* NoteCardCollectionDataSource.swift in Sources */,
 				B40056F523D6CC8600997216 /* NavigationBarButton.swift in Sources */,
 				B411E0512332F6B4008D99A0 /* NotificationObserver.swift in Sources */,
 				B4EE3ECC2329D86500CC40B7 /* ModalTextField.swift in Sources */,
 				B4FFEB27234ED0CE00B4550F /* Color.swift in Sources */,
 				B46B0F592364A0CE0074B71A /* SearchTextField.swift in Sources */,
 				B4DD491F238A5ED300D183CF /* WelcomeGuideView.swift in Sources */,
-				B45A49FF2367A7690079D8DE /* NoteCardNavigationButtonStyle.swift in Sources */,
 				650D14E92332B96100B6E2BF /* View.swift in Sources */,
-				B4BAC54323205022007EAF15 /* NoteCardDataSource.swift in Sources */,
 				B4B49B602378CCF90086B8B5 /* NoteCardSearchModel.swift in Sources */,
 				B4A0CE9623D4AB57003A4D83 /* NoteCardCollectionViewModel.swift in Sources */,
 				B4113FE023D2E046004E70DC /* NoteCardCellWrapper.swift in Sources */,
-				B4270C9A23ADB5F2003BE97E /* NoteCardCollectionSelectionView.swift in Sources */,
 				B4BAC541232041FE007EAF15 /* ObjectValidatable.swift in Sources */,
 				B40B519C2335C2D6002DA41D /* NotificationName.swift in Sources */,
-				B499A3652326E8B7002D16A0 /* CoreDataStack+Extension.swift in Sources */,
 				B4C76DFB232C0A520033DDEA /* ModalTextFieldWrapper.swift in Sources */,
 				B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */,
 				B4BAC54523206B28007EAF15 /* String.swift in Sources */,
@@ -656,20 +552,16 @@
 				B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */,
 				B4F395DB238BC39C006DA683 /* TextFieldWrapper.swift in Sources */,
 				B4EC398123DB7AD90011569C /* Alert.swift in Sources */,
-				B4D73417233F074E00A3958A /* NoteCardDetailTagView.swift in Sources */,
 				B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */,
-				B4153C592329843F00496E38 /* NoteCardDetailView.swift in Sources */,
 				B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */,
 				B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */,
 				B4EC398423DB88460011569C /* CollectionViewWrapper.swift in Sources */,
 				B4113FBC23D2D7D9004E70DC /* FNCollectionViewCell.swift in Sources */,
 				B40F09FD237CFC6600E4F7D3 /* UserSetting.swift in Sources */,
 				B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */,
-				B411E04F2332F672008D99A0 /* NavigationStateHandler.swift in Sources */,
 				B4816A6F23D91341006485F7 /* NoteCardCollectionCUDRequest.swift in Sources */,
 				B40056EE23D6B9C400997216 /* ModalTextFieldModel.swift in Sources */,
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
-				B499A3632326E518002D16A0 /* NoteCardCollectionView.swift in Sources */,
 				B45A4A032368A2810079D8DE /* NoteCardSearchScope.swift in Sources */,
 				B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */,
 				B4816A7123D91354006485F7 /* TagCUDRequest.swift in Sources */,

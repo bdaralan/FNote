@@ -12,7 +12,7 @@ import CoreData
 import SwiftUI
 
 
-class NoteCard: NSManagedObject, ObjectValidatable, Identifiable {
+class NoteCard: NSManagedObject, Identifiable, ObjectValidatable {
     
     @NSManaged private(set) var uuid: String
     @NSManaged var native: String
@@ -284,20 +284,6 @@ extension NoteCard {
 
 
 extension NoteCard {
-    
-    static func sampleNoteCards(count: Int) -> [NoteCard] {
-        let sampleContext = CoreDataStack.sampleContext
-        
-        var notes = [NoteCard]()
-        for note in 1...count {
-            let noteCard = NoteCard(context: sampleContext)
-            noteCard.native = "Native \(note)"
-            noteCard.translation = "Translation \(note)"
-            notes.append(noteCard)
-        }
-        
-        return notes
-    }
     
     static let sample: NoteCard = {
         let card = NoteCard(context: .sample)

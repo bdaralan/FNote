@@ -13,7 +13,7 @@ struct HomeView: View {
     
     @EnvironmentObject var appState: AppState
     
-    @State private var currentTab = MainTabView.Tab.card
+    @State private var currentTab = Tab.card
     
     @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
     @State private var collectionCollectionViewModel = NoteCardCollectionCollectionViewModel()
@@ -33,27 +33,27 @@ struct HomeView: View {
                     viewModel: cardCollectionViewModel,
                     collection: appState.currentCollection!
                 )
-                    .tabItem(MainTabView.Tab.card.tabItem)
-                    .tag(MainTabView.Tab.card)
+                    .tabItem(Tab.card.tabItem)
+                    .tag(Tab.card)
             
             } else {
                 WelcomeGuideView(
                     iCloudActive: appState.iCloudActive,
                     action: beginCreateNoteCardCollection
                 )
-                    .tabItem(MainTabView.Tab.card.tabItem)
-                    .tag(MainTabView.Tab.card)
+                    .tabItem(Tab.card.tabItem)
+                    .tag(Tab.card)
             }
             
             // MARK: Collection Tab
             HomeNoteCardCollectionView(viewModel: collectionCollectionViewModel)
-                .tabItem(MainTabView.Tab.collection.tabItem)
-                .tag(MainTabView.Tab.collection)
+                .tabItem(Tab.collection.tabItem)
+                .tag(Tab.collection)
             
             // MARK: Tag Tab
             HomeTagView(tags: appState.tags)
-                .tabItem(MainTabView.Tab.tag.tabItem)
-                .tag(MainTabView.Tab.tag)
+                .tabItem(Tab.tag.tabItem)
+                .tag(Tab.tag)
             
         }
         .onAppear(perform: setupOnAppear)
@@ -116,6 +116,50 @@ extension HomeView {
             
         case .updated, .deleted, .unchanged:
             fatalError("🧨 hmm... tried to \(result) collection in commitCreateNoteCardCollection method 🧨")
+        }
+    }
+}
+
+
+// MARK: - Tab Enum
+
+extension HomeView {
+    
+    enum Tab: Int {
+        case card
+        case collection
+        case tag
+        case profile
+        
+        
+        var title: String {
+            switch self {
+            case .card: return "Cards"
+            case .collection: return "Collections"
+            case .tag: return "Tags"
+            case .profile: return "Profile"
+            }
+        }
+        
+        var systemImage: String {
+            switch self {
+            case .card: return "rectangle.fill.on.rectangle.angled.fill"
+            case .collection: return "rectangle.stack.fill"
+            case .tag: return "tag.fill"
+            case .profile: return "person.fill"
+            }
+        }
+        
+        func tabItem() -> some View {
+            let size: CGFloat = self == .profile ? 23 : 17
+            
+            let image = Image(systemName: systemImage)
+                .frame(alignment: .bottom)
+                .font(.system(size: size))
+            
+            let tabName = Text(title)
+            
+            return ViewBuilder.buildBlock(image, tabName)
         }
     }
 }
