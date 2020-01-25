@@ -88,8 +88,8 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     }
     
     func showCellBorder(_ show: Bool) {
-        contentView.layer.borderColor = UIColor.appAccent.cgColor
-        contentView.layer.borderWidth = show ? 3 : 0
+        layer.borderColor = UIColor.appAccent.cgColor
+        layer.borderWidth = show ? 3 : 0
     }
     
     func disableCell(_ disabled: Bool) {
