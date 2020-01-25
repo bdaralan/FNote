@@ -27,5 +27,6 @@ enum ObjectCUDResult<T: NSManagedObject> {
     case created(T, ManagedObjectChildContext)
     case updated(T, ManagedObjectChildContext)
     case deleted(ManagedObjectChildContext)
+    case unchanged
     case failed
 }

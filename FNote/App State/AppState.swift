@@ -32,6 +32,10 @@ class AppState: ObservableObject {
         tagFetchController.fetchedObjects ?? []
     }
     
+    var iCloudActive: Bool {
+        FileManager.default.ubiquityIdentityToken != nil
+    }
+    
     @Published private(set) var currentCollectionID: String? = AppCache.currentCollectionUUID
     private(set) lazy var currentCollection = collections.first(where: { $0.uuid == currentCollectionID })
     
@@ -85,9 +89,9 @@ class AppState: ObservableObject {
 extension AppState {
     
     func setCurrentCollection(_ collection: NoteCardCollection?) {
+        AppCache.currentCollectionUUID = collection?.uuid
         currentCollectionID = collection?.uuid
         currentCollection = collection
-        AppCache.currentCollectionUUID = collection?.uuid
         fetchCurrentNoteCards()
     }
     
@@ -105,6 +109,14 @@ extension AppState {
         currentRequest.sortDescriptors = newRequest.sortDescriptors
         
         try? currentNoteCardsFetchController.performFetch()
+    }
+    
+    func fetchCollections() {
+        try? collectionFetchController.performFetch()
+    }
+    
+    func fetchTags() {
+        try? tagFetchController.performFetch()
     }
 }
 
@@ -149,7 +161,9 @@ extension AppState {
         request.update(collection)
         
         if collection.isValid() {
-            return .created(collection, context)
+            if isCollectionNameUnique(collection.name) {
+                return .created(collection, context)
+            }
         }
         
         return .failed
@@ -163,7 +177,13 @@ extension AppState {
         request.update(collectionToUpdate)
         
         if collectionToUpdate.isValid() {
-            return .updated(collectionToUpdate, context)
+            if collectionToUpdate.name == collection.name {
+                return .unchanged
+            }
+            
+            if isCollectionNameUnique(collectionToUpdate.name) {
+                return .updated(collectionToUpdate, context)
+            }
         }
         
         return .failed
@@ -212,8 +232,14 @@ extension AppState {
 }
 
 
-
-
+extension AppState {
+    
+    func isCollectionNameUnique(_ name: String) -> Bool {
+        let collectionNames = collections.map({ $0.name.lowercased() })
+        let name = name.trimmed().lowercased()
+        return !collectionNames.contains(name)
+    }
+}
 
 
 

@@ -7,11 +7,18 @@
 //
 
 import UIKit
+import Combine
+import CoreData
 
 
-class FNCollectionViewCell<Object>: UICollectionViewCell {
+class FNCollectionViewCell<Object>: UICollectionViewCell where Object: NSManagedObject {
+    
+    static var reuseID: String { "\(Self.self)" }
     
     private(set) var object: Object?
+    
+    /// A subscription to reload cell on received `objectWillChange`.
+    private(set) var subscription: AnyCancellable?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -29,6 +36,7 @@ class FNCollectionViewCell<Object>: UICollectionViewCell {
     
     func reload(with object: Object) {
         self.object = object
+        setupSubscription()
     }
     
     func initCell() {
@@ -39,4 +47,22 @@ class FNCollectionViewCell<Object>: UICollectionViewCell {
     func setupCell() {}
     
     func setupConstraints() {}
+}
+
+
+extension FNCollectionViewCell {
+    
+    private func setupSubscription() {
+        subscription = object?
+            .objectWillChange
+            .eraseToAnyPublisher()
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] a in
+                guard let self = self else { return }
+                guard let object = self.object else { return }
+                guard object.managedObjectContext != nil else { return }
+                self.reload(with: object)
+            })
+    }
 }

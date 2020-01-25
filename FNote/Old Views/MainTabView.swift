@@ -78,7 +78,7 @@ struct MainTabView: View {
             } else {
                 NavigationView {
                     WelcomeGuideView(
-                        isInvalidUser: isInvalidUser,
+                        iCloudActive: !isInvalidUser,
                         action: requestCreatingNoteCardCollection
                     )
                         .navigationBarTitle("FNote")

@@ -35,9 +35,6 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     
     private(set) var style: Style = .regular
     
-    /// A subscription for note card's `objectWillChange`.
-    private var subscription: AnyCancellable?
-    
     
     // MARK: Constraints
     
@@ -67,22 +64,6 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         
         tagButton.isUserInteractionEnabled = !object.tags.isEmpty
         tagButton.tintColor = object.tags.isEmpty ? .quaternaryLabel : .secondaryLabel
-        
-        setupSubscription()
-    }
-    
-    private func setupSubscription() {
-        subscription = object?
-            .objectWillChange
-            .eraseToAnyPublisher()
-            .subscribe(on: DispatchQueue.global(qos: .background))
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] a in
-                guard let self = self else { return }
-                guard let object = self.object else { return }
-                guard object.managedObjectContext != nil else { return }
-                self.reload(with: object)
-            })
     }
     
     func setCellStyle(_ style: Style) {
@@ -138,11 +119,11 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     override func setupCell() {
         super.setupCell()
         
-        backgroundColor = UIColor(named: "note-card-background")
+        backgroundColor = .noteCardBackground
         layer.masksToBounds = false
         layer.cornerRadius = 15
         layer.shadowColor = UIColor.label.cgColor
-        layer.shadowOpacity = 0.1
+        layer.shadowOpacity = 0.17
         layer.shadowRadius = 1
         layer.shadowOffset = .init(width: -1, height: 1)
         

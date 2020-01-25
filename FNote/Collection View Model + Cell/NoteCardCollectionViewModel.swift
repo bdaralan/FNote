@@ -26,7 +26,7 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     var borderedNoteCardIDs: Set<String> = []
     var disableNoteCardIDs: Set<String> = []
-    var contextMenus: Set<NoteCardCell.ContextMenu> = []
+    var contextMenus: [NoteCardCell.ContextMenu] = []
     
     
     // MARK: Action
@@ -40,15 +40,7 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     private weak var collectionView: UICollectionView?
     
-    private let cellID = "NoteCardCellID"
-    
-    
-    func updateSnapshot(animated: Bool, completion: (() -> Void)? = nil) {
-        var snapshot = Snapshot()
-        snapshot.appendSections([0])
-        snapshot.appendItems(noteCards, toSection: 0)
-        dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
-    }
+    private let cellID = NoteCardCell.reuseID
 }
 
 
@@ -97,12 +89,18 @@ extension NoteCardCollectionViewModel {
 
 extension NoteCardCollectionViewModel {
     
+    func updateSnapshot(animated: Bool, completion: (() -> Void)? = nil) {
+        var snapshot = Snapshot()
+        snapshot.appendSections([0])
+        snapshot.appendItems(noteCards, toSection: 0)
+        dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
+    }
+    
     func setupCollectionView(_ collectionView: UICollectionView) {
         self.collectionView = collectionView
         collectionView.collectionViewLayout = createCompositionalLayout()
         collectionView.register(NoteCardCell.self, forCellWithReuseIdentifier: cellID)
         collectionView.delegate = self
-        
         collectionView.alwaysBounceVertical = true
         
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, noteCard in

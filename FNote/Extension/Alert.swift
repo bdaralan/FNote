@@ -18,4 +18,14 @@ extension Alert {
         let delete = Alert.Button.destructive(Text("Delete"), action: onDelete)
         return Alert(title: title, message: message, primaryButton: cancel, secondaryButton: delete)
     }
+    
+    static func DeleteNoteCardCollection(_ collection: NoteCardCollection, onCancel: (() -> Void)?, onDelete: (() -> Void)?) -> Alert {
+        let cardCount = collection.noteCards.count
+        let countUnit = cardCount == 1 ? "card" : "cards"
+        let title = Text("Delete Collection")
+        let message = Text("Delete '\(collection.name)' with \(cardCount) \(countUnit).")
+        let cancel = Alert.Button.cancel(onCancel)
+        let delete = Alert.Button.destructive(Text("Delete"), action: onDelete)
+        return Alert(title: title, message: message, primaryButton: cancel, secondaryButton: delete)
+    }
 }

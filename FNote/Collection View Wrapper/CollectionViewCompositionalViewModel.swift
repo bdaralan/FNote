@@ -11,7 +11,7 @@ import UIKit
 
 protocol CollectionViewCompositionalViewModel {
     
-    func setupCollectionView(_ collection: UICollectionView)
+    func setupCollectionView(_ collectionView: UICollectionView)
     
     func updateSnapshot(animated: Bool, completion: (() -> Void)?)
 }

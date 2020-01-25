@@ -11,49 +11,55 @@ import SwiftUI
 
 struct WelcomeGuideView: View {
     
-    var isInvalidUser = false
+    var iCloudActive = false
     
     var action: (() -> Void)?
     
     var imageName: String {
-        isInvalidUser ? "person.crop.circle.fill.badge.exclam" : "rectangle.stack.fill.badge.plus"
+        iCloudActive ? "rectangle.stack.fill.badge.plus" : "person.crop.circle.fill.badge.exclam"
     }
     
     var imageColor: Color {
-        isInvalidUser ? .primary : .init(UIColor.tertiaryLabel)
+        iCloudActive ? .init(UIColor.tertiaryLabel) : .primary
     }
     
     var firstString: String {
-        isInvalidUser ? "No iCloud Detected" : "No collection selected"
+        iCloudActive ? "No collection selected" : "No iCloud Detected"
     }
     
     var secondString: String {
-        let invalidUserMessage = """
-        Please make sure your Apple ID is logged in
-        and FNote is turned on in iCloud Settings.
-        """
-        return isInvalidUser ? invalidUserMessage : "Select or create a new collection"
+        if iCloudActive {
+            return "Select or create a new collection"
+        } else {
+            return """
+            Please make sure your Apple ID is logged in
+            and FNote is turned on in iCloud Settings.
+            """
+        }
     }
     
     
     var body: some View {
-        VStack(spacing: 24) {
-            Button(action: action ?? {}) {
-                Image(systemName: imageName)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 150, height: 150)
-                    .foregroundColor(imageColor)
+        NavigationView {
+            VStack(spacing: 24) {
+                Button(action: action ?? {}) {
+                    Image(systemName: imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 150, height: 150)
+                        .foregroundColor(imageColor)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .disabled(!iCloudActive)
+                
+                VStack(spacing: 8) {
+                    Text(firstString)
+                    Text(secondString)
+                }
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
             }
-            .buttonStyle(PlainButtonStyle())
-            .disabled(isInvalidUser)
-            
-            VStack(spacing: 8) {
-                Text(firstString)
-                Text(secondString)
-            }
-            .foregroundColor(.secondary)
-            .multilineTextAlignment(.center)
+            .navigationBarTitle("FNote")
         }
     }
 }

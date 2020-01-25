@@ -61,7 +61,9 @@ extension HomeNoteCardView {
                 .eraseToAnyView()
             
         case .noteCardRelationship:
-            let doneNavItem = Button("Done", action: { self.sheet = nil })
+            let done = { self.sheet = nil }
+            let label = { Text("Done").bold() }
+            let doneNavItem = Button(action: done, label: label)
             return NavigationView {
                 NoteCardFormRelationshipSelectionView(viewModel: relationshipViewModel!)
                     .navigationBarTitle("Relationships", displayMode: .inline)
@@ -71,7 +73,9 @@ extension HomeNoteCardView {
             .eraseToAnyView()
             
         case .noteCardTag:
-            let doneNavItem = Button("Done", action: { self.sheet = nil })
+            let done = { self.sheet = nil }
+            let label = { Text("Done").bold() }
+            let doneNavItem = Button(action: done, label: label)
             return NavigationView {
                 NoteCardFormTagSelectionView(
                     formModel: tagViewModel!,
@@ -227,20 +231,7 @@ extension HomeNoteCardView {
     func commitDeleteNoteCard() {
         guard let noteCardToDelete = noteCardToDelete else { return }
         let result = appState.deleteObject(noteCardToDelete)
-        switch result {
-        case .deleted(let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            appState.fetchCurrentNoteCards()
-            viewModel.noteCards = appState.currenNoteCards
-            viewModel.updateSnapshot(animated: true)
-            
-        case .failed: // TODO: inform user if needed
-            break
-            
-        case .created, .updated:
-            fatalError("🧨 hmm... tried to \(result) object in commitDeleteNoteCard method 🧨")
-        }
+        handleNoteCardCUDResult(result)
     }
 }
 
@@ -342,11 +333,16 @@ extension HomeNoteCardView {
             }
             sheet = nil
             
-        case .failed: // TODO: show alert if needed
+        case .deleted(let childContext):
+            childContext.quickSave()
+            childContext.parent?.quickSave()
+            appState.fetchCurrentNoteCards()
+            viewModel.noteCards = appState.currenNoteCards
+            viewModel.updateSnapshot(animated: true)
             sheet = nil
             
-        case .deleted:
-            fatalError("🧨 hmm... tried to delete object in commitCreateNoteCard method 🧨")
+        case .failed, .unchanged: // TODO: show alert if needed
+            sheet = nil
         }
     }
 }

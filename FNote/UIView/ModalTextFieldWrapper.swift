@@ -58,6 +58,7 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
         
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
             wrapper.onCommit?()
+            textField.resignFirstResponder()
             return true
         }
         
