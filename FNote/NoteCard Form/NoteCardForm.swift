@@ -32,7 +32,7 @@ struct NoteCardForm: View {
                     }
                     VStack(alignment: .leading, spacing: 4) {
                         TextField(viewModel.translationPlaceholder, text: $viewModel.translation)
-                            .font(.headline)
+                            .font(Font.headline.weight(.regular))
                         Text("translation")
                             .font(.footnote)
                             .foregroundColor(.secondary)

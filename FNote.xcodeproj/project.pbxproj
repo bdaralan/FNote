@@ -21,6 +21,7 @@
 		B4113FBE23D2DA5E004E70DC /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4113FBD23D2DA5E004E70DC /* UIView.swift */; };
 		B4113FE023D2E046004E70DC /* NoteCardCellWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4113FDF23D2E046004E70DC /* NoteCardCellWrapper.swift */; };
 		B411E0512332F6B4008D99A0 /* NotificationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E0502332F6B4008D99A0 /* NotificationObserver.swift */; };
+		B44E786C23DCAA7700428D4A /* SearchFieldCellHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44E786B23DCAA7700428D4A /* SearchFieldCellHeader.swift */; };
 		B45A4A032368A2810079D8DE /* NoteCardSearchScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */; };
 		B46B0F592364A0CE0074B71A /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B0F582364A0CD0074B71A /* SearchTextField.swift */; };
 		B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */; };
@@ -100,6 +101,7 @@
 		B4113FBD23D2DA5E004E70DC /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		B4113FDF23D2E046004E70DC /* NoteCardCellWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCellWrapper.swift; sourceTree = "<group>"; };
 		B411E0502332F6B4008D99A0 /* NotificationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObserver.swift; sourceTree = "<group>"; };
+		B44E786B23DCAA7700428D4A /* SearchFieldCellHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFieldCellHeader.swift; sourceTree = "<group>"; };
 		B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchScope.swift; sourceTree = "<group>"; };
 		B46B0F582364A0CD0074B71A /* SearchTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewWrapper.swift; sourceTree = "<group>"; };
@@ -215,6 +217,7 @@
 				B4113FDF23D2E046004E70DC /* NoteCardCellWrapper.swift */,
 				B4D240D823DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift */,
 				B4D240D623DBD1EE005B4066 /* NoteCardCollectionCell.swift */,
+				B44E786B23DCAA7700428D4A /* SearchFieldCellHeader.swift */,
 			);
 			path = "Collection View Model + Cell";
 			sourceTree = "<group>";
@@ -556,6 +559,7 @@
 				B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */,
 				B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */,
 				B4EC398423DB88460011569C /* CollectionViewWrapper.swift in Sources */,
+				B44E786C23DCAA7700428D4A /* SearchFieldCellHeader.swift in Sources */,
 				B4113FBC23D2D7D9004E70DC /* FNCollectionViewCell.swift in Sources */,
 				B40F09FD237CFC6600E4F7D3 /* UserSetting.swift in Sources */,
 				B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */,

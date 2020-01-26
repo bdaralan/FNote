@@ -23,6 +23,8 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     let translationLabel = UILabel(text: "Translation")
     let nativeLabel = UILabel(text: "Native")
     let dividerLine = UIView()
+    let dividerLCircle = UIView()
+    let dividerRCircle = UIView()
     
     let relationshipButton = UIButton(type: .system)
     let tagButton = UIButton(type: .system)
@@ -34,6 +36,7 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     }
     
     private(set) var style: Style = .regular
+    private let dividerCircleWidth: CGFloat = 5
     
     
     // MARK: Constraints
@@ -51,7 +54,7 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         
         nativeLabel.text = object.native
         
-        dividerLine.backgroundColor = object.formality.uiColor
+        setDividerColor(object.formality.uiColor)
         
         let imageName = object.isFavorited ? "star.fill" : "star"
         favoriteButton.setImage(createQuickButtonImage(systemName: imageName), for: .normal)
@@ -97,6 +100,12 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         contentView.layer.opacity = disabled ? 0.4 : 1
     }
     
+    func setDividerColor(_ color: UIColor) {
+        dividerLine.backgroundColor = color
+        dividerLCircle.backgroundColor = color
+        dividerRCircle.backgroundColor = color
+    }
+    
     @objc private func handleQuickButtonTapped(_ sender: UIButton) {
         guard let noteCard = object else { return }
         let type: QuickButtonType
@@ -131,7 +140,9 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         
         translationLabel.font = .preferredFont(forTextStyle: .body)
         
-        dividerLine.backgroundColor = NoteCard.Formality.unspecified.uiColor
+        setDividerColor(NoteCard.Formality.unspecified.uiColor)
+        dividerLCircle.layer.cornerRadius = dividerCircleWidth / 2
+        dividerRCircle.layer.cornerRadius = dividerCircleWidth / 2
         
         relationshipButton.setImage(createQuickButtonImage(systemName: "square.on.square"), for: .normal)
         tagButton.setImage(createQuickButtonImage(systemName: "tag"), for: .normal)
@@ -154,6 +165,8 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         labelStackView.distribution = .fillProportionally
         labelStackView.addArrangedSubviews(nativeLabel, dividerLine, translationLabel)
         
+        dividerLine.addSubviews(dividerLCircle, dividerRCircle, useAutoLayout: true)
+        
         quickButtonStackView.axis = .horizontal
         quickButtonStackView.spacing = 0
         quickButtonStackView.distribution = .fillEqually
@@ -164,7 +177,17 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
             labelStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, constant: -16 * 2),
             labelStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
-            dividerLine.heightAnchor.constraint(equalToConstant: 1)
+            dividerLine.heightAnchor.constraint(equalToConstant: 1),
+            
+            dividerLCircle.centerYAnchor.constraint(equalTo: dividerLine.centerYAnchor),
+            dividerLCircle.centerXAnchor.constraint(equalTo: dividerLine.leadingAnchor),
+            dividerLCircle.heightAnchor.constraint(equalToConstant: dividerCircleWidth),
+            dividerLCircle.widthAnchor.constraint(equalToConstant: dividerCircleWidth),
+            
+            dividerRCircle.centerYAnchor.constraint(equalTo: dividerLine.centerYAnchor),
+            dividerRCircle.centerXAnchor.constraint(equalTo: dividerLine.trailingAnchor),
+            dividerRCircle.heightAnchor.constraint(equalToConstant: dividerCircleWidth),
+            dividerRCircle.widthAnchor.constraint(equalToConstant: dividerCircleWidth)
         ]
         
         regularStyleConstraints = sharedConstraints + [

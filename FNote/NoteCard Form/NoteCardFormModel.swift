@@ -66,7 +66,8 @@ class NoteCardFormModel: ObservableObject {
     }
     
     var selectedCollectionNoteCardCount: String {
-        let count = selectedCollection?.noteCards.count ?? 0
+        guard let collection = selectedCollection else { return "" }
+        let count = collection.noteCards.count
         let card = count == 1 ? "CARD" : "CARDS"
         return "\(count) \(card)"
     }

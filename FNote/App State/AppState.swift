@@ -95,7 +95,7 @@ extension AppState {
         fetchCurrentNoteCards()
     }
     
-    func fetchCurrentNoteCards(with option: String = "") { // TODO: Implement filter & sort
+    func fetchCurrentNoteCards() {
         let newRequest: NSFetchRequest<NoteCard>
         
         if let collection = currentCollection {

@@ -36,11 +36,17 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     var onContextMenuSelected: ((NoteCardCell.ContextMenu, NoteCard) -> Void)?
     
     
+    // MARK: Search
+    var onSearchTextDebounced: ((String) -> Void)?
+    var onSearchCancel: (() -> Void)?
+    
+    
     // MARK: Reference
     
     private weak var collectionView: UICollectionView?
     
     private let cellID = NoteCardCell.reuseID
+    private let searchFieldHeaderID = "SearchHeaderID"
 }
 
 
@@ -100,9 +106,12 @@ extension NoteCardCollectionViewModel {
         self.collectionView = collectionView
         collectionView.collectionViewLayout = createCompositionalLayout()
         collectionView.register(NoteCardCell.self, forCellWithReuseIdentifier: cellID)
+        collectionView.register(SearchFieldCellHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: searchFieldHeaderID)
         collectionView.delegate = self
         collectionView.alwaysBounceVertical = true
+        collectionView.keyboardDismissMode = .onDrag
         
+        // MARK: Cell
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, noteCard in
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellID, for: indexPath) as! NoteCardCell
             cell.reload(with: noteCard)
@@ -111,6 +120,25 @@ extension NoteCardCollectionViewModel {
             cell.disableCell(self.disableNoteCardIDs.contains(noteCard.uuid))
             cell.onQuickButtonTapped = self.onNoteCardQuickButtonTapped
             return cell
+        }
+        
+        // MARK: Header
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
+            guard kind == UICollectionView.elementKindSectionHeader else { return nil }
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: self.searchFieldHeaderID, for: indexPath) as! SearchFieldCellHeader
+            
+            header.onSearchTextDebounced = { [weak self] searchText in
+                self?.onSearchTextDebounced?(searchText)
+            }
+            
+            header.onCancel = { [weak self] in
+                self?.onSearchCancel?()
+                header.searchText = ""
+                header.searchField.resignFirstResponder()
+                header.showCancel(false, animated: true)
+            }
+            
+            return header
         }
     }
     
@@ -133,6 +161,21 @@ extension NoteCardCollectionViewModel {
         section.interGroupSpacing = 16
         section.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
         
+        section.boundarySupplementaryItems = [createSearchFieldSupplementaryItem()]
+//        if onSearchTextDebounced != nil {
+//            section.boundarySupplementaryItems = [createSearchFieldSupplementaryItem()]
+//        }
+        
         return section
+    }
+    
+    func createSearchFieldSupplementaryItem() -> NSCollectionLayoutBoundarySupplementaryItem {
+        let size = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(35 + 16))
+        let item = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: size,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .top
+        )
+        return item
     }
 }
