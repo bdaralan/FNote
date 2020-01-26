@@ -23,6 +23,8 @@ struct HomeView: View {
     @State private var showCreateCollectionSheet = false
     @State private var modalTextFieldModel = ModalTextFieldModel()
     
+    @State private var storeRemoteChangeObserver = NotificationObserver(name: .persistentStoreRemoteChange)
+    
     
     var body: some View {
         TabView(selection: $currentTab) {
@@ -67,7 +69,40 @@ struct HomeView: View {
 extension HomeView {
     
     func setupOnAppear() {
+        storeRemoteChangeObserver.onReceived = handleStoreRemoteChangeNotification
+    }
+    
+    func handleStoreRemoteChangeNotification(_ notification: Notification) {
+        let history = CoreDataStack.current.historyTracker
+        guard let newHistoryToken = history.token(fromRemoteChange: notification) else { return }
+        guard !newHistoryToken.isEqual(history.lastToken) else { return }
+        history.updateLastToken(newHistoryToken)
+        DispatchQueue.main.async {
+            self.refreshAllFetches()
+        }
+    }
+    
+    func refreshAllFetches() {
+        appState.objectWillChange.send()
         
+        appState.fetchCurrentNoteCards()
+        cardCollectionViewModel.noteCards = appState.currenNoteCards
+        
+        appState.fetchCollections()
+        collectionCollectionViewModel.collections = appState.collections
+        
+        appState.fetchTags()
+        
+        switch currentTab {
+        case .card:
+            cardCollectionViewModel.updateSnapshot(animated: true)
+        case .collection:
+            collectionCollectionViewModel.updateSnapshot(animated: true)
+        case .tag:
+            break
+        case .profile:
+            break
+        }
     }
 }
 
