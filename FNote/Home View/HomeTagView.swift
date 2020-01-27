@@ -59,8 +59,7 @@ extension HomeTagView {
 extension HomeTagView {
     
     func setupOnAppear() {
-        viewModel.availableTags = appState.tags
-        viewModel.sections = [.available]
+        viewModel.tags = appState.tags
         viewModel.contextMenus = [.rename, .delete]
         viewModel.onTagSelected = handleTagSelected
         viewModel.onContextMenuSelected = handleContextMenuSelected

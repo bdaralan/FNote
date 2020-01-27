@@ -25,6 +25,11 @@ class TagCell: FNCollectionViewCell<Tag> {
         cardCountLabel.text = "\(count) \(unit)"
     }
     
+    func showCellBorder(_ show: Bool) {
+        layer.borderColor = UIColor.appAccent.cgColor
+        layer.borderWidth = show ? 3 : 0
+    }
+    
     override func setupCell() {
         super.setupCell()
         

@@ -11,26 +11,17 @@ import UIKit
 
 class TagCollectionViewModel: NSObject, CollectionViewCompositionalDataSource {
     
-    typealias DataSourceSection = Section
+    typealias DataSourceSection = Int
     typealias DataSourceItem = Tag
-    
-    enum Section {
-        case available
-        case selected
-        case unselected
-    }
     
     
     // MARK: Property
     
     var dataSource: DiffableDataSource!
     
-    var sections: [Section] = []
+    var tags: [Tag] = []
     
-    var availableTags: [Tag] = []
-    
-    var selectedTags: [Tag] = []
-    var unselectedTags: [Tag] = []
+    var borderedTags: Set<String> = []
     
     var contextMenus: [TagCell.ContextMenu] = []
  
@@ -44,6 +35,14 @@ class TagCollectionViewModel: NSObject, CollectionViewCompositionalDataSource {
     // MARK: Reference
     
     private weak var collectionView: UICollectionView?
+    
+    
+    // MARK: Method
+    
+    private func setupTagCell(_ cell: TagCell, for tag: Tag) {
+        cell.reload(with: tag)
+        cell.showCellBorder(borderedTags.contains(tag.uuid))
+    }
 }
 
 
@@ -53,7 +52,9 @@ extension TagCollectionViewModel: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let tag = dataSource.itemIdentifier(for: indexPath) else { return }
+        guard let cell = collectionView.cellForItem(at: indexPath) as? TagCell else { return }
         onTagSelected?(tag)
+        cell.showCellBorder(borderedTags.contains(tag.uuid))
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
@@ -111,38 +112,15 @@ extension TagCollectionViewModel {
         
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, tag in
             let cell = collectionView.dequeueCell(TagCell.self, for: indexPath)
-            cell.reload(with: tag)
+            self.setupTagCell(cell, for: tag)
             return cell
-        }
-        
-        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
-            let header = collectionView.dequeueHeader(LabelCollectionHeader.self, for: indexPath)
-            
-            switch self.sections[indexPath.section] {
-            case .available:
-                header.label.text = ""
-            case .selected:
-                header.label.text = "SELECTED"
-            case .unselected:
-                header.label.text = "UNSELECTED"
-            }
-            
-            return header
         }
     }
     
     func updateSnapshot(animated: Bool, completion: (() -> Void)? = nil) {
         var snapshot = Snapshot()
-        snapshot.appendSections(sections)
-        
-        for section in sections {
-            switch section {
-            case .available: snapshot.appendItems(availableTags, toSection: section)
-            case .selected: snapshot.appendItems(selectedTags, toSection: section)
-            case .unselected: snapshot.appendItems(unselectedTags, toSection: section)
-            }
-        }
-        
+        snapshot.appendSections([0])
+        snapshot.appendItems(tags)
         dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
     }
     
@@ -165,17 +143,6 @@ extension TagCollectionViewModel {
         section.interGroupSpacing = 12
         section.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
         
-        if sections.elementsEqual([.selected, .unselected]) {
-            section.boundarySupplementaryItems = [createHeaderSupplementaryItem()]
-        }
-        
         return section
-    }
-    
-    func createHeaderSupplementaryItem() -> NSCollectionLayoutBoundarySupplementaryItem {
-        let kind = UICollectionView.elementKindSectionHeader
-        let size = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(21))
-        let item = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: size, elementKind: kind, alignment: .top)
-        return item
     }
 }
