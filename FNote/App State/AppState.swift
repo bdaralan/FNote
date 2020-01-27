@@ -177,8 +177,15 @@ extension AppState {
         request.update(collectionToUpdate)
         
         if collectionToUpdate.isValid() {
-            if collectionToUpdate.name == collection.name {
-                return .unchanged
+            let currentName = collection.name
+            let updatedName = collectionToUpdate.name
+            
+            if currentName.lowercased() == updatedName.lowercased() {
+                if currentName == updatedName {
+                    return .unchanged
+                } else {
+                    return .updated(collectionToUpdate, context)
+                }
             }
             
             if isCollectionNameUnique(collectionToUpdate.name) {
