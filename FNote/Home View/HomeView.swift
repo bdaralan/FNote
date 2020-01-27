@@ -17,9 +17,7 @@ struct HomeView: View {
     
     @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
     @State private var collectionCollectionViewModel = NoteCardCollectionCollectionViewModel()
-    
-    @State private var currentCollectionID: String? = AppCache.currentCollectionUUID
-    
+        
     @State private var showCreateCollectionSheet = false
     @State private var modalTextFieldModel = ModalTextFieldModel()
     
@@ -111,19 +109,19 @@ extension HomeView {
     
     func refreshUIs() {
         switch currentTab {
+        case .collection:
+            collectionCollectionViewModel.updateSnapshot(animated: true)
+            
+        case .tag:
+            break
+            
+        case .profile:
+            break
+            
         case .card:
             if appState.currentCollection != nil {
                 cardCollectionViewModel.updateSnapshot(animated: true)
             }
-        
-        case .collection:
-            collectionCollectionViewModel.updateSnapshot(animated: true)
-        
-        case .tag:
-            break
-        
-        case .profile:
-            break
         }
     }
 }

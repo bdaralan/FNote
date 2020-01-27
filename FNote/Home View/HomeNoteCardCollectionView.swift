@@ -63,8 +63,8 @@ extension HomeNoteCardCollectionView {
         viewModel.onCollectionSelected = handleNoteCardCollectionSelected
         viewModel.onContextMenuSelected = handleContextMenuSelected
         
-        if let collectionID = appState.currentCollectionID {
-            viewModel.selectedCollectionIDs = [collectionID]
+        if let collection = appState.currentCollection {
+            viewModel.selectedCollectionIDs = [collection.uuid]
         } else {
             viewModel.selectedCollectionIDs = []
         }
