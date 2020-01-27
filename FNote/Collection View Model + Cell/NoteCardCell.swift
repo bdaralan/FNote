@@ -232,16 +232,19 @@ extension NoteCardCell {
     }
     
     enum ContextMenu {
+        case copyNative
         case delete
         
         var title: String {
             switch self {
+            case .copyNative: return "Copy Native"
             case .delete: return "Delete"
             }
         }
         
         var image: UIImage {
             switch self {
+            case .copyNative: return UIImage(systemName: "doc.on.clipboard")!
             case .delete: return UIImage(systemName: "trash")!
             }
         }

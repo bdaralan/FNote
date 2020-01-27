@@ -109,7 +109,7 @@ extension HomeNoteCardView {
 extension HomeNoteCardView {
     
     func setupOnAppear() {
-        viewModel.contextMenus = [.delete]
+        viewModel.contextMenus = [.copyNative, .delete]
         viewModel.noteCards = appState.currenNoteCards
         viewModel.onNoteCardSelected = beginEditNoteCard
         viewModel.onNoteCardQuickButtonTapped = handleNoteCardQuickButtonTapped
@@ -324,6 +324,8 @@ extension HomeNoteCardView {
         switch menu {
         case .delete:
             noteCardToDelete = noteCard
+        case .copyNative:
+            UIPasteboard.general.string = noteCard.native
         }
     }
 }
