@@ -14,6 +14,7 @@ class NoteCardCollectionCollectionViewModel: NSObject, CollectionViewComposition
     typealias DataSourceSection = Int
     typealias DataSourceItem = NoteCardCollection
     
+    
     // MARK: Property
     
     var dataSource: UICollectionViewDiffableDataSource<Int, NoteCardCollection>!

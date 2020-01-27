@@ -17,6 +17,7 @@ struct HomeView: View {
     
     @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
     @State private var collectionCollectionViewModel = NoteCardCollectionCollectionViewModel()
+    @State private var tagCollectionViewModel = TagCollectionViewModel()
         
     @State private var showCreateCollectionSheet = false
     @State private var modalTextFieldModel = ModalTextFieldModel()
@@ -50,7 +51,7 @@ struct HomeView: View {
                 .tag(Tab.collection)
             
             // MARK: Tag Tab
-            HomeTagView(tags: appState.tags)
+            HomeTagView(viewModel: tagCollectionViewModel)
                 .tabItem(Tab.tag.tabItem)
                 .tag(Tab.tag)
             

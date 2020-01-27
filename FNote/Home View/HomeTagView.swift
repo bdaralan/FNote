@@ -11,33 +11,27 @@ import SwiftUI
 
 struct HomeTagView: View {
     
-    var tags: [Tag]
+    @EnvironmentObject var appState: AppState
+    
+    var viewModel: TagCollectionViewModel
     
     @State private var sheet: Sheet?
     
     @State private var modalTextFieldModel = ModalTextFieldModel()
     
+    @State private var tagToDelete: Tag?
+    
     
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: true) {
-                VStack(spacing: 16) {
-                    ForEach(tags) { tag in
-                        TagRow(
-                            tag: tag,
-                            contextMenus: [.rename, .delete],
-                            onContextMenuSelected: self.handleContextMenuSelected
-                        )
-                            .onTapGesture(perform: { self.handleTagSelected(tag) })
-                    }
-                }
-                .padding()
-            }
-            .navigationBarTitle("Tags")
-            .navigationBarItems(trailing: createTagNavItem)
+            CollectionViewWrapper(viewModel: viewModel)
+                .navigationBarTitle("Tags")
+                .navigationBarItems(trailing: createTagNavItem)
+                .edgesIgnoringSafeArea(.all)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, content: presentationSheet)
+        .onAppear(perform: setupOnAppear)
     }
 }
 
@@ -56,6 +50,20 @@ extension HomeTagView {
         case .modalTextField:
             return ModalTextField(viewModel: $modalTextFieldModel)
         }
+    }
+}
+
+
+// MARK: - On Appear
+
+extension HomeTagView {
+    
+    func setupOnAppear() {
+        viewModel.availableTags = appState.tags
+        viewModel.sections = [.available]
+        viewModel.contextMenus = [.rename, .delete]
+        viewModel.onTagSelected = handleTagSelected
+        viewModel.onContextMenuSelected = handleContextMenuSelected
     }
 }
 
@@ -115,7 +123,17 @@ extension HomeTagView {
 
 extension HomeTagView {
     
+    func beginDeleteTag(_ tag: Tag) {
+        
+    }
     
+    func cancelDeleteTag(_ tag: Tag) {
+        
+    }
+    
+    func commitDeleteTag(_ tag: Tag) {
+        
+    }
 }
 
 
@@ -127,14 +145,17 @@ extension HomeTagView {
         
     }
     
-    func handleContextMenuSelected(_ menu: TagRow.ContextMenu, tag: Tag) {
-        
+    func handleContextMenuSelected(_ menu: TagCell.ContextMenu, tag: Tag) {
+        switch menu {
+        case .rename: beginRenameTag(tag)
+        case .delete: beginDeleteTag(tag)
+        }
     }
 }
 
 
 struct HomeTagView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeTagView(tags: [])
+        HomeTagView(viewModel: .init())
     }
 }
