@@ -80,8 +80,8 @@ class NoteCardCollectionCell: FNCollectionViewCell<NoteCardCollection> {
             
             iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             iconImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            iconImageView.heightAnchor.constraint(equalToConstant: 25),
-            iconImageView.widthAnchor.constraint(equalToConstant: 25)
+            iconImageView.heightAnchor.constraint(equalToConstant: 20),
+            iconImageView.widthAnchor.constraint(equalToConstant: 20)
         )
     }
 }

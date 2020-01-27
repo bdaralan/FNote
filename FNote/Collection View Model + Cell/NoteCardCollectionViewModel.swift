@@ -9,11 +9,15 @@
 import UIKit
 
 
-class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSource, CollectionViewCompositionalViewModel {
+class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSource {
     
-    typealias DataSourceSection = Int
-    
+    typealias DataSourceSection = Section
     typealias DataSourceItem = NoteCard
+    
+    enum Section {
+        case search
+        case card
+    }
     
     
     // MARK: Property
@@ -27,6 +31,10 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     var borderedNoteCardIDs: Set<String> = []
     var disableNoteCardIDs: Set<String> = []
     var contextMenus: [NoteCardCell.ContextMenu] = []
+    
+    private var sections: [Section] {
+        onSearchTextDebounced == nil ? [.card] : [.search, .card]
+    }
     
     
     // MARK: Action
@@ -45,8 +53,31 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     private weak var collectionView: UICollectionView?
     
-    private let cellID = NoteCardCell.reuseID
-    private let searchFieldHeaderID = "SearchHeaderID"
+    
+    // MARK: Method
+    
+    private func setupNoteCardCell(_ cell: NoteCardCell, for noteCard: NoteCard) {
+        cell.reload(with: noteCard)
+        cell.setCellStyle(cellStyle)
+        cell.showCellBorder(borderedNoteCardIDs.contains(noteCard.uuid))
+        cell.disableCell(disableNoteCardIDs.contains(noteCard.uuid))
+        cell.onQuickButtonTapped = onNoteCardQuickButtonTapped
+    }
+    
+    private func setupSearchHeader(_ header: SearchFieldCollectionHeader) {
+        header.onSearchTextDebounced = { [weak self] searchText in
+            guard let self = self else { return }
+            self.onSearchTextDebounced?(searchText)
+        }
+        
+        header.onCancel = { [weak self] in
+            guard let self = self else { return }
+            self.onSearchCancel?()
+            header.searchText = ""
+            header.searchField.resignFirstResponder()
+            header.showCancel(false, animated: true)
+        }
+    }
 }
 
 
@@ -91,65 +122,77 @@ extension NoteCardCollectionViewModel {
 }
 
 
+// MARK: - Collection Wrapper
+
+extension NoteCardCollectionViewModel: CollectionViewWrapperViewModel {
+    
+    func setupCollectionView(_ collectionView: UICollectionView) {
+        setupDataSource(with: collectionView)
+        updateSnapshot(animated: false)
+    }
+}
+
+
 // MARK: - Collection Diff Data Source
 
 extension NoteCardCollectionViewModel {
     
     func updateSnapshot(animated: Bool, completion: (() -> Void)? = nil) {
         var snapshot = Snapshot()
-        snapshot.appendSections([0])
-        snapshot.appendItems(noteCards, toSection: 0)
+        snapshot.appendSections(sections)
+        
+        for section in sections {
+            switch section {
+            case .search: snapshot.appendItems([], toSection: section)
+            case .card: snapshot.appendItems(noteCards, toSection: section)
+            }
+        }
+        
         dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
     }
     
-    func setupCollectionView(_ collectionView: UICollectionView) {
+    func setupDataSource(with collectionView: UICollectionView) {
         self.collectionView = collectionView
         collectionView.collectionViewLayout = createCompositionalLayout()
-        collectionView.register(NoteCardCell.self, forCellWithReuseIdentifier: cellID)
-        collectionView.register(SearchFieldCellHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: searchFieldHeaderID)
+        collectionView.registerCell(NoteCardCell.self)
+        collectionView.registerHeader(SearchFieldCollectionHeader.self)
         collectionView.delegate = self
         collectionView.alwaysBounceVertical = true
         collectionView.keyboardDismissMode = .onDrag
         
         // MARK: Cell
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, noteCard in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellID, for: indexPath) as! NoteCardCell
-            cell.reload(with: noteCard)
-            cell.setCellStyle(self.cellStyle)
-            cell.showCellBorder(self.borderedNoteCardIDs.contains(noteCard.uuid))
-            cell.disableCell(self.disableNoteCardIDs.contains(noteCard.uuid))
-            cell.onQuickButtonTapped = self.onNoteCardQuickButtonTapped
-            return cell
+            switch self.sections[indexPath.section] {
+            case .card:
+                let cardCell = collectionView.dequeueCell(NoteCardCell.self, for: indexPath)
+                self.setupNoteCardCell(cardCell, for: noteCard)
+                return cardCell
+                
+            case .search:
+                fatalError("🧨 attempt to dequeue cell for search section. 🧨")
+            }
         }
         
         // MARK: Header
         dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
             guard kind == UICollectionView.elementKindSectionHeader else { return nil }
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: self.searchFieldHeaderID, for: indexPath) as! SearchFieldCellHeader
-            
-            header.onSearchTextDebounced = { [weak self] searchText in
-                self?.onSearchTextDebounced?(searchText)
-            }
-            
-            header.onCancel = { [weak self] in
-                self?.onSearchCancel?()
-                header.searchText = ""
-                header.searchField.resignFirstResponder()
-                header.showCancel(false, animated: true)
-            }
-            
-            return header
+            let searchHeader = collectionView.dequeueHeader(SearchFieldCollectionHeader.self, for: indexPath)
+            self.setupSearchHeader(searchHeader)
+            return searchHeader
         }
     }
     
     func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { section, environment in
-            self.createLayoutSection()
+            switch self.sections[section] {
+            case .search: return self.createSearchLayoutSection()
+            case .card: return self.createNoteCardLayoutSection()
+            }
         }
         return layout
     }
     
-    func createLayoutSection() -> NSCollectionLayoutSection {
+    private func createNoteCardLayoutSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
@@ -161,21 +204,27 @@ extension NoteCardCollectionViewModel {
         section.interGroupSpacing = 16
         section.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
         
+        return section
+    }
+    
+    private func createSearchLayoutSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
+        
+        let section = NSCollectionLayoutSection(group: group)
         section.boundarySupplementaryItems = [createSearchFieldSupplementaryItem()]
-//        if onSearchTextDebounced != nil {
-//            section.boundarySupplementaryItems = [createSearchFieldSupplementaryItem()]
-//        }
         
         return section
     }
     
-    func createSearchFieldSupplementaryItem() -> NSCollectionLayoutBoundarySupplementaryItem {
+    private func createSearchFieldSupplementaryItem() -> NSCollectionLayoutBoundarySupplementaryItem {
+        let kind = UICollectionView.elementKindSectionHeader
         let size = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(35 + 16))
-        let item = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: size,
-            elementKind: UICollectionView.elementKindSectionHeader,
-            alignment: .top
-        )
+        let item = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: size, elementKind: kind, alignment: .top)
+        item.contentInsets = .init(top: 0, leading: 16, bottom: 0, trailing: 16)
         return item
     }
 }

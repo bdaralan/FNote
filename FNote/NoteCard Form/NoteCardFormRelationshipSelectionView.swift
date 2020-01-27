@@ -15,13 +15,6 @@ struct NoteCardFormRelationshipSelectionView: View {
     
     var body: some View {
         CollectionViewWrapper(viewModel: viewModel)
-            .navigationBarTitle("Relationships")
-    }
-}
-
-
-struct NoteCardFormRelationshipSelectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        NoteCardFormRelationshipSelectionView(viewModel: .init())
+            .navigationBarTitle("Links")
     }
 }

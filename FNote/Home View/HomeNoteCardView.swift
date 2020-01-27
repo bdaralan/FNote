@@ -26,6 +26,8 @@ struct HomeNoteCardView: View {
     
     @State private var noteCardToDelete: NoteCard?
     
+    @State private var searchFetchController: NSFetchedResultsController<NoteCard>?
+    
     
     var body: some View {
         NavigationView {
@@ -66,7 +68,7 @@ extension HomeNoteCardView {
             let doneNavItem = Button(action: done, label: label)
             return NavigationView {
                 NoteCardFormRelationshipSelectionView(viewModel: relationshipViewModel!)
-                    .navigationBarTitle("Relationships", displayMode: .inline)
+                    .navigationBarTitle("Links", displayMode: .inline)
                     .navigationBarItems(trailing: doneNavItem)
             }
             .navigationViewStyle(StackNavigationViewStyle())
@@ -112,6 +114,46 @@ extension HomeNoteCardView {
         viewModel.onNoteCardSelected = beginEditNoteCard
         viewModel.onNoteCardQuickButtonTapped = handleNoteCardQuickButtonTapped
         viewModel.onContextMenuSelected = handleContextMenuSelected
+        viewModel.onSearchTextDebounced = handleSearchTextDebounced
+        viewModel.onSearchCancel = handleSearchCancel
+    }
+}
+
+
+// MARK: - Search
+
+extension HomeNoteCardView {
+    
+    func handleSearchTextDebounced(_ searchText: String) {
+        guard !searchText.trimmed().isEmpty else {
+            viewModel.noteCards = appState.currenNoteCards
+            viewModel.updateSnapshot(animated: true)
+            return
+        }
+        
+        let request = NoteCard.requestNoteCards(forCollectionUUID: collection.uuid, predicate: searchText)
+        
+        if searchFetchController == nil {
+            searchFetchController = .init(
+                fetchRequest: request,
+                managedObjectContext: appState.parentContext,
+                sectionNameKeyPath: nil,
+                cacheName: nil
+            )
+        }
+        
+        searchFetchController?.fetchRequest.predicate = request.predicate
+        searchFetchController?.fetchRequest.sortDescriptors = request.sortDescriptors
+        try? searchFetchController?.performFetch()
+        
+        viewModel.noteCards = searchFetchController?.fetchedObjects ?? []
+        viewModel.updateSnapshot(animated: true)
+    }
+    
+    func handleSearchCancel() {
+        viewModel.noteCards = appState.currenNoteCards
+        viewModel.updateSnapshot(animated: true)
+        searchFetchController = nil
     }
 }
 

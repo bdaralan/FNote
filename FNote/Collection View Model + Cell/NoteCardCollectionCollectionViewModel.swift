@@ -9,7 +9,7 @@
 import UIKit
 
 
-class NoteCardCollectionCollectionViewModel: NSObject, CollectionViewCompositionalDataSource, CollectionViewCompositionalViewModel {
+class NoteCardCollectionCollectionViewModel: NSObject, CollectionViewCompositionalDataSource {
     
     typealias DataSourceSection = Int
     typealias DataSourceItem = NoteCardCollection
@@ -34,8 +34,6 @@ class NoteCardCollectionCollectionViewModel: NSObject, CollectionViewComposition
     // MARK: Reference
     
     private weak var collectionView: UICollectionView?
-    
-    private let cellID = NoteCardCell.reuseID
     
     
     // MARK: Method
@@ -92,6 +90,17 @@ extension NoteCardCollectionCollectionViewModel {
 }
 
 
+// MARK: - Collection Wrapper
+
+extension NoteCardCollectionCollectionViewModel: CollectionViewWrapperViewModel {
+    
+    func setupCollectionView(_ collectionView: UICollectionView) {
+        setupDataSource(with: collectionView)
+        updateSnapshot(animated: false)
+    }
+}
+
+
 // MARK: - Collection Diff Data Source
 
 extension NoteCardCollectionCollectionViewModel {
@@ -103,16 +112,15 @@ extension NoteCardCollectionCollectionViewModel {
         dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
     }
     
-    func setupCollectionView(_ collectionView: UICollectionView) {
+    func setupDataSource(with collectionView: UICollectionView) {
         self.collectionView = collectionView
         collectionView.collectionViewLayout = createCompositionalLayout()
-        collectionView.register(NoteCardCollectionCell.self, forCellWithReuseIdentifier: cellID)
+        collectionView.registerCell(NoteCardCollectionCell.self)
         collectionView.delegate = self
         collectionView.alwaysBounceVertical = true
         
         dataSource = .init(collectionView: collectionView, cellProvider: { collectionView, indexPath, collection in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellID, for: indexPath) as! NoteCardCollectionCell
-            
+            let cell = collectionView.dequeueCell(NoteCardCollectionCell.self, for: indexPath)
             cell.reload(with: collection)
             
             let isCollectionSelected = self.selectedCollectionIDs.contains(collection.uuid)

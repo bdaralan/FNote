@@ -1,5 +1,5 @@
 //
-//  SearchFieldCellHeader.swift
+//  SearchFieldCollectionHeader.swift
 //  FNote
 //
 //  Created by Dara Beng on 1/25/20.
@@ -10,14 +10,11 @@ import UIKit
 import Combine
 
 
-class SearchFieldCellHeader: UICollectionReusableView {
-    
+class SearchFieldCollectionHeader: UICollectionReusableView {
+        
     let searchField = UISearchTextField()
     let cancelButton = UIButton(type: .system)
     let fieldHStack = UIStackView()
-    
-    @Published private var debounceSearchText = ""
-    private var searchTextSubscription: AnyCancellable?
     
     var searchText: String {
         set { searchField.text = newValue }
@@ -28,6 +25,9 @@ class SearchFieldCellHeader: UICollectionReusableView {
     var onSearch: (() -> Void)?
     var onSearchTextDebounced: ((String) -> Void)?
     var onSearchTextChanged: ((String) -> Void)?
+    
+    @Published private var debounceSearchText = ""
+    private var searchTextSubscription: AnyCancellable?
     
     
     override init(frame: CGRect) {
@@ -56,7 +56,7 @@ class SearchFieldCellHeader: UICollectionReusableView {
 }
 
 
-extension SearchFieldCellHeader: UISearchTextFieldDelegate {
+extension SearchFieldCollectionHeader: UISearchTextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchField.resignFirstResponder()
@@ -78,7 +78,7 @@ extension SearchFieldCellHeader: UISearchTextFieldDelegate {
 }
 
 
-extension SearchFieldCellHeader {
+extension SearchFieldCollectionHeader {
     
     private func setupView() {
         searchField.delegate = self

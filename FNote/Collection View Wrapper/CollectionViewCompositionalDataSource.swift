@@ -18,8 +18,8 @@ protocol CollectionViewCompositionalDataSource {
     typealias DiffableDataSource = UICollectionViewDiffableDataSource<DataSourceSection, DataSourceItem>
     
     var dataSource: DiffableDataSource! { set get }
-            
-    func createCompositionalLayout() -> UICollectionViewCompositionalLayout
     
-    func createLayoutSection() -> NSCollectionLayoutSection
+    func setupDataSource(with collectionView: UICollectionView)
+    
+    func updateSnapshot(animated: Bool, completion: (() -> Void)?)
 }

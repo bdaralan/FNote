@@ -12,9 +12,7 @@ import CoreData
 
 
 class FNCollectionViewCell<Object>: UICollectionViewCell where Object: NSManagedObject {
-    
-    static var reuseID: String { "\(Self.self)" }
-    
+        
     private(set) var object: Object?
     
     /// A subscription to reload cell on received `objectWillChange`.

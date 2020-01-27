@@ -13,7 +13,7 @@ struct CollectionViewWrapper: UIViewRepresentable {
     
     // MARK: Property
         
-    var viewModel: CollectionViewCompositionalViewModel
+    var viewModel: CollectionViewWrapperViewModel
     
     
     // MARK: Make View
@@ -42,10 +42,6 @@ extension CollectionViewWrapper {
         
         let collectionView: UICollectionView
         
-        var viewModel: CollectionViewCompositionalViewModel {
-            wrapper.viewModel
-        }
-        
         
         init(wrapper: CollectionViewWrapper) {
             self.wrapper = wrapper
@@ -53,8 +49,7 @@ extension CollectionViewWrapper {
             collectionView.backgroundColor = .clear
             
             super.init()
-            viewModel.setupCollectionView(collectionView)
-            viewModel.updateSnapshot(animated: false, completion: nil)
+            wrapper.viewModel.setupCollectionView(collectionView)
         }
     }
 }
@@ -67,4 +62,12 @@ extension CollectionViewWrapper.Coordinator {
     func update(with wrapper: CollectionViewWrapper) {
         self.wrapper = wrapper
     }
+}
+
+
+// MARK: - View Model
+
+protocol CollectionViewWrapperViewModel {
+    
+    func setupCollectionView(_ collectionView: UICollectionView)
 }
