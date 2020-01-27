@@ -16,44 +16,38 @@ struct WelcomeGuideView: View {
     var action: (() -> Void)?
     
     var imageName: String {
-        iCloudActive ? "rectangle.stack.fill.badge.plus" : "person.crop.circle.fill.badge.exclam"
-    }
-    
-    var imageColor: Color {
-        iCloudActive ? .init(UIColor.tertiaryLabel) : .primary
+        iCloudActive ? "rectangle.stack.fill.badge.plus" : "exclamationmark.icloud.fill"
     }
     
     var firstString: String {
-        iCloudActive ? "No collection selected" : "No iCloud Detected"
+        iCloudActive ? "No collection selected." : "Cannot Access iCloud"
     }
     
     var secondString: String {
         if iCloudActive {
-            return "Select or create a new collection"
+            return "Select or Create a new collection"
         } else {
-            return """
-            Please make sure your Apple ID is logged in
-            and FNote is turned on in iCloud Settings.
-            """
+            return "Please make sure FNote is turned on\nin iCloud Settings."
         }
     }
     
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 24) {
+            VStack(spacing: iCloudActive ? 16 : 0) {
                 Button(action: action ?? {}) {
                     Image(systemName: imageName)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 150, height: 150)
-                        .foregroundColor(imageColor)
+                        .foregroundColor(iCloudActive ? .appAccent : .primary)
                 }
                 .buttonStyle(PlainButtonStyle())
                 .disabled(!iCloudActive)
                 
                 VStack(spacing: 8) {
                     Text(firstString)
+                        .fontWeight(iCloudActive ? .regular : .bold)
                     Text(secondString)
                 }
                 .foregroundColor(.secondary)
@@ -61,6 +55,7 @@ struct WelcomeGuideView: View {
             }
             .navigationBarTitle("FNote")
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

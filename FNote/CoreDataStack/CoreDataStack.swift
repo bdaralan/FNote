@@ -62,11 +62,6 @@ class CoreDataStack: NSObject {
 
 extension CoreDataStack {
     
-    /// A notification posted when the current core data stack changed.
-    /// Notification's object is the new `CoreDataStack`.
-    static let nCoreDataStackDidChange = Notification.Name("CoreDataStack.nCoreDataStackDidChange")
-    
-    
     func setupUserIdentityChangeNotification() {
         let notificationCenter = NotificationCenter.default
         let notification = Notification.Name.NSUbiquityIdentityDidChange
@@ -98,8 +93,18 @@ extension CoreDataStack {
     }
     
     func switchCurrentCoreDataStack() {
-        let currentStack = CoreDataStack()
-        CoreDataStack.current = currentStack
-        NotificationCenter.default.post(name: CoreDataStack.nCoreDataStackDidChange, object: currentStack)
+        let stackToSwitch = CoreDataStack()
+        CoreDataStack.current = stackToSwitch
+        NotificationCenter.default.post(name: .currentCoreDataStackDidChange, object: stackToSwitch)
     }
+}
+
+
+// MARK: Notification
+
+extension Notification.Name {
+    
+    /// A notification posted when the current core data stack changed.
+    /// Notification's object is the new `CoreDataStack`.
+    static let currentCoreDataStackDidChange = Notification.Name("CoreDataStack.currentCoreDataStackDidChange")
 }

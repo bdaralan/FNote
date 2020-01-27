@@ -28,7 +28,6 @@ struct HomeView: View {
     
     var body: some View {
         TabView(selection: $currentTab) {
-            
             // MARK: Card Tab
             if appState.currentCollection != nil && appState.iCloudActive {
                 HomeNoteCardView(
@@ -60,6 +59,7 @@ struct HomeView: View {
         }
         .onAppear(perform: setupOnAppear)
         .sheet(isPresented: $showCreateCollectionSheet, content: createCollectionSheet)
+        .disabled(!appState.iCloudActive)
     }
 }
 
@@ -71,35 +71,57 @@ extension HomeView {
     func setupOnAppear() {
         storeRemoteChangeObserver.onReceived = handleStoreRemoteChangeNotification
     }
+}
+
+
+// MARK: - Remote Changes
+
+extension HomeView {
     
     func handleStoreRemoteChangeNotification(_ notification: Notification) {
         let history = CoreDataStack.current.historyTracker
+        
+        // check if need to update token
         guard let newHistoryToken = history.token(fromRemoteChange: notification) else { return }
         guard !newHistoryToken.isEqual(history.lastToken) else { return }
+        
+        // update token
         history.updateLastToken(newHistoryToken)
-        DispatchQueue.main.async {
-            self.refreshAllFetches()
+        
+        // update UIs
+        DispatchQueue.global(qos: .default).async {
+            self.refetchObjects()
+            DispatchQueue.main.async {
+                self.updateModels()
+                self.refreshUIs()
+            }
         }
     }
     
-    func refreshAllFetches() {
-        appState.objectWillChange.send()
-        
+    func refetchObjects() {
         appState.fetchCurrentNoteCards()
-        cardCollectionViewModel.noteCards = appState.currenNoteCards
-        
         appState.fetchCollections()
-        collectionCollectionViewModel.collections = appState.collections
-        
         appState.fetchTags()
-        
+    }
+    
+    func updateModels() {
+        cardCollectionViewModel.noteCards = appState.currenNoteCards
+        collectionCollectionViewModel.collections = appState.collections
+    }
+    
+    func refreshUIs() {
         switch currentTab {
         case .card:
-            cardCollectionViewModel.updateSnapshot(animated: true)
+            if appState.currentCollection != nil {
+                cardCollectionViewModel.updateSnapshot(animated: true)
+            }
+        
         case .collection:
             collectionCollectionViewModel.updateSnapshot(animated: true)
+        
         case .tag:
             break
+        
         case .profile:
             break
         }
