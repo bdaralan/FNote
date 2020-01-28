@@ -28,4 +28,12 @@ extension Alert {
         let delete = Alert.Button.destructive(Text("Delete"), action: onDelete)
         return Alert(title: title, message: message, primaryButton: cancel, secondaryButton: delete)
     }
+    
+    static func DeleteTag(_ tag: Tag, onCancel: (() -> Void)?, onDelete: (() -> Void)?) -> Alert {
+        let title = Text("Delete Tag")
+        let message = Text("Delete '\(tag.name)'. The tag will also be removed it from the cards.")
+        let cancel = Alert.Button.cancel(onCancel)
+        let delete = Alert.Button.destructive(Text("Delete"), action: onDelete)
+        return Alert(title: title, message: message, primaryButton: cancel, secondaryButton: delete)
+    }
 }

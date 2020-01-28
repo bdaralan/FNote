@@ -161,7 +161,8 @@ extension AppState {
         request.update(collection)
         
         if collection.isValid() {
-            if isCollectionNameUnique(collection.name) {
+            let names = collections.map({ $0.name })
+            if isNameUnique(collection.name, existingNames: names) {
                 return .created(collection, context)
             }
         }
@@ -188,7 +189,8 @@ extension AppState {
                 }
             }
             
-            if isCollectionNameUnique(collectionToUpdate.name) {
+            let names = collections.map({ $0.name })
+            if isNameUnique(collectionToUpdate.name, existingNames: names) {
                 return .updated(collectionToUpdate, context)
             }
         }
@@ -204,7 +206,10 @@ extension AppState {
         request.update(tag)
         
         if tag.isValid() {
-            return .created(tag, context)
+            let names = tags.map({ $0.name })
+            if isNameUnique(tag.name, existingNames: names) {
+                return .created(tag, context)
+            }
         }
         
         return .failed
@@ -218,7 +223,21 @@ extension AppState {
         request.update(tagToUpdate)
         
         if tag.isValid() {
-            return .updated(tagToUpdate, context)
+            let currentName = tag.name
+            let updatedName = tagToUpdate.name
+            
+            if currentName.lowercased() == updatedName.lowercased() {
+                if currentName == updatedName {
+                    return .unchanged
+                } else {
+                    return .updated(tagToUpdate, context)
+                }
+            }
+            
+            let names = tags.map({ $0.name })
+            if isNameUnique(updatedName, existingNames: names) {
+                return .updated(tagToUpdate, context)
+            }
         }
         
         return .failed
@@ -241,10 +260,10 @@ extension AppState {
 
 extension AppState {
     
-    func isCollectionNameUnique(_ name: String) -> Bool {
-        let collectionNames = collections.map({ $0.name.lowercased() })
+    func isNameUnique(_ name: String, existingNames: [String]) -> Bool {
+        let names = existingNames.map({ $0.lowercased() })
         let name = name.trimmed().lowercased()
-        return !collectionNames.contains(name)
+        return !names.contains(name)
     }
 }
 

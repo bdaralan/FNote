@@ -31,6 +31,7 @@ struct HomeTagView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, content: presentationSheet)
+        .alert(item: $tagToDelete, content: deleteTagAlert)
         .onAppear(perform: setupOnAppear)
     }
 }
@@ -88,7 +89,16 @@ extension HomeTagView {
     }
     
     func commitCreateTag() {
-        sheet = nil
+        let name = modalTextFieldModel.text.trimmed()
+        
+        if name.isEmpty {
+            sheet = nil
+            return
+        }
+        
+        let request = TagCUDRequest(name: name)
+        let result = appState.createTag(with: request)
+        handleTagCUDResult(result)
     }
 }
 
@@ -113,7 +123,16 @@ extension HomeTagView {
     }
     
     func commitRenameTag(_ tag: Tag) {
-        sheet = nil
+        let name = modalTextFieldModel.text.trimmed()
+        
+        if name.isEmpty {
+            sheet = nil
+            return
+        }
+        
+        let request = TagCUDRequest(name: name)
+        let result = appState.updateTag(tag, with: request)
+        handleTagCUDResult(result)
     }
 }
 
@@ -122,16 +141,22 @@ extension HomeTagView {
 
 extension HomeTagView {
     
+    func deleteTagAlert(_ tag: Tag) -> Alert {
+        Alert.DeleteTag(tag, onCancel: cancelDeleteTag, onDelete: commitDeleteTag)
+    }
+    
     func beginDeleteTag(_ tag: Tag) {
-        
+        tagToDelete = tag
     }
     
-    func cancelDeleteTag(_ tag: Tag) {
-        
+    func cancelDeleteTag() {
+        tagToDelete = nil
     }
     
-    func commitDeleteTag(_ tag: Tag) {
-        
+    func commitDeleteTag() {
+        guard let tag = tagToDelete else { return }
+        let result = appState.deleteObject(tag)
+        handleTagCUDResult(result)
     }
 }
 
@@ -148,6 +173,41 @@ extension HomeTagView {
         switch menu {
         case .rename: beginRenameTag(tag)
         case .delete: beginDeleteTag(tag)
+        }
+    }
+    
+    func handleTagCUDResult(_ result: ObjectCUDResult<Tag>) {
+        switch result {
+        case .created(_, let childContext):
+            childContext.quickSave()
+            childContext.parent?.quickSave()
+            appState.fetchTags()
+            viewModel.tags = appState.tags
+            viewModel.updateSnapshot(animated: true)
+            sheet = nil
+            
+        case .updated(_, let childContext):
+            childContext.quickSave()
+            childContext.parent?.quickSave()
+            appState.fetchTags()
+            viewModel.tags = appState.tags
+            viewModel.updateSnapshot(animated: true)
+            sheet = nil
+            
+        case .deleted(let childContext):
+            childContext.quickSave()
+            childContext.parent?.quickSave()
+            appState.fetchTags()
+            viewModel.tags = appState.tags
+            viewModel.updateSnapshot(animated: true)
+            sheet = nil
+            
+        case .unchanged:
+            sheet = nil
+            
+        case .failed: // TODO: inform user if needed
+            modalTextFieldModel.prompt = "Duplicate tag name!"
+            modalTextFieldModel.promptColor = .red
         }
     }
 }
