@@ -33,10 +33,11 @@ class NoteCardFormModel: ObservableObject {
     var onCollectionSelected: ((NoteCardCollection) -> Void)?
     var onRelationshipSelected: ((NoteCard) -> Void)?
     var onTagSelected: ((Tag) -> Void)?
-    
+    var onCreateTag: ((String) -> Tag?)?
     
     var onCancel: (() -> Void)?
     var onCommit: (() -> Void)?
+    
     
     // MARK: UI Property
     

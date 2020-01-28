@@ -93,7 +93,7 @@ struct NoteCardForm: View {
                     
                     // MARK: Tag
                     NavigationLink(
-                        destination: NoteCardFormTagSelectionView(viewModel: tagViewModel),
+                        destination: NoteCardFormTagSelectionView(viewModel: tagViewModel, onCreateTag: handleCreateTag),
                         isActive: $viewModel.isSelectingTag
                     ) {
                         HStack {
@@ -129,9 +129,9 @@ struct NoteCardForm: View {
             }
             .navigationBarItems(leading: cancelNavItem, trailing: commitNavItem)
             .navigationBarTitle(Text(viewModel.navigationTitle), displayMode: .inline)
-            .sheet(item: $sheet, onDismiss: handleSheetDismissed, content: presentationSheet)
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .sheet(item: $sheet, onDismiss: handleSheetDismissed, content: presentationSheet)
     }
 }
 
@@ -260,6 +260,16 @@ extension NoteCardForm {
             tagViewModel.borderedTagIDs.insert(tag.uuid)
         }
         viewModel.onTagSelected?(tag)
+    }
+    
+    func handleCreateTag(withName name: String) -> Bool {
+        if let tag = viewModel.onCreateTag?(name) {
+            tagViewModel.tags.insert(tag, at: 0)
+            tagViewModel.borderedTagIDs.insert(tag.uuid)
+            tagViewModel.updateSnapshot(animated: true)
+            return true
+        }
+        return false
     }
     
     func beginEditTag() {

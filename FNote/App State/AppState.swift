@@ -162,7 +162,7 @@ extension AppState {
         
         if collection.isValid() {
             let names = collections.map({ $0.name })
-            if isNameUnique(collection.name, existingNames: names) {
+            if Self.isNameUnique(collection.name, existingNames: names) {
                 return .created(collection, context)
             }
         }
@@ -190,7 +190,7 @@ extension AppState {
             }
             
             let names = collections.map({ $0.name })
-            if isNameUnique(collectionToUpdate.name, existingNames: names) {
+            if Self.isNameUnique(collectionToUpdate.name, existingNames: names) {
                 return .updated(collectionToUpdate, context)
             }
         }
@@ -207,7 +207,7 @@ extension AppState {
         
         if tag.isValid() {
             let names = tags.map({ $0.name })
-            if isNameUnique(tag.name, existingNames: names) {
+            if Self.isNameUnique(tag.name, existingNames: names) {
                 return .created(tag, context)
             }
         }
@@ -235,7 +235,7 @@ extension AppState {
             }
             
             let names = tags.map({ $0.name })
-            if isNameUnique(updatedName, existingNames: names) {
+            if Self.isNameUnique(updatedName, existingNames: names) {
                 return .updated(tagToUpdate, context)
             }
         }
@@ -260,7 +260,7 @@ extension AppState {
 
 extension AppState {
     
-    func isNameUnique(_ name: String, existingNames: [String]) -> Bool {
+    static func isNameUnique(_ name: String, existingNames: [String]) -> Bool {
         let names = existingNames.map({ $0.lowercased() })
         let name = name.trimmed().lowercased()
         return !names.contains(name)

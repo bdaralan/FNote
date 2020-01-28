@@ -185,6 +185,10 @@ extension HomeNoteCardView {
             self.handleNoteCardFormTagSelected(tag, formModel: formModel)
         }
         
+        formModel.onCreateTag = { name in
+            self.handleNoteCardFormCreateTag(name: name, formModel: formModel)
+        }
+        
         noteCardFormModel?.commitTitle = "Create"
         noteCardFormModel?.navigationTitle = "New Card"
         
@@ -230,6 +234,10 @@ extension HomeNoteCardView {
         
         formModel.onTagSelected = { tag in
             self.handleNoteCardFormTagSelected(tag, formModel: formModel)
+        }
+        
+        formModel.onCreateTag = { name in
+            self.handleNoteCardFormCreateTag(name: name, formModel: formModel)
         }
         
         formModel.update(with: noteCard)
@@ -350,6 +358,28 @@ extension HomeNoteCardView {
             formModel.selectedTags.remove(tag)
         } else {
             formModel.selectedTags.insert(tag)
+        }
+    }
+    
+    func handleNoteCardFormCreateTag(name: String, formModel: NoteCardFormModel) -> Tag? {
+        let request = TagCUDRequest(name: name)
+        let result = appState.createTag(with: request)
+        
+        switch result {
+        case .created(let tag, let childContext):
+            childContext.quickSave()
+            childContext.parent?.quickSave()
+            appState.fetchTags()
+            let newTag = tag.get(from: appState.parentContext)
+            formModel.selectableTags.insert(newTag, at: 0)
+            formModel.selectedTags.insert(newTag)
+            return newTag
+        
+        case .failed: // TODO: inform user if needed
+            return nil
+        
+        case .updated, .deleted, .unchanged:
+            fatalError("🧨 attempt to \(result) in handleNoteCardFormCreateTag method 🧨")
         }
     }
     

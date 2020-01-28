@@ -106,6 +106,7 @@ extension HomeView {
     func updateModels() {
         cardCollectionViewModel.noteCards = appState.currenNoteCards
         collectionCollectionViewModel.collections = appState.collections
+        tagCollectionViewModel.tags = appState.tags
     }
     
     func refreshUIs() {
@@ -114,7 +115,7 @@ extension HomeView {
             collectionCollectionViewModel.updateSnapshot(animated: true)
             
         case .tag:
-            break
+            tagCollectionViewModel.updateSnapshot(animated: true)
             
         case .profile:
             break
