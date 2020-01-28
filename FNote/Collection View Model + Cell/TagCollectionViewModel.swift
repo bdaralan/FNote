@@ -21,7 +21,7 @@ class TagCollectionViewModel: NSObject, CollectionViewCompositionalDataSource {
     
     var tags: [Tag] = []
     
-    var borderedTags: Set<String> = []
+    var borderedTagIDs: Set<String> = []
     
     var contextMenus: [TagCell.ContextMenu] = []
  
@@ -41,7 +41,7 @@ class TagCollectionViewModel: NSObject, CollectionViewCompositionalDataSource {
     
     private func setupTagCell(_ cell: TagCell, for tag: Tag) {
         cell.reload(with: tag)
-        cell.showCellBorder(borderedTags.contains(tag.uuid))
+        cell.showCellBorder(borderedTagIDs.contains(tag.uuid))
     }
 }
 
@@ -54,7 +54,7 @@ extension TagCollectionViewModel: UICollectionViewDelegate {
         guard let tag = dataSource.itemIdentifier(for: indexPath) else { return }
         guard let cell = collectionView.cellForItem(at: indexPath) as? TagCell else { return }
         onTagSelected?(tag)
-        cell.showCellBorder(borderedTags.contains(tag.uuid))
+        cell.showCellBorder(borderedTagIDs.contains(tag.uuid))
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {

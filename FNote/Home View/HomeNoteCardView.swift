@@ -21,7 +21,7 @@ struct HomeNoteCardView: View {
     @State private var sheet: Sheet?
     @State private var noteCardFormModel: NoteCardFormModel?
     @State private var relationshipViewModel: NoteCardCollectionViewModel?
-    @State private var tagViewModel: NoteCardFormModel?
+    @State private var tagViewModel: TagCollectionViewModel?
     @State private var textViewModel = ModalTextViewModel()
     
     @State private var noteCardToDelete: NoteCard?
@@ -79,11 +79,7 @@ extension HomeNoteCardView {
             let label = { Text("Done").bold() }
             let doneNavItem = Button(action: done, label: label)
             return NavigationView {
-                NoteCardFormTagSelectionView(
-                    formModel: tagViewModel!,
-                    showSelectedHeader: false,
-                    showUnselectedSection: false
-                )
+                NoteCardFormTagSelectionView(viewModel: tagViewModel!)
                     .navigationBarTitle("Tags", displayMode: .inline)
                     .navigationBarItems(trailing: doneNavItem)
             }
@@ -293,8 +289,8 @@ extension HomeNoteCardView {
             sheet = .noteCardRelationship
         
         case .tag:
-            tagViewModel = .init(collection: collection)
-            tagViewModel?.selectedTags = noteCard.tags
+            tagViewModel = .init()
+            tagViewModel?.tags = noteCard.tags.sortedByName()
             sheet = .noteCardTag
         
         case .favorite:

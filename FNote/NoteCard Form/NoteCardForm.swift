@@ -16,6 +16,7 @@ struct NoteCardForm: View {
     @State private var sheet: Sheet?
     @State private var modalTextViewModel = ModalTextViewModel()
     @State private var relationshipViewModel = NoteCardCollectionViewModel()
+    @State private var tagViewModel = TagCollectionViewModel()
     
     
     var body: some View {
@@ -92,7 +93,7 @@ struct NoteCardForm: View {
                     
                     // MARK: Tag
                     NavigationLink(
-                        destination: NoteCardFormTagSelectionView(formModel: viewModel),
+                        destination: NoteCardFormTagSelectionView(viewModel: tagViewModel),
                         isActive: $viewModel.isSelectingTag
                     ) {
                         HStack {
@@ -106,6 +107,7 @@ struct NoteCardForm: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+                    .onReceive(viewModel.$isSelectingTag, perform: handleTagViewPushed)
                     
                     // MARK: Note
                     Button(action: beginEditNote) {
@@ -197,7 +199,7 @@ extension NoteCardForm {
 }
 
 
-// MARK: - Relationship
+// MARK: - Relationship Selection
 
 extension NoteCardForm {
     
@@ -234,10 +236,44 @@ extension NoteCardForm {
     }
     
     func commitEditRelationship() {
-        relationshipViewModel.noteCards = []
-        relationshipViewModel.borderedNoteCardIDs = []
-        relationshipViewModel.disableNoteCardIDs = []
-        relationshipViewModel.onNoteCardSelected = nil
+        relationshipViewModel = .init()
+    }
+}
+
+
+// MARK: - Tag Selection
+
+extension NoteCardForm {
+    
+    func handleTagViewPushed(_ isPushed: Bool) {
+        if isPushed {
+            beginEditTag()
+        } else {
+            commitEditTag()
+        }
+    }
+    
+    func handleTagViewTagSelected(_ tag: Tag) {
+        if tagViewModel.borderedTagIDs.contains(tag.uuid) {
+            tagViewModel.borderedTagIDs.remove(tag.uuid)
+        } else {
+            tagViewModel.borderedTagIDs.insert(tag.uuid)
+        }
+        viewModel.onTagSelected?(tag)
+    }
+    
+    func beginEditTag() {
+        tagViewModel.tags = viewModel.selectableTags
+        
+        for tag in viewModel.selectedTags {
+            tagViewModel.borderedTagIDs.insert(tag.uuid)
+        }
+        
+        tagViewModel.onTagSelected = handleTagViewTagSelected
+    }
+    
+    func commitEditTag() {
+        tagViewModel = .init()
     }
 }
 
