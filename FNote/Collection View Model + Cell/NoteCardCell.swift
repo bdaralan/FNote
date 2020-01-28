@@ -97,7 +97,9 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     
     func disableCell(_ disabled: Bool) {
         isUserInteractionEnabled = disabled ? false : true
-        contentView.layer.opacity = disabled ? 0.4 : 1
+        contentView.layer.opacity = disabled ? 0.35 : 1
+        layer.shadowOpacity = disabled ? 0 : 0.17
+        backgroundColor = backgroundColor?.withAlphaComponent(disabled ? 0.35 : 1)
     }
     
     func setDividerColor(_ color: UIColor) {
