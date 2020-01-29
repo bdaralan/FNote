@@ -18,6 +18,8 @@ struct NoteCardForm: View {
     @State private var relationshipViewModel = NoteCardCollectionViewModel()
     @State private var tagViewModel = TagCollectionViewModel()
     
+    let iconSize = CGSize(width: 25, height: 20)
+    
     
     var body: some View {
         NavigationView {
@@ -69,8 +71,9 @@ struct NoteCardForm: View {
                     // MARK: Favorite
                     Toggle(isOn: $viewModel.isFavorite) {
                         Image.noteCardFavorite(viewModel.isFavorite)
-                            .frame(width: 20, height: 20, alignment: .center)
+                            .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
                         Text("Favorite")
+                            .padding(.leading, 4)
                     }
                     
                     // MARK: Relationship
@@ -80,10 +83,11 @@ struct NoteCardForm: View {
                     ) {
                         HStack {
                             Image.noteCardRelationship
-                                .frame(width: 20, height: 20, alignment: .center)
+                                .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
                                 .foregroundColor(.primary)
                             Text("Links")
                                 .foregroundColor(.primary)
+                                .padding(.leading, 4)
                             Spacer()
                             Text("\(viewModel.selectedRelationships.count)")
                                 .foregroundColor(.secondary)
@@ -98,10 +102,11 @@ struct NoteCardForm: View {
                     ) {
                         HStack {
                             Image.noteCardTag
-                                .frame(width: 20, height: 20, alignment: .center)
+                                .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
                                 .foregroundColor(.primary)
                             Text("Tags")
                                 .foregroundColor(.primary)
+                                .padding(.leading, 4)
                             Spacer()
                             Text("\(viewModel.selectedTags.count)")
                                 .foregroundColor(.secondary)
@@ -113,10 +118,11 @@ struct NoteCardForm: View {
                     Button(action: beginEditNote) {
                         HStack {
                             Image.noteCardNote
-                                .frame(width: 20, height: 20, alignment: .center)
+                                .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
                                 .foregroundColor(.primary)
                             Text("Note")
                                 .foregroundColor(.primary)
+                                .padding(.leading, 4)
                             Spacer()
                             HStack(spacing: 3) { // markdown logo with sf symbol
                                 Image(systemName: "m.square")

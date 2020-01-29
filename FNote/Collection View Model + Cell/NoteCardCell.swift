@@ -242,7 +242,7 @@ extension NoteCardCell {
         var image: UIImage {
             let image: UIImage
             switch self {
-            case .relationship: image = UIImage(systemName: "square.on.square")!
+            case .relationship: image = UIImage(systemName: "rectangle.on.rectangle")!
             case .tag: image = UIImage(systemName: "tag")!
             case .favorite: image = UIImage(systemName: "star")!
             case .note: image = UIImage(systemName: "doc.plaintext")!
