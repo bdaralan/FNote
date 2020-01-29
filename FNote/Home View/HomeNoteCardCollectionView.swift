@@ -193,10 +193,15 @@ extension HomeNoteCardCollectionView {
 
     func handleNoteCardCollectionCUDResult(_ result: ObjectCUDResult<NoteCardCollection>) {
         switch result {
-        case .created(_, let childContext):
+        case .created(let collection, let childContext):
             childContext.quickSave()
             childContext.parent?.quickSave()
             appState.fetchCollections()
+            if appState.currentCollection == nil {
+                let collection = collection.get(from: appState.parentContext)
+                appState.setCurrentCollection(collection)
+                viewModel.selectedCollectionIDs = [collection.uuid]
+            }
             viewModel.collections = appState.collections
             viewModel.updateSnapshot(animated: true)
             sheet = nil
