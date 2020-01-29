@@ -56,9 +56,6 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         
         setDividerColor(object.formality.uiColor)
         
-        let imageName = object.isFavorite ? "star.fill" : "star"
-        favoriteButton.setImage(createQuickButtonImage(systemName: imageName), for: .normal)
-        
         noteButton.isUserInteractionEnabled = !object.note.isEmpty
         noteButton.tintColor = object.note.isEmpty ? .quaternaryLabel : .secondaryLabel
         
@@ -108,6 +105,22 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         dividerRCircle.backgroundColor = color
     }
     
+    func setQuickButtonImages() {
+        relationshipButton.setImage(QuickButtonType.relationship.image, for: .normal)
+        tagButton.setImage(QuickButtonType.tag.image, for: .normal)
+        noteButton.setImage(QuickButtonType.note.image, for: .normal)
+        
+        let favorite = QuickButtonType.favorite
+        let image = object?.isFavorite == true ? favorite.favoriteImage : favorite.image
+        favoriteButton.setImage(image, for: .normal)
+    }
+    
+    func reloadQuickButtonImages() {
+        for button in quickButtons {
+            button.setImage(button.image(for: .normal), for: .normal)
+        }
+    }
+    
     @objc private func handleQuickButtonTapped(_ sender: UIButton) {
         guard let noteCard = object else { return }
         let type: QuickButtonType
@@ -125,6 +138,7 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
     override func initCell() {
         super.initCell()
         setCellStyle(style)
+        setQuickButtonImages()
     }
     
     override func setupCell() {
@@ -147,11 +161,6 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         setDividerColor(NoteCard.Formality.unspecified.uiColor)
         dividerLCircle.layer.cornerRadius = dividerCircleWidth / 2
         dividerRCircle.layer.cornerRadius = dividerCircleWidth / 2
-        
-        relationshipButton.setImage(createQuickButtonImage(systemName: "square.on.square"), for: .normal)
-        tagButton.setImage(createQuickButtonImage(systemName: "tag"), for: .normal)
-        favoriteButton.setImage(createQuickButtonImage(systemName: "star"), for: .normal)
-        noteButton.setImage(createQuickButtonImage(systemName: "doc.plaintext"), for: .normal)
         
         for button in quickButtons {
             button.addTarget(self, action: #selector(handleQuickButtonTapped), for: .touchUpInside)
@@ -207,11 +216,6 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
             labelStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ]
     }
-    
-    private func createQuickButtonImage(systemName: String) -> UIImage? {
-        UIImage(systemName: systemName)?
-            .applyingSymbolConfiguration(.init(scale: .medium))
-    }
 }
 
 
@@ -234,6 +238,21 @@ extension NoteCardCell {
         case tag
         case favorite
         case note
+        
+        var image: UIImage {
+            let image: UIImage
+            switch self {
+            case .relationship: image = UIImage(systemName: "square.on.square")!
+            case .tag: image = UIImage(systemName: "tag")!
+            case .favorite: image = UIImage(systemName: "star")!
+            case .note: image = UIImage(systemName: "doc.plaintext")!
+            }
+            return image.applyingSymbolConfiguration(.init(scale: .medium))!
+        }
+        
+        var favoriteImage: UIImage {
+            UIImage(systemName: "star.fill")!.applyingSymbolConfiguration(.init(scale: .medium))!
+        }
     }
     
     enum ContextMenu {

@@ -11,7 +11,7 @@ import CoreData
 
 
 struct HomeNoteCardView: View {
-    
+        
     @EnvironmentObject var appState: AppState
     
     var viewModel: NoteCardCollectionViewModel

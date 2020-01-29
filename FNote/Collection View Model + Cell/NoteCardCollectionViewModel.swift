@@ -51,7 +51,11 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     // MARK: Reference
     
+    /// A reference to the collection view.
     private weak var collectionView: UICollectionView?
+    
+    /// A flag to reload cell quick buttons images if size category ever changed.
+    private var sizeCategoryChanged = false
     
     
     // MARK: Method
@@ -73,6 +77,9 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
         cell.showCellBorder(borderedNoteCardIDs.contains(noteCard.uuid))
         cell.disableCell(disableNoteCardIDs.contains(noteCard.uuid))
         cell.onQuickButtonTapped = onNoteCardQuickButtonTapped
+        
+        guard sizeCategoryChanged else { return }
+        cell.setQuickButtonImages()
     }
     
     private func setupSearchHeader(_ header: SearchFieldCollectionHeader) {
@@ -91,7 +98,10 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     }
     
     @objc private func handleSizeCategoryChanged() {
-        
+        sizeCategoryChanged = true
+        var snapshot = dataSource.snapshot()
+        snapshot.reloadItems(snapshot.itemIdentifiers)
+        dataSource.apply(snapshot)
     }
 }
 
