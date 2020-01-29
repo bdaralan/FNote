@@ -56,7 +56,7 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         
         setDividerColor(object.formality.uiColor)
         
-        let imageName = object.isFavorited ? "star.fill" : "star"
+        let imageName = object.isFavorite ? "star.fill" : "star"
         favoriteButton.setImage(createQuickButtonImage(systemName: imageName), for: .normal)
         
         noteButton.isUserInteractionEnabled = !object.note.isEmpty

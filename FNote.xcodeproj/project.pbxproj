@@ -25,6 +25,7 @@
 		B448744A23DEC1B9005EBA45 /* LabelCollectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B448744923DEC1B9005EBA45 /* LabelCollectionHeader.swift */; };
 		B44E786C23DCAA7700428D4A /* SearchFieldCollectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44E786B23DCAA7700428D4A /* SearchFieldCollectionHeader.swift */; };
 		B44E787023DE774600428D4A /* UICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44E786F23DE774600428D4A /* UICollectionView.swift */; };
+		B452519923E0138C007A85CF /* ExportImportDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B452519823E0138C007A85CF /* ExportImportDataManager.swift */; };
 		B45A4A032368A2810079D8DE /* NoteCardSearchScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */; };
 		B46B0F592364A0CE0074B71A /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B0F582364A0CD0074B71A /* SearchTextField.swift */; };
 		B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */; };
@@ -107,6 +108,7 @@
 		B448744923DEC1B9005EBA45 /* LabelCollectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelCollectionHeader.swift; sourceTree = "<group>"; };
 		B44E786B23DCAA7700428D4A /* SearchFieldCollectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFieldCollectionHeader.swift; sourceTree = "<group>"; };
 		B44E786F23DE774600428D4A /* UICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionView.swift; sourceTree = "<group>"; };
+		B452519823E0138C007A85CF /* ExportImportDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportDataManager.swift; sourceTree = "<group>"; };
 		B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchScope.swift; sourceTree = "<group>"; };
 		B46B0F582364A0CD0074B71A /* SearchTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewWrapper.swift; sourceTree = "<group>"; };
@@ -209,6 +211,7 @@
 			isa = PBXGroup;
 			children = (
 				B411E0502332F6B4008D99A0 /* NotificationObserver.swift */,
+				B452519823E0138C007A85CF /* ExportImportDataManager.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -514,6 +517,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B452519923E0138C007A85CF /* ExportImportDataManager.swift in Sources */,
 				B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */,
 				B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */,
 				B4816A6B23D912E9006485F7 /* ObjectCUDRequest.swift in Sources */,
@@ -730,7 +734,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = FNote/FNote.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_ASSET_PATHS = "\"FNote/Preview Content\"";
 				DEVELOPMENT_TEAM = J58QF9TXDQ;
 				ENABLE_PREVIEWS = YES;
@@ -752,7 +756,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = FNote/FNote.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_ASSET_PATHS = "\"FNote/Preview Content\"";
 				DEVELOPMENT_TEAM = J58QF9TXDQ;
 				ENABLE_PREVIEWS = YES;

@@ -108,7 +108,7 @@ extension NoteCardFormModel {
         native = noteCard.native
         translation = noteCard.translation
         formality = Int(noteCard.formality.rawValue)
-        isFavorite = noteCard.isFavorited
+        isFavorite = noteCard.isFavorite
         note = noteCard.note
         
         selectedRelationships = noteCard.relationships

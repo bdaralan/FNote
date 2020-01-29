@@ -17,7 +17,7 @@ class NoteCard: NSManagedObject, Identifiable, ObjectValidatable {
     @NSManaged private(set) var uuid: String
     @NSManaged var native: String
     @NSManaged var translation: String
-    @NSManaged var isFavorited: Bool
+    @NSManaged var isFavorite: Bool
     @NSManaged var note: String
     @NSManaged var collection: NoteCardCollection?
     @NSManaged var relationships: Set<NoteCard>
@@ -33,7 +33,7 @@ class NoteCard: NSManagedObject, Identifiable, ObjectValidatable {
     
     override func awakeFromInsert() {
         super.awakeFromInsert()
-        uuid = UUID().uuidString
+        uuid = "FNNC+\(UUID().uuidString)"
     }
     
     override func willSave() {
@@ -106,11 +106,18 @@ extension NoteCard {
         return request
     }
     
+    static func requestAllNoteCards() -> NSFetchRequest<NoteCard> {
+        let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
+        request.predicate = .init(value: true)
+        request.sortDescriptors = []
+        return request
+    }
+    
     /// A request to fetch favorited note cards in a collection.
     /// - Parameter uuid: The collection UUID. The default is `nil` means fetch all favorited note cards.
     static func requestFavoriteCards(forCollectionUUID uuid: String? = nil) -> NSFetchRequest<NoteCard> {
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        let isFavorited = #keyPath(NoteCard.isFavorited)
+        let isFavorited = #keyPath(NoteCard.isFavorite)
         let translation = #keyPath(NoteCard.translation)
         let collectionUUID = #keyPath(NoteCard.collection.uuid)
         

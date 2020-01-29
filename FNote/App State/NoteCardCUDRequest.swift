@@ -50,7 +50,7 @@ class NoteCardCUDRequest: ObjectCUDRequest {
         object.native = native
         object.translation = translation
         object.formality = formality
-        object.isFavorited = isFavorite
+        object.isFavorite = isFavorite
         object.note = note
         object.setRelationships(relationships)
         object.setTags(tags)

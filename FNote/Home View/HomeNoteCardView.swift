@@ -121,6 +121,38 @@ extension HomeNoteCardView {
 extension HomeNoteCardView {
     
     func handleSearchTextDebounced(_ searchText: String) {
+        if searchText.lowercased() == "/export-data" {
+            let exporter = ExportImportDataManager(context: appState.parentContext)
+            exporter.exportData()
+            return
+        }
+        
+        if searchText.lowercased().contains("/import-data-") {
+            let importer = ExportImportDataManager(context: appState.parentContext)
+            let fileManager = FileManager.default
+            let document = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let files = try? fileManager.contentsOfDirectory(at: document, includingPropertiesForKeys: nil, options: [])
+            let file = files?.first(where: { $0.lastPathComponent.contains("fn-exported-data") })
+            
+            let components = searchText.lowercased().components(separatedBy: "-")
+            
+            if let file = file, let flag = components.last, ["00", "01", "10", "11", "22"].contains(flag) {
+                if flag == "22" {
+                    let result = importer.importData(from: file, deleteCurrentData: true)
+                    result?.quickSave()
+                    result?.parent?.quickSave()
+                } else {
+                    let save = flag.first == "1"
+                    let delete = flag.last == "1"
+                    let result = importer.importData(from: file, deleteCurrentData: delete)
+                    if save {
+                        result?.quickSave()
+                    }
+                }
+            }
+            return
+        }
+        
         guard !searchText.trimmed().isEmpty else {
             viewModel.noteCards = appState.currenNoteCards
             viewModel.updateSnapshot(animated: true)
@@ -302,7 +334,7 @@ extension HomeNoteCardView {
             sheet = .noteCardTag
         
         case .favorite:
-            noteCard.isFavorited.toggle()
+            noteCard.isFavorite.toggle()
             noteCard.managedObjectContext?.quickSave()
         
         case .note:
