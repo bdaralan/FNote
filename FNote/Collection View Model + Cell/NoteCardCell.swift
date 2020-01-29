@@ -139,8 +139,10 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         layer.shadowOffset = .init(width: -1, height: 1)
         
         nativeLabel.font = .preferredFont(forTextStyle: .title3)
+        nativeLabel.adjustsFontForContentSizeCategory = true
         
         translationLabel.font = .preferredFont(forTextStyle: .body)
+        translationLabel.adjustsFontForContentSizeCategory = true
         
         setDividerColor(NoteCard.Formality.unspecified.uiColor)
         dividerLCircle.layer.cornerRadius = dividerCircleWidth / 2
@@ -193,7 +195,8 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         ]
         
         regularStyleConstraints = sharedConstraints + [
-            quickButtonStackView.topAnchor.constraint(equalTo: labelStackView.bottomAnchor, constant: 12),
+            quickButtonStackView.topAnchor.constraint(lessThanOrEqualTo: labelStackView.bottomAnchor, constant: 12),
+            quickButtonStackView.topAnchor.constraint(greaterThanOrEqualTo: labelStackView.bottomAnchor, constant: 4),
             quickButtonStackView.heightAnchor.constraint(equalToConstant: 35),
             quickButtonStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             quickButtonStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
@@ -220,8 +223,8 @@ extension NoteCardCell {
         
         var height: CGFloat {
             switch self {
-            case .regular: return 135
-            case .short: return 100
+            case .regular: return 140
+            case .short: return 105
             }
         }
     }

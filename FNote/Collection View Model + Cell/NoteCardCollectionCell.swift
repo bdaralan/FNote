@@ -37,8 +37,11 @@ class NoteCardCollectionCell: FNCollectionViewCell<NoteCardCollection> {
         }
         
         guard name != iconName else { return }
-        let symbol = UIImage.SymbolConfiguration(textStyle: .body)
-        let image = UIImage(systemName: name)?.applyingSymbolConfiguration(symbol)
+        let font = UIImage.SymbolConfiguration(textStyle: .body)
+        let weight = UIImage.SymbolConfiguration(weight: .semibold)
+        var image = UIImage(systemName: name)
+        image = image?.applyingSymbolConfiguration(font)
+        image = image?.applyingSymbolConfiguration(weight)
         iconImageView.image = image
     }
     
@@ -53,11 +56,16 @@ class NoteCardCollectionCell: FNCollectionViewCell<NoteCardCollection> {
         layer.shadowRadius = 1
         layer.shadowOffset = .init(width: -1, height: 1)
         
-        nameLabel.font = UIFont.preferredFont(forTextStyle: .headline)
+        let font = UIFont.preferredFont(forTextStyle: .title3)
+        let fontDescriptor = font.fontDescriptor
+        let boldFontDescriptor = fontDescriptor.withSymbolicTraits(.traitBold) ?? fontDescriptor
+        nameLabel.font = UIFont(descriptor: boldFontDescriptor, size: boldFontDescriptor.pointSize)
         nameLabel.textColor = .label
+        nameLabel.adjustsFontForContentSizeCategory = true
         
         cardCountLabel.font = .preferredFont(forTextStyle: .callout)
         cardCountLabel.textColor = .secondaryLabel
+        cardCountLabel.adjustsFontForContentSizeCategory = true
         
         iconImageView.tintColor = .label
         iconImageView.contentMode = .scaleAspectFit
@@ -67,7 +75,7 @@ class NoteCardCollectionCell: FNCollectionViewCell<NoteCardCollection> {
         super.setupConstraints()
         let labelVStack = UIStackView(arrangedSubviews: [nameLabel, cardCountLabel])
         labelVStack.axis = .vertical
-        labelVStack.spacing = 12
+        labelVStack.spacing = 0
         labelVStack.distribution = .fillProportionally
         
         contentView.addSubviews(labelVStack, iconImageView, useAutoLayout: true)
@@ -75,8 +83,9 @@ class NoteCardCollectionCell: FNCollectionViewCell<NoteCardCollection> {
         NSLayoutConstraint.activateConstraints(
             labelVStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             labelVStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            labelVStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            labelVStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            labelVStack.topAnchor.constraint(greaterThanOrEqualTo: contentView.topAnchor, constant: 8),
+            labelVStack.bottomAnchor.constraint(greaterThanOrEqualTo: contentView.bottomAnchor, constant: -8),
+            labelVStack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
             iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             iconImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),

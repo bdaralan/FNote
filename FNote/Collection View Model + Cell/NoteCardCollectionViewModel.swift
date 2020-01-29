@@ -89,6 +89,10 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
             header.showCancel(false, animated: true)
         }
     }
+    
+    @objc private func handleSizeCategoryChanged() {
+        
+    }
 }
 
 
@@ -170,6 +174,11 @@ extension NoteCardCollectionViewModel {
         collectionView.delegate = self
         collectionView.alwaysBounceVertical = true
         collectionView.keyboardDismissMode = .onDrag
+        
+        // listen to content size category changed
+        let name = UIContentSizeCategory.didChangeNotification
+        let action = #selector(handleSizeCategoryChanged)
+        NotificationCenter.default.addObserver(self, selector: action, name: name, object: nil)
         
         // MARK: Cell
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, noteCard in

@@ -43,9 +43,11 @@ class TagCell: FNCollectionViewCell<Tag> {
         
         nameLabel.font = UIFont.preferredFont(forTextStyle: .headline)
         nameLabel.textColor = .label
+        nameLabel.adjustsFontForContentSizeCategory = true
         
         cardCountLabel.font = .preferredFont(forTextStyle: .callout)
         cardCountLabel.textColor = .secondaryLabel
+        cardCountLabel.adjustsFontForContentSizeCategory = true
     }
     
     override func setupConstraints() {
