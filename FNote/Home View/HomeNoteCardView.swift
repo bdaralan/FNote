@@ -321,11 +321,19 @@ extension HomeNoteCardView {
     func handleNoteCardQuickButtonTapped(_ button: NoteCardCell.QuickButtonType, noteCard: NoteCard) {
         switch button {
         case .relationship:
-            relationshipViewModel = .init()
-            let noteCards = noteCard.relationships.sorted(by: { $0.translation < $1.translation })
-            relationshipViewModel?.noteCards = noteCards
+            if relationshipViewModel == nil {
+                relationshipViewModel = .init()
+            }
+            
+            let relationships = noteCard.relationships.sorted(by: { $0.translation < $1.translation })
+            relationshipViewModel?.noteCards = [noteCard] + relationships
             relationshipViewModel?.cellStyle = .short
-            relationshipViewModel?.onNoteCardSelected = { print($0.native) }
+            relationshipViewModel?.disableNoteCardIDs = [noteCard.uuid]
+            relationshipViewModel?.onNoteCardSelected = { noteCard in
+                self.handleNoteCardQuickButtonTapped(.relationship, noteCard: noteCard)
+                self.relationshipViewModel?.reloadDisableCells()
+                self.relationshipViewModel?.updateSnapshot(animated: true)
+            }
             sheet = .noteCardRelationship
         
         case .tag:

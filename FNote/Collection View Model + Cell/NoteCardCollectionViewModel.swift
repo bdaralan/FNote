@@ -56,6 +56,17 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     // MARK: Method
     
+    func reloadDisableCells() {
+        guard let collectionView = collectionView else { return }
+        let visibleIndexPaths = collectionView.indexPathsForVisibleItems
+        for indexPath in visibleIndexPaths {
+            let cell = collectionView.cellForItem(at: indexPath) as! NoteCardCell
+            if let noteCard = dataSource.itemIdentifier(for: indexPath) {
+                cell.disableCell(disableNoteCardIDs.contains(noteCard.uuid))
+            }
+        }
+    }
+    
     private func setupNoteCardCell(_ cell: NoteCardCell, for noteCard: NoteCard) {
         cell.reload(with: noteCard)
         cell.setCellStyle(cellStyle)
