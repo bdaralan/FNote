@@ -18,6 +18,7 @@ struct HomeTagView: View {
     @State private var sheet: Sheet?
     
     @State private var modalTextFieldModel = ModalTextFieldModel()
+    let noteCardCollectionModel = NoteCardCollectionViewModel()
     
     @State private var tagToDelete: Tag?
     
@@ -44,12 +45,26 @@ extension HomeTagView {
     enum Sheet: Identifiable {
         var id: Self { self }
         case modalTextField
+        case noteCard
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
         case .modalTextField:
             return ModalTextField(viewModel: $modalTextFieldModel)
+                .eraseToAnyView()
+            
+        case .noteCard:
+            let action = { self.sheet = nil }
+            let label = { Text("Done").bold() }
+            let doneNavItem = Button(action: action, label: label)
+            return NavigationView {
+                CollectionViewWrapper(viewModel: noteCardCollectionModel)
+                    .navigationBarTitle("Cards", displayMode: .inline)
+                    .navigationBarItems(trailing: doneNavItem)
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .eraseToAnyView()
         }
     }
 }
@@ -166,7 +181,10 @@ extension HomeTagView {
 extension HomeTagView {
     
     func handleTagSelected(_ tag: Tag) {
-        
+        let noteCards = tag.noteCards.sorted(by: { $0.translation < $1.translation})
+        noteCardCollectionModel.noteCards = noteCards
+        noteCardCollectionModel.cellStyle = .short
+        sheet = .noteCard
     }
     
     func handleContextMenuSelected(_ menu: TagCell.ContextMenu, tag: Tag) {
