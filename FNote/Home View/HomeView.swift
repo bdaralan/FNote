@@ -62,6 +62,7 @@ struct HomeView: View {
         .sheet(isPresented: $showCreateCollectionSheet, content: createCollectionSheet)
         .disabled(!appState.iCloudActive)
         .onReceive(appState.$currentCollectionID, perform: handleOnReceiveCurrentCollectionID)
+        .onReceive(currentTab.rawValue.description.publisher.last(), perform: handleOnReceiveCurrentTab)
     }
 }
 
@@ -77,6 +78,10 @@ extension HomeView {
     func handleOnReceiveCurrentCollectionID(_ collectionID: String?) {
         cardCollectionView = .init(frame: .zero, collectionViewLayout: .init())
         cardCollectionViewModel.setupDataSource(with: cardCollectionView)
+    }
+    
+    func handleOnReceiveCurrentTab(_ : Character) {
+        cardCollectionViewModel.cancelSearch()
     }
 }
 

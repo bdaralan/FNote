@@ -71,6 +71,19 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
         }
     }
     
+    /// The method does not trigger `onSearchCancel` block.
+    func cancelSearch() {
+        let headerIndexPath = IndexPath(item: 0, section: 0)
+        let headerKind = UICollectionView.elementKindSectionHeader
+        let supplementaryView = collectionView?.supplementaryView(forElementKind: headerKind, at: headerIndexPath)
+        
+        guard let header = supplementaryView as? SearchFieldCollectionHeader else { return }
+        guard !header.searchText.isEmpty else { return }
+        header.searchText = ""
+        header.searchField.resignFirstResponder()
+        header.showCancel(false, animated: true)
+    }
+    
     private func setupNoteCardCell(_ cell: NoteCardCell, for noteCard: NoteCard) {
         cell.reload(with: noteCard)
         cell.setCellStyle(cellStyle)
