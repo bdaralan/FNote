@@ -46,7 +46,9 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     // MARK: Search
     var onSearchTextDebounced: ((String) -> Void)?
+    var onSearchTextChanged: ((String) -> Void)?
     var onSearchCancel: (() -> Void)?
+    var onSearchNoteActiveChanged: ((Bool) -> Void)?
     
     
     // MARK: Reference
@@ -56,6 +58,8 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     /// A flag to reload cell quick buttons images if size category ever changed.
     private var sizeCategoryChanged = false
+    
+    private(set) var isSearchNoteActive = false
     
     
     // MARK: Method
@@ -82,6 +86,7 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
         header.searchText = ""
         header.searchField.resignFirstResponder()
         header.showCancel(false, animated: true)
+        header.setDebounceSearchText("")
     }
     
     private func setupNoteCardCell(_ cell: NoteCardCell, for noteCard: NoteCard) {
@@ -96,6 +101,13 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     }
     
     private func setupSearchHeader(_ header: SearchFieldCollectionHeader) {
+        header.searchField.placeholder = "Search by native, translation, or note"
+        
+        header.onSearchTextChanged = { [weak self] searchText in
+            guard let self = self else { return }
+            self.onSearchTextChanged?(searchText)
+        }
+        
         header.onSearchTextDebounced = { [weak self] searchText in
             guard let self = self else { return }
             self.onSearchTextDebounced?(searchText)
@@ -107,6 +119,12 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
             header.searchText = ""
             header.searchField.resignFirstResponder()
             header.showCancel(false, animated: true)
+        }
+        
+        header.onNoteActive = { [weak self] isActive in
+            guard let self = self else { return }
+            self.isSearchNoteActive = isActive
+            self.onSearchNoteActiveChanged?(isActive)
         }
     }
     

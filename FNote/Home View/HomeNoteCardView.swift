@@ -30,6 +30,7 @@ struct HomeNoteCardView: View {
     @State private var noteCardToDelete: NoteCard?
     
     @State private var searchFetchController: NSFetchedResultsController<NoteCard>?
+    @State private var currentSearchText = ""
     
     
     var body: some View {
@@ -115,6 +116,7 @@ extension HomeNoteCardView {
         viewModel.onContextMenuSelected = handleContextMenuSelected
         viewModel.onSearchTextDebounced = handleSearchTextDebounced
         viewModel.onSearchCancel = handleSearchCancel
+        viewModel.onSearchNoteActiveChanged = handleSearchNoteActiveChanged
         viewModel.updateSnapshot(animated: false)
     }
 }
@@ -125,6 +127,8 @@ extension HomeNoteCardView {
 extension HomeNoteCardView {
     
     func handleSearchTextDebounced(_ searchText: String) {
+        currentSearchText = searchText
+        
         if searchText.lowercased() == "/export-data" {
             let exporter = ExportImportDataManager(context: appState.parentContext)
             exporter.exportData()
@@ -155,16 +159,22 @@ extension HomeNoteCardView {
             return
         }
         
-        let request = NoteCard.requestNoteCards(forCollectionUUID: collection.uuid, predicate: searchText)
-        
         if searchFetchController == nil {
             searchFetchController = .init(
-                fetchRequest: request,
+                fetchRequest: NoteCard.requestNone(),
                 managedObjectContext: appState.parentContext,
                 sectionNameKeyPath: nil,
                 cacheName: nil
             )
         }
+        
+        let isNoteActive = viewModel.isSearchNoteActive
+        
+        let request = NoteCard.requestNoteCards(
+            forCollectionUUID: collection.uuid,
+            searchText: searchText,
+            scopes: isNoteActive ? [.native, .translation, .note] : [.native, .translation]
+        )
         
         searchFetchController?.fetchRequest.predicate = request.predicate
         searchFetchController?.fetchRequest.sortDescriptors = request.sortDescriptors
@@ -178,6 +188,10 @@ extension HomeNoteCardView {
         viewModel.noteCards = appState.currenNoteCards
         viewModel.updateSnapshot(animated: true)
         searchFetchController = nil
+    }
+    
+    func handleSearchNoteActiveChanged(_ isActive: Bool) {
+        handleSearchTextDebounced(currentSearchText)
     }
 }
 

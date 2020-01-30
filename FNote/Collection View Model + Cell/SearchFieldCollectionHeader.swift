@@ -14,7 +14,9 @@ class SearchFieldCollectionHeader: UICollectionReusableView {
         
     let searchField = UISearchTextField()
     let cancelButton = UIButton(type: .system)
-    let fieldHStack = UIStackView()
+    let noteButton = UIButton(type: .system)
+    
+    private let fieldHStack = UIStackView()
     
     var searchText: String {
         set { searchField.text = newValue }
@@ -25,9 +27,14 @@ class SearchFieldCollectionHeader: UICollectionReusableView {
     var onSearch: (() -> Void)?
     var onSearchTextDebounced: ((String) -> Void)?
     var onSearchTextChanged: ((String) -> Void)?
+    var onEditingChanged: ((Bool) -> Void)?
+    var onNoteActive: ((Bool) -> Void)?
     
     @Published private var debounceSearchText = ""
     private var searchTextSubscription: AnyCancellable?
+    
+    @Published private(set) var isNoteActive = false
+    private var noteActiveSubscription: AnyCancellable?
     
     
     override init(frame: CGRect) {
@@ -36,6 +43,7 @@ class SearchFieldCollectionHeader: UICollectionReusableView {
         setupConstraints()
         setupTargets()
         setupSearchTextSubscription()
+        setupNoteActiveSubscription()
     }
     
     required init?(coder: NSCoder) {
@@ -44,6 +52,7 @@ class SearchFieldCollectionHeader: UICollectionReusableView {
     
     func showCancel(_ show: Bool, animated: Bool) {
         cancelButton.isHidden = !show
+        noteButton.isHidden = !show || onNoteActive == nil
         UIView.animate(withDuration: animated ? 0.3 : 0) { [weak self] in
             guard let self = self else { return }
             self.layoutIfNeeded()
@@ -66,9 +75,11 @@ extension SearchFieldCollectionHeader: UISearchTextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         showCancel(true, animated: true)
+        onEditingChanged?(true)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
+        onEditingChanged?(false)
         if searchText.trimmed().isEmpty {
             searchText = ""
             debounceSearchText = ""
@@ -89,13 +100,17 @@ extension SearchFieldCollectionHeader {
         cancelButton.isHidden = true
         cancelButton.setTitle("Cancel", for: .normal)
         cancelButton.setTitleColor(.appAccent, for: .normal)
+    
+        noteButton.isHidden = true
+        let noteImage = UIImage(systemName: "doc.plaintext", withConfiguration: nil)
+        noteButton.setImage(noteImage, for: .normal)
     }
     
     private func setupConstraints() {
-        fieldHStack.addArrangedSubviews(searchField, cancelButton)
+        fieldHStack.addArrangedSubviews(searchField, noteButton, cancelButton)
         fieldHStack.axis = .horizontal
         fieldHStack.distribution = .fill
-        fieldHStack.spacing = 8
+        fieldHStack.spacing = 12
         
         addSubviews(fieldHStack, useAutoLayout: true)
         
@@ -116,13 +131,27 @@ extension SearchFieldCollectionHeader {
             })
     }
     
+    private func setupNoteActiveSubscription() {
+        noteActiveSubscription = $isNoteActive
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] isActive in
+                self?.noteButton.tintColor = isActive ? .appAccent : .secondaryLabel
+            })
+    }
+    
     private func setupTargets() {
         searchField.addTarget(self, action: #selector(handleTextChanged), for: .editingChanged)
         cancelButton.addTarget(self, action: #selector(handleCancelButtonTapped), for: .touchUpInside)
+        noteButton.addTarget(self, action: #selector(handleOptionButtonTapped), for: .touchUpInside)
     }
     
     @objc private func handleCancelButtonTapped() {
         onCancel?()
+    }
+    
+    @objc private func handleOptionButtonTapped() {
+        isNoteActive.toggle()
+        onNoteActive?(isNoteActive)
     }
     
     @objc private func handleTextChanged() {

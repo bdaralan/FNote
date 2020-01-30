@@ -9,35 +9,16 @@
 import Foundation
 
 
-enum NoteCardSearchScope: CaseIterable {
-    
-    case translationOrNative
+enum NoteCardSearchScope {
     case translation
     case native
-    case tag
     case note
     
-    var title: String {
+    var keyPath: String {
         switch self {
-        case .translationOrNative: return "translation | native"
-        case .translation: return "translation"
-        case .native: return "native"
-        case .tag: return "tag"
-        case .note: return "note"
+        case .translation: return #keyPath(NoteCard.translation)
+        case .native: return #keyPath(NoteCard.native)
+        case .note: return #keyPath(NoteCard.note)
         }
     }
-    
-    static func scope(withTitle: String) -> NoteCardSearchScope? {
-        NoteCardSearchScope.allCases.first(where: { $0.title == withTitle })
-    }
-}
-
-
-enum NoteCardSearchOption {
-    
-    /// Include those in the array.
-    case include([NoteCard])
-    
-    /// Exclude those in the array.
-    case exclude([NoteCard])
 }

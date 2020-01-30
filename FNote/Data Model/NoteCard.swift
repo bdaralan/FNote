@@ -166,83 +166,37 @@ extension NoteCard {
     
     /// A request used with search feature to fetch note cards in a collection.
     ///
-    /// If the search text is empty, all note cards in the collection are fetched.
     /// - Parameters:
-    ///   - uuid: The collection UUID. Pass `nil` to fetch all note cards.
-    ///   - search: The search text.
-    ///   - scope: The search scope.
-    ///   - options: The search option. The default is empty which means include all matches.
-    static func requestNoteCards(forCollectionUUID uuid: String?, search: String, scope: NoteCardSearchScope, options: [NoteCardSearchOption] = []) -> NSFetchRequest<NoteCard> {
-        guard !search.trimmed().isEmpty else { return requestNone() }
+    ///   - uuid: The collection UUID.
+    ///   - searchText: The search text.
+    ///   - scopes: The search scopes.
+    /// - Returns: The fetch request. The request will fetch none if any of the parameters are empty.
+    static func requestNoteCards(forCollectionUUID uuid: String, searchText: String = "", scopes: [NoteCardSearchScope]) -> NSFetchRequest<NoteCard> {
+        guard !uuid.trimmed().isEmpty, !searchText.trimmed().isEmpty, !scopes.isEmpty else { return NoteCard.requestNone() }
+        
+        // create predicate for the search scopes
+        var scopePredicates = [NSPredicate]()
+        for scope in scopes {
+            let predicate = NSPredicate(format: "\(scope.keyPath) CONTAINS[c] %@", searchText)
+            scopePredicates.append(predicate)
+        }
+        
+        // create predicate to match collection uuid
         let collectionUUID = #keyPath(NoteCard.collection.uuid)
-        let cardUUID = #keyPath(NoteCard.uuid)
-        let translation = #keyPath(NoteCard.translation)
-        let native = #keyPath(NoteCard.native)
-        let note = #keyPath(NoteCard.note)
-        let tags = #keyPath(NoteCard.tags)
+        let matchCollection = NSPredicate(format: "\(collectionUUID) == %@", uuid)
         
-        var predicates = [NSPredicate]()
-        var sortDescriptors = [NSSortDescriptor]()
+        // combine the predicates
+        // OR the scopes then AND with the match collection's uuid
+        let scopeCompoundPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: scopePredicates)
+        let allPredicates = [matchCollection, scopeCompoundPredicate]
+        let requestPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: allPredicates)
         
-        if let uuid = uuid {
-            let matchCollection = NSPredicate(format: "\(collectionUUID) == %@", uuid)
-            predicates.append(matchCollection)
-        }
-        
-        // set scope predicate
-        switch scope {
-        case .translationOrNative:
-            let query = "\(translation) CONTAINS[c] %@ OR \(native) CONTAINS[c] %@"
-            let matchTranslationOrNative = NSPredicate(format: query, search, search)
-            predicates.append(matchTranslationOrNative)
-            sortDescriptors.append(.init(key: translation, ascending: true))
-        
-        case .translation:
-            let query = "\(translation) CONTAINS[c] %@"
-            let matchTranslation = NSPredicate(format: query, search)
-            predicates.append(matchTranslation)
-            sortDescriptors.append(.init(key: translation, ascending: true))
-        
-        case .native:
-            let query = "\(native) CONTAINS[c] %@"
-            let matchNative = NSPredicate(format: query, search)
-            predicates.append(matchNative)
-            sortDescriptors.append(.init(key: native, ascending: true))
-        
-        case .tag:
-            let query = "SUBQUERY(\(tags), $tag, $tag.name CONTAINS[c] %@).@count > 0"
-            let matchTag = NSPredicate(format: query, search)
-            predicates.append(matchTag)
-            sortDescriptors.append(.init(key: translation, ascending: true))
-            
-        case .note:
-            let query = "\(note) CONTAINS[c] %@"
-            let matchNote = NSPredicate(format: query, search)
-            predicates.append(matchNote)
-            sortDescriptors.append(.init(key: translation, ascending: true))
-        }
-        
-        // set option predicate
-        for option in options {
-            switch option {
-            case .include(let noteCards):
-                let uuids = noteCards.map({ $0.uuid })
-                let query = "\(cardUUID) IN %@"
-                let includeNoteCards = NSPredicate(format: query, uuids)
-                predicates.append(includeNoteCards)
-                
-            case .exclude(let noteCards):
-                let uuids = noteCards.map({ $0.uuid })
-                let query = "NOT (\(cardUUID) IN %@)"
-                let exclude = NSPredicate(format: query, uuids)
-                predicates.append(exclude)
-            }
-        }
-        
-        // create request
+        // create the request
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        request.sortDescriptors = sortDescriptors
+        let sortKey = #keyPath(NoteCard.translation)
+        request.predicate = requestPredicate
+        request.sortDescriptors = [.init(key: sortKey, ascending: true)]
+        
         return request
     }
 }
