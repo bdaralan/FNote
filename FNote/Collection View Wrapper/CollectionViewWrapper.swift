@@ -15,6 +15,13 @@ struct CollectionViewWrapper: UIViewRepresentable {
         
     var viewModel: CollectionViewWrapperViewModel
     
+    /// A collection view to use.
+    ///
+    /// NOTE:
+    /// - If given `nil`, the wrapper will create one.
+    /// - Otherwise, the collection view must be setup and ready to be used.
+    var collectionView: UICollectionView?
+    
     
     // MARK: Make View
     
@@ -45,11 +52,13 @@ extension CollectionViewWrapper {
         
         init(wrapper: CollectionViewWrapper) {
             self.wrapper = wrapper
-            collectionView = .init(frame: .zero, collectionViewLayout: .init())
+            collectionView = wrapper.collectionView ?? .init(frame: .zero, collectionViewLayout: .init())
             collectionView.backgroundColor = .clear
             
             super.init()
-            wrapper.viewModel.setupCollectionView(collectionView)
+            if wrapper.collectionView == nil {
+                wrapper.viewModel.setupCollectionView(collectionView)
+            }
         }
     }
 }
@@ -69,5 +78,10 @@ extension CollectionViewWrapper.Coordinator {
 
 protocol CollectionViewWrapperViewModel {
     
+    /// The method called by the wrapper on init to setup the collection view.
+    ///
+    /// NOTE:
+    /// - The wrapper only calls this method if the wrapper's `collectionView` is `nil`.
+    /// - If the `collectionView` is not `nil`, the wrapper assumes the setup is done.
     func setupCollectionView(_ collectionView: UICollectionView)
 }

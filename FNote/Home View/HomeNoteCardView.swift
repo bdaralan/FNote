@@ -18,7 +18,10 @@ struct HomeNoteCardView: View {
     
     var collection: NoteCardCollection
     
+    var collectionView: UICollectionView
+    
     @State private var sheet: Sheet?
+
     @State private var noteCardFormModel: NoteCardFormModel?
     @State private var relationshipViewModel: NoteCardCollectionViewModel?
     @State private var tagViewModel: TagCollectionViewModel?
@@ -31,7 +34,7 @@ struct HomeNoteCardView: View {
     
     var body: some View {
         NavigationView {
-            CollectionViewWrapper(viewModel: viewModel)
+            CollectionViewWrapper(viewModel: viewModel, collectionView: collectionView)
                 .navigationBarTitle(Text(collection.name), displayMode: .large)
                 .navigationBarItems(trailing: createNoteCardNavItem)
                 .edgesIgnoringSafeArea(.all)
@@ -112,6 +115,7 @@ extension HomeNoteCardView {
         viewModel.onContextMenuSelected = handleContextMenuSelected
         viewModel.onSearchTextDebounced = handleSearchTextDebounced
         viewModel.onSearchCancel = handleSearchCancel
+        viewModel.updateSnapshot(animated: false)
     }
 }
 
@@ -460,6 +464,6 @@ extension HomeNoteCardView {
 
 struct HomeNoteCardView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeNoteCardView(viewModel: .init(), collection: .sample)
+        HomeNoteCardView(viewModel: .init(), collection: .sample, collectionView: .init(frame: .zero, collectionViewLayout: .init()))
     }
 }

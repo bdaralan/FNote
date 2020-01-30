@@ -15,9 +15,10 @@ struct HomeView: View {
     
     @State private var currentTab = Tab.card
     
-    @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
     @State private var collectionCollectionViewModel = NoteCardCollectionCollectionViewModel()
     @State private var tagCollectionViewModel = TagCollectionViewModel()
+    @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
+    @State private var cardCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
         
     @State private var showCreateCollectionSheet = false
     @State private var modalTextFieldModel = ModalTextFieldModel()
@@ -31,7 +32,8 @@ struct HomeView: View {
             if appState.currentCollection != nil && appState.iCloudActive {
                 HomeNoteCardView(
                     viewModel: cardCollectionViewModel,
-                    collection: appState.currentCollection!
+                    collection: appState.currentCollection!,
+                    collectionView: cardCollectionView
                 )
                     .tabItem(Tab.card.tabItem)
                     .tag(Tab.card)
@@ -59,6 +61,7 @@ struct HomeView: View {
         .onAppear(perform: setupOnAppear)
         .sheet(isPresented: $showCreateCollectionSheet, content: createCollectionSheet)
         .disabled(!appState.iCloudActive)
+        .onReceive(appState.$currentCollectionID, perform: handleOnReceiveCurrentCollectionID)
     }
 }
 
@@ -69,6 +72,11 @@ extension HomeView {
     
     func setupOnAppear() {
         storeRemoteChangeObserver.onReceived = handleStoreRemoteChangeNotification
+    }
+    
+    func handleOnReceiveCurrentCollectionID(_ collectionID: String?) {
+        cardCollectionView = .init(frame: .zero, collectionViewLayout: .init())
+        cardCollectionViewModel.setupDataSource(with: cardCollectionView)
     }
 }
 
