@@ -55,6 +55,7 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         nativeLabel.text = object.native
         
         setDividerColor(object.formality.uiColor)
+        setFavoriteButtonImage()
         
         noteButton.isUserInteractionEnabled = !object.note.isEmpty
         noteButton.tintColor = object.note.isEmpty ? .quaternaryLabel : .secondaryLabel
@@ -109,16 +110,13 @@ class NoteCardCell: FNCollectionViewCell<NoteCard> {
         relationshipButton.setImage(QuickButtonType.relationship.image, for: .normal)
         tagButton.setImage(QuickButtonType.tag.image, for: .normal)
         noteButton.setImage(QuickButtonType.note.image, for: .normal)
-        
-        let favorite = QuickButtonType.favorite
-        let image = object?.isFavorite == true ? favorite.favoriteImage : favorite.image
-        favoriteButton.setImage(image, for: .normal)
+        setFavoriteButtonImage()
     }
     
-    func reloadQuickButtonImages() {
-        for button in quickButtons {
-            button.setImage(button.image(for: .normal), for: .normal)
-        }
+    func setFavoriteButtonImage() {
+        let isFavorite = object?.isFavorite == true
+        let image = isFavorite ? QuickButtonType.favoriteImage : QuickButtonType.favorite.image
+        favoriteButton.setImage(image, for: .normal)
     }
     
     @objc private func handleQuickButtonTapped(_ sender: UIButton) {
@@ -238,21 +236,21 @@ extension NoteCardCell {
         case tag
         case favorite
         case note
-        
+            
         var image: UIImage {
-            let image: UIImage
             switch self {
-            case .relationship: image = UIImage(systemName: "rectangle.on.rectangle")!
-            case .tag: image = UIImage(systemName: "tag")!
-            case .favorite: image = UIImage(systemName: "star")!
-            case .note: image = UIImage(systemName: "doc.plaintext")!
+            case .relationship: return Self.relationshipImage
+            case .tag: return Self.tagImage
+            case .favorite: return Self.unfavoriteImage
+            case .note: return Self.noteImage
             }
-            return image.applyingSymbolConfiguration(.init(scale: .medium))!
         }
         
-        var favoriteImage: UIImage {
-            UIImage(systemName: "star.fill")!.applyingSymbolConfiguration(.init(scale: .medium))!
-        }
+        static let relationshipImage = UIImage(systemName: "rectangle.on.rectangle")!.applyingSymbolConfiguration(.init(scale: .medium))!
+        static let tagImage = UIImage(systemName: "tag")!.applyingSymbolConfiguration(.init(scale: .medium))!
+        static let noteImage = UIImage(systemName: "doc.plaintext")!.applyingSymbolConfiguration(.init(scale: .medium))!
+        static let unfavoriteImage = UIImage(systemName: "star")!.applyingSymbolConfiguration(.init(scale: .medium))!
+        static let favoriteImage = UIImage(systemName: "star.fill")!.applyingSymbolConfiguration(.init(scale: .medium))!
     }
     
     enum ContextMenu {
