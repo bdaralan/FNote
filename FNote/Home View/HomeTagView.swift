@@ -184,6 +184,13 @@ extension HomeTagView {
         let noteCards = tag.noteCards.sorted(by: { $0.translation < $1.translation})
         noteCardCollectionModel.noteCards = noteCards
         noteCardCollectionModel.cellStyle = .short
+        noteCardCollectionModel.contextMenus = [.copyNative]
+        
+        noteCardCollectionModel.onContextMenuSelected = { menu, noteCard in
+            guard menu == .copyNative else { return }
+            UIPasteboard.general.string = noteCard.native
+        }
+        
         sheet = .noteCard
     }
     

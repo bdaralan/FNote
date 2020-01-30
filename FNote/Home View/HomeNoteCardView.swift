@@ -338,7 +338,14 @@ extension HomeNoteCardView {
             let relationships = noteCard.relationships.sorted(by: { $0.translation < $1.translation })
             relationshipViewModel?.noteCards = [noteCard] + relationships
             relationshipViewModel?.cellStyle = .short
+            relationshipViewModel?.contextMenus = [.copyNative]
             relationshipViewModel?.disableNoteCardIDs = [noteCard.uuid]
+            
+            relationshipViewModel?.onContextMenuSelected = { menu, noteCard in
+                guard menu == .copyNative else { return }
+                UIPasteboard.general.string = noteCard.native
+            }
+            
             relationshipViewModel?.onNoteCardSelected = { noteCard in
                 self.handleNoteCardQuickButtonTapped(.relationship, noteCard: noteCard)
                 self.relationshipViewModel?.reloadDisableCells()
