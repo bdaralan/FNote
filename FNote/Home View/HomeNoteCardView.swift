@@ -140,19 +140,11 @@ extension HomeNoteCardView {
             
             let components = searchText.lowercased().components(separatedBy: "-")
             
-            if let file = file, let flag = components.last, ["00", "01", "10", "11", "22"].contains(flag) {
-                if flag == "22" {
-                    let result = importer.importData(from: file, deleteCurrentData: true)
-                    result?.quickSave()
-                    result?.parent?.quickSave()
-                } else {
-                    let save = flag.first == "1"
-                    let delete = flag.last == "1"
-                    let result = importer.importData(from: file, deleteCurrentData: delete)
-                    if save {
-                        result?.quickSave()
-                    }
-                }
+            if let file = file, let flag = components.last, ["0", "1"].contains(flag) {
+                let delete = flag == "1"
+                let result = importer.importData(from: file, deleteCurrentData: delete)
+                result?.quickSave()
+                result?.parent?.quickSave()
             }
             return
         }

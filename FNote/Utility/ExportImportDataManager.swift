@@ -111,6 +111,41 @@ struct ExportImportDataManager {
             
             if deleteCurrentData {
                 eraseCurrentData()
+            
+            } else {
+                // step 1 - fetch all tags
+                let existingTagRequest = Tag.requestAllTags()
+                let existingTags = try context.fetch(existingTagRequest)
+        
+                // step 2 - map them into key value pairs
+                
+                // key is the existing tag's name lowercased
+                // value is the existing tag
+                var existingTagMap = [String: Tag]()
+                
+                for existingTag in existingTags {
+                    existingTagMap[existingTag.name.lowercased()] = existingTag.get(from: importContext)
+                }
+                
+                var importingTagsToDelete = Set<Tag>()
+                
+                // step 3 - find matching tag and add the existing into note cards
+                for importingTag in tagMap.values {
+                    let lowercasedName = importingTag.name.lowercased()
+                    if let existingTag = existingTagMap[lowercasedName] {
+                        importingTagsToDelete.insert(importingTag)
+                        for noteCard in importingTag.noteCards {
+                            if noteCard.tags.contains(importingTag) {
+                                noteCard.addTags([existingTag])
+                            }
+                        }
+                    }
+                }
+                
+                // step 4 - delete the matching importing tags
+                for importingTag in importingTagsToDelete {
+                    importContext.delete(importingTag)
+                }
             }
             
             return importContext
