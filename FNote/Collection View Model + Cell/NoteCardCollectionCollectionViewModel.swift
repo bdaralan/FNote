@@ -21,6 +21,7 @@ class NoteCardCollectionCollectionViewModel: NSObject, CollectionViewComposition
     
     var collections: [NoteCardCollection] = []
     
+    var disableCollectionIDs: Set<String> = []
     var selectedCollectionIDs: Set<String> = []
     
     var contextMenus: [NoteCardCollectionCell.ContextMenu] = []
@@ -123,6 +124,7 @@ extension NoteCardCollectionCollectionViewModel {
         dataSource = .init(collectionView: collectionView, cellProvider: { collectionView, indexPath, collection in
             let cell = collectionView.dequeueCell(NoteCardCollectionCell.self, for: indexPath)
             cell.reload(with: collection)
+            cell.disableCell(self.disableCollectionIDs.contains(collection.uuid))
             
             let isCollectionSelected = self.selectedCollectionIDs.contains(collection.uuid)
             let icon = isCollectionSelected ? "checkmark" : nil

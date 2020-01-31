@@ -45,6 +45,13 @@ class NoteCardCollectionCell: FNCollectionViewCell<NoteCardCollection> {
         iconImageView.image = image
     }
     
+    func disableCell(_ disabled: Bool) {
+        isUserInteractionEnabled = disabled ? false : true
+        contentView.layer.opacity = disabled ? 0.35 : 1
+        layer.shadowOpacity = disabled ? 0 : 0.17
+        backgroundColor = backgroundColor?.withAlphaComponent(disabled ? 0.35 : 1)
+    }
+    
     override func setupCell() {
         super.setupCell()
         
@@ -56,10 +63,7 @@ class NoteCardCollectionCell: FNCollectionViewCell<NoteCardCollection> {
         layer.shadowRadius = 1
         layer.shadowOffset = .init(width: -1, height: 1)
         
-        let font = UIFont.preferredFont(forTextStyle: .title3)
-        let fontDescriptor = font.fontDescriptor
-        let boldFontDescriptor = fontDescriptor.withSymbolicTraits(.traitBold) ?? fontDescriptor
-        nameLabel.font = UIFont(descriptor: boldFontDescriptor, size: boldFontDescriptor.pointSize)
+        nameLabel.font = .preferredFont(forTextStyle: .headline)
         nameLabel.textColor = .label
         nameLabel.adjustsFontForContentSizeCategory = true
         

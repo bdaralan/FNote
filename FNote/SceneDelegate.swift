@@ -19,11 +19,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
-        // setup setting
-        let setting = UserSetting.current
-        setting.applyColorScheme()
-        setting.listenToRemoteChange()
-        NSUbiquitousKeyValueStore.default.synchronize()
+        // setup appearance
+        window.tintColor = .appAccent
+        UISwitch.appearance().onTintColor = .appAccent
         
         // setup app state
         let parentContext = CoreDataStack.current.mainContext
@@ -39,9 +37,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window.rootViewController = rootViewCV
         window.makeKeyAndVisible()
-        
-        window.tintColor = .appAccent
-        UISwitch.appearance().onTintColor = .appAccent
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

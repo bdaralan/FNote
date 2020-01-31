@@ -15,6 +15,8 @@ struct NoteCardForm: View {
     
     @State private var sheet: Sheet?
     @State private var modalTextViewModel = ModalTextViewModel()
+    
+    @State private var collectionViewModel = NoteCardCollectionCollectionViewModel()
     @State private var relationshipViewModel = NoteCardCollectionViewModel()
     @State private var tagViewModel = TagCollectionViewModel()
     
@@ -45,7 +47,7 @@ struct NoteCardForm: View {
                 // MARK: Collection
                 Section(header: Text("COLLECTION")) {
                     NavigationLink(
-                        destination: NoteCardFormCollectionSelectionView(formModel: viewModel),
+                        destination: NoteCardFormCollectionSelectionView(viewModel: collectionViewModel),
                         isActive: $viewModel.isSelectingCollection
                     ) {
                         HStack {
@@ -56,6 +58,7 @@ struct NoteCardForm: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+                    .onReceive(viewModel.$isSelectingCollection, perform: handleCollectionViewPushed)
                 }
                 
                 Section(header: Text("FORMALITY")) {
@@ -205,16 +208,53 @@ extension NoteCardForm {
 }
 
 
+// MARK: - Collection Selection
+
+extension NoteCardForm {
+    
+    func handleCollectionViewPushed(_ isPushed: Bool) {
+        guard isPushed else {
+            collectionViewModel = .init()
+            return
+        }
+        
+        collectionViewModel.collections = viewModel.selectableCollections
+        collectionViewModel.onCollectionSelected = handleNoteCardCollectionSelected
+        
+        if let collection = viewModel.selectedCollection {
+            collectionViewModel.disableCollectionIDs = [collection.uuid]
+        }
+    }
+    
+    func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
+        viewModel.selectedCollection = collection
+        viewModel.isSelectingCollection = false
+    }
+}
+
+
 // MARK: - Relationship Selection
 
 extension NoteCardForm {
     
     func handleRelationshipViewPushed(_ isPushed: Bool) {
-        if isPushed {
-            beginEditRelationship()
-        } else {
-            commitEditRelationship()
+        guard isPushed else {
+            relationshipViewModel = .init()
+            return
         }
+        
+        relationshipViewModel.noteCards = viewModel.selectableRelationships
+        relationshipViewModel.cellStyle = .short
+        
+        viewModel.selectedRelationships.forEach { noteCard in
+            relationshipViewModel.borderedNoteCardIDs.insert(noteCard.uuid)
+        }
+        
+        if let noteCard = viewModel.selectedNoteCard {
+            relationshipViewModel.disableNoteCardIDs.insert(noteCard.uuid)
+        }
+        
+        relationshipViewModel.onNoteCardSelected = handleRelationshipNoteCardSelected
     }
     
     func handleRelationshipNoteCardSelected(_ noteCard: NoteCard) {
@@ -224,25 +264,6 @@ extension NoteCardForm {
             relationshipViewModel.borderedNoteCardIDs.insert(noteCard.uuid)
         }
         viewModel.onRelationshipSelected?(noteCard)
-    }
-    
-    func beginEditRelationship() {
-        relationshipViewModel.noteCards = viewModel.selectableRelationships
-        relationshipViewModel.cellStyle = .short
-        
-        viewModel.selectedRelationships.forEach { noteCard in
-            relationshipViewModel.borderedNoteCardIDs.insert(noteCard.uuid)
-        }
-    
-        if let noteCard = viewModel.selectedNoteCard {
-            relationshipViewModel.disableNoteCardIDs.insert(noteCard.uuid)
-        }
-        
-        relationshipViewModel.onNoteCardSelected = handleRelationshipNoteCardSelected
-    }
-    
-    func commitEditRelationship() {
-        relationshipViewModel = .init()
     }
 }
 

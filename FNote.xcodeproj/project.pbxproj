@@ -8,18 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		650D14E92332B96100B6E2BF /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650D14E82332B96100B6E2BF /* View.swift */; };
-		656AC27E236A11AE0038F301 /* NoteCardCollectionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656AC27D236A11AE0038F301 /* NoteCardCollectionRow.swift */; };
-		656AC282236A1AA30038F301 /* TagRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656AC281236A1AA30038F301 /* TagRow.swift */; };
 		B40056EE23D6B9C400997216 /* ModalTextFieldModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056ED23D6B9C300997216 /* ModalTextFieldModel.swift */; };
 		B40056F023D6C26500997216 /* HomeTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056EF23D6C26500997216 /* HomeTagView.swift */; };
 		B40056F323D6C82900997216 /* ModalTextViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056F223D6C82900997216 /* ModalTextViewModel.swift */; };
 		B40056F523D6CC8600997216 /* NavigationBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40056F423D6CC8600997216 /* NavigationBarButton.swift */; };
 		B40B519C2335C2D6002DA41D /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40B519B2335C2D6002DA41D /* NotificationName.swift */; };
-		B40F09FD237CFC6600E4F7D3 /* UserSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40F09FC237CFC6600E4F7D3 /* UserSetting.swift */; };
 		B4113FB923D2D539004E70DC /* NoteCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4113FB823D2D539004E70DC /* NoteCardCell.swift */; };
 		B4113FBC23D2D7D9004E70DC /* FNCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4113FBB23D2D7D9004E70DC /* FNCollectionViewCell.swift */; };
 		B4113FBE23D2DA5E004E70DC /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4113FBD23D2DA5E004E70DC /* UIView.swift */; };
 		B411E0512332F6B4008D99A0 /* NotificationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E0502332F6B4008D99A0 /* NotificationObserver.swift */; };
+		B44625FA23E3D31A00B43526 /* UserStoredValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44625F923E3D31A00B43526 /* UserStoredValue.swift */; };
+		B44625FC23E3DE2D00B43526 /* UserPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44625FB23E3DE2D00B43526 /* UserPreference.swift */; };
 		B448744623DEB578005EBA45 /* TagCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B448744523DEB578005EBA45 /* TagCell.swift */; };
 		B448744823DEB73A005EBA45 /* TagCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B448744723DEB73A005EBA45 /* TagCollectionViewModel.swift */; };
 		B448744A23DEC1B9005EBA45 /* LabelCollectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B448744923DEC1B9005EBA45 /* LabelCollectionHeader.swift */; };
@@ -90,18 +89,17 @@
 
 /* Begin PBXFileReference section */
 		650D14E82332B96100B6E2BF /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
-		656AC27D236A11AE0038F301 /* NoteCardCollectionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionRow.swift; sourceTree = "<group>"; };
-		656AC281236A1AA30038F301 /* TagRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagRow.swift; sourceTree = "<group>"; };
 		B40056ED23D6B9C300997216 /* ModalTextFieldModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextFieldModel.swift; sourceTree = "<group>"; };
 		B40056EF23D6C26500997216 /* HomeTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTagView.swift; sourceTree = "<group>"; };
 		B40056F223D6C82900997216 /* ModalTextViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewModel.swift; sourceTree = "<group>"; };
 		B40056F423D6CC8600997216 /* NavigationBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarButton.swift; sourceTree = "<group>"; };
 		B40B519B2335C2D6002DA41D /* NotificationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
-		B40F09FC237CFC6600E4F7D3 /* UserSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSetting.swift; sourceTree = "<group>"; };
 		B4113FB823D2D539004E70DC /* NoteCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCell.swift; sourceTree = "<group>"; };
 		B4113FBB23D2D7D9004E70DC /* FNCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FNCollectionViewCell.swift; sourceTree = "<group>"; };
 		B4113FBD23D2DA5E004E70DC /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		B411E0502332F6B4008D99A0 /* NotificationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObserver.swift; sourceTree = "<group>"; };
+		B44625F923E3D31A00B43526 /* UserStoredValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStoredValue.swift; sourceTree = "<group>"; };
+		B44625FB23E3DE2D00B43526 /* UserPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreference.swift; sourceTree = "<group>"; };
 		B448744523DEB578005EBA45 /* TagCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCell.swift; sourceTree = "<group>"; };
 		B448744723DEB73A005EBA45 /* TagCollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewModel.swift; sourceTree = "<group>"; };
 		B448744923DEC1B9005EBA45 /* LabelCollectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelCollectionHeader.swift; sourceTree = "<group>"; };
@@ -188,8 +186,6 @@
 			isa = PBXGroup;
 			children = (
 				B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */,
-				656AC27D236A11AE0038F301 /* NoteCardCollectionRow.swift */,
-				656AC281236A1AA30038F301 /* TagRow.swift */,
 				B40056F423D6CC8600997216 /* NavigationBarButton.swift */,
 			);
 			path = "Reusable View";
@@ -236,6 +232,14 @@
 			path = "FN View & Controller";
 			sourceTree = "<group>";
 		};
+		B44625F823E3D28E00B43526 /* Property Wrapper */ = {
+			isa = PBXGroup;
+			children = (
+				B44625F923E3D31A00B43526 /* UserStoredValue.swift */,
+			);
+			path = "Property Wrapper";
+			sourceTree = "<group>";
+		};
 		B4816A6723D8D71D006485F7 /* App State */ = {
 			isa = PBXGroup;
 			children = (
@@ -254,7 +258,7 @@
 				B499A35B2326D988002D16A0 /* CoreDataStack.swift */,
 				B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */,
 				B499A35D2326D9A7002D16A0 /* AppCache.swift */,
-				B40F09FC237CFC6600E4F7D3 /* UserSetting.swift */,
+				B44625FB23E3DE2D00B43526 /* UserPreference.swift */,
 			);
 			path = CoreDataStack;
 			sourceTree = "<group>";
@@ -353,6 +357,7 @@
 				B40BB6172335B11900E2F98B /* Utility */,
 				B4BAC52223203F60007EAF15 /* Extension */,
 				B499A3572326D932002D16A0 /* CoreDataStack */,
+				B44625F823E3D28E00B43526 /* Property Wrapper */,
 				B4BB117023145DC400A380AA /* AppDelegate.swift */,
 				B4BB117223145DC400A380AA /* SceneDelegate.swift */,
 				B4BB117923145DC600A380AA /* Assets.xcassets */,
@@ -520,6 +525,7 @@
 				B4816A6B23D912E9006485F7 /* ObjectCUDRequest.swift in Sources */,
 				B4816A6923D8D73C006485F7 /* AppState.swift in Sources */,
 				B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */,
+				B44625FA23E3D31A00B43526 /* UserStoredValue.swift in Sources */,
 				B4FFEB29234ED2AA00B4550F /* Image.swift in Sources */,
 				B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */,
 				B4D240D723DBD1EE005B4066 /* NoteCardCollectionCell.swift in Sources */,
@@ -527,7 +533,6 @@
 				B4A0CE9923D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift in Sources */,
 				B4816A6D23D91327006485F7 /* NoteCardCUDRequest.swift in Sources */,
 				B49C4C6F23D64AFB0030D9B2 /* SegmentControlWrapper.swift in Sources */,
-				656AC282236A1AA30038F301 /* TagRow.swift in Sources */,
 				B4113FBE23D2DA5E004E70DC /* UIView.swift in Sources */,
 				B448744A23DEC1B9005EBA45 /* LabelCollectionHeader.swift in Sources */,
 				B49C4C7823D6B0AC0030D9B2 /* HomeNoteCardCollectionView.swift in Sources */,
@@ -541,7 +546,6 @@
 				B4113FB923D2D539004E70DC /* NoteCardCell.swift in Sources */,
 				B44E787023DE774600428D4A /* UICollectionView.swift in Sources */,
 				B49C4C7323D69E6C0030D9B2 /* NoteCardFormModel.swift in Sources */,
-				656AC27E236A11AE0038F301 /* NoteCardCollectionRow.swift in Sources */,
 				B4D240D923DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift in Sources */,
 				B48AC69923D9445A0033DF6F /* NoteCardFormTagSelectionView.swift in Sources */,
 				B40056F523D6CC8600997216 /* NavigationBarButton.swift in Sources */,
@@ -568,7 +572,6 @@
 				B4EC398423DB88460011569C /* CollectionViewWrapper.swift in Sources */,
 				B44E786C23DCAA7700428D4A /* SearchFieldCollectionHeader.swift in Sources */,
 				B4113FBC23D2D7D9004E70DC /* FNCollectionViewCell.swift in Sources */,
-				B40F09FD237CFC6600E4F7D3 /* UserSetting.swift in Sources */,
 				B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */,
 				B4816A6F23D91341006485F7 /* NoteCardCollectionCUDRequest.swift in Sources */,
 				B40056EE23D6B9C400997216 /* ModalTextFieldModel.swift in Sources */,
@@ -576,6 +579,7 @@
 				B45A4A032368A2810079D8DE /* NoteCardSearchScope.swift in Sources */,
 				B448744823DEB73A005EBA45 /* TagCollectionViewModel.swift in Sources */,
 				B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */,
+				B44625FC23E3DE2D00B43526 /* UserPreference.swift in Sources */,
 				B4816A7123D91354006485F7 /* TagCUDRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
