@@ -13,12 +13,18 @@ class CoreDataStackHistoryTracker {
     
     /// The key for the token value stored in `UserDefaults`.
     private let historyTokenDataKey: String
+    private let historyDeleteDateKey = "CoreDataStackHistoryTracker.kDeleteDate"
 
     /// The last history token stored in `UserDefaults`.
     var lastToken: NSPersistentHistoryToken? {
         guard let tokenData = UserDefaults.standard.data(forKey: historyTokenDataKey) else { return nil }
         let token = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSPersistentHistoryToken.self, from: tokenData)
         return token
+    }
+    
+    var lastDeleteDate: Date {
+        set { UserDefaults.standard.set(newValue, forKey: historyDeleteDateKey) }
+        get { UserDefaults.standard.value(forKey: historyDeleteDateKey) as? Date ?? Date() }
     }
     
     /// Create a history tracker object with a key.
@@ -42,9 +48,17 @@ class CoreDataStackHistoryTracker {
     }
     
     func deleteHistory(before token: NSPersistentHistoryToken, context: NSManagedObjectContext) {
+        let calendar = Calendar.current
+        let now = Date()
+        let lastDelete = calendar.dateComponents([.day], from: lastDeleteDate, to: now)
+
+        guard let day = lastDelete.day, day > 30 else { return }
+        
         let deleteHistoryRequest = NSPersistentHistoryChangeRequest.deleteHistory(before: token)
+        
         do {
             try context.execute(deleteHistoryRequest)
+            lastDeleteDate = Date()
         } catch {
             print("failed to delete core data history with token: \(token)")
         }

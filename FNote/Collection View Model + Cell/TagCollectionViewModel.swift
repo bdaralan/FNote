@@ -109,6 +109,7 @@ extension TagCollectionViewModel {
         collectionView.delegate = self
         collectionView.registerCell(TagCell.self)
         collectionView.registerHeader(LabelCollectionHeader.self)
+        collectionView.alwaysBounceVertical = true
         
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, tag in
             let cell = collectionView.dequeueCell(TagCell.self, for: indexPath)
