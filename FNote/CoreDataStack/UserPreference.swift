@@ -37,7 +37,6 @@ class UserPreference: ObservableObject {
         self.window = window
         let preferredStyle = ColorScheme(rawValue: colorScheme)?.userInterfaceStyle ?? .unspecified
         window.overrideUserInterfaceStyle = preferredStyle
-        
     }
 }
 

@@ -16,6 +16,20 @@ struct SettingView: View {
     @State private var sheet: Sheet?
     @State private var textFieldModel = ModalTextFieldModel()
     
+    var useMarkdown: Binding<Bool> {
+        .init(
+            get: { self.userPreference.useMarkdown },
+            set: { self.userPreference.objectWillChange.send(); self.userPreference.useMarkdown = $0 }
+        )
+    }
+    
+    var useMarkdownSoftBreak: Binding<Bool> {
+        .init(
+            get: { self.userPreference.useMarkdownSoftBreak },
+            set: { self.userPreference.objectWillChange.send(); self.userPreference.useMarkdownSoftBreak = $0 }
+        )
+    }
+    
     var checkedSystem: Bool {
         userPreference.colorScheme == UserPreference.ColorScheme.system.rawValue
     }
@@ -66,12 +80,12 @@ struct SettingView: View {
                     
                     // MARK: Markdown
                     VStack(spacing: 4) {
-                        Toggle(isOn: $userPreference.useMarkdown) {
+                        Toggle(isOn: useMarkdown) {
                             Text("Use in Note")
                         }
                         .modifier(SettingRowModifier())
                         
-                        Toggle(isOn: $userPreference.useMarkdownSoftBreak) {
+                        Toggle(isOn: useMarkdownSoftBreak) {
                             Text("Use Soft Break")
                                 .foregroundColor(userPreference.useMarkdown ? .primary : Color(.tertiaryLabel))
                         }
