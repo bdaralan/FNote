@@ -102,6 +102,7 @@ struct SettingView: View {
             }
             .navigationBarTitle("Settings")
         }
+        .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, content: presentationSheet)
     }
 }

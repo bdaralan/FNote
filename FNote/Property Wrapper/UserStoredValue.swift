@@ -49,13 +49,24 @@ struct UserStoredValue<Value> {
     // MARK: Method
     
     func setValue(_ newValue: Value) {
+        // NOTE: important check
+        // need to check if newValue is nil
+        // since supporting any optional and non-optional
+        // with a generic Value
+        // use String(describing:) to check for now
+        // since cannot seem to find a better one
+        let isNewValueNil = String(describing: newValue) == "nil"
+        let newValue = isNewValueNil ? nil : newValue
+        
         switch storage {
         
         case .userDefaults:
-            UserDefaults.standard.setValue(newValue, forKeyPath: key)
-        
+            UserDefaults.standard.set(newValue, forKey: key)
+            
         case .iCloud:
-            NSUbiquitousKeyValueStore.default.set(newValue, forKey: key)
+            let store = NSUbiquitousKeyValueStore.default
+            store.set(newValue, forKey: key)
+            store.synchronize()
         }
     }
     

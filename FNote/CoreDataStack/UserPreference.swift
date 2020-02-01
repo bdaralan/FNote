@@ -13,6 +13,8 @@ class UserPreference: ObservableObject {
     
     static let shared = UserPreference()
     
+    weak var window: UIWindow?
+    
     @UserStoredValue(in: .iCloud, key: "kUserPreference.colorScheme", defaultValue: ColorScheme.system.rawValue)
     var colorScheme: Int
         
@@ -27,10 +29,15 @@ class UserPreference: ObservableObject {
     
     
     func applyColorScheme() {
+        guard let window = window else { return }
+        setColorScheme(for: window)
+    }
+    
+    func setColorScheme(for window: UIWindow) {
+        self.window = window
         let preferredStyle = ColorScheme(rawValue: colorScheme)?.userInterfaceStyle ?? .unspecified
-        for window in UIApplication.shared.windows {
-            window.overrideUserInterfaceStyle = preferredStyle
-        }
+        window.overrideUserInterfaceStyle = preferredStyle
+        
     }
 }
 
