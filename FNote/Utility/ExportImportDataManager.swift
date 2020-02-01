@@ -16,16 +16,7 @@ struct ExportImportDataManager {
     
     /// Export all data as JSON to document directory.
     @discardableResult
-    func exportData() -> Data? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd--HH-mm"
-        let date = Date()
-        let dateString = dateFormatter.string(from: date)
-        
-        let fileManager = FileManager.default
-        let document = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let exportFileURL = document.appendingPathComponent("fn-exported-data-\(dateString).json")
-        
+    func exportData(to url: URL) -> Data? {
         let collectionRequest = NoteCardCollection.requestAllCollections()
         let noteCardRequest = NoteCard.requestAllNoteCards()
         let tagRequest = Tag.requestAllTags()
@@ -52,7 +43,7 @@ struct ExportImportDataManager {
             let data = try JSONEncoder().encode(exportData)
             
             // write data to URL
-            try data.write(to: exportFileURL, options: .atomic)
+            try data.write(to: url, options: .atomic)
             
             return data
 

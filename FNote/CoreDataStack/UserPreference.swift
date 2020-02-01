@@ -6,19 +6,48 @@
 //  Copyright © 2020 Dara Beng. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 
 class UserPreference: ObservableObject {
     
     static let shared = UserPreference()
     
-    @UserStoredValue(in: .iCloud, key: "kUserPreference.preferredColorScheme", defaultValue: 0)
-    var preferredColorScheme: Int
+    @UserStoredValue(in: .iCloud, key: "kUserPreference.colorScheme", defaultValue: ColorScheme.system.rawValue)
+    var colorScheme: Int
         
-    @UserStoredValue(in: .iCloud, key: "kUserPreference.useMarkdown", defaultValue: false)
+    @UserStoredValue(in: .iCloud, key: "kUserPreference.useMarkdown", defaultValue: true)
     var useMarkdown: Bool
+    
+    @UserStoredValue(in: .iCloud, key: "kUserPreference.useMarkdownSoftBreak", defaultValue: false)
+    var useMarkdownSoftBreak: Bool
     
     
     private init() {}
+    
+    
+    func applyColorScheme() {
+        let preferredStyle = ColorScheme(rawValue: colorScheme)?.userInterfaceStyle ?? .unspecified
+        for window in UIApplication.shared.windows {
+            window.overrideUserInterfaceStyle = preferredStyle
+        }
+    }
+}
+
+
+extension UserPreference {
+    
+    enum ColorScheme: Int {
+        case system
+        case light
+        case dark
+        
+        var userInterfaceStyle: UIUserInterfaceStyle {
+            switch self {
+            case .system: return .unspecified
+            case .light: return .light
+            case .dark: return .dark
+            }
+        }
+    }
 }

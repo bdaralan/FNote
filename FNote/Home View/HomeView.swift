@@ -57,6 +57,11 @@ struct HomeView: View {
                 .tabItem(Tab.tag.tabItem)
                 .tag(Tab.tag)
             
+            // MARK: Setting Tab
+            SettingView(userPreference: .shared)
+                .tabItem(Tab.setting.tabItem)
+                .tag(Tab.setting)
+            
         }
         .onAppear(perform: setupOnAppear)
         .sheet(isPresented: $showCreateCollectionSheet, content: createCollectionSheet)
@@ -130,7 +135,7 @@ extension HomeView {
         case .tag:
             tagCollectionViewModel.updateSnapshot(animated: true)
             
-        case .profile:
+        case .setting:
             break
             
         case .card:
@@ -199,7 +204,7 @@ extension HomeView {
         case card
         case collection
         case tag
-        case profile
+        case setting
         
         
         var title: String {
@@ -207,7 +212,7 @@ extension HomeView {
             case .card: return "Cards"
             case .collection: return "Collections"
             case .tag: return "Tags"
-            case .profile: return "Profile"
+            case .setting: return "Settings"
             }
         }
         
@@ -216,12 +221,12 @@ extension HomeView {
             case .card: return "rectangle.fill.on.rectangle.angled.fill"
             case .collection: return "rectangle.stack.fill"
             case .tag: return "tag.fill"
-            case .profile: return "person.fill"
+            case .setting: return "gear"
             }
         }
         
         func tabItem() -> some View {
-            let size: CGFloat = self == .profile ? 23 : 17
+            let size: CGFloat = self == .setting ? 23 : 17
             
             let image = Image(systemName: systemImage)
                 .frame(alignment: .bottom)

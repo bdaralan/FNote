@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 
-class NoteCardCell: FNCollectionViewCell<NoteCard> {
+class NoteCardCell: ManagedObjectCollectionViewCell<NoteCard> {
     
     // MARK: Action
     

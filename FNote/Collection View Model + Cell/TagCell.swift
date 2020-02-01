@@ -9,7 +9,7 @@
 import UIKit
 
 
-class TagCell: FNCollectionViewCell<Tag> {
+class TagCell: ManagedObjectCollectionViewCell<Tag> {
     
     let nameLabel = UILabel(text: "Tag")
     let cardCountLabel = UILabel(text: "0 CARDS")

@@ -55,7 +55,7 @@ struct UserStoredValue<Value> {
             UserDefaults.standard.setValue(newValue, forKeyPath: key)
         
         case .iCloud:
-            NSUbiquitousKeyValueStore.default.setValue(newValue, forKey: key)
+            NSUbiquitousKeyValueStore.default.set(newValue, forKey: key)
         }
     }
     

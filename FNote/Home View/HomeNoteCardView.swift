@@ -129,30 +129,6 @@ extension HomeNoteCardView {
     func handleSearchTextDebounced(_ searchText: String) {
         currentSearchText = searchText
         
-        if searchText.lowercased() == "/export-data" {
-            let exporter = ExportImportDataManager(context: appState.parentContext)
-            exporter.exportData()
-            return
-        }
-        
-        if searchText.lowercased().contains("/import-data-") {
-            let importer = ExportImportDataManager(context: appState.parentContext)
-            let fileManager = FileManager.default
-            let document = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-            let files = try? fileManager.contentsOfDirectory(at: document, includingPropertiesForKeys: nil, options: [])
-            let file = files?.first(where: { $0.lastPathComponent.contains("fn-exported-data") })
-            
-            let components = searchText.lowercased().components(separatedBy: "-")
-            
-            if let file = file, let flag = components.last, ["0", "1"].contains(flag) {
-                let delete = flag == "1"
-                let result = importer.importData(from: file, deleteCurrentData: delete)
-                result?.quickSave()
-                result?.parent?.quickSave()
-            }
-            return
-        }
-        
         guard !searchText.trimmed().isEmpty else {
             viewModel.noteCards = appState.currenNoteCards
             viewModel.updateSnapshot(animated: true)

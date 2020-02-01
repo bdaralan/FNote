@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 
-class NoteCardCollectionCell: FNCollectionViewCell<NoteCardCollection> {
+class NoteCardCollectionCell: ManagedObjectCollectionViewCell<NoteCardCollection> {
     
     let nameLabel = UILabel(text: "Collection")
     let cardCountLabel = UILabel(text: "0 CARDS")
