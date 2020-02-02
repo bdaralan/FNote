@@ -22,3 +22,16 @@ enum NoteCardSearchScope {
         }
     }
 }
+
+
+enum NoteCardSortOption: Int {
+    case native
+    case translation
+    
+    var optionImageName: String {
+        switch self {
+        case .native: return "n.square"
+        case .translation: return "t.square"
+        }
+    }
+}

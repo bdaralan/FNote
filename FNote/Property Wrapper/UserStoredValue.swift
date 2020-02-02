@@ -25,14 +25,14 @@ struct UserStoredValue<Value> {
     // MARK: Value
     
     var wrappedValue: Value {
-        set { setValue(newValue) }
-        get { getValue() }
+        set { storage.setValue(newValue, forKey: key) }
+        get { storage.value(forKey: key, defaultValue: defaultValue) }
     }
     
     var binding: Binding<Value> {
         .init(
-            get: { self.getValue() },
-            set: { self.setValue($0) }
+            get: { self.storage.value(forKey: self.key, defaultValue: self.defaultValue) },
+            set: { self.storage.setValue($0, forKey: self.key) }
         )
     }
 
@@ -43,44 +43,6 @@ struct UserStoredValue<Value> {
         self.storage = storage
         self.key = key
         self.defaultValue = defaultValue
-    }
-    
-    
-    // MARK: Method
-    
-    func setValue(_ newValue: Value) {
-        // NOTE: important check
-        // need to check if newValue is nil
-        // since supporting any optional and non-optional
-        // with a generic Value
-        // use String(describing:) to check for now
-        // since cannot seem to find a better one
-        let isNewValueNil = String(describing: newValue) == "nil"
-        let newValue = isNewValueNil ? nil : newValue
-        
-        switch storage {
-        
-        case .userDefaults:
-            UserDefaults.standard.set(newValue, forKey: key)
-            
-        case .iCloud:
-            let store = NSUbiquitousKeyValueStore.default
-            store.set(newValue, forKey: key)
-            store.synchronize()
-        }
-    }
-    
-    func getValue() -> Value {
-        switch storage {
-        
-        case .userDefaults:
-            let value = UserDefaults.standard.object(forKey: key) as? Value
-            return value ?? defaultValue
-        
-        case .iCloud:
-            let value = NSUbiquitousKeyValueStore.default.object(forKey: key) as? Value
-            return value ?? defaultValue
-        }
     }
 }
 
@@ -95,5 +57,49 @@ extension UserStoredValue {
         /// Store value in `NSUbiquitousKeyValueStore`
         /// - Important: Must enable iCloud's Key-value storage in Signing & Capabilities
         case iCloud
+    }
+}
+
+
+extension UserStoredValue.Storage {
+    
+    func setValue(_ newValue: Value, forKey key: String) {
+        let newValue = isValueOptionalAndNil(newValue) ? nil : newValue
+        
+        switch self {
+        
+        case .userDefaults:
+            UserDefaults.standard.set(newValue, forKey: key)
+            
+        case .iCloud:
+            let store = NSUbiquitousKeyValueStore.default
+            store.set(newValue, forKey: key)
+            store.synchronize()
+        }
+    }
+    
+    func value(forKey key: String, defaultValue: Value) -> Value {
+        switch self {
+        
+        case .userDefaults:
+            let value = UserDefaults.standard.object(forKey: key) as? Value
+            return value ?? defaultValue
+        
+        case .iCloud:
+            let value = NSUbiquitousKeyValueStore.default.object(forKey: key) as? Value
+            return value ?? defaultValue
+        }
+    }
+    
+    /// Check if the value is of type `Optional` and its value is `nil`.
+    ///
+    /// - NOTE: Since `Value` can be optional type,
+    /// use String(describing:) to check if it is `nil` (for now)
+    ///
+    /// - Parameter value: The value to check.
+    /// 
+    /// - Returns: `true` is the value is `nil`.
+    func isValueOptionalAndNil(_ value: Value) -> Bool {
+        String(describing: value) == "nil"
     }
 }

@@ -16,22 +16,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
+    
+        // setup app state
+        let parentContext = CoreDataStack.current.mainContext
+        let userPreference = UserPreference.shared
+        let appState = AppState(parentContext: parentContext)
+        appState.noteCardSortOption = userPreference.noteCardSortOption
+        appState.noteCardSortOptionAscending = userPreference.noteCardSortOptionAscending
+        appState.fetchCurrentNoteCards()
+        
+        // create window
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
         // setup appearance
         window.tintColor = .appAccent
-        UserPreference.shared.setColorScheme(for: window)
+        userPreference.setColorScheme(for: window)
         UISwitch.appearance().onTintColor = .appAccent
-        
-        // setup app state
-        let parentContext = CoreDataStack.current.mainContext
-        let appState = AppState(parentContext: parentContext)
-        appState.fetchCurrentNoteCards()
         
         // setup home view
         let homeView = HomeView()
             .environmentObject(appState)
+            .environmentObject(userPreference)
             .environment(\.managedObjectContext, appState.parentContext)
         
         let rootViewCV = UIHostingController(rootView: homeView)

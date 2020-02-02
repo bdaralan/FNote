@@ -39,6 +39,9 @@ class AppState: ObservableObject {
     @Published private(set) var currentCollectionID: String? = AppCache.currentCollectionUUID
     private(set) lazy var currentCollection = collections.first(where: { $0.uuid == currentCollectionID })
     
+    var noteCardSortOption: NoteCardSortOption = .translation
+    var noteCardSortOptionAscending = true
+    
     
     // MARK: Fetch Controller
     
@@ -99,7 +102,11 @@ extension AppState {
         let newRequest: NSFetchRequest<NoteCard>
         
         if let collection = currentCollection {
-            newRequest = NoteCard.requestNoteCards(forCollectionUUID: collection.uuid)
+            newRequest = NoteCard.requestNoteCards(
+                forCollectionUUID: collection.uuid,
+                sortBy: noteCardSortOption,
+                ascending: noteCardSortOptionAscending
+            )
         } else {
             newRequest = NoteCard.requestNone()
         }

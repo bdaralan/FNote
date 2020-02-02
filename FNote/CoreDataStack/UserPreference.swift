@@ -15,6 +15,8 @@ class UserPreference: ObservableObject {
     
     weak var window: UIWindow?
     
+    // MARK: iCloud
+    
     @UserStoredValue(in: .iCloud, key: "kUserPreference.colorScheme", defaultValue: ColorScheme.system.rawValue)
     var colorScheme: Int
         
@@ -23,6 +25,26 @@ class UserPreference: ObservableObject {
     
     @UserStoredValue(in: .iCloud, key: "kUserPreference.useMarkdownSoftBreak", defaultValue: false)
     var useMarkdownSoftBreak: Bool
+    
+    
+    // MARK: User Defaults
+    
+    @UserStoredValue(in: .iCloud, key: "kUserPreference.noteCardSortOptionAscending", defaultValue: true)
+    var noteCardSortOptionAscending: Bool
+    
+    let noteCardSortOptionKey = "kUserPreference.noteCardSortOption"
+    var noteCardSortOption: NoteCardSortOption {
+        set {
+            objectWillChange.send()
+            UserStoredValue.Storage.iCloud.setValue(newValue.rawValue, forKey: noteCardSortOptionKey)
+        }
+        get {
+            let storage = UserStoredValue<Int>.Storage.iCloud
+            let defaultValue = NoteCardSortOption.translation.rawValue
+            let rawValue = storage.value(forKey: noteCardSortOptionKey, defaultValue: defaultValue)
+            return NoteCardSortOption(rawValue: rawValue) ?? .translation
+        }
+    }
     
     
     private init() {}

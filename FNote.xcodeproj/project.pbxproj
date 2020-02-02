@@ -30,6 +30,7 @@
 		B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */; };
 		B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3404232E8214008B2088 /* ModalTextView.swift */; };
 		B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3406232E8634008B2088 /* InputViewResponder.swift */; };
+		B47460B923E66D50001D07F4 /* NoteCardSortNavigationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47460B823E66D50001D07F4 /* NoteCardSortNavigationButton.swift */; };
 		B4816A6923D8D73C006485F7 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4816A6823D8D73C006485F7 /* AppState.swift */; };
 		B4816A6B23D912E9006485F7 /* ObjectCUDRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4816A6A23D912E9006485F7 /* ObjectCUDRequest.swift */; };
 		B4816A6D23D91327006485F7 /* NoteCardCUDRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4816A6C23D91327006485F7 /* NoteCardCUDRequest.swift */; };
@@ -120,6 +121,7 @@
 		B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewWrapper.swift; sourceTree = "<group>"; };
 		B46B3404232E8214008B2088 /* ModalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextView.swift; sourceTree = "<group>"; };
 		B46B3406232E8634008B2088 /* InputViewResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewResponder.swift; sourceTree = "<group>"; };
+		B47460B823E66D50001D07F4 /* NoteCardSortNavigationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSortNavigationButton.swift; sourceTree = "<group>"; };
 		B4816A6823D8D73C006485F7 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		B4816A6A23D912E9006485F7 /* ObjectCUDRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectCUDRequest.swift; sourceTree = "<group>"; };
 		B4816A6C23D91327006485F7 /* NoteCardCUDRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCUDRequest.swift; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 			children = (
 				B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */,
 				B40056F423D6CC8600997216 /* NavigationBarButton.swift */,
+				B47460B823E66D50001D07F4 /* NoteCardSortNavigationButton.swift */,
 			);
 			path = "Reusable View";
 			sourceTree = "<group>";
@@ -623,6 +626,7 @@
 				B45A4A032368A2810079D8DE /* NoteCardSearchScope.swift in Sources */,
 				B448744823DEB73A005EBA45 /* TagCollectionViewModel.swift in Sources */,
 				B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */,
+				B47460B923E66D50001D07F4 /* NoteCardSortNavigationButton.swift in Sources */,
 				B44625FC23E3DE2D00B43526 /* UserPreference.swift in Sources */,
 				B4816A7123D91354006485F7 /* TagCUDRequest.swift in Sources */,
 			);

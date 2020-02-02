@@ -13,6 +13,7 @@ import CoreData
 struct HomeNoteCardView: View {
         
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var userPreference: UserPreference
     
     var viewModel: NoteCardCollectionViewModel
     
@@ -21,6 +22,7 @@ struct HomeNoteCardView: View {
     var collectionView: UICollectionView
     
     @State private var sheet: Sheet?
+    @State private var showSortOption = false
 
     @State private var noteCardFormModel: NoteCardFormModel?
     @State private var relationshipViewModel: NoteCardCollectionViewModel?
@@ -37,12 +39,13 @@ struct HomeNoteCardView: View {
         NavigationView {
             CollectionViewWrapper(viewModel: viewModel, collectionView: collectionView)
                 .navigationBarTitle(Text(collection.name), displayMode: .large)
-                .navigationBarItems(trailing: createNoteCardNavItem)
+                .navigationBarItems(trailing: trailingNavItems)
                 .edgesIgnoringSafeArea(.all)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, onDismiss: presentationSheetDismissed, content: presentationSheet)
         .alert(item: $noteCardToDelete, content: deleteNoteCardAlert)
+        .actionSheet(isPresented: $showSortOption, content: presentationActionSheet)
         .onAppear(perform: setupOnAppear)
     }
 }
@@ -101,6 +104,34 @@ extension HomeNoteCardView {
         relationshipViewModel = nil
         tagViewModel = nil
     }
+    
+    func presentationActionSheet() -> ActionSheet {
+        let nativeAscending = { self.setNoteCardSortOption(.native, ascending: true) }
+        let nativeDescending = { self.setNoteCardSortOption(.native, ascending: false) }
+        let translationAscending = { self.setNoteCardSortOption(.translation, ascending: true) }
+        let translationDescending = { self.setNoteCardSortOption(.translation, ascending: false) }
+        return ActionSheet(title: Text("Sort By"), message: nil, buttons: [
+            .default(Text("Native Ascending Order"), action: nativeAscending),
+            .default(Text("Native Descending Order"), action: nativeDescending),
+            .default(Text("Translation Ascending Order"), action: translationAscending),
+            .default(Text("Translation Descending Order"), action: translationDescending),
+            .cancel()
+        ])
+    }
+    
+    func setNoteCardSortOption(_ option: NoteCardSortOption, ascending: Bool) {
+        let currentOption = appState.noteCardSortOption
+        let currentAscending = appState.noteCardSortOptionAscending
+        
+        guard option != currentOption || ascending != currentAscending else { return }
+        userPreference.noteCardSortOption = option
+        userPreference.noteCardSortOptionAscending = ascending
+        appState.noteCardSortOption = option
+        appState.noteCardSortOptionAscending = ascending
+        appState.fetchCurrentNoteCards()
+        viewModel.noteCards = appState.currenNoteCards
+        viewModel.updateSnapshot(animated: true)
+    }
 }
 
 
@@ -132,6 +163,7 @@ extension HomeNoteCardView {
         guard !searchText.trimmed().isEmpty else {
             viewModel.noteCards = appState.currenNoteCards
             viewModel.updateSnapshot(animated: true)
+            searchFetchController = nil
             return
         }
         
@@ -176,8 +208,17 @@ extension HomeNoteCardView {
 
 extension HomeNoteCardView {
     
-    var createNoteCardNavItem: some View {
-        NavigationBarButton(imageName: "plus", action: beginCreateNoteCard)
+    var trailingNavItems: some View {
+        HStack(spacing: 8) {
+            NoteCardSortNavigationButton(
+                sortOption: userPreference.noteCardSortOption,
+                ascending: userPreference.noteCardSortOptionAscending,
+                action: { self.showSortOption = true }
+            )
+                .disabled(searchFetchController != nil)
+            
+            NavigationBarButton(imageName: "plus", action: beginCreateNoteCard)
+        }
     }
     
     func beginCreateNoteCard() {

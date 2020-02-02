@@ -140,7 +140,7 @@ extension NoteCard {
     /// - Parameters:
     ///   - uuid: The collection UUID.
     ///   - predicate: A predicate to match either the `translation` or `native`.
-    static func requestNoteCards(forCollectionUUID uuid: String, predicate: String = "") -> NSFetchRequest<NoteCard> {
+    static func requestNoteCards(forCollectionUUID uuid: String, sortBy: NoteCardSortOption = .translation, ascending: Bool = true) -> NSFetchRequest<NoteCard> {
         guard !uuid.trimmed().isEmpty else { return NoteCard.requestNone() }
         
         let collectionUUID = #keyPath(NoteCard.collection.uuid)
@@ -148,18 +148,17 @@ extension NoteCard {
         let translation = #keyPath(NoteCard.translation)
         
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        let matchCollection = NSPredicate(format: "\(collectionUUID) == %@", uuid)
+        request.predicate = NSPredicate(format: "\(collectionUUID) == %@", uuid)
         
-        if predicate.trimmed().isEmpty {
-            request.predicate = matchCollection
-        } else {
-            let query = "\(translation) CONTAINS[c] %@ OR \(native) CONTAINS[c] %@"
-            let matchTranslationOrNative = NSPredicate(format: query, predicate, predicate)
-            let predicates = [matchCollection, matchTranslationOrNative]
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        let sortByNative = NSSortDescriptor(key: native, ascending: ascending)
+        let sortByTranslation = NSSortDescriptor(key: translation, ascending: ascending)
+        
+        switch sortBy {
+        case .native:
+            request.sortDescriptors = [sortByNative, sortByTranslation]
+        case .translation:
+            request.sortDescriptors = [sortByTranslation, sortByNative]
         }
-        
-        request.sortDescriptors = [.init(key: translation, ascending: true)]
         
         return request
     }
