@@ -1,5 +1,5 @@
 //
-//  ModalTextFieldWrapper.swift
+//  TextFieldWrapper.swift
 //  FNote
 //
 //  Created by Dara Beng on 9/13/19.
@@ -9,7 +9,7 @@
 import SwiftUI
 
 
-struct ModalTextFieldWrapper: UIViewRepresentable {
+struct TextFieldWrapper: UIViewRepresentable {
     
     @Binding var isActive: Bool
     
@@ -17,7 +17,13 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
     
     var placeholder: String
     
+    var nextResponder: UIResponder?
+    
     var onCommit: (() -> Void)?
+    
+    var onNextResponder: ((UIResponder) -> Void)?
+    
+    var configure: ((UITextField) -> Void)?
     
     
     func makeCoordinator() -> Coordinator {
@@ -37,19 +43,20 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
     
     class Coordinator: NSObject, UITextFieldDelegate, InputViewResponder {
         
-        var wrapper: ModalTextFieldWrapper
+        var wrapper: TextFieldWrapper
         
         let textField = UITextField()
 
         
-        init(wrapper: ModalTextFieldWrapper) {
+        init(wrapper: TextFieldWrapper) {
             self.wrapper = wrapper
             super.init()
             setupTextField()
+            wrapper.configure?(textField)
         }
     
         
-        func update(with wrapper: ModalTextFieldWrapper) {
+        func update(with wrapper: TextFieldWrapper) {
             self.wrapper = wrapper
             textField.text = wrapper.text
             textField.placeholder = wrapper.placeholder
@@ -57,9 +64,14 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
         }
         
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-            wrapper.onCommit?()
-            textField.resignFirstResponder()
-            return true
+            if let nextResponder = wrapper.nextResponder {
+                nextResponder.becomeFirstResponder()
+                return false
+            } else {
+                wrapper.onCommit?()
+                textField.resignFirstResponder()
+                return true
+            }
         }
         
         func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -76,6 +88,7 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
             textField.clearButtonMode = .whileEditing
             textField.delegate = self
             textField.addTarget(self, action: #selector(handleEditingChanged), for: .editingChanged)
+            textField.adjustsFontForContentSizeCategory = true
             textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
         

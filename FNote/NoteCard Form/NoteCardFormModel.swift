@@ -41,6 +41,12 @@ class NoteCardFormModel: ObservableObject {
     
     // MARK: UI Property
     
+    /// Used to control native text field.
+    @Published var isNativeFirstResponder = false
+    
+    /// Used to control translation text field.
+    @Published var isTranslationFirstResponder = false
+    
     /// Used to control NavigationLink
     @Published var isSelectingCollection = false
     

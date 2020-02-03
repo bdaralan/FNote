@@ -260,8 +260,8 @@ extension HomeNoteCardView {
             self.handleNoteCardFormCreateTag(name: name, formModel: formModel)
         }
         
-        noteCardFormModel?.commitTitle = "Create"
-        noteCardFormModel?.navigationTitle = "New Card"
+        formModel.commitTitle = "Create"
+        formModel.navigationTitle = "New Card"
         
         sheet = .noteCardForm
     }

@@ -1,15 +1,15 @@
 //
-//  SettingRowModifier.swift
+//  NoteCardFormRowModifier.swift
 //  FNote
 //
-//  Created by Dara Beng on 1/31/20.
+//  Created by Dara Beng on 2/2/20.
 //  Copyright © 2020 Dara Beng. All rights reserved.
 //
 
 import SwiftUI
 
 
-struct SettingRowModifier: ViewModifier {
+struct NoteCardFormRowModifier: ViewModifier {
     
     @Environment(\.colorScheme) var colorScheme
     

@@ -26,7 +26,7 @@ struct ModalTextField: View {
                 }
             }
             
-            ModalTextFieldWrapper(
+            TextFieldWrapper(
                 isActive: $viewModel.isFirstResponder,
                 text: $viewModel.text,
                 placeholder: viewModel.placeholder,

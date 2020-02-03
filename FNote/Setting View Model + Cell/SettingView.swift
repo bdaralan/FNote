@@ -66,7 +66,7 @@ struct SettingView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 32) {
                     // MARK: Color Scheme
-                    VStack(spacing: 4) {
+                    VStack(spacing: 5) {
                         SettingCheckmarkRow(label: "System", checked: checkedSystem)
                             .onTapGesture(perform: { self.handleColorSchemeTapped(.system) })
                         
@@ -79,7 +79,7 @@ struct SettingView: View {
                     .modifier(SettingSectionModifier(header: "COLOR SCHEME"))
                     
                     // MARK: Markdown
-                    VStack(spacing: 4) {
+                    VStack(spacing: 5) {
                         Toggle(isOn: useMarkdown) {
                             Text("Use in Note")
                         }
@@ -95,7 +95,7 @@ struct SettingView: View {
                     .modifier(SettingSectionModifier(header: "MARKDOWN", footer: "Soft break means to create a new line, two return keys are required."))
                     
                     // MARK: Export & Import
-                    VStack(spacing: 4) {
+                    VStack(spacing: 5) {
                         Button(action: beginExportData) {
                             SettingTextRow(label: "Export Data", detail: "backup data")
                         }
@@ -107,7 +107,7 @@ struct SettingView: View {
                     .modifier(SettingSectionModifier(header: "DATA", footer: "Make a backup or import from a file. The files are stored locally on the phone."))
                     
                     // MARK: About
-                    VStack(spacing: 4) {
+                    VStack(spacing: 5) {
                         SettingTextRow(label: "Version", detail: appVersionNumber)
                     }
                     .modifier(SettingSectionModifier(header: "ABOUT"))

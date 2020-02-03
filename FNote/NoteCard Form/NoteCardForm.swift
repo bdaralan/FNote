@@ -2,7 +2,7 @@
 //  NoteCardForm.swift
 //  FNote
 //
-//  Created by Dara Beng on 1/20/20.
+//  Created by Dara Beng on 2/2/20.
 //  Copyright © 2020 Dara Beng. All rights reserved.
 //
 
@@ -20,70 +20,85 @@ struct NoteCardForm: View {
     @State private var relationshipViewModel = NoteCardCollectionViewModel()
     @State private var tagViewModel = TagCollectionViewModel()
     
+    @State private var translationTextField: UITextField?
+    
     let iconSize = CGSize(width: 25, height: 20)
     
     
     var body: some View {
         NavigationView {
-            Form {
-                // MARK: Native & Translation
-                Section(header: Text("NATIVE & TRANSLATION").padding(.top, 24)) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        TextField(viewModel.nativePlaceholder, text: $viewModel.native)
-                            .font(.headline)
-                        Text("native")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
+            ScrollView(.vertical, showsIndicators: true) {
+                VStack(spacing: 32) {
+                    // MARK: Native & Translation
+                    VStack(spacing: 5) {
+                        TextFieldWrapper(
+                            isActive: $viewModel.isNativeFirstResponder,
+                            text: $viewModel.native,
+                            placeholder: viewModel.nativePlaceholder,
+                            nextResponder: translationTextField,
+                            configure: configureNativeTextField
+                        )
+                            .modifier(NoteCardFormRowModifier())
+                        
+                        TextFieldWrapper(
+                            isActive: $viewModel.isTranslationFirstResponder,
+                            text: $viewModel.translation,
+                            placeholder: viewModel.translationPlaceholder,
+                            onCommit: nil,
+                            configure: configureTranslationTextField
+                        )
+                            .modifier(NoteCardFormRowModifier())
                     }
-                    VStack(alignment: .leading, spacing: 4) {
-                        TextField(viewModel.translationPlaceholder, text: $viewModel.translation)
-                            .font(Font.headline.weight(.regular))
-                        Text("translation")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                
-                // MARK: Collection
-                Section(header: Text("COLLECTION")) {
-                    NavigationLink(
-                        destination: NoteCardFormCollectionSelectionView(viewModel: collectionViewModel),
-                        isActive: $viewModel.isSelectingCollection
-                    ) {
+                    .modifier(NoteCardFormSectionModifier(header: "NATIVE & TRANSLATION"))
+                    
+                    // MARK: Collection
+                    VStack {
                         HStack {
                             Text(viewModel.selectedCollection?.name ?? "None")
                                 .foregroundColor(viewModel.selectedCollection == nil ? .secondary : .primary)
                             Spacer()
-                            Text(viewModel.selectedCollectionNoteCardCount)
-                                .foregroundColor(.secondary)
+                            HStack {
+                                Text("4 CARDS")
+                                    .foregroundColor(.secondary)
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(Color(.tertiaryLabel))
+                            }
                         }
+                        .modifier(NoteCardFormRowModifier())
+                        .onTapGesture(perform: beginSelectCollection)
+                        .onReceive(viewModel.$isSelectingCollection, perform: handleOnReceiveSelectingCollection)
+                        .background(
+                            NavigationLink(
+                                destination: NoteCardFormCollectionSelectionView(viewModel: collectionViewModel),
+                                isActive: $viewModel.isSelectingCollection,
+                                label: EmptyView.init
+                            )
+                        )
                     }
-                    .onReceive(viewModel.$isSelectingCollection, perform: handleCollectionViewPushed)
-                }
-                
-                Section(header: Text("FORMALITY")) {
-                    // MARK: Formality
-                    SegmentControlWrapper(
-                        selectedIndex: $viewModel.formality,
-                        segments: viewModel.formalities,
-                        selectedColor: viewModel.selectedFormality.uiColor
-                    )
-                }
-                
-                Section {
-                    // MARK: Favorite
-                    Toggle(isOn: $viewModel.isFavorite) {
-                        Image.noteCardFavorite(viewModel.isFavorite)
-                            .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
-                        Text("Favorite")
-                            .padding(.leading, 4)
-                    }
+                    .modifier(NoteCardFormSectionModifier(header: "COLLECTION"))
                     
-                    // MARK: Relationship
-                    NavigationLink(
-                        destination: NoteCardFormRelationshipSelectionView(viewModel: relationshipViewModel),
-                        isActive: $viewModel.isSelectingRelationship
-                    ) {
+                    // MARK: Formality
+                    VStack {
+                        SegmentControlWrapper(
+                            selectedIndex: $viewModel.formality,
+                            segments: viewModel.formalities,
+                            selectedColor: viewModel.selectedFormality.uiColor
+                        )
+                            .modifier(NoteCardFormRowModifier())
+                    }
+                    .modifier(NoteCardFormSectionModifier(header: "FORMALITY"))
+                    
+                    // MARK: Favorite
+                    VStack(spacing: 5) {
+                        Toggle(isOn: $viewModel.isFavorite) {
+                            Image.noteCardFavorite(viewModel.isFavorite)
+                                .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
+                            Text("Favorite")
+                                .padding(.leading, 4)
+                        }
+                        .modifier(NoteCardFormRowModifier())
+                        
+                        // MARK: Relationship
                         HStack {
                             Image.noteCardRelationship
                                 .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
@@ -92,17 +107,25 @@ struct NoteCardForm: View {
                                 .foregroundColor(.primary)
                                 .padding(.leading, 4)
                             Spacer()
-                            Text("\(viewModel.selectedRelationships.count)")
-                                .foregroundColor(.secondary)
+                            HStack {
+                                Text("\(viewModel.selectedRelationships.count)")
+                                    .foregroundColor(.secondary)
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(Color(.tertiaryLabel))
+                            }
                         }
-                    }
-                    .onReceive(viewModel.$isSelectingRelationship, perform: handleRelationshipViewPushed)
-                    
-                    // MARK: Tag
-                    NavigationLink(
-                        destination: NoteCardFormTagSelectionView(viewModel: tagViewModel, onCreateTag: handleCreateTag),
-                        isActive: $viewModel.isSelectingTag
-                    ) {
+                        .modifier(NoteCardFormRowModifier())
+                        .onTapGesture(perform: beginSelectRelationship)
+                        .onReceive(viewModel.$isSelectingRelationship, perform: handleOnReceiveSelectingRelationship)
+                        .background(
+                            NavigationLink(
+                                destination: NoteCardFormRelationshipSelectionView(viewModel: relationshipViewModel),
+                                isActive: $viewModel.isSelectingRelationship,
+                                label: EmptyView.init
+                            )
+                        )
+                        
+                        // MARK: Tag
                         HStack {
                             Image.noteCardTag
                                 .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
@@ -111,14 +134,25 @@ struct NoteCardForm: View {
                                 .foregroundColor(.primary)
                                 .padding(.leading, 4)
                             Spacer()
-                            Text("\(viewModel.selectedTags.count)")
-                                .foregroundColor(.secondary)
+                            HStack {
+                                Text("\(viewModel.selectedTags.count)")
+                                    .foregroundColor(.secondary)
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(Color(.tertiaryLabel))
+                            }
                         }
-                    }
-                    .onReceive(viewModel.$isSelectingTag, perform: handleTagViewPushed)
-                    
-                    // MARK: Note
-                    Button(action: beginEditNote) {
+                        .modifier(NoteCardFormRowModifier())
+                        .onTapGesture(perform: beginSelectTag)
+                        .onReceive(viewModel.$isSelectingTag, perform: handleOnReceiveSelectingTag)
+                        .background(
+                            NavigationLink(
+                                destination: NoteCardFormTagSelectionView(viewModel: tagViewModel, onCreateTag: handleCreateTag),
+                                isActive: $viewModel.isSelectingTag,
+                                label: EmptyView.init
+                            )
+                        )
+                        
+                        // MARK: Note
                         HStack {
                             Image.noteCardNote
                                 .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
@@ -133,8 +167,11 @@ struct NoteCardForm: View {
                             }
                             .foregroundColor(.secondary)
                         }
+                        .modifier(NoteCardFormRowModifier())
+                        .onTapGesture(perform: beginEditNote)
                     }
                 }
+                .padding(.vertical, 32)
             }
             .navigationBarItems(leading: cancelNavItem, trailing: commitNavItem)
             .navigationBarTitle(Text(viewModel.navigationTitle), displayMode: .inline)
@@ -212,18 +249,20 @@ extension NoteCardForm {
 
 extension NoteCardForm {
     
-    func handleCollectionViewPushed(_ isPushed: Bool) {
-        guard isPushed else {
-            collectionViewModel = .init()
-            return
-        }
-        
+    func beginSelectCollection() {
         collectionViewModel.collections = viewModel.selectableCollections
         collectionViewModel.onCollectionSelected = handleNoteCardCollectionSelected
         
         if let collection = viewModel.selectedCollection {
             collectionViewModel.disableCollectionIDs = [collection.uuid]
         }
+        
+        viewModel.isSelectingCollection = true
+    }
+    
+    func handleOnReceiveSelectingCollection(_ isSelecting: Bool) {
+        guard !isSelecting else { return }
+        collectionViewModel = .init()
     }
     
     func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
@@ -237,12 +276,7 @@ extension NoteCardForm {
 
 extension NoteCardForm {
     
-    func handleRelationshipViewPushed(_ isPushed: Bool) {
-        guard isPushed else {
-            relationshipViewModel = .init()
-            return
-        }
-        
+    func beginSelectRelationship() {
         relationshipViewModel.noteCards = viewModel.selectableRelationships
         relationshipViewModel.cellStyle = .short
         
@@ -255,6 +289,13 @@ extension NoteCardForm {
         }
         
         relationshipViewModel.onNoteCardSelected = handleRelationshipNoteCardSelected
+        
+        viewModel.isSelectingRelationship = true
+    }
+    
+    func handleOnReceiveSelectingRelationship(_ isSelecting: Bool) {
+        guard !isSelecting else { return }
+        relationshipViewModel = .init()
     }
     
     func handleRelationshipNoteCardSelected(_ noteCard: NoteCard) {
@@ -272,12 +313,21 @@ extension NoteCardForm {
 
 extension NoteCardForm {
     
-    func handleTagViewPushed(_ isPushed: Bool) {
-        if isPushed {
-            beginEditTag()
-        } else {
-            commitEditTag()
+    func beginSelectTag() {
+        tagViewModel.tags = viewModel.selectableTags
+        
+        for tag in viewModel.selectedTags {
+            tagViewModel.borderedTagIDs.insert(tag.uuid)
         }
+        
+        tagViewModel.onTagSelected = handleTagViewTagSelected
+        
+        viewModel.isSelectingTag = true
+    }
+    
+    func handleOnReceiveSelectingTag(_ isSelecting: Bool) {
+        guard !isSelecting else { return }
+        tagViewModel = .init()
     }
     
     func handleTagViewTagSelected(_ tag: Tag) {
@@ -298,25 +348,30 @@ extension NoteCardForm {
         }
         return false
     }
+}
+
+
+// MARK: - Setup Text Field
+
+extension NoteCardForm {
     
-    func beginEditTag() {
-        tagViewModel.tags = viewModel.selectableTags
-        
-        for tag in viewModel.selectedTags {
-            tagViewModel.borderedTagIDs.insert(tag.uuid)
-        }
-        
-        tagViewModel.onTagSelected = handleTagViewTagSelected
+    func configureNativeTextField(_ textField: UITextField) {
+        textField.font = .preferredFont(forTextStyle: .headline)
+        textField.returnKeyType = .next
     }
     
-    func commitEditTag() {
-        tagViewModel = .init()
+    func configureTranslationTextField(_ textField: UITextField) {
+        translationTextField = textField
+        textField.font = .preferredFont(forTextStyle: .body)
     }
 }
 
 
 struct NoteCardForm_Previews: PreviewProvider {
     static var previews: some View {
-        NoteCardForm(viewModel: .init(collection: .sample))
+        Group {
+            NoteCardForm(viewModel: .init()).colorScheme(.light)
+            NoteCardForm(viewModel: .init()).colorScheme(.dark)
+        }
     }
 }
