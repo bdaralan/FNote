@@ -82,7 +82,6 @@
 		B4EC398423DB88460011569C /* CollectionViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EC398323DB88460011569C /* CollectionViewWrapper.swift */; };
 		B4EE3ECC2329D86500CC40B7 /* ModalTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */; };
 		B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EEF32B235D99B400869567 /* ModalDragHandle.swift */; };
-		B4F395DB238BC39C006DA683 /* TextFieldWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F395DA238BC39C006DA683 /* TextFieldWrapper.swift */; };
 		B4FFEB27234ED0CE00B4550F /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FFEB26234ED0CE00B4550F /* Color.swift */; };
 		B4FFEB29234ED2AA00B4550F /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FFEB28234ED2AA00B4550F /* Image.swift */; };
 /* End PBXBuildFile section */
@@ -177,7 +176,6 @@
 		B4EC398323DB88460011569C /* CollectionViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewWrapper.swift; sourceTree = "<group>"; };
 		B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextField.swift; sourceTree = "<group>"; };
 		B4EEF32B235D99B400869567 /* ModalDragHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalDragHandle.swift; sourceTree = "<group>"; };
-		B4F395DA238BC39C006DA683 /* TextFieldWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldWrapper.swift; sourceTree = "<group>"; };
 		B4FFEB26234ED0CE00B4550F /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		B4FFEB28234ED2AA00B4550F /* Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -436,7 +434,6 @@
 				B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */,
 				B4EEF32B235D99B400869567 /* ModalDragHandle.swift */,
 				B46B3406232E8634008B2088 /* InputViewResponder.swift */,
-				B4F395DA238BC39C006DA683 /* TextFieldWrapper.swift */,
 			);
 			path = "Text Field Wrapper";
 			sourceTree = "<group>";
@@ -610,7 +607,6 @@
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,
 				B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */,
 				B4BBDBDB23E4CD8000A0AEA1 /* ManagedObjectCollectionViewCell.swift in Sources */,
-				B4F395DB238BC39C006DA683 /* TextFieldWrapper.swift in Sources */,
 				B4EC398123DB7AD90011569C /* Alert.swift in Sources */,
 				B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */,
 				B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */,

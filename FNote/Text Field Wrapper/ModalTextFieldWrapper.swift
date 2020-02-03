@@ -76,6 +76,7 @@ struct ModalTextFieldWrapper: UIViewRepresentable {
             textField.clearButtonMode = .whileEditing
             textField.delegate = self
             textField.addTarget(self, action: #selector(handleEditingChanged), for: .editingChanged)
+            textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
         
         @objc private func handleEditingChanged(_ sender: UITextField) {
