@@ -223,10 +223,7 @@ extension NoteCardCollectionViewModel {
         collectionView.alwaysBounceVertical = true
         collectionView.keyboardDismissMode = .onDrag
         
-        // listen to content size category changed
-        let name = UIContentSizeCategory.didChangeNotification
-        let action = #selector(handleSizeCategoryChanged)
-        NotificationCenter.default.addObserver(self, selector: action, name: name, object: nil)
+        listenToSizeCategoryChanged()
         
         // MARK: Cell
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, noteCard in
@@ -269,7 +266,7 @@ extension NoteCardCollectionViewModel {
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
         
         let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = 16
+        section.interGroupSpacing = 12
         section.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
         
         return section
@@ -294,5 +291,11 @@ extension NoteCardCollectionViewModel {
         let item = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: size, elementKind: kind, alignment: .top)
         item.contentInsets = .init(top: 0, leading: 16, bottom: 0, trailing: 16)
         return item
+    }
+    
+    private func listenToSizeCategoryChanged() {
+        let name = UIContentSizeCategory.didChangeNotification
+        let action = #selector(handleSizeCategoryChanged)
+        NotificationCenter.default.addObserver(self, selector: action, name: name, object: nil)
     }
 }

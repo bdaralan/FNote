@@ -149,7 +149,7 @@ extension NoteCardCollectionCollectionViewModel {
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
         
         let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = 16
+        section.interGroupSpacing = 12
         section.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
         
         return section

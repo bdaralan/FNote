@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftUI
 
 
 @propertyWrapper
@@ -20,20 +19,13 @@ struct UserStoredValue<Value> {
     let key: String
     
     let defaultValue: Value
-    
+        
     
     // MARK: Value
     
     var wrappedValue: Value {
         set { storage.setValue(newValue, forKey: key) }
         get { storage.value(forKey: key, defaultValue: defaultValue) }
-    }
-    
-    var binding: Binding<Value> {
-        .init(
-            get: { self.storage.value(forKey: self.key, defaultValue: self.defaultValue) },
-            set: { self.storage.setValue($0, forKey: self.key) }
-        )
     }
 
     
