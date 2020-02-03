@@ -61,6 +61,11 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     private(set) var isSearchNoteActive = false
     
+    /// Check if the search is active.
+    ///
+    /// - Note: The search is considered inactive if the search text is empty.
+    private(set) var isSearchActive = false
+    
     
     // MARK: Method
     
@@ -105,6 +110,7 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
         
         header.onSearchTextChanged = { [weak self] searchText in
             guard let self = self else { return }
+            self.isSearchActive = !searchText.trimmed().isEmpty
             self.onSearchTextChanged?(searchText)
         }
         
@@ -116,6 +122,7 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
         header.onCancel = { [weak self] in
             guard let self = self else { return }
             self.onSearchCancel?()
+            self.isSearchActive = false
             header.searchText = ""
             header.searchField.resignFirstResponder()
             header.showCancel(false, animated: true)

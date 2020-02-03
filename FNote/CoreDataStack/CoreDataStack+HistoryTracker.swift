@@ -72,4 +72,8 @@ class CoreDataStackHistoryTracker {
         guard let token = changeInfo["historyToken"] else { return nil }
         return token as? NSPersistentHistoryToken
     }
+    
+    func storeID(forRemote notification: Notification) -> String {
+        notification.userInfo?["NSStoreUUID"] as? String ?? ""
+    }
 }

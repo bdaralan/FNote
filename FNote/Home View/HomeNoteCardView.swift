@@ -46,6 +46,7 @@ struct HomeNoteCardView: View {
         .sheet(item: $sheet, onDismiss: presentationSheetDismissed, content: presentationSheet)
         .alert(item: $noteCardToDelete, content: deleteNoteCardAlert)
         .actionSheet(isPresented: $showSortOption, content: presentationActionSheet)
+        .onReceive(appState.currentNoteCardsWillChange, perform: handleOnReceiveCurrentNotesCardWillChange)
         .onAppear(perform: setupOnAppear)
     }
 }
@@ -201,10 +202,15 @@ extension HomeNoteCardView {
     func handleSearchNoteActiveChanged(_ isActive: Bool) {
         handleSearchTextDebounced(currentSearchText)
     }
+    
+    func handleOnReceiveCurrentNotesCardWillChange(_ value: Void) {
+        guard searchFetchController != nil else { return }
+        handleSearchTextDebounced(currentSearchText)
+    }
 }
 
 
-// MARK: - Create Note Card
+// MARK: - Nav Bar Item
 
 extension HomeNoteCardView {
     
@@ -220,6 +226,12 @@ extension HomeNoteCardView {
             NavigationBarButton(imageName: "plus", action: beginCreateNoteCard)
         }
     }
+}
+
+
+// MARK: - Create Note Card
+
+extension HomeNoteCardView {
     
     func beginCreateNoteCard() {
         let formModel = NoteCardFormModel(collection: collection)

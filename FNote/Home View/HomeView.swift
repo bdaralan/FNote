@@ -16,9 +16,9 @@ struct HomeView: View {
     
     @State private var currentTab = Tab.card
     
+    @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
     @State private var collectionCollectionViewModel = NoteCardCollectionCollectionViewModel()
     @State private var tagCollectionViewModel = TagCollectionViewModel()
-    @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
     @State private var cardCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
         
     @State private var showCreateCollectionSheet = false
@@ -97,7 +97,8 @@ extension HomeView {
 extension HomeView {
     
     func handleStoreRemoteChangeNotification(_ notification: Notification) {
-        let history = CoreDataStack.current.historyTracker
+        let coreDataStack = CoreDataStack.current
+        let history = coreDataStack.historyTracker
         
         // check if need to update token
         guard let newHistoryToken = history.token(fromRemoteChange: notification) else { return }
@@ -106,7 +107,7 @@ extension HomeView {
         // update token
         history.updateLastToken(newHistoryToken)
         
-        // update UIs
+        // update UI if remote changed
         DispatchQueue.global(qos: .default).async {
             self.refetchObjects()
             DispatchQueue.main.async {
@@ -140,7 +141,7 @@ extension HomeView {
             break
             
         case .card:
-            if appState.currentCollection != nil {
+            if appState.currentCollection != nil, !cardCollectionViewModel.isSearchActive {
                 cardCollectionViewModel.updateSnapshot(animated: true)
             }
         }

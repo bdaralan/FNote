@@ -20,6 +20,8 @@ class AppState: ObservableObject {
     /// The context used to create, update, and delete objects.
     private(set) var cudContext: NSManagedObjectContext?
     
+    let currentNoteCardsWillChange = ObjectWillChangePublisher()
+    
     var currenNoteCards: [NoteCard] {
         currentNoteCardsFetchController.fetchedObjects ?? []
     }
@@ -115,6 +117,9 @@ extension AppState {
         currentRequest.predicate = newRequest.predicate
         currentRequest.sortDescriptors = newRequest.sortDescriptors
         
+        DispatchQueue.main.async {
+            self.currentNoteCardsWillChange.send()
+        }
         try? currentNoteCardsFetchController.performFetch()
     }
     
