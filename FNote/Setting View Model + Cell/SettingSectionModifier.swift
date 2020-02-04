@@ -17,7 +17,7 @@ struct SettingSectionModifier: ViewModifier {
     
     var footer = ""
     
-    var hPadding: CGFloat = 20
+    var hPadding: CGFloat = 0
     
     
     func body(content: Content) -> some View {

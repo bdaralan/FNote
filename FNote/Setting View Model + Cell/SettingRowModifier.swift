@@ -24,7 +24,6 @@ struct SettingRowModifier: ViewModifier {
             .frame(height: 50)
             .background(Color.noteCardBackground)
             .cornerRadius(10)
-            .padding(.horizontal)
             .shadow(color: Color.primary.opacity(shadowOpacity), radius: 0.5, x: -0.25, y: 0.25)
     }
 }

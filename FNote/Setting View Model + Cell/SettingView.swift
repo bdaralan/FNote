@@ -113,6 +113,7 @@ struct SettingView: View {
                     .modifier(SettingSectionModifier(header: "ABOUT"))
                 }
                 .padding(.vertical, 32)
+                .padding(.horizontal)
             }
             .navigationBarTitle("Settings")
         }

@@ -172,6 +172,7 @@ struct NoteCardForm: View {
                     }
                 }
                 .padding(.vertical, 32)
+                .padding(.horizontal)
             }
             .navigationBarItems(leading: cancelNavItem, trailing: commitNavItem)
             .navigationBarTitle(Text(viewModel.navigationTitle), displayMode: .inline)
