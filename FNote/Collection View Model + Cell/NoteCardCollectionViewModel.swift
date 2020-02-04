@@ -163,7 +163,7 @@ extension NoteCardCollectionViewModel: UICollectionViewDelegate {
 }
 
 
-// MARk: - Context Menu
+// MARK: - Context Menu
 
 extension NoteCardCollectionViewModel {
     
@@ -176,7 +176,8 @@ extension NoteCardCollectionViewModel {
     }
     
     private func createContextMenuAction(for menu: NoteCardCell.ContextMenu, with noteCard: NoteCard) -> UIAction {
-        let attribute: UIMenuElement.Attributes = menu == .delete ? .destructive : .init()
+        let isDestructive = menu == .delete
+        let attribute: UIMenuElement.Attributes = isDestructive ? .destructive : .init()
         let action = UIAction(title: menu.title, image: menu.image, attributes: attribute) { action in
             self.onContextMenuSelected?(menu, noteCard)
         }
