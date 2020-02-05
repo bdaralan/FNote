@@ -61,8 +61,8 @@ class NoteCardFormModel: ObservableObject {
             && !native.trimmed().isEmpty
     }
     
-    var nativePlaceholder = "안영"
-    var translationPlaceholder = "Hi"
+    var nativePlaceholder = "안녕 (native)"
+    var translationPlaceholder = "Hi (translation)"
     var commitTitle = "Commit"
     var navigationTitle = "Note Card"
     
