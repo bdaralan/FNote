@@ -144,6 +144,7 @@ extension SettingView {
                     .navigationBarTitle("Select Import File", displayMode: .inline)
                     .navigationBarItems(trailing: doneNavItem)
             }
+            .navigationViewStyle(StackNavigationViewStyle())
             .eraseToAnyView()
         
         case .exportFileNaming:
