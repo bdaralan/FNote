@@ -34,6 +34,10 @@ struct HomeNoteCardView: View {
     @State private var searchFetchController: NSFetchedResultsController<NoteCard>?
     @State private var currentSearchText = ""
     
+    var iPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+    
     
     var body: some View {
         NavigationView {
@@ -45,7 +49,7 @@ struct HomeNoteCardView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, onDismiss: presentationSheetDismissed, content: presentationSheet)
         .alert(item: $noteCardToDelete, content: deleteNoteCardAlert)
-        .actionSheet(isPresented: $showSortOption, content: presentationActionSheet)
+        .actionSheet(isPresented: iPad ? .constant(false) : $showSortOption, content: presentationActionSheet)
         .onReceive(appState.currentNoteCardsWillChange, perform: handleOnReceiveCurrentNotesCardWillChange)
         .onAppear(perform: setupOnAppear)
     }
@@ -112,10 +116,10 @@ extension HomeNoteCardView {
         let translationAscending = { self.setNoteCardSortOption(.translation, ascending: true) }
         let translationDescending = { self.setNoteCardSortOption(.translation, ascending: false) }
         return ActionSheet(title: Text("Sort By"), message: nil, buttons: [
-            .default(Text("Native Ascending Order"), action: nativeAscending),
-            .default(Text("Native Descending Order"), action: nativeDescending),
-            .default(Text("Translation Ascending Order"), action: translationAscending),
-            .default(Text("Translation Descending Order"), action: translationDescending),
+            .default(Text("Native Ascending"), action: nativeAscending),
+            .default(Text("Native Descending"), action: nativeDescending),
+            .default(Text("Translation Ascending"), action: translationAscending),
+            .default(Text("Translation Descending"), action: translationDescending),
             .cancel()
         ])
     }
@@ -216,15 +220,40 @@ extension HomeNoteCardView {
     
     var trailingNavItems: some View {
         HStack(spacing: 8) {
-            NoteCardSortNavigationButton(
-                sortOption: userPreference.noteCardSortOption,
-                ascending: userPreference.noteCardSortOptionAscending,
-                action: { self.showSortOption = true }
-            )
-                .disabled(searchFetchController != nil)
-            
-            NavigationBarButton(imageName: "plus", action: beginCreateNoteCard)
+            if iPad {
+                sortOptionPopoverNavItem
+            } else {
+                sortOptionNavItem
+            }
+            createNoteCardNavItem
         }
+    }
+    
+    var sortOptionNavItem: some View {
+        NoteCardSortNavigationButton(
+            sortOption: userPreference.noteCardSortOption,
+            ascending: userPreference.noteCardSortOptionAscending,
+            action: { self.showSortOption = true }
+        )
+            .disabled(searchFetchController != nil)
+    }
+    
+    var sortOptionPopoverNavItem: some View {
+        let popoverView = NoteCardSortOptionPopoverView(onSelected: { option, ascending in
+            self.setNoteCardSortOption(option, ascending: ascending)
+            self.showSortOption = false
+        })
+        
+        return sortOptionNavItem.popover(
+            isPresented: $showSortOption,
+            attachmentAnchor: .point(.bottom),
+            arrowEdge: .top,
+            content: { popoverView }
+        )
+    }
+    
+    var createNoteCardNavItem: some View {
+        NavigationBarButton(imageName: "plus", action: beginCreateNoteCard)
     }
 }
 
