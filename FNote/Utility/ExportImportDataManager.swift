@@ -160,6 +160,29 @@ struct ExportImportDataManager {
 }
 
 
+extension ExportImportDataManager {
+    
+    @discardableResult
+    static func copyFileToDocumentFolder(fileURL: URL) -> Bool {
+        let fileManager = FileManager.default
+        let documentFolder = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let destinationURL = documentFolder.appendingPathComponent(fileURL.lastPathComponent)
+        
+        do {
+            if fileManager.fileExists(atPath: destinationURL.path) {
+                try fileManager.removeItem(at: destinationURL)
+            }
+            try fileManager.copyItem(at: fileURL, to: destinationURL)
+            return true
+        
+        } catch {
+            print("⚠️ failed to copy file to document folder with error: \(error)\n\(fileURL) ⚠️")
+            return false
+        }
+    }
+}
+
+
 // MARK: - Export Data
 
 fileprivate struct ExportData: Codable {

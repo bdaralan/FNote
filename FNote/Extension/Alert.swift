@@ -36,4 +36,10 @@ extension Alert {
         let delete = Alert.Button.destructive(Text("Delete"), action: onDelete)
         return Alert(title: title, message: message, primaryButton: cancel, secondaryButton: delete)
     }
+    
+    static func DidCopyFileAlert(fileName: String) -> Alert {
+        let title = Text("File Copied")
+        let message = Text("File '\(fileName)' is copied to the document folder.")
+        return Alert(title: title, message: message, dismissButton: .default(Text("Dismiss")))
+    }
 }

@@ -1,5 +1,5 @@
 //
-//  SettingView.swift
+//  HomeSettingView.swift
 //  FNote
 //
 //  Created by Dara Beng on 1/31/20.
@@ -9,7 +9,7 @@
 import SwiftUI
 
 
-struct SettingView: View {
+struct HomeSettingView: View {
     
     @ObservedObject var userPreference: UserPreference
     
@@ -56,8 +56,9 @@ struct SettingView: View {
     
     var importableFiles: [URL] {
         let fileManager = FileManager.default
-        let files = try? fileManager.contentsOfDirectory(at: documentFolder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-        return files?.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) ?? []
+        let files = try? fileManager.contentsOfDirectory(at: documentFolder, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
+        let importableFiles = files?.filter({ $0.lastPathComponent.contains(".fnotex") }) ?? []
+        return importableFiles.sorted(by: { $0.lastPathComponent < $1.lastPathComponent })
     }
     
     
@@ -125,7 +126,7 @@ struct SettingView: View {
 
 // MARK: - Sheet & Alert
 
-extension SettingView {
+extension HomeSettingView {
     
     enum Sheet: Identifiable {
         var id: Self { self }
@@ -157,7 +158,7 @@ extension SettingView {
 
 // MARK: Action
 
-extension SettingView {
+extension HomeSettingView {
     
     func handleColorSchemeTapped(_ colorScheme: UserPreference.ColorScheme) {
         userPreference.objectWillChange.send()
@@ -200,11 +201,11 @@ extension SettingView {
 }
 
 
-struct SettingView_Previews: PreviewProvider {
+struct HomeSettingView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            SettingView(userPreference: .shared).colorScheme(.light)
-            SettingView(userPreference: .shared).colorScheme(.dark)
+            HomeSettingView(userPreference: .shared).colorScheme(.light)
+            HomeSettingView(userPreference: .shared).colorScheme(.dark)
         }
     }
 }

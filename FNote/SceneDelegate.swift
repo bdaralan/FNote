@@ -9,18 +9,19 @@
 import UIKit
 import SwiftUI
 
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+
+    let appState = AppState(parentContext: CoreDataStack.current.mainContext)
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
     
         // setup app state
-        let parentContext = CoreDataStack.current.mainContext
         let userPreference = UserPreference.shared
-        let appState = AppState(parentContext: parentContext)
         appState.noteCardSortOption = userPreference.noteCardSortOption
         appState.noteCardSortOptionAscending = userPreference.noteCardSortOptionAscending
         appState.fetchCurrentNoteCards()
@@ -44,6 +45,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window.rootViewController = rootViewCV
         window.makeKeyAndVisible()
+    }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let sourceURL = URLContexts.first?.url else { return }
+        let copied = ExportImportDataManager.copyFileToDocumentFolder(fileURL: sourceURL)
+        if copied {
+            DispatchQueue.main.async {
+                let file = sourceURL.lastPathComponent
+                let fileExtension = sourceURL.pathExtension
+                let fileName = file.replacingOccurrences(of: ".\(fileExtension)", with: "")
+                self.appState.copiedFileName = fileName
+                self.appState.showDidCopyFileAlert = true
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

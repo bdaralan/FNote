@@ -44,6 +44,9 @@ class AppState: ObservableObject {
     var noteCardSortOption: NoteCardSortOption = .translation
     var noteCardSortOptionAscending = true
     
+    @Published var showDidCopyFileAlert = false
+    var copiedFileName = ""
+    
     
     // MARK: Fetch Controller
     

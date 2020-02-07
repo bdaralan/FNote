@@ -59,13 +59,14 @@ struct HomeView: View {
                 .tag(Tab.tag)
             
             // MARK: Setting Tab
-            SettingView(userPreference: .shared)
+            HomeSettingView(userPreference: .shared)
                 .tabItem(Tab.setting.tabItem)
                 .tag(Tab.setting)
             
         }
         .onAppear(perform: setupOnAppear)
         .sheet(isPresented: $showCreateCollectionSheet, content: createCollectionSheet)
+        .alert(isPresented: $appState.showDidCopyFileAlert, content: { .DidCopyFileAlert(fileName: appState.copiedFileName) })
         .disabled(!appState.iCloudActive)
         .onReceive(appState.$currentCollectionID, perform: handleOnReceiveCurrentCollectionID)
         .onReceive(currentTab.rawValue.description.publisher.last(), perform: handleOnReceiveCurrentTab)
