@@ -17,8 +17,9 @@ struct NoteCardForm: View {
     @State private var modalTextViewModel = ModalTextViewModel()
     
     @State private var collectionViewModel = NoteCardCollectionCollectionViewModel()
-    @State private var relationshipViewModel = NoteCardCollectionViewModel()
     @State private var tagViewModel = TagCollectionViewModel()
+    @State private var relationshipViewModel = NoteCardCollectionViewModel()
+    @State private var relationshipCurrentSearchText = ""
     
     @State private var translationTextField: UITextField?
     
@@ -291,6 +292,13 @@ extension NoteCardForm {
         
         relationshipViewModel.onNoteCardSelected = handleRelationshipNoteCardSelected
         
+        // setup search
+        if viewModel.selectedCollection != nil {
+            relationshipViewModel.onSearchTextDebounced = handleRelationshipSearchTextDebounced
+            relationshipViewModel.onSearchNoteActiveChanged = handleRelationshipSearchNoteActiveChanged
+            relationshipViewModel.onSearchCancel = handleRelationshipSearchCancel
+        }
+        
         viewModel.isSelectingRelationship = true
     }
     
@@ -306,6 +314,39 @@ extension NoteCardForm {
             relationshipViewModel.borderedNoteCardIDs.insert(noteCard.uuid)
         }
         viewModel.onRelationshipSelected?(noteCard)
+    }
+    
+    func handleRelationshipSearchTextDebounced(_ searchText: String) {
+        relationshipCurrentSearchText = searchText
+        
+        guard !searchText.trimmed().isEmpty else {
+            relationshipViewModel.noteCards = viewModel.selectableRelationships
+            relationshipViewModel.updateSnapshot(animated: true)
+            return
+        }
+        
+        let searchResults = viewModel.selectableRelationships.filter { noteCard in
+            let matchNative = noteCard.native.range(of: searchText, options: .caseInsensitive) != nil
+            let matchTranslation = noteCard.translation.range(of: searchText, options: .caseInsensitive) != nil
+            if relationshipViewModel.isSearchNoteActive {
+                let matchNote = noteCard.note.range(of: searchText, options: .caseInsensitive) != nil
+                return matchNote || matchTranslation || matchNote
+            } else {
+                return matchNative || matchTranslation
+            }
+        }
+        
+        relationshipViewModel.noteCards = searchResults
+        relationshipViewModel.updateSnapshot(animated: true)
+    }
+    
+    func handleRelationshipSearchNoteActiveChanged(_ isActive: Bool) {
+        handleRelationshipSearchTextDebounced(relationshipCurrentSearchText)
+    }
+    
+    func handleRelationshipSearchCancel() {
+        relationshipViewModel.noteCards = viewModel.selectableRelationships
+        relationshipViewModel.updateSnapshot(animated: true)
     }
 }
 
