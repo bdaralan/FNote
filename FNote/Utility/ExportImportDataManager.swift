@@ -24,13 +24,17 @@ struct ExportImportDataManager {
         do {
             // fetch all objects
             let collections = try context.fetch(collectionRequest)
-            let noteCards = try context.fetch(noteCardRequest)
             let tags = try context.fetch(tagRequest)
+            let noteCards = try context.fetch(noteCardRequest)
+            
+            for noteCard in noteCards where noteCard.collection == nil {
+                context.delete(noteCard)
+            }
             
             // encode objects
             let collectionData = collections.map({ NoteCardCollectionData(collection: $0) })
             let tagData = tags.map({ TagData(tag: $0) })
-            let noteCardData = noteCards.map({ NoteCardData(noteCard: $0) })
+            let noteCardData = noteCards.compactMap({ $0.collection == nil ? nil : NoteCardData(noteCard: $0) })
             
             // create data
             let exportData = ExportData(

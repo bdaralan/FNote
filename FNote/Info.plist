@@ -4,6 +4,26 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array>
+				<string>document-type-icon-22.png</string>
+				<string>document-type-icon-44.png</string>
+				<string>document-type-icon-64.png</string>
+				<string>document-type-icon-320.png</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>fnotex</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.fnotex</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -61,26 +81,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>fnotex</string>
-			<key>LSHandlerRank</key>
-			<string>Default</string>
-			<key>CFBundleTypeIconFiles</key>
-			<array>
-				<string>document-type-icon-22.png</string>
-				<string>document-type-icon-44.png</string>
-				<string>document-type-icon-64.png</string>
-				<string>document-type-icon-320.png</string>
-			</array>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.fnotex</string>
-			</array>
-		</dict>
 	</array>
 	<key>UISupportsDocumentBrowser</key>
 	<false/>

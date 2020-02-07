@@ -179,7 +179,7 @@ extension HomeSettingView {
     func commitExportData() {
         let fileName = textFieldModel.text.trimmed()
         if !fileName.isEmpty {
-            let fileURL = documentFolder.appendingPathComponent("\(fileName).json")
+            let fileURL = documentFolder.appendingPathComponent("\(fileName).fnotex")
             let exporter = ExportImportDataManager(context: CoreDataStack.current.mainContext)
             exporter.exportData(to: fileURL)
         }
