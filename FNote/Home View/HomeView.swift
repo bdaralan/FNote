@@ -30,7 +30,7 @@ struct HomeView: View {
     var body: some View {
         TabView(selection: $currentTab) {
             // MARK: Card Tab
-            if appState.currentCollection != nil && appState.iCloudActive {
+            if appState.currentCollection?.managedObjectContext != nil && appState.iCloudActive {
                 HomeNoteCardView(
                     viewModel: cardCollectionViewModel,
                     collection: appState.currentCollection!,
