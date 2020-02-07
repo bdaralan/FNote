@@ -49,6 +49,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let sourceURL = URLContexts.first?.url else { return }
+        let supportedTypes = FNSupportFileType.allCases.map({ $0.rawValue })
+        
+        guard supportedTypes.contains(sourceURL.pathExtension) else { return }
         let copied = ExportImportDataManager.copyFileToDocumentFolder(fileURL: sourceURL)
         if copied {
             DispatchQueue.main.async {

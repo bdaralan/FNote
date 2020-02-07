@@ -57,7 +57,8 @@ struct HomeSettingView: View {
     var importableFiles: [URL] {
         let fileManager = FileManager.default
         let files = try? fileManager.contentsOfDirectory(at: documentFolder, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
-        let importableFiles = files?.filter({ $0.lastPathComponent.contains(".fnotex") }) ?? []
+        let fileExtension = FNSupportFileType.fnotex.rawValue
+        let importableFiles = files?.filter({ $0.pathExtension == fileExtension }) ?? []
         return importableFiles.sorted(by: { $0.lastPathComponent < $1.lastPathComponent })
     }
     
@@ -179,7 +180,8 @@ extension HomeSettingView {
     func commitExportData() {
         let fileName = textFieldModel.text.trimmed()
         if !fileName.isEmpty {
-            let fileURL = documentFolder.appendingPathComponent("\(fileName).fnotex")
+            let fileExtension = FNSupportFileType.fnotex.rawValue
+            let fileURL = documentFolder.appendingPathComponent("\(fileName).\(fileExtension)")
             let exporter = ExportImportDataManager(context: CoreDataStack.current.mainContext)
             exporter.exportData(to: fileURL)
         }

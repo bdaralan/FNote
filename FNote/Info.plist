@@ -15,12 +15,12 @@
 				<string>document-type-icon-320.png</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>fnotex</string>
+			<string>Export File</string>
 			<key>LSHandlerRank</key>
 			<string>Default</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>public.fnotex</string>
+				<string>public.data</string>
 			</array>
 		</dict>
 	</array>

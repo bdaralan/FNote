@@ -285,3 +285,8 @@ extension TagData {
         tag.name = name
     }
 }
+
+
+enum FNSupportFileType: String, CaseIterable {
+    case fnotex
+}
