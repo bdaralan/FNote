@@ -43,11 +43,20 @@ extension UserStoredValue {
     
     enum Storage {
         
-        /// Store value in `UserDefaults`
+        /// Store value in `UserDefaults`.
+        ///
+        /// - Note: For supported types, see [UserDefaults][link].
+        ///
+        ///   [link]: https://developer.apple.com/documentation/foundation/userdefaults
         case userDefaults
         
-        /// Store value in `NSUbiquitousKeyValueStore`
-        /// - Important: Must enable iCloud's Key-value storage in Signing & Capabilities
+        /// Store value in `NSUbiquitousKeyValueStore`.
+        ///
+        /// - Important: Must enable iCloud's Key-value storage in Signing & Capabilities.
+        ///
+        /// - Note: For supported types, see [NSUbiquitousKeyValueStore][link].
+        ///
+        ///   [link]: https://developer.apple.com/documentation/foundation/nsubiquitouskeyvaluestore
         case iCloud
     }
 }
@@ -56,7 +65,7 @@ extension UserStoredValue {
 extension UserStoredValue.Storage {
     
     func setValue(_ newValue: Value, forKey key: String) {
-        let newValue = isValueOptionalAndNil(newValue) ? nil : newValue
+        let newValue = isValueNil(newValue) ? nil : newValue
         
         switch self {
         
@@ -86,12 +95,12 @@ extension UserStoredValue.Storage {
     /// Check if the value is of type `Optional` and its value is `nil`.
     ///
     /// - NOTE: Since `Value` can be optional type,
-    /// use String(describing:) to check if it is `nil` (for now)
+    ///   use String(describing:) to check if it is `nil` (for now)
     ///
     /// - Parameter value: The value to check.
     /// 
     /// - Returns: `true` is the value is `nil`.
-    func isValueOptionalAndNil(_ value: Value) -> Bool {
+    func isValueNil(_ value: Value) -> Bool {
         String(describing: value) == "nil"
     }
 }
