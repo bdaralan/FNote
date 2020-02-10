@@ -269,6 +269,7 @@ extension HomeNoteCardView {
         formModel.selectableCollections = appState.collections
         formModel.selectableRelationships = appState.currenNoteCards
         formModel.selectableTags = appState.tags
+        formModel.relationshipSelectedCollection = collection
         
         formModel.onCancel = cancelCreateNoteCard
         formModel.onCommit = commitCreateNoteCard
@@ -287,6 +288,10 @@ extension HomeNoteCardView {
         
         formModel.onCreateTag = { name in
             self.handleNoteCardFormCreateTag(name: name, formModel: formModel)
+        }
+        
+        formModel.onRelationshipCollectionSelected = { collection in
+            self.handleRelationshipCollectionSelected(collection, formModel: formModel)
         }
         
         formModel.commitTitle = "Create"
@@ -320,6 +325,7 @@ extension HomeNoteCardView {
         formModel.selectableCollections = appState.collections
         formModel.selectableRelationships = appState.currenNoteCards
         formModel.selectableTags = appState.tags
+        formModel.relationshipSelectedCollection = collection
         
         formModel.onCancel = cancelEditNoteCard
         formModel.onCommit = { self.commitEditNoteCard(noteCard) }
@@ -338,6 +344,10 @@ extension HomeNoteCardView {
         
         formModel.onCreateTag = { name in
             self.handleNoteCardFormCreateTag(name: name, formModel: formModel)
+        }
+        
+        formModel.onRelationshipCollectionSelected = { collection in
+            self.handleRelationshipCollectionSelected(collection, formModel: formModel)
         }
         
         formModel.update(with: noteCard)
@@ -456,6 +466,8 @@ extension HomeNoteCardView {
     
     func handleNoteCardFormCollectionSelected(_ collection: NoteCardCollection, formModel: NoteCardFormModel) {
         formModel.selectedCollection = collection
+        formModel.relationshipSelectedCollection = collection
+        formModel.selectableRelationships = collection.noteCards.sorted(by: { $0.translation < $1.translation })
         formModel.isSelectingCollection = false
     }
     
@@ -496,6 +508,11 @@ extension HomeNoteCardView {
         case .updated, .deleted, .unchanged:
             fatalError("🧨 attempt to \(result) in handleNoteCardFormCreateTag method 🧨")
         }
+    }
+    
+    func handleRelationshipCollectionSelected(_ collection: NoteCardCollection, formModel: NoteCardFormModel) {
+        formModel.selectableRelationships = collection.noteCards.sorted(by: { $0.translation < $1.translation })
+        formModel.relationshipSelectedCollection = collection
     }
     
     func handleNoteCardCUDResult(_ result: ObjectCUDResult<NoteCard>) {

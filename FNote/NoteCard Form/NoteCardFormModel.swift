@@ -27,6 +27,8 @@ class NoteCardFormModel: ObservableObject {
     @Published var selectedRelationships: Set<NoteCard> = []
     @Published var selectedTags: Set<Tag> = []
     
+    @Published var relationshipSelectedCollection: NoteCardCollection?
+    
     var selectedNoteCard: NoteCard?
     
     // MARK: Action
@@ -34,6 +36,8 @@ class NoteCardFormModel: ObservableObject {
     var onRelationshipSelected: ((NoteCard) -> Void)?
     var onTagSelected: ((Tag) -> Void)?
     var onCreateTag: ((String) -> Tag?)?
+    
+    var onRelationshipCollectionSelected: ((NoteCardCollection) -> Void)?
     
     var onCancel: (() -> Void)?
     var onCommit: (() -> Void)?

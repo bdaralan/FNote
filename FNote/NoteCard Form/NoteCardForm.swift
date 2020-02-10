@@ -16,6 +16,9 @@ struct NoteCardForm: View {
     @State private var sheet: Sheet?
     @State private var modalTextViewModel = ModalTextViewModel()
     
+    @State private var showChooseRelationshipCollection = false
+    let chooseRelationshipCollectionViewModel = NoteCardCollectionCollectionViewModel()
+    
     @State private var collectionViewModel = NoteCardCollectionCollectionViewModel()
     @State private var tagViewModel = TagCollectionViewModel()
     @State private var relationshipViewModel = NoteCardCollectionViewModel()
@@ -118,13 +121,7 @@ struct NoteCardForm: View {
                         .modifier(NoteCardFormRowModifier())
                         .onTapGesture(perform: beginSelectRelationship)
                         .onReceive(viewModel.$isSelectingRelationship, perform: handleOnReceiveSelectingRelationship)
-                        .background(
-                            NavigationLink(
-                                destination: NoteCardFormRelationshipSelectionView(viewModel: relationshipViewModel),
-                                isActive: $viewModel.isSelectingRelationship,
-                                label: EmptyView.init
-                            )
-                        )
+                        .background(relationshipNavigationLink)
                         
                         // MARK: Tag
                         HStack {
@@ -268,7 +265,7 @@ extension NoteCardForm {
     }
     
     func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
-        viewModel.selectedCollection = collection
+        viewModel.onCollectionSelected?(collection)
         viewModel.isSelectingCollection = false
     }
 }
@@ -277,6 +274,56 @@ extension NoteCardForm {
 // MARK: - Relationship Selection
 
 extension NoteCardForm {
+    
+    var relationshipNavigationLink: some View {
+        let done = { self.showChooseRelationshipCollection = false }
+        let doneLabel = { Text("Done").bold() }
+        let doneNavItem = Button(action: done, label: doneLabel)
+        
+        let chooseCollectionView = NavigationView {
+            CollectionViewWrapper(viewModel: chooseRelationshipCollectionViewModel)
+                .navigationBarTitle("Link Collection", displayMode: .inline)
+                .navigationBarItems(trailing: doneNavItem)
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
+        
+        let chooseCollectionNavItem = NavigationBarButton(
+            imageName: "rectangle.stack",
+            action: beginChooseRelationshipCollection
+        )
+        
+        let destinationView = NoteCardFormRelationshipSelectionView(viewModel: relationshipViewModel)
+            .navigationBarItems(trailing: chooseCollectionNavItem)
+            .sheet(isPresented: $showChooseRelationshipCollection, content: { chooseCollectionView })
+        
+        return NavigationLink(
+            destination: destinationView,
+            isActive: $viewModel.isSelectingRelationship,
+            label: EmptyView.init
+        )
+    }
+    
+    func beginChooseRelationshipCollection() {
+        chooseRelationshipCollectionViewModel.collections = viewModel.selectableCollections
+        
+        if let collection = viewModel.relationshipSelectedCollection {
+            chooseRelationshipCollectionViewModel.disableCollectionIDs = [collection.uuid]
+        }
+        
+        chooseRelationshipCollectionViewModel.onCollectionSelected = { collection in
+            self.viewModel.onRelationshipCollectionSelected?(collection)
+            
+            self.chooseRelationshipCollectionViewModel.disableCollectionIDs = [collection.uuid]
+            self.chooseRelationshipCollectionViewModel.updateSnapshot(animated: false)
+            
+            self.relationshipViewModel.noteCards = self.viewModel.selectableRelationships
+            self.relationshipViewModel.updateSnapshot(animated: false)
+            
+            self.showChooseRelationshipCollection = false
+        }
+        
+        showChooseRelationshipCollection = true
+    }
     
     func beginSelectRelationship() {
         relationshipViewModel.noteCards = viewModel.selectableRelationships
@@ -293,7 +340,7 @@ extension NoteCardForm {
         relationshipViewModel.onNoteCardSelected = handleRelationshipNoteCardSelected
         
         // setup search
-        if viewModel.selectedCollection != nil {
+        if viewModel.relationshipSelectedCollection != nil {
             relationshipViewModel.onSearchTextDebounced = handleRelationshipSearchTextDebounced
             relationshipViewModel.onSearchNoteActiveChanged = handleRelationshipSearchNoteActiveChanged
             relationshipViewModel.onSearchCancel = handleRelationshipSearchCancel
