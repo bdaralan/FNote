@@ -432,7 +432,8 @@ extension HomeNoteCardView {
         
         case .note:
             textViewModel = .init()
-            textViewModel.renderMarkdown = true
+            textViewModel.renderMarkdown = userPreference.useMarkdown
+            textViewModel.renderSoftBreak = userPreference.useMarkdownSoftBreak
             textViewModel.disableEditing = true
             textViewModel.title = "Note"
             textViewModel.text = noteCard.note

@@ -17,6 +17,7 @@ struct ModalTextViewModel {
     
     var disableEditing = false
     var renderMarkdown = false
+    var renderSoftBreak = false
     
     var onCommit: (() -> Void)?
 }

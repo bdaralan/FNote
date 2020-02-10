@@ -22,6 +22,8 @@ struct ModalTextViewWrapper: UIViewRepresentable {
     
     var renderMarkdown = false
     
+    var renderSoftBreak = false
+    
     
     func makeCoordinator() -> Coordinator {
         Coordinator(wrapper: self)
@@ -70,14 +72,16 @@ struct ModalTextViewWrapper: UIViewRepresentable {
             let renderMarkdown = wrapper.renderMarkdown
             let colorScheme = wrapper.colorScheme
             
-            if renderMarkdown, let markdown = createMarkdown(from: wrapper.text, colorScheme: colorScheme) {
+            if renderMarkdown {
+                let options = wrapper.renderSoftBreak ? DownOptions.hardBreaks : .safe
+                let markdown = createMarkdown(from: wrapper.text, options: options, colorScheme: colorScheme)
                 textView.attributedText = markdown
             } else {
                 textView.text = wrapper.text
             }
         }
         
-        func createMarkdown(from string: String, colorScheme: ColorScheme) -> NSAttributedString? {
+        func createMarkdown(from string: String, options: DownOptions, colorScheme: ColorScheme) -> NSAttributedString? {
             var config = DownStylerConfiguration()
             
             switch colorScheme {
@@ -91,7 +95,7 @@ struct ModalTextViewWrapper: UIViewRepresentable {
             
             let styler = DownStyler(configuration: config)
             let down = Down(markdownString: string)
-            return try? down.toAttributedString(.hardBreaks, styler: styler)
+            return try? down.toAttributedString(options, styler: styler)
         }
         
         func setupTextView() {

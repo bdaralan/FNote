@@ -13,7 +13,6 @@ class UserPreference: ObservableObject {
     
     static let shared = UserPreference()
     
-    weak var window: UIWindow?
     
     // MARK: iCloud
     
@@ -23,7 +22,7 @@ class UserPreference: ObservableObject {
     @UserStoredValue(in: .iCloud, key: "kUserPreference.useMarkdown", defaultValue: true)
     var useMarkdown: Bool
     
-    @UserStoredValue(in: .iCloud, key: "kUserPreference.useMarkdownSoftBreak", defaultValue: false)
+    @UserStoredValue(in: .iCloud, key: "kUserPreference.useMarkdownSoftBreak", defaultValue: true)
     var useMarkdownSoftBreak: Bool
     
     
@@ -51,14 +50,10 @@ class UserPreference: ObservableObject {
     
     
     func applyColorScheme() {
-        guard let window = window else { return }
-        setColorScheme(for: window)
-    }
-    
-    func setColorScheme(for window: UIWindow) {
-        self.window = window
         let preferredStyle = ColorScheme(rawValue: colorScheme)?.userInterfaceStyle ?? .unspecified
-        window.overrideUserInterfaceStyle = preferredStyle
+        for window in UIApplication.shared.windows {
+            window.overrideUserInterfaceStyle = preferredStyle
+        }
     }
 }
 

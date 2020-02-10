@@ -30,11 +30,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
-        // setup appearance
-        window.tintColor = .appAccent
-        userPreference.setColorScheme(for: window)
-        UISwitch.appearance().onTintColor = .appAccent
-        
         // setup home view
         let homeView = HomeView()
             .environmentObject(appState)
@@ -45,6 +40,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window.rootViewController = rootViewCV
         window.makeKeyAndVisible()
+        
+        // setup appearance
+        window.tintColor = .appAccent
+        userPreference.applyColorScheme()
+        UISwitch.appearance().onTintColor = .appAccent
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

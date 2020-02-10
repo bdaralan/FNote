@@ -29,7 +29,8 @@ struct ModalTextView: View {
                 text: $viewModel.text,
                 isFirstResponder: $viewModel.isFirstResponder,
                 disableEditing: viewModel.disableEditing,
-                renderMarkdown: viewModel.renderMarkdown
+                renderMarkdown: viewModel.renderMarkdown,
+                renderSoftBreak: viewModel.renderSoftBreak
             )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
