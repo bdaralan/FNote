@@ -69,14 +69,15 @@ struct HomeSettingView: View {
                 VStack(spacing: 32) {
                     // MARK: Color Scheme
                     VStack(spacing: 5) {
-                        SettingCheckmarkRow(label: "System", checked: checkedSystem)
-                            .onTapGesture(perform: { self.handleColorSchemeTapped(.system) })
-                        
-                        SettingCheckmarkRow(label: "Light", checked: checkedLight)
-                            .onTapGesture(perform: { self.handleColorSchemeTapped(.light) })
                         
                         SettingCheckmarkRow(label: "Dark", checked: checkedDark)
                             .onTapGesture(perform: { self.handleColorSchemeTapped(.dark) })
+                        
+                        SettingCheckmarkRow(label: "Light", checked: checkedLight)
+                        .onTapGesture(perform: { self.handleColorSchemeTapped(.light) })
+                        
+                        SettingCheckmarkRow(label: "System", checked: checkedSystem)
+                            .onTapGesture(perform: { self.handleColorSchemeTapped(.system) })
                     }
                     .modifier(SettingSectionModifier(header: "COLOR SCHEME"))
                     
@@ -94,7 +95,7 @@ struct HomeSettingView: View {
                         .modifier(SettingRowModifier())
                         .disabled(!userPreference.useMarkdown)
                     }
-                    .modifier(SettingSectionModifier(header: "MARKDOWN", footer: "Soft break means to create a new line, two return keys are required. Otherwise, the lines continue."))
+                    .modifier(SettingSectionModifier(header: "MARKDOWN", footer: "If soft break is off, to create a new line, two return keys are required. Otherwise, the sentences continue."))
                     
                     // MARK: Export & Import
                     VStack(spacing: 5) {
