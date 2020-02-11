@@ -85,6 +85,7 @@ extension HomeView {
     func handleOnReceiveCurrentCollectionID(_ collectionID: String?) {
         cardCollectionView = .init(frame: .zero, collectionViewLayout: .init())
         cardCollectionViewModel.setupDataSource(with: cardCollectionView)
+        currentTab = .card
     }
     
     func handleOnReceiveCurrentTab(_ : Character) {
