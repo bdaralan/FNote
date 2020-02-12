@@ -62,7 +62,7 @@ struct NoteCardForm: View {
                                 .foregroundColor(viewModel.selectedCollection == nil ? .secondary : .primary)
                             Spacer()
                             HStack {
-                                Text("4 CARDS")
+                                Text(viewModel.selectedCollectionNoteCardCount)
                                     .foregroundColor(.secondary)
                                 Image(systemName: "chevron.right")
                                     .foregroundColor(Color(.tertiaryLabel))
