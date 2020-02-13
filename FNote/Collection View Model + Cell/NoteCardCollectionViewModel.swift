@@ -59,12 +59,20 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     /// A flag to reload cell quick buttons images if size category ever changed.
     private var sizeCategoryChanged = false
     
-    private(set) var isSearchNoteActive = false
-    
     /// Check if the search is active.
     ///
     /// - Note: The search is considered inactive if the search text is empty.
     private(set) var isSearchActive = false
+    
+    var searchFieldHeader: SearchFieldCollectionHeader? {
+        let headerKind = UICollectionView.elementKindSectionHeader
+        let header = collectionView?.visibleSupplementaryViews(ofKind: headerKind).first
+        return header as? SearchFieldCollectionHeader
+    }
+    
+    var isSearchNoteActive: Bool {
+        searchFieldHeader?.isNoteActive ?? false
+    }
     
     
     // MARK: Method
@@ -130,7 +138,6 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
         
         header.onNoteActive = { [weak self] isActive in
             guard let self = self else { return }
-            self.isSearchNoteActive = isActive
             self.onSearchNoteActiveChanged?(isActive)
         }
     }
