@@ -25,10 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         appState.noteCardSortOption = userPreference.noteCardSortOption
         appState.noteCardSortOptionAscending = userPreference.noteCardSortOptionAscending
         appState.fetchCurrentNoteCards()
-        
-        // create window
-        let window = UIWindow(windowScene: windowScene)
-        self.window = window
+        appState.lockPortraitMode = AppCache.shouldShowOnboard
         
         // setup home view
         let homeView = HomeView()
@@ -36,8 +33,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .environmentObject(userPreference)
             .environment(\.managedObjectContext, appState.parentContext)
         
-        let rootViewCV = UIHostingController(rootView: homeView)
+        let rootViewCV = HostingRootViewController(rootView: homeView)
+        rootViewCV.appState = appState
         
+        // create window
+        let window = UIWindow(windowScene: windowScene)
+        self.window = window
         window.rootViewController = rootViewCV
         window.makeKeyAndVisible()
         
@@ -94,4 +95,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NSUbiquitousKeyValueStore.default.synchronize()
     }
 }
-

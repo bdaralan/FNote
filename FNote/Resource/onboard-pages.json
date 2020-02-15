@@ -1,0 +1,37 @@
+[
+    {
+        "title": "Welcome to FNote",
+        "description": "description",
+        "imageUrl": "",
+        "foregroundColor": "000000",
+        "backgroundColor": "D8D52B"
+    },
+    {
+        "title": "Create Note Cards\nwith\nNative & Translation",
+        "description": "description",
+        "imageUrl": "",
+        "foregroundColor": "FFFFFF",
+        "backgroundColor": "EC4E20"
+    },
+    {
+        "title": "Group Note Cards\nby\nCollections",
+        "description": "description",
+        "imageUrl": "",
+        "foregroundColor": "000000",
+        "backgroundColor": "F0F0C9"
+    },
+    {
+        "title": "Link Note Cards\ntogether for\nEasy Lookup",
+        "description": "description",
+        "imageUrl": "",
+        "foregroundColor": "FFFFFF",
+        "backgroundColor": "46B1C9"
+    },
+    {
+        "title": "Add Custom Tags\nto\nNote Cards",
+        "description": "description",
+        "imageUrl": "",
+        "foregroundColor": "000000",
+        "backgroundColor": "F7CB15"
+    }
+]

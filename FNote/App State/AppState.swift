@@ -47,6 +47,8 @@ class AppState: ObservableObject {
     @Published var showDidCopyFileAlert = false
     var copiedFileName = ""
     
+    var lockPortraitMode = false
+    
     
     // MARK: Fetch Controller
     

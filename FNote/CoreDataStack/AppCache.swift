@@ -21,4 +21,7 @@ struct AppCache {
     
     @UserStoredValue(in: .userDefaults, key: "kAppCache.currentCollectionUUID", defaultValue: nil)
     static var currentCollectionUUID: String?
+    
+    @UserStoredValue(in: .userDefaults, key: "kAppCache.shouldShowOnboard", defaultValue: true)
+    static var shouldShowOnboard: Bool
 }

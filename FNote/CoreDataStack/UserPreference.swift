@@ -28,17 +28,17 @@ class UserPreference: ObservableObject {
     
     // MARK: User Defaults
     
-    @UserStoredValue(in: .iCloud, key: "kUserPreference.noteCardSortOptionAscending", defaultValue: true)
+    @UserStoredValue(in: .userDefaults, key: "kUserPreference.noteCardSortOptionAscending", defaultValue: true)
     var noteCardSortOptionAscending: Bool
     
     let noteCardSortOptionKey = "kUserPreference.noteCardSortOption"
     var noteCardSortOption: NoteCardSortOption {
         set {
             objectWillChange.send()
-            UserStoredValue.Storage.iCloud.setValue(newValue.rawValue, forKey: noteCardSortOptionKey)
+            UserStoredValue.Storage.userDefaults.setValue(newValue.rawValue, forKey: noteCardSortOptionKey)
         }
         get {
-            let storage = UserStoredValue<Int>.Storage.iCloud
+            let storage = UserStoredValue<Int>.Storage.userDefaults
             let defaultValue = NoteCardSortOption.translation.rawValue
             let rawValue = storage.value(forKey: noteCardSortOptionKey, defaultValue: defaultValue)
             return NoteCardSortOption(rawValue: rawValue) ?? .translation

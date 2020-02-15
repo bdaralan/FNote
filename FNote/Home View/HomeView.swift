@@ -16,13 +16,13 @@ struct HomeView: View {
     
     @State private var currentTab = Tab.card
     
+    @State private var sheet: Sheet?
+    @State private var modalTextFieldModel = ModalTextFieldModel()
+    
     @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
     @State private var collectionCollectionViewModel = NoteCardCollectionCollectionViewModel()
     @State private var tagCollectionViewModel = TagCollectionViewModel()
     @State private var cardCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
-        
-    @State private var showCreateCollectionSheet = false
-    @State private var modalTextFieldModel = ModalTextFieldModel()
     
     @State private var storeRemoteChangeObserver = NotificationObserver(name: .persistentStoreRemoteChange)
     
@@ -65,7 +65,7 @@ struct HomeView: View {
             
         }
         .onAppear(perform: setupOnAppear)
-        .sheet(isPresented: $showCreateCollectionSheet, content: createCollectionSheet)
+        .sheet(item: $sheet, onDismiss: handleSheetDismissed, content: presentationSheet)
         .alert(isPresented: $appState.showDidCopyFileAlert, content: { .DidCopyFileAlert(fileName: appState.copiedFileName) })
         .disabled(!appState.iCloudActive)
         .onReceive(appState.$currentCollectionID, perform: handleOnReceiveCurrentCollectionID)
@@ -80,6 +80,7 @@ extension HomeView {
     
     func setupOnAppear() {
         storeRemoteChangeObserver.onReceived = handleStoreRemoteChangeNotification
+        showOnboardIfNeeded()
     }
     
     func handleOnReceiveCurrentCollectionID(_ collectionID: String?) {
@@ -90,6 +91,43 @@ extension HomeView {
     
     func handleOnReceiveCurrentTab(_ : Character) {
         cardCollectionViewModel.cancelSearch()
+    }
+    
+    func showOnboardIfNeeded() {
+        guard AppCache.shouldShowOnboard else { return }
+        appState.lockPortraitMode = true
+        sheet = .onboard
+    }
+    
+    func dismissOnboard() {
+        appState.lockPortraitMode = false
+        sheet = nil
+    }
+}
+
+
+extension HomeView {
+    
+    enum Sheet: Identifiable {
+        var id: Self { self }
+        case createNoteCardCollection
+        case onboard
+    }
+    
+    func presentationSheet(for sheet: Sheet) -> some View {
+        switch sheet {
+        case .createNoteCardCollection:
+            return ModalTextField(viewModel: $modalTextFieldModel)
+                .eraseToAnyView()
+        
+        case .onboard:
+            return OnboardView(onDismiss: dismissOnboard)
+                .eraseToAnyView()
+        }
+    }
+    
+    func handleSheetDismissed() {
+        dismissOnboard()
     }
 }
 
@@ -155,24 +193,20 @@ extension HomeView {
 
 extension HomeView {
     
-    func createCollectionSheet() -> some View {
-        ModalTextField(viewModel: $modalTextFieldModel)
-    }
-    
     func beginCreateNoteCardCollection() {
         modalTextFieldModel.title = "New Collection"
         modalTextFieldModel.text = ""
         modalTextFieldModel.placeholder = "Collection Name"
         modalTextFieldModel.isFirstResponder = true
         modalTextFieldModel.onCommit = commitCreateNoteCardCollection
-        showCreateCollectionSheet = true
+        sheet = .createNoteCardCollection
     }
     
     func commitCreateNoteCardCollection() {
         let name = modalTextFieldModel.text.trimmed()
         
         guard !name.isEmpty else {
-            showCreateCollectionSheet = false
+            sheet = nil
             return
         }
         
@@ -187,7 +221,7 @@ extension HomeView {
             appState.setCurrentCollection(parentContextCollection)
             appState.fetchCollections()
             collectionCollectionViewModel.collections = appState.collections
-            showCreateCollectionSheet = false
+            sheet = nil
             
         case .failed: // TODO: inform user if needed
             modalTextFieldModel.prompt = "Duplicate collection name!"

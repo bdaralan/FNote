@@ -17,6 +17,9 @@
 		B4113FBC23D2D7D9004E70DC /* FNCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4113FBB23D2D7D9004E70DC /* FNCollectionViewCell.swift */; };
 		B4113FBE23D2DA5E004E70DC /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4113FBD23D2DA5E004E70DC /* UIView.swift */; };
 		B411E0512332F6B4008D99A0 /* NotificationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B411E0502332F6B4008D99A0 /* NotificationObserver.swift */; };
+		B420059B23F6433E008F5E63 /* OnboardCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B420059A23F6433E008F5E63 /* OnboardCollectionViewModel.swift */; };
+		B420059D23F64E00008F5E63 /* OnboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B420059C23F64E00008F5E63 /* OnboardView.swift */; };
+		B420059F23F64F1C008F5E63 /* OnboardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B420059E23F64F1C008F5E63 /* OnboardCell.swift */; };
 		B424018B23ED2BAA0042B223 /* document-type-icon-320.png in Resources */ = {isa = PBXBuildFile; fileRef = B424018723ED2BAA0042B223 /* document-type-icon-320.png */; };
 		B424018C23ED2BAA0042B223 /* document-type-icon-22.png in Resources */ = {isa = PBXBuildFile; fileRef = B424018823ED2BAA0042B223 /* document-type-icon-22.png */; };
 		B424018D23ED2BAA0042B223 /* document-type-icon-64.png in Resources */ = {isa = PBXBuildFile; fileRef = B424018923ED2BAA0042B223 /* document-type-icon-64.png */; };
@@ -46,6 +49,11 @@
 		B48AC69D23D971390033DF6F /* NoteCardFormRelationshipSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48AC69C23D971390033DF6F /* NoteCardFormRelationshipSelectionView.swift */; };
 		B4928E8C239054FF0060AD45 /* Down in Frameworks */ = {isa = PBXBuildFile; productRef = B4928E8B239054FF0060AD45 /* Down */; };
 		B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */; };
+		B49796EA23F78CF00035DF63 /* PageControlWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49796E923F78CF00035DF63 /* PageControlWrapper.swift */; };
+		B49796EC23F7AAA90035DF63 /* onboard-pages.json in Resources */ = {isa = PBXBuildFile; fileRef = B49796EB23F7AAA90035DF63 /* onboard-pages.json */; };
+		B49796EE23F7AF850035DF63 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49796ED23F7AF850035DF63 /* Bundle.swift */; };
+		B49796F023F7B5FD0035DF63 /* HostingRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49796EF23F7B5FD0035DF63 /* HostingRootViewController.swift */; };
+		B49796F223F7B8C30035DF63 /* OnboardPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49796F123F7B8C20035DF63 /* OnboardPage.swift */; };
 		B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35B2326D988002D16A0 /* CoreDataStack.swift */; };
 		B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35D2326D9A7002D16A0 /* AppCache.swift */; };
 		B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C6923D628760030D9B2 /* HomeView.swift */; };
@@ -114,6 +122,9 @@
 		B4113FBB23D2D7D9004E70DC /* FNCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FNCollectionViewCell.swift; sourceTree = "<group>"; };
 		B4113FBD23D2DA5E004E70DC /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		B411E0502332F6B4008D99A0 /* NotificationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObserver.swift; sourceTree = "<group>"; };
+		B420059A23F6433E008F5E63 /* OnboardCollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardCollectionViewModel.swift; sourceTree = "<group>"; };
+		B420059C23F64E00008F5E63 /* OnboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardView.swift; sourceTree = "<group>"; };
+		B420059E23F64F1C008F5E63 /* OnboardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardCell.swift; sourceTree = "<group>"; };
 		B424018723ED2BAA0042B223 /* document-type-icon-320.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "document-type-icon-320.png"; sourceTree = "<group>"; };
 		B424018823ED2BAA0042B223 /* document-type-icon-22.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "document-type-icon-22.png"; sourceTree = "<group>"; };
 		B424018923ED2BAA0042B223 /* document-type-icon-64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "document-type-icon-64.png"; sourceTree = "<group>"; };
@@ -142,6 +153,11 @@
 		B48AC69823D9445A0033DF6F /* NoteCardFormTagSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardFormTagSelectionView.swift; sourceTree = "<group>"; };
 		B48AC69C23D971390033DF6F /* NoteCardFormRelationshipSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardFormRelationshipSelectionView.swift; sourceTree = "<group>"; };
 		B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataStack+HistoryTracker.swift"; sourceTree = "<group>"; };
+		B49796E923F78CF00035DF63 /* PageControlWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageControlWrapper.swift; sourceTree = "<group>"; };
+		B49796EB23F7AAA90035DF63 /* onboard-pages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "onboard-pages.json"; sourceTree = "<group>"; };
+		B49796ED23F7AF850035DF63 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		B49796EF23F7B5FD0035DF63 /* HostingRootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostingRootViewController.swift; sourceTree = "<group>"; };
+		B49796F123F7B8C20035DF63 /* OnboardPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardPage.swift; sourceTree = "<group>"; };
 		B499A35B2326D988002D16A0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		B499A35D2326D9A7002D16A0 /* AppCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCache.swift; sourceTree = "<group>"; };
 		B49C4C6923D628760030D9B2 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -263,8 +279,20 @@
 			children = (
 				B4113FBB23D2D7D9004E70DC /* FNCollectionViewCell.swift */,
 				B4BBDBDA23E4CD8000A0AEA1 /* ManagedObjectCollectionViewCell.swift */,
+				B49796EF23F7B5FD0035DF63 /* HostingRootViewController.swift */,
 			);
 			path = "FN View & Controller";
+			sourceTree = "<group>";
+		};
+		B420059923F64301008F5E63 /* Onboard View + Model */ = {
+			isa = PBXGroup;
+			children = (
+				B420059A23F6433E008F5E63 /* OnboardCollectionViewModel.swift */,
+				B49796F123F7B8C20035DF63 /* OnboardPage.swift */,
+				B420059C23F64E00008F5E63 /* OnboardView.swift */,
+				B420059E23F64F1C008F5E63 /* OnboardCell.swift */,
+			);
+			path = "Onboard View + Model";
 			sourceTree = "<group>";
 		};
 		B424018623ED2B750042B223 /* Resource */ = {
@@ -274,6 +302,7 @@
 				B424018A23ED2BAA0042B223 /* document-type-icon-44.png */,
 				B424018923ED2BAA0042B223 /* document-type-icon-64.png */,
 				B424018723ED2BAA0042B223 /* document-type-icon-320.png */,
+				B49796EB23F7AAA90035DF63 /* onboard-pages.json */,
 			);
 			path = Resource;
 			sourceTree = "<group>";
@@ -357,6 +386,7 @@
 				B44E786F23DE774600428D4A /* UICollectionView.swift */,
 				B40B519B2335C2D6002DA41D /* NotificationName.swift */,
 				B4BBDBF223E4F6D000A0AEA1 /* CGFloat.swift */,
+				B49796ED23F7AF850035DF63 /* Bundle.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -397,14 +427,15 @@
 				B4816A6723D8D71D006485F7 /* App State */,
 				B49C4C6823D628520030D9B2 /* Home View */,
 				B49C4C6B23D638EC0030D9B2 /* NoteCard Form */,
-				B4EC398223DB88350011569C /* Collection View Wrapper */,
 				B4113FB723D2D507004E70DC /* Collection View Model + Cell */,
 				B4BBDBDF23E4CFD400A0AEA1 /* Setting View Model + Cell */,
 				B4113FBA23D2D7BE004E70DC /* FN View & Controller */,
 				B40056F123D6C65B00997216 /* Reusable View */,
+				B4EC398223DB88350011569C /* Reusable Wrapper */,
 				B4BAC5272320400A007EAF15 /* Data Model */,
 				B4C76DF9232C0A180033DDEA /* Text Field Wrapper */,
 				B402F62A234087F900EC0A77 /* Search View + Model */,
+				B420059923F64301008F5E63 /* Onboard View + Model */,
 				B40BB6172335B11900E2F98B /* Utility */,
 				B4BAC52223203F60007EAF15 /* Extension */,
 				B499A3572326D932002D16A0 /* CoreDataStack */,
@@ -447,7 +478,6 @@
 				B4BBDBEC23E4EA5C00A0AEA1 /* SettingTextRow.swift */,
 				B4BBDBEE23E4F1B000A0AEA1 /* SettingSectionModifier.swift */,
 				B4BBDBF023E4F1C400A0AEA1 /* SettingRowModifier.swift */,
-				B4BBDBFA23E525F100A0AEA1 /* ActivityViewControllerWrapper.swift */,
 			);
 			path = "Setting View Model + Cell";
 			sourceTree = "<group>";
@@ -467,13 +497,15 @@
 			path = "Text Field Wrapper";
 			sourceTree = "<group>";
 		};
-		B4EC398223DB88350011569C /* Collection View Wrapper */ = {
+		B4EC398223DB88350011569C /* Reusable Wrapper */ = {
 			isa = PBXGroup;
 			children = (
 				B4EC398323DB88460011569C /* CollectionViewWrapper.swift */,
 				B4A0CE9823D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift */,
+				B4BBDBFA23E525F100A0AEA1 /* ActivityViewControllerWrapper.swift */,
+				B49796E923F78CF00035DF63 /* PageControlWrapper.swift */,
 			);
-			path = "Collection View Wrapper";
+			path = "Reusable Wrapper";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -567,6 +599,7 @@
 				B424018C23ED2BAA0042B223 /* document-type-icon-22.png in Resources */,
 				B4BB117D23145DC600A380AA /* Preview Assets.xcassets in Resources */,
 				B424018D23ED2BAA0042B223 /* document-type-icon-64.png in Resources */,
+				B49796EC23F7AAA90035DF63 /* onboard-pages.json in Resources */,
 				B4BB117A23145DC600A380AA /* Assets.xcassets in Resources */,
 				B424018B23ED2BAA0042B223 /* document-type-icon-320.png in Resources */,
 				B424018E23ED2BAA0042B223 /* document-type-icon-44.png in Resources */,
@@ -593,6 +626,7 @@
 				B4BBDBED23E4EA5C00A0AEA1 /* SettingTextRow.swift in Sources */,
 				B4DC48CB23E7E76700104847 /* NoteCardFormSectionModifier.swift in Sources */,
 				B4816A6B23D912E9006485F7 /* ObjectCUDRequest.swift in Sources */,
+				B420059B23F6433E008F5E63 /* OnboardCollectionViewModel.swift in Sources */,
 				B4BBDBEF23E4F1B000A0AEA1 /* SettingSectionModifier.swift in Sources */,
 				B4DC48CD23E7E78B00104847 /* NoteCardFormRowModifier.swift in Sources */,
 				B4816A6923D8D73C006485F7 /* AppState.swift in Sources */,
@@ -611,6 +645,7 @@
 				B49C4C7823D6B0AC0030D9B2 /* HomeNoteCardCollectionView.swift in Sources */,
 				B4DC48C923E7D4CA00104847 /* NoteCardForm.swift in Sources */,
 				B48AC69723D93C150033DF6F /* NoteCardFormCollectionSelectionView.swift in Sources */,
+				B49796F023F7B5FD0035DF63 /* HostingRootViewController.swift in Sources */,
 				B40056F323D6C82900997216 /* ModalTextViewModel.swift in Sources */,
 				B40056F023D6C26500997216 /* HomeTagView.swift in Sources */,
 				B4BB117623145DC400A380AA /* FNote.xcdatamodeld in Sources */,
@@ -618,9 +653,12 @@
 				B4BBDBF323E4F6D000A0AEA1 /* CGFloat.swift in Sources */,
 				B48AC69D23D971390033DF6F /* NoteCardFormRelationshipSelectionView.swift in Sources */,
 				B4113FB923D2D539004E70DC /* NoteCardCell.swift in Sources */,
+				B420059D23F64E00008F5E63 /* OnboardView.swift in Sources */,
 				B4BBDBF123E4F1C400A0AEA1 /* SettingRowModifier.swift in Sources */,
 				B44E787023DE774600428D4A /* UICollectionView.swift in Sources */,
+				B49796F223F7B8C30035DF63 /* OnboardPage.swift in Sources */,
 				B49C4C7323D69E6C0030D9B2 /* NoteCardFormModel.swift in Sources */,
+				B420059F23F64F1C008F5E63 /* OnboardCell.swift in Sources */,
 				B4D240D923DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift in Sources */,
 				B48AC69923D9445A0033DF6F /* NoteCardFormTagSelectionView.swift in Sources */,
 				B40056F523D6CC8600997216 /* NavigationBarButton.swift in Sources */,
@@ -644,6 +682,7 @@
 				B4BBDBDB23E4CD8000A0AEA1 /* ManagedObjectCollectionViewCell.swift in Sources */,
 				B4EC398123DB7AD90011569C /* Alert.swift in Sources */,
 				B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */,
+				B49796EE23F7AF850035DF63 /* Bundle.swift in Sources */,
 				B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */,
 				B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */,
 				B4EC398423DB88460011569C /* CollectionViewWrapper.swift in Sources */,
@@ -654,6 +693,7 @@
 				B4816A6F23D91341006485F7 /* NoteCardCollectionCUDRequest.swift in Sources */,
 				B40056EE23D6B9C400997216 /* ModalTextFieldModel.swift in Sources */,
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
+				B49796EA23F78CF00035DF63 /* PageControlWrapper.swift in Sources */,
 				B45382D223EB7F7D0085400F /* NoteCardSortOptionPopoverView.swift in Sources */,
 				B45A4A032368A2810079D8DE /* NoteCardSearchScope.swift in Sources */,
 				B448744823DEB73A005EBA45 /* TagCollectionViewModel.swift in Sources */,
