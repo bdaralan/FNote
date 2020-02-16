@@ -87,6 +87,7 @@ extension HomeView {
         cardCollectionView = .init(frame: .zero, collectionViewLayout: .init())
         cardCollectionViewModel.setupDataSource(with: cardCollectionView)
         currentTab = .card
+        UISelectionFeedbackGenerator().selectionChanged()
     }
     
     func handleOnReceiveCurrentTab(_ : Character) {

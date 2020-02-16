@@ -86,7 +86,8 @@ struct NoteCardForm: View {
                         SegmentControlWrapper(
                             selectedIndex: $viewModel.formality,
                             segments: viewModel.formalities,
-                            selectedColor: viewModel.selectedFormality.uiColor
+                            selectedColor: viewModel.selectedFormality.uiColor,
+                            enableHapticFeedback: true
                         )
                             .modifier(NoteCardFormRowModifier())
                     }

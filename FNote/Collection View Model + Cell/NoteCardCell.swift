@@ -125,9 +125,13 @@ class NoteCardCell: ManagedObjectCollectionViewCell<NoteCard> {
         switch sender {
         case relationshipButton: type = .relationship
         case tagButton: type = .tag
-        case favoriteButton: type = .favorite
         case noteButton: type = .note
+        case favoriteButton: type = .favorite
         default: fatalError("🧨 handleQuickButtonTapped unknown button type 💣")
+        }
+        
+        if sender === favoriteButton {
+            UISelectionFeedbackGenerator().selectionChanged()
         }
         
         onQuickButtonTapped?(type, noteCard)

@@ -19,6 +19,8 @@ struct SegmentControlWrapper: UIViewRepresentable {
     
     var selectedColor: UIColor?
     
+    var enableHapticFeedback = false
+    
     
     // MARK: Make View
     
@@ -46,6 +48,8 @@ extension SegmentControlWrapper {
         
         let segmentControl: UISegmentedControl
         
+        lazy var selectionHaptic = UISelectionFeedbackGenerator()
+        
         
         init(wrapper: SegmentControlWrapper) {
             self.wrapper = wrapper
@@ -70,6 +74,10 @@ extension SegmentControlWrapper.Coordinator {
     
     @objc private func handleSegmentChanged() {
         wrapper.selectedIndex = segmentControl.selectedSegmentIndex
+        
+        if wrapper.enableHapticFeedback {
+            selectionHaptic.selectionChanged()
+        }
     }
     
     private func updateSegmentSelectedColor() {

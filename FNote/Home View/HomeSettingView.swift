@@ -163,9 +163,11 @@ extension HomeSettingView {
 extension HomeSettingView {
     
     func handleColorSchemeTapped(_ colorScheme: UserPreference.ColorScheme) {
+        guard userPreference.colorScheme != colorScheme.rawValue else { return }
         userPreference.objectWillChange.send()
         userPreference.colorScheme = colorScheme.rawValue
         userPreference.applyColorScheme()
+        UISelectionFeedbackGenerator().selectionChanged()
     }
     
     func beginExportData() {
@@ -184,7 +186,9 @@ extension HomeSettingView {
             let fileExtension = FNSupportFileType.fnotex.rawValue
             let fileURL = documentFolder.appendingPathComponent("\(fileName).\(fileExtension)")
             let exporter = ExportImportDataManager(context: CoreDataStack.current.mainContext)
-            exporter.exportData(to: fileURL)
+            if exporter.exportData(to: fileURL) != nil {
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
+            }
         }
         
         sheet = nil
@@ -199,6 +203,7 @@ extension HomeSettingView {
         let result = importer.importData(from: file, deleteCurrentData: true)
         result?.quickSave()
         result?.parent?.quickSave()
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
         sheet = nil
     }
 }
