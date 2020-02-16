@@ -2,36 +2,26 @@
     {
         "title": "Welcome to FNote",
         "description": "Language Learner's Companion.\nMake jotting down notes and learning on the go easy.",
-        "imageName": "",
-        "foregroundColor": "000000",
-        "backgroundColor": "F0F0C9"
+        "imageName": "onboard-page-welcome"
     },
     {
         "title": "Create Note Cards\nwith\nNative & Translation",
-        "description": "Write down words or phrases,\nset their formalities, and more...",
-        "imageName": "",
-        "foregroundColor": "000000",
-        "backgroundColor": "F0F0C9"
+        "description": "Write down words or phrases,\nset their formalities, and more.",
+        "imageName": "onboard-page-note-card"
     },
     {
         "title": "Group Note Cards\nby\nCollections",
         "description": "Collections help separate note cards\nby subjects or categories.",
-        "imageName": "",
-        "foregroundColor": "000000",
-        "backgroundColor": "F0F0C9"
+        "imageName": "onboard-page-collection"
     },
     {
         "title": "Link Note Cards\ntogether for\nEasy Lookup",
         "description": "Links offer a way to connect related note cards across collections.",
-        "imageName": "",
-        "foregroundColor": "000000",
-        "backgroundColor": "F0F0C9"
+        "imageName": "onboard-page-link"
     },
     {
         "title": "Add Custom Tags\nto\nNote Cards",
         "description": "Tags provide an extra layer to categorize note cards.",
-        "imageName": "",
-        "foregroundColor": "000000",
-        "backgroundColor": "F0F0C9"
+        "imageName": "onboard-page-tag"
     }
 ]

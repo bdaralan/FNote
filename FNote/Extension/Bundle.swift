@@ -11,6 +11,12 @@ import Foundation
 
 extension Bundle {
     
+    var appVersion: String {
+        let key = "CFBundleShortVersionString"
+        let version = Bundle.main.object(forInfoDictionaryKey: key) as? String ?? "???"
+        return version
+    }
+    
     func loadJSON<T>(resource: String, result: T.Type) -> T where T: Decodable {
         guard let url = Bundle.main.url(forResource: resource, withExtension: "json") else {
             fatalError("🧨 attempt to load resource, but does not exist 🧨")

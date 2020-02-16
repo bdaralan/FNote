@@ -87,7 +87,6 @@ extension HomeView {
         cardCollectionView = .init(frame: .zero, collectionViewLayout: .init())
         cardCollectionViewModel.setupDataSource(with: cardCollectionView)
         currentTab = .card
-        UISelectionFeedbackGenerator().selectionChanged()
     }
     
     func handleOnReceiveCurrentTab(_ : Character) {
@@ -101,6 +100,7 @@ extension HomeView {
     }
     
     func dismissOnboard() {
+        AppCache.shouldShowOnboard = false
         appState.lockPortraitMode = false
         sheet = nil
     }

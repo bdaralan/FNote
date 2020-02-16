@@ -25,7 +25,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         appState.noteCardSortOption = userPreference.noteCardSortOption
         appState.noteCardSortOptionAscending = userPreference.noteCardSortOptionAscending
         appState.fetchCurrentNoteCards()
-        appState.lockPortraitMode = AppCache.shouldShowOnboard
+        
+        // logic to show onboard
+        let lastKnownVersion = AppCache.lastKnownVersion
+        let currentVersion = Bundle.main.appVersion
+        if lastKnownVersion == nil || lastKnownVersion != currentVersion {
+            AppCache.lastKnownVersion = currentVersion
+            AppCache.shouldShowOnboard = true
+            appState.lockPortraitMode = true
+        }
         
         // setup home view
         let homeView = HomeView()

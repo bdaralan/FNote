@@ -81,6 +81,7 @@ extension HomeNoteCardCollectionView {
         viewModel.clearCellIconImages()
         viewModel.selectedCollectionIDs = [collection.uuid]
         appState.setCurrentCollection(collection)
+        UISelectionFeedbackGenerator().selectionChanged()
     }
     
     func handleContextMenuSelected(_ menu: NoteCardCollectionCell.ContextMenu, collection: NoteCardCollection) {
@@ -217,6 +218,7 @@ extension HomeNoteCardCollectionView {
         case .deleted(let childContext):
             if collectionToDelete == appState.currentCollection {
                 appState.setCurrentCollection(nil)
+                UISelectionFeedbackGenerator().selectionChanged()
             }
             childContext.quickSave()
             childContext.parent?.quickSave()

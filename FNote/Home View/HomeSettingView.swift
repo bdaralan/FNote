@@ -42,12 +42,6 @@ struct HomeSettingView: View {
         userPreference.colorScheme == UserPreference.ColorScheme.dark.rawValue
     }
     
-    var appVersionNumber: String {
-        let key = "CFBundleShortVersionString"
-        let version = Bundle.main.object(forInfoDictionaryKey: key) as? String ?? "???"
-        return version
-    }
-    
     var documentFolder: URL {
         let fileManager = FileManager.default
         let document = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -111,7 +105,10 @@ struct HomeSettingView: View {
                     
                     // MARK: About
                     VStack(spacing: 5) {
-                        SettingTextRow(label: "Version", detail: appVersionNumber)
+                        SettingTextRow(label: "Version", detail: Bundle.main.appVersion)
+                        Button(action: showOnboardView) {
+                            SettingTextRow(label: "See Welcome Pages", detail: "")
+                        }
                     }
                     .modifier(SettingSectionModifier(header: "ABOUT"))
                 }
@@ -134,6 +131,7 @@ extension HomeSettingView {
         var id: Self { self }
         case importFileList
         case exportFileNaming
+        case onboardView
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
@@ -152,6 +150,11 @@ extension HomeSettingView {
         
         case .exportFileNaming:
             return ModalTextField(viewModel: $textFieldModel)
+                .eraseToAnyView()
+            
+        case .onboardView:
+            let done = { self.sheet = nil }
+            return OnboardView(onDismiss: done)
                 .eraseToAnyView()
         }
     }
@@ -205,6 +208,10 @@ extension HomeSettingView {
         result?.parent?.quickSave()
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         sheet = nil
+    }
+    
+    func showOnboardView() {
+        sheet = .onboardView
     }
 }
 

@@ -13,8 +13,6 @@ struct OnboardPage: Decodable, Hashable {
     let title: String
     let description: String
     let imageName: String
-    let foregroundColor: String
-    let backgroundColor: String
 }
 
 

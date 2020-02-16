@@ -21,3 +21,11 @@ extension Image {
         Image(systemName: enable ? "star.fill" : "star")
     }
 }
+
+
+extension UIImage {
+    
+    static func preload(name: String) {
+        let _ = UIImage(named: name)
+    }
+}

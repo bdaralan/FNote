@@ -24,4 +24,7 @@ struct AppCache {
     
     @UserStoredValue(in: .userDefaults, key: "kAppCache.shouldShowOnboard", defaultValue: true)
     static var shouldShowOnboard: Bool
+    
+    @UserStoredValue(in: .userDefaults, key: "kAppCache.lastKnownVersion", defaultValue: nil)
+    static var lastKnownVersion: String?
 }

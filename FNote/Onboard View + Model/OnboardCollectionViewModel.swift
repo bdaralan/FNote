@@ -46,7 +46,6 @@ extension OnboardCollectionViewModel {
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, item in
             let cell = collectionView.dequeueCell(OnboardCell.self, for: indexPath)
             cell.reload(with: item)
-            cell.backgroundColor = UIColor(hex: item.backgroundColor)
             return cell
         }
     }

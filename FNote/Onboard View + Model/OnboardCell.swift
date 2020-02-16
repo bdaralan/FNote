@@ -18,12 +18,8 @@ class OnboardCell: FNCollectionViewCell<OnboardPage> {
     override func reload(with object: OnboardPage) {
         super.reload(with: object)
         titleLabel.text = object.title
-        titleLabel.textColor = UIColor(hex: object.foregroundColor)
-        
         descriptionLabel.text = object.description
-        descriptionLabel.textColor = titleLabel.textColor
-        
-        imageView.image = UIImage(systemName: "photo")?.applyingSymbolConfiguration(.init(scale: .large))
+        imageView.image = UIImage(named: object.imageName)
     }
     
     override func setupCell() {
@@ -33,19 +29,19 @@ class OnboardCell: FNCollectionViewCell<OnboardPage> {
         titleDescriptor = titleDescriptor.withDesign(.rounded) ?? titleDescriptor
         titleDescriptor = titleDescriptor.withSymbolicTraits(.traitBold) ?? titleDescriptor
         titleLabel.font = UIFont(descriptor: titleDescriptor, size: titleDescriptor.pointSize)
-        titleLabel.textAlignment = .center
-        titleLabel.numberOfLines = 3
-        titleLabel.adjustsFontSizeToFitWidth = true
-        titleLabel.minimumScaleFactor = 0.6
         
         let descriptionFont = UIFont.preferredFont(forTextStyle: .title3)
         var descriptionDescriptor: UIFontDescriptor = descriptionFont.fontDescriptor
         descriptionDescriptor = descriptionDescriptor.withDesign(.rounded) ?? descriptionDescriptor
         descriptionLabel.font = UIFont(descriptor: descriptionDescriptor, size: descriptionDescriptor.pointSize)
-        descriptionLabel.textAlignment = .center
-        descriptionLabel.numberOfLines = 3
-        descriptionLabel.adjustsFontSizeToFitWidth = true
-        descriptionLabel.minimumScaleFactor = 0.6
+        
+        for label in [titleLabel, descriptionLabel] {
+            label.textAlignment = .center
+            label.numberOfLines = 3
+            label.adjustsFontSizeToFitWidth = true
+            label.minimumScaleFactor = 0.6
+            label.textColor = .white
+        }
         
         imageView.contentMode = .scaleAspectFit
     }

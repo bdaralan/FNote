@@ -11,13 +11,12 @@ import SwiftUI
 
 struct OnboardView: View {
     
+    var onDismiss: () -> Void
+    
     @State private var viewModel = OnboardCollectionViewModel()
     @State private var currentPage = 0
     
-    @State private var viewBGColor = Color.clear
-    @State private var hasShownLastPage = false
-    
-    var onDismiss = {}
+    @State private var hasLastPageShown = false
     
     
     var body: some View {
@@ -26,7 +25,7 @@ struct OnboardView: View {
                 .edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 16) {
-                if hasShownLastPage {
+                if hasLastPageShown {
                     Button(action: onDismiss) {
                         Text("Get Started")
                             .font(Font.system(.title, design: .rounded).bold())
@@ -49,9 +48,8 @@ struct OnboardView: View {
                     .padding(.bottom, 16)
             }
         }
-        .overlay(dismissButton, alignment: .topTrailing)
         .overlay(dragHandle.padding(.top, 8), alignment: .top)
-        .background(viewBGColor.edgesIgnoringSafeArea(.all))
+        .background(gradientBackground.edgesIgnoringSafeArea(.all))
         .edgesIgnoringSafeArea(.horizontal)
         .onAppear(perform: setupOnAppear)
     }
@@ -62,13 +60,13 @@ extension OnboardView {
     
     func setupOnAppear() {
         viewModel.onPageChanged = handlePageChanged
+        viewModel.pages.forEach({ UIImage.preload(name: $0.imageName) })
     }
     
     func handlePageChanged(pageIndex: Int, page: OnboardPage) {
-        viewBGColor = Color(UIColor(hex: page.backgroundColor))
         currentPage = pageIndex
         if pageIndex == viewModel.pages.count - 1 {
-            hasShownLastPage = true
+            hasLastPageShown = true
         }
     }
     
@@ -76,31 +74,27 @@ extension OnboardView {
         control.isUserInteractionEnabled = false
         control.currentPageIndicatorTintColor = .black
         control.pageIndicatorTintColor = UIColor.black.withAlphaComponent(0.2)
-        control.transform = .init(scaleX: 1.2, y: 1.2)
     }
 }
 
 
 extension OnboardView {
     
-    var dismissButton: some View {
-        Button(action: onDismiss) {
-            Image(systemName: "xmark.circle.fill")
-                .font(.title)
-                .frame(width: 50, height: 50)
-        }
-        .accentColor(.black)
-        .opacity(hasShownLastPage ? 1 : 0)
-    }
-    
     var dragHandle: some View {
         ModalDragHandle(color: .black, hideOnLandscape: true)
+    }
+    
+    var gradientBackground: some View {
+        let top = Color(UIColor(hex: "FF9414"))
+        let bottom = Color(UIColor(hex: "FF1452"))
+        let gradient = Gradient(colors: [top, bottom])
+        return LinearGradient(gradient: gradient, startPoint: .top, endPoint: .bottom)
     }
 }
 
 
 struct OnboardView_Previews: PreviewProvider {
     static var previews: some View {
-        OnboardView()
+        OnboardView(onDismiss: {})
     }
 }
