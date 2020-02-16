@@ -1,37 +1,37 @@
 [
     {
         "title": "Welcome to FNote",
-        "description": "description",
-        "imageUrl": "",
+        "description": "Language Learner's Companion.\nMake jotting down notes and learning on the go easy.",
+        "imageName": "",
         "foregroundColor": "000000",
-        "backgroundColor": "D8D52B"
+        "backgroundColor": "F0F0C9"
     },
     {
         "title": "Create Note Cards\nwith\nNative & Translation",
-        "description": "description",
-        "imageUrl": "",
-        "foregroundColor": "FFFFFF",
-        "backgroundColor": "EC4E20"
+        "description": "Write down words or phrases,\nset their formalities, and more...",
+        "imageName": "",
+        "foregroundColor": "000000",
+        "backgroundColor": "F0F0C9"
     },
     {
         "title": "Group Note Cards\nby\nCollections",
-        "description": "description",
-        "imageUrl": "",
+        "description": "Collections help separate note cards\nby subjects or categories.",
+        "imageName": "",
         "foregroundColor": "000000",
         "backgroundColor": "F0F0C9"
     },
     {
         "title": "Link Note Cards\ntogether for\nEasy Lookup",
-        "description": "description",
-        "imageUrl": "",
-        "foregroundColor": "FFFFFF",
-        "backgroundColor": "46B1C9"
+        "description": "Links offer a way to connect related note cards across collections.",
+        "imageName": "",
+        "foregroundColor": "000000",
+        "backgroundColor": "F0F0C9"
     },
     {
         "title": "Add Custom Tags\nto\nNote Cards",
-        "description": "description",
-        "imageUrl": "",
+        "description": "Tags provide an extra layer to categorize note cards.",
+        "imageName": "",
         "foregroundColor": "000000",
-        "backgroundColor": "F7CB15"
+        "backgroundColor": "F0F0C9"
     }
 ]

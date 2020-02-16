@@ -24,8 +24,6 @@ class OnboardCell: FNCollectionViewCell<OnboardPage> {
         descriptionLabel.textColor = titleLabel.textColor
         
         imageView.image = UIImage(systemName: "photo")?.applyingSymbolConfiguration(.init(scale: .large))
-        
-        backgroundColor = UIColor(hex: object.backgroundColor)
     }
     
     override func setupCell() {
@@ -40,7 +38,7 @@ class OnboardCell: FNCollectionViewCell<OnboardPage> {
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.minimumScaleFactor = 0.6
         
-        let descriptionFont = UIFont.preferredFont(forTextStyle: .title1)
+        let descriptionFont = UIFont.preferredFont(forTextStyle: .title3)
         var descriptionDescriptor: UIFontDescriptor = descriptionFont.fontDescriptor
         descriptionDescriptor = descriptionDescriptor.withDesign(.rounded) ?? descriptionDescriptor
         descriptionLabel.font = UIFont(descriptor: descriptionDescriptor, size: descriptionDescriptor.pointSize)
