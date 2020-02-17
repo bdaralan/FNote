@@ -16,6 +16,8 @@ struct HomeSettingView: View {
     @State private var sheet: Sheet?
     @State private var textFieldModel = ModalTextFieldModel()
     
+    @State private var onboardViewModel: OnboardCollectionViewModel?
+    
     var useMarkdown: Binding<Bool> {
         .init(
             get: { self.userPreference.useMarkdown },
@@ -106,8 +108,13 @@ struct HomeSettingView: View {
                     // MARK: About
                     VStack(spacing: 5) {
                         SettingTextRow(label: "Version", detail: Bundle.main.appVersion)
+                        
                         Button(action: showOnboardView) {
                             SettingTextRow(label: "See Welcome Pages", detail: "")
+                        }
+                        
+                        Button(action: resetOnboardView) {
+                            SettingTextRow(label: "Reset Welcome Pages", detail: "developer")
                         }
                     }
                     .modifier(SettingSectionModifier(header: "ABOUT"))
@@ -154,7 +161,7 @@ extension HomeSettingView {
             
         case .onboardView:
             let done = { self.sheet = nil }
-            return OnboardView(onDismiss: done)
+            return OnboardView(viewModel: onboardViewModel!, alwaysShowXButton: true, onDismiss: done)
                 .eraseToAnyView()
         }
     }
@@ -211,7 +218,12 @@ extension HomeSettingView {
     }
     
     func showOnboardView() {
+        onboardViewModel = .init()
         sheet = .onboardView
+    }
+    
+    func resetOnboardView() {
+        AppCache.shouldShowOnboard = true
     }
 }
 

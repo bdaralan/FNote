@@ -32,7 +32,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if lastKnownVersion == nil || lastKnownVersion != currentVersion {
             AppCache.lastKnownVersion = currentVersion
             AppCache.shouldShowOnboard = true
-            appState.lockPortraitMode = true
         }
         
         // setup home view
@@ -41,8 +40,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .environmentObject(userPreference)
             .environment(\.managedObjectContext, appState.parentContext)
         
-        let rootViewCV = HostingRootViewController(rootView: homeView)
-        rootViewCV.appState = appState
+        let rootViewCV = UIHostingController(rootView: homeView)
         
         // create window
         let window = UIWindow(windowScene: windowScene)

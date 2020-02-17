@@ -24,6 +24,8 @@ struct HomeView: View {
     @State private var tagCollectionViewModel = TagCollectionViewModel()
     @State private var cardCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     
+    @State private var onboardViewModel: OnboardCollectionViewModel?
+    
     @State private var storeRemoteChangeObserver = NotificationObserver(name: .persistentStoreRemoteChange)
     
     
@@ -95,13 +97,12 @@ extension HomeView {
     
     func showOnboardIfNeeded() {
         guard AppCache.shouldShowOnboard else { return }
-        appState.lockPortraitMode = true
+        onboardViewModel = .init()
         sheet = .onboard
     }
     
     func dismissOnboard() {
         AppCache.shouldShowOnboard = false
-        appState.lockPortraitMode = false
         sheet = nil
     }
 }
@@ -122,7 +123,7 @@ extension HomeView {
                 .eraseToAnyView()
         
         case .onboard:
-            return OnboardView(onDismiss: dismissOnboard)
+            return OnboardView(viewModel: onboardViewModel!, onDismiss: dismissOnboard)
                 .eraseToAnyView()
         }
     }

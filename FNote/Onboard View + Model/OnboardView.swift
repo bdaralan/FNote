@@ -11,64 +11,37 @@ import SwiftUI
 
 struct OnboardView: View {
     
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    @ObservedObject var viewModel: OnboardCollectionViewModel
+    
+    var includeXButton = false
+    
+    var alwaysShowXButton = false
+    
     var onDismiss: () -> Void
+        
+    var isPhoneLandscape: Bool {
+        let isPhone = UIDevice.current.userInterfaceIdiom == .phone
+        return isPhone && verticalSizeClass == .compact
+    }
     
-    @State private var viewModel = OnboardCollectionViewModel()
-    @State private var currentPage = 0
-    
-    @State private var hasLastPageShown = false
+    var isPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
     
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            CollectionViewWrapper(viewModel: _viewModel.wrappedValue)
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack(spacing: 16) {
-                if hasLastPageShown {
-                    Button(action: onDismiss) {
-                        Text("Get Started")
-                            .font(Font.system(.title, design: .rounded).bold())
-                            .padding(.vertical)
-                            .padding(.horizontal, 32)
-                            .background(Color.white.opacity(0.7))
-                            .foregroundColor(.black)
-                            .cornerRadius(100)
-                    }
-                }
-             
-                PageControlWrapper(
-                    currentPage: $currentPage,
-                    pageCount: viewModel.pages.count,
-                    configure: setupPageControl
-                )
-                    .padding(.horizontal, 24)
-                    .background(Color.white.opacity(0.7))
-                    .cornerRadius(100)
-                    .padding(.bottom, 16)
-            }
-        }
-        .overlay(dragHandle.padding(.top, 8), alignment: .top)
-        .background(gradientBackground.edgesIgnoringSafeArea(.all))
-        .edgesIgnoringSafeArea(.horizontal)
-        .onAppear(perform: setupOnAppear)
+        OnboardViewControllerWrapper(viewModel: viewModel)
+            .overlay(pageControl, alignment: isPhoneLandscape ? .bottomTrailing : .bottom)
+            .overlay(dismissXButton, alignment: .topTrailing)
+            .overlay(dragHandle.padding(.top, 8), alignment: .top)
+            .background(gradientBackground.edgesIgnoringSafeArea(.all))
     }
 }
 
 
 extension OnboardView {
-    
-    func setupOnAppear() {
-        viewModel.onPageChanged = handlePageChanged
-        viewModel.pages.forEach({ UIImage.preload(name: $0.imageName) })
-    }
-    
-    func handlePageChanged(pageIndex: Int, page: OnboardPage) {
-        currentPage = pageIndex
-        if pageIndex == viewModel.pages.count - 1 {
-            hasLastPageShown = true
-        }
-    }
     
     func setupPageControl(_ control: UIPageControl) {
         control.isUserInteractionEnabled = false
@@ -80,6 +53,44 @@ extension OnboardView {
 
 extension OnboardView {
     
+    var pageControl: some View {
+        VStack(alignment: isPhoneLandscape ? .trailing : .center, spacing: 16) {
+            if viewModel.hasLastPageShown {
+                Button(action: onDismiss) {
+                    Text("Get Started")
+                        .font(Font.system(isPhoneLandscape ? .body : .title, design: .rounded).bold())
+                        .padding(.vertical)
+                        .padding(.horizontal, 32)
+                        .background(Color.white.opacity(0.7))
+                        .foregroundColor(.black)
+                        .cornerRadius(100)
+                }
+                .transition(AnyTransition.scale.animation(.spring()))
+            }
+            
+            PageControlWrapper(
+                currentPage: $viewModel.currentPage,
+                pageCount: viewModel.pages.count,
+                configure: setupPageControl
+            )
+                .padding(.horizontal, 24)
+                .background(Color.white.opacity(0.7))
+                .cornerRadius(100)
+                .padding(.bottom, isPad ? 16 : 8)
+        }
+        .padding(.trailing, isPhoneLandscape ? 8 : 0)
+    }
+    
+    var dismissXButton: some View {
+        Button(action: onDismiss) {
+            Image(systemName: "xmark.circle.fill")
+                .font(.title)
+                .frame(width: 50, height: 50)
+        }
+        .accentColor(.black)
+        .opacity(viewModel.hasLastPageShown && includeXButton || alwaysShowXButton ? 1 : 0)
+    }
+    
     var dragHandle: some View {
         ModalDragHandle(color: .black, hideOnLandscape: true)
     }
@@ -89,12 +100,13 @@ extension OnboardView {
         let bottom = Color(UIColor(hex: "FF1452"))
         let gradient = Gradient(colors: [top, bottom])
         return LinearGradient(gradient: gradient, startPoint: .top, endPoint: .bottom)
+            .background(bottom)
     }
 }
 
 
 struct OnboardView_Previews: PreviewProvider {
     static var previews: some View {
-        OnboardView(onDismiss: {})
+        OnboardView(viewModel: .init(), onDismiss: {})
     }
 }

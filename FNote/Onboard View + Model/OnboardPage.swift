@@ -11,7 +11,9 @@ import Foundation
 
 struct OnboardPage: Decodable, Hashable {
     let title: String
+    let titleCompact: String?
     let description: String
+    let descriptionCompact: String?
     let imageName: String
 }
 

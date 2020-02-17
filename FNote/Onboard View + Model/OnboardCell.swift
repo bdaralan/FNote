@@ -17,9 +17,13 @@ class OnboardCell: FNCollectionViewCell<OnboardPage> {
     
     override func reload(with object: OnboardPage) {
         super.reload(with: object)
-        titleLabel.text = object.title
-        descriptionLabel.text = object.description
-        imageView.image = UIImage(named: object.imageName)
+        if traitCollection.verticalSizeClass == .compact {
+            titleLabel.text = object.titleCompact ?? object.title
+            descriptionLabel.text = object.descriptionCompact ?? object.description
+        } else {
+            titleLabel.text = object.title
+            descriptionLabel.text = object.description
+        }
     }
     
     override func setupCell() {
@@ -53,17 +57,17 @@ class OnboardCell: FNCollectionViewCell<OnboardPage> {
         NSLayoutConstraint.activateConstraints(
             imageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, constant: -40),
-            imageView.heightAnchor.constraint(equalToConstant: 200),
+            imageView.widthAnchor.constraint(lessThanOrEqualToConstant: 200),
+            imageView.heightAnchor.constraint(lessThanOrEqualToConstant: 200),
     
             titleLabel.bottomAnchor.constraint(equalTo: imageView.topAnchor, constant: -16),
             titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            titleLabel.widthAnchor.constraint(equalTo: imageView.widthAnchor),
+            titleLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, constant: -40),
             titleLabel.topAnchor.constraint(greaterThanOrEqualTo: contentView.topAnchor, constant: 20),
             
             descriptionLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 16),
             descriptionLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            descriptionLabel.widthAnchor.constraint(equalTo: imageView.widthAnchor)
+            descriptionLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, constant: -40)
         )
     }
 }

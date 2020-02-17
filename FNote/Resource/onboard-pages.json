@@ -6,22 +6,27 @@
     },
     {
         "title": "Create Note Cards\nwith\nNative & Translation",
+        "titleCompact": "Create Note Cards\nwith Native & Translation",
         "description": "Write down words or phrases,\nset their formalities, and more.",
         "imageName": "onboard-page-note-card"
     },
     {
         "title": "Group Note Cards\nby\nCollections",
+        "titleCompact": "Group Note Cards\nby Collections",
         "description": "Collections help separate note cards\nby subjects or categories.",
         "imageName": "onboard-page-collection"
     },
     {
-        "title": "Link Note Cards\ntogether for\nEasy Lookup",
-        "description": "Links offer a way to connect related note cards across collections.",
-        "imageName": "onboard-page-link"
-    },
-    {
         "title": "Add Custom Tags\nto\nNote Cards",
+        "titleCompact": "Add Custom Tags\nto Note Cards",
         "description": "Tags provide an extra layer to categorize note cards.",
         "imageName": "onboard-page-tag"
+    },
+    {
+        "title": "Link Note Cards\ntogether for\nEasy Lookup",
+        "titleCompact": "Link Note Cards\ntogether for Easy Lookup",
+        "description": "Links offer a way to connect related note cards across collections.",
+        "descriptionCompact": "Links offer a way to connect related note cards\nacross collections.",
+        "imageName": "onboard-page-link"
     }
 ]
