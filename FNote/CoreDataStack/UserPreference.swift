@@ -15,9 +15,6 @@ class UserPreference: ObservableObject {
     
     
     // MARK: iCloud
-    
-    @UserStoredValue(in: .iCloud, key: "kUserPreference.colorScheme", defaultValue: ColorScheme.system.rawValue)
-    var colorScheme: Int
         
     @UserStoredValue(in: .iCloud, key: "kUserPreference.useMarkdown", defaultValue: true)
     var useMarkdown: Bool
@@ -27,6 +24,9 @@ class UserPreference: ObservableObject {
     
     
     // MARK: User Defaults
+    
+    @UserStoredValue(in: .userDefaults, key: "kUserPreference.colorScheme", defaultValue: ColorScheme.system.rawValue)
+    var colorScheme: Int
     
     @UserStoredValue(in: .userDefaults, key: "kUserPreference.noteCardSortOptionAscending", defaultValue: true)
     var noteCardSortOptionAscending: Bool
