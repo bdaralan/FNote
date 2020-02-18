@@ -113,9 +113,9 @@ struct HomeSettingView: View {
                             SettingTextRow(label: "See Welcome Pages", detail: "")
                         }
                         
-                        Button(action: resetOnboardView) {
-                            SettingTextRow(label: "Reset Welcome Pages", detail: "developer")
-                        }
+//                        Button(action: resetOnboardView) {
+//                            SettingTextRow(label: "Reset Welcome Pages", detail: "developer")
+//                        }
                     }
                     .modifier(SettingSectionModifier(header: "ABOUT"))
                 }

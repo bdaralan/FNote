@@ -65,6 +65,10 @@ class NoteCardFormModel: ObservableObject {
             && !native.trimmed().isEmpty
     }
     
+    var presentingTitle: String {
+        isSelectingTag || isSelectingRelationship || isSelectingCollection ? "Card" : navigationTitle
+    }
+    
     var nativePlaceholder = "안녕 (native)"
     var translationPlaceholder = "Hi (translation)"
     var commitTitle = "Commit"

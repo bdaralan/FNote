@@ -174,7 +174,7 @@ struct NoteCardForm: View {
                 .padding(.horizontal)
             }
             .navigationBarItems(leading: cancelNavItem, trailing: commitNavItem)
-            .navigationBarTitle(Text(viewModel.navigationTitle), displayMode: .inline)
+            .navigationBarTitle(Text(viewModel.presentingTitle), displayMode: .inline)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, onDismiss: handleSheetDismissed, content: presentationSheet)
@@ -294,6 +294,7 @@ extension NoteCardForm {
         )
         
         let destinationView = NoteCardFormRelationshipSelectionView(viewModel: relationshipViewModel)
+            .navigationBarTitle(viewModel.relationshipSelectedCollection?.name ?? "???")
             .navigationBarItems(trailing: chooseCollectionNavItem)
             .sheet(isPresented: $showChooseRelationshipCollection, content: { chooseCollectionView })
         
