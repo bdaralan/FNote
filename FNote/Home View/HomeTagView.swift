@@ -16,6 +16,7 @@ struct HomeTagView: View {
     var viewModel: TagCollectionViewModel
     
     @State private var sheet: Sheet?
+    @State private var selectedTagName = ""
     
     @State private var modalTextFieldModel = ModalTextFieldModel()
     let noteCardCollectionModel = NoteCardCollectionViewModel()
@@ -60,7 +61,7 @@ extension HomeTagView {
             let doneNavItem = Button(action: action, label: label)
             return NavigationView {
                 CollectionViewWrapper(viewModel: noteCardCollectionModel)
-                    .navigationBarTitle("Cards", displayMode: .inline)
+                    .navigationBarTitle(Text(selectedTagName), displayMode: .inline)
                     .navigationBarItems(trailing: doneNavItem)
             }
             .navigationViewStyle(StackNavigationViewStyle())
@@ -191,6 +192,7 @@ extension HomeTagView {
             UIPasteboard.general.string = noteCard.native
         }
         
+        selectedTagName = tag.name
         sheet = .noteCard
     }
     
