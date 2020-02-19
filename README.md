@@ -10,12 +10,15 @@ Available on [App Store](https://apps.apple.com/app/id1455029307).
 
 - Written in Swift
 - Main UI layouts: *Collection View* and *Collection View Compositional Layout*
-- Main frameworks: **SwiftUI**, **UIKit**, **Core Data**
+- Frameworks: **SwiftUI**, **UIKit**, **Core Data**, **Combine**
+- Desgin pattern: **MVVM**, **MVC**
 - Implement Core Data & CloudKit auto sync
 - Integrate [Down](https://github.com/iwasrobbed/Down), a public Markdown rendering library for Swift
 - Support Dynamic Type which adapts to user's font-scale preference.
 
 ## Preview
+
+![phone-onboard-light](previews/phone-pad-onboard.png)
 
 ### iPhone Light Mode
 
