@@ -17,6 +17,16 @@ extension UIView {
             addSubview(view)
         }
     }
+    
+    func applyCardStyle() {
+        backgroundColor = .noteCardBackground
+        layer.masksToBounds = false
+        layer.cornerRadius = 15
+        layer.shadowColor = UIColor.label.cgColor
+        layer.shadowOpacity = 0.17
+        layer.shadowRadius = 1
+        layer.shadowOffset = .init(width: -1, height: 1)
+    }
 }
 
 

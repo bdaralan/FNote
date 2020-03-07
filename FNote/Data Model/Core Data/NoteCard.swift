@@ -233,7 +233,7 @@ extension NoteCard {
         
         var uiColor: UIColor {
             switch self {
-            case .unspecified: return UIColor(named: "note-card-divider")!
+            case .unspecified: return .noteCardDivider
             case .informal: return .systemRed
             case .neutral: return .systemOrange
             case .formal: return .systemGreen

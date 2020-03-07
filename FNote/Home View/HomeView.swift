@@ -19,6 +19,7 @@ struct HomeView: View {
     @State private var sheet: Sheet?
     @State private var modalTextFieldModel = ModalTextFieldModel()
     
+    @State private var publicCollectionViewModel = PublicCollectionViewModel.sample
     @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
     @State private var collectionCollectionViewModel = NoteCardCollectionCollectionViewModel()
     @State private var tagCollectionViewModel = TagCollectionViewModel()
@@ -59,6 +60,10 @@ struct HomeView: View {
             HomeTagView(viewModel: tagCollectionViewModel)
                 .tabItem(Tab.tag.tabItem)
                 .tag(Tab.tag)
+            
+            HomeCommunityView(viewModel: publicCollectionViewModel)
+                .tabItem(Tab.community.tabItem)
+                .tag(Tab.community)
             
             // MARK: Setting Tab
             HomeSettingView(userPreference: .shared)
@@ -179,7 +184,7 @@ extension HomeView {
         case .tag:
             tagCollectionViewModel.updateSnapshot(animated: true)
             
-        case .setting:
+        case .setting, .community:
             break
             
         case .card:
@@ -245,6 +250,7 @@ extension HomeView {
         case collection
         case tag
         case setting
+        case community
         
         
         var title: String {
@@ -253,6 +259,7 @@ extension HomeView {
             case .collection: return "Collections"
             case .tag: return "Tags"
             case .setting: return "Settings"
+            case .community: return "Communities"
             }
         }
         
@@ -262,6 +269,7 @@ extension HomeView {
             case .collection: return "rectangle.stack.fill"
             case .tag: return "tag.fill"
             case .setting: return "gear"
+            case .community: return "person.3.fill"
             }
         }
         

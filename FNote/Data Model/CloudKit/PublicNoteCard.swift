@@ -1,5 +1,5 @@
 //
-//  PublishNoteCard.swift
+//  PublicNoteCard.swift
 //  FNote
 //
 //  Created by Dara Beng on 2/20/20.
@@ -9,13 +9,13 @@
 import CloudKit
 
 
-struct PublishNoteCard {
+struct PublicNoteCard {
     
     /// The CKRecord ID of the card's collection.
-    let publishedCollectionID: String
+    let collectionID: String
     
     /// The CKRecord ID.
-    let publishedID: String
+    let cardID: String
     
     var native: String
     var translation: String
@@ -29,17 +29,17 @@ struct PublishNoteCard {
 }
 
 
-extension PublishNoteCard: DatabaseRecord {
+extension PublicNoteCard: CloudKitRecord {
     
-    static let recordType = "PublishedNoteCard"
+    static let recordType = "PublicNoteCard"
     
     var recordName: String {
-        publishedID
+        cardID
     }
     
     enum RecordKeys: CodingKey {
-        case publishedCollectionID
-        case publishedID
+        case collectionID
+        case cardID
         case native
         case translation
         case favorited
@@ -54,9 +54,9 @@ extension PublishNoteCard: DatabaseRecord {
         let recordID = CKRecord.ID(recordName: recordName)
         let record = CKRecord(recordType: Self.recordType, recordID: recordID)
         
-        let keyedRecord = KeyedRecord<RecordKeys>(record: record)
-        keyedRecord[.publishedCollectionID] = publishedCollectionID
-        keyedRecord[.publishedID] = publishedID
+        let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
+        keyedRecord[.collectionID] = collectionID
+        keyedRecord[.cardID] = cardID
         keyedRecord[.native] = native
         keyedRecord[.translation] = translation
         keyedRecord[.favorited] = favorited
@@ -65,8 +65,8 @@ extension PublishNoteCard: DatabaseRecord {
         keyedRecord[.tags] = tags.joined(separator: ",")
         keyedRecord[.relationships] = relationships.isEmpty ? nil : relationships
         
-        let collectionID = CKRecord.ID(recordName: publishedCollectionID)
-        let collectionRef = CKRecord.Reference(recordID: collectionID, action: .deleteSelf)
+        let collectionRecID = CKRecord.ID(recordName: collectionID)
+        let collectionRef = CKRecord.Reference(recordID: collectionRecID, action: .deleteSelf)
         keyedRecord[.collectionRef] = collectionRef
         
         return record
@@ -74,12 +74,12 @@ extension PublishNoteCard: DatabaseRecord {
 }
 
 
-extension PublishNoteCard {
+extension PublicNoteCard {
     
     init(record: CKRecord) {
-        let keyedRecord = KeyedRecord<RecordKeys>(record: record)
-        publishedCollectionID = keyedRecord[.publishedCollectionID] as! String
-        publishedID = keyedRecord[.publishedID] as! String
+        let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
+        collectionID = keyedRecord[.collectionID] as! String
+        cardID = keyedRecord[.cardID] as! String
         
         native = keyedRecord[.native] as? String ?? ""
         translation = keyedRecord[.translation] as? String ?? ""

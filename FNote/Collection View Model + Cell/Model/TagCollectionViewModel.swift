@@ -108,7 +108,7 @@ extension TagCollectionViewModel {
         collectionView.collectionViewLayout = createCompositionalLayout()
         collectionView.delegate = self
         collectionView.registerCell(TagCell.self)
-        collectionView.registerHeader(LabelCollectionHeader.self)
+        collectionView.registerHeader(CollectionHeaderLabel.self)
         collectionView.alwaysBounceVertical = true
         
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, tag in

@@ -67,6 +67,14 @@ class NoteCardCell: ManagedObjectCollectionViewCell<NoteCard> {
         tagButton.tintColor = object.tags.isEmpty ? .quaternaryLabel : .secondaryLabel
     }
     
+    func reload(with item: PublicNoteCard) {
+        translationLabel.text = item.translation
+        nativeLabel.text = item.native
+        
+        let formality = NoteCard.Formality(rawValue: Int64(item.formality)) ?? .unspecified
+        setDividerColor(formality.uiColor)
+    }
+    
     func setCellStyle(_ style: Style) {
         let isRegularInactive = regularStyleConstraints.map({ $0.isActive }).contains(false)
         let isShortInactive = shortStyleConstraints.map({ $0.isActive }).contains(false)
@@ -137,6 +145,11 @@ class NoteCardCell: ManagedObjectCollectionViewCell<NoteCard> {
         onQuickButtonTapped?(type, noteCard)
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        applyCardStyle()
+    }
+    
     override func initCell() {
         super.initCell()
         setCellStyle(style)
@@ -145,14 +158,6 @@ class NoteCardCell: ManagedObjectCollectionViewCell<NoteCard> {
     
     override func setupCell() {
         super.setupCell()
-        
-        backgroundColor = .noteCardBackground
-        layer.masksToBounds = false
-        layer.cornerRadius = 15
-        layer.shadowColor = UIColor.label.cgColor
-        layer.shadowOpacity = 0.17
-        layer.shadowRadius = 1
-        layer.shadowOffset = .init(width: -1, height: 1)
         
         nativeLabel.font = .preferredFont(forTextStyle: .title3)
         nativeLabel.adjustsFontForContentSizeCategory = true

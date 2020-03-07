@@ -28,6 +28,8 @@ extension UIColor {
     static let offWhite = UIColor(white: 0.8, alpha: 1)
     
     static let noteCardBackground = UIColor(named: "note-card-background")
+    
+    static let noteCardDivider = UIColor(named: "note-card-divider")!
 }
 
 

@@ -1,5 +1,5 @@
 //
-//  PublishCollection.swift
+//  PublicCollection.swift
 //  FNote
 //
 //  Created by Dara Beng on 2/20/20.
@@ -9,19 +9,13 @@
 import CloudKit
 
 
-struct PublishCollection {
+struct PublicCollection {
     
     /// The CKRecord ID.
-    let publishedID: String
-    
-    /// The published date.
-    let publishedDate: Date
+    let collectionID: String
     
     /// The author's userID.
     let authorID: String
-    
-    /// The author name.
-    let author: String
     
     /// The name of the published collection.
     let name: String
@@ -38,59 +32,59 @@ struct PublishCollection {
     /// The tags describing the collection.
     /// - Note: A comma separated values
     let tags: [String]
+    
+    /// The number of cards.
+    let cardsCount: Int
 }
 
 
 // MARK: - Database Record
 
-extension PublishCollection: DatabaseRecord {
+extension PublicCollection: CloudKitRecord {
     
-    static let recordType = "PublishedCollection"
+    static let recordType = "PublicCollection"
     
     var recordName: String {
-        publishedID
+        collectionID
     }
     
     enum RecordKeys: CodingKey {
-        case publishedID
-        case publishedDate // ISO 8061 String Format
+        case collectionID
         case authorID
-        case author
         case name
         case description
         case primaryLanguage
         case secondaryLanguage
         case tags
+        case cardsCount
     }
     
     func createCKRecord() -> CKRecord {
         let recordID = CKRecord.ID(recordName: recordName)
         let record = CKRecord(recordType: Self.recordType, recordID: recordID)
         
-        let keyedRecord = KeyedRecord<RecordKeys>(record: record)
-        keyedRecord[.publishedID] = publishedID
-        keyedRecord[.publishedDate] = publishedDate.databaseDateString
+        let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
+        keyedRecord[.collectionID] = collectionID
         keyedRecord[.authorID] = authorID
-        keyedRecord[.author] = author
         keyedRecord[.name] = name
         keyedRecord[.description] = description
         keyedRecord[.primaryLanguage] = primaryLanguage
         keyedRecord[.secondaryLanguage] = secondaryLanguage
-        keyedRecord[.tags] = tags.sorted().joined(separator: ",")
+        keyedRecord[.tags] = tags.isEmpty ? nil : tags
+        keyedRecord[.cardsCount] = cardsCount
         
         return record
     }
     
     init(record: CKRecord) {
-        let keyedRecord = KeyedRecord<RecordKeys>(record: record)
-        publishedID = keyedRecord[.publishedID] as! String
-        publishedDate = Date.databaseDate(from: keyedRecord[.publishedDate] as! String)!
+        let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
+        collectionID = keyedRecord[.collectionID] as! String
         authorID = keyedRecord[.authorID] as! String
-        author = keyedRecord[.author] as! String
         name = keyedRecord[.name] as! String
         description = keyedRecord[.description] as! String
         primaryLanguage = keyedRecord[.primaryLanguage] as! String
         secondaryLanguage = keyedRecord[.secondaryLanguage] as! String
-        tags = (keyedRecord[.tags] as! String).components(separatedBy: ",")
+        tags = keyedRecord[.tags] as? [String] ?? []
+        cardsCount = keyedRecord[.cardsCount] as! Int
     }
 }
