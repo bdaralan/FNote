@@ -25,8 +25,11 @@ class PublicCollectionViewModel: NSObject, CollectionViewCompositionalDataSource
 extension PublicCollectionViewModel {
 
     func updateSection(type: PublishSectionType, with section: PublishSection) {
-        guard let index = sections.firstIndex(where: { $0.type == type }) else { return }
-        sections[index] = section
+        if let index = sections.firstIndex(where: { $0.type == type }) {
+            sections[index] = section
+        } else {
+            sections.append(section)
+        }
     }
 }
 
@@ -86,22 +89,27 @@ extension PublicCollectionViewModel {
     func reloadUsername(for cell: PublicCollectionCell, userID: String) {
         guard !userID.isEmpty else { return }
         
-        if let userRecord = PublicUserDownloader.cache[userID] {
-            cell.setAuthor(name: userRecord["username"] as! String)
+        let recordManager = PublicRecordManager.shared
+        let usernameKey = PublicUser.RecordKeys.username.stringValue
+        
+        // check cache
+        if let userRecord = recordManager.cachedRecord(forKey: userID) {
+            cell.setAuthor(name: userRecord[usernameKey] as! String)
             return
         }
         
-        let userDownloader = PublicUserDownloader()
-        userDownloader.download(userIDs: [userID]) { result in
-            switch result {
-            case .success(let records):
-                let record = records[0]
-                PublicUserDownloader.cache[userID] = record
-                guard cell.object?.authorID == userID else { return }
-                DispatchQueue.main.async {
-                    cell.setAuthor(name: record["username"] as! String)
-                }
-            case .failure(_): break
+        // query user record and don't care about error
+        recordManager.queryUsers(withIDs: [userID]) { result in
+            guard case .success(let records) = result, let record = records.first else { return }
+            
+            // cache queried record
+            recordManager.cacheRecords(records, usingKey: PublicUser.RecordKeys.userID)
+            
+            // update cell if still valid
+            guard cell.object?.authorID == userID else { return }
+            guard let username = record[usernameKey] as? String else { return }
+            DispatchQueue.main.async {
+                cell.setAuthor(name: username)
             }
         }
     }
@@ -203,11 +211,11 @@ extension PublicCollectionViewModel: UICollectionViewDelegate {
             guard let collection = dataSource.itemIdentifier(for: indexPath)?.object as? PublicCollection else { return }
             print(collection.cardsCount)
             
-            let collectionDownloader = PublicCollectionDownloader()
-            collectionDownloader.downloadCards(collectionID: collection.collectionID) { (result) in
+            let recordManager = PublicRecordManager.shared
+            recordManager.queryCards(withCollectionID: collection.collectionID) { result in
                 switch result {
                 case .success((let records)):
-                    records.forEach({ print($0.keyedRecord(keys: PublicNoteCard.RecordKeys.self)[.native] as Any) })
+                    records.forEach({ print($0.keyedRecord(keys: PublicNoteCard.RecordKeys.self)[.translation] as Any) })
                 default:
                     print("failed to download cards")
                 }
@@ -270,17 +278,9 @@ extension PublicCollectionViewModel {
 //                .init(object: PublicCollection(collectionID: "04", authorID: "", name: "Japanese 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "JPN", secondaryLanguage: "ENG", tags: ["Beginner", "Pro", "Noob"], cardsCount: 92))
 //            ]),
             
-            .init(type: .recentCollection, title: "Recent Collections", items: [
-                .init(object: PublicCollection(collectionID: "01", authorID: "", name: "----", description: "----", primaryLanguage: "---", secondaryLanguage: "---", tags: ["---", "---", "---"], cardsCount: 0)),
-                .init(object: PublicCollection(collectionID: "02", authorID: "", name: "----", description: "----", primaryLanguage: "---", secondaryLanguage: "---", tags: ["---", "---", "---"], cardsCount: 0))
-            ]),
+            .init(type: .recentCollection, title: "Recent Collections", items: []),
             
-            .init(type: .randomCard, title: "Random Cards", items: [
-                .init(object: PublicNoteCard(collectionID: "none", cardID: "09", native: "native", translation: "translation", favorited: true, formality: 0, note: "some note", tags: ["N", "T"], relationships: [""])),
-                .init(object: PublicNoteCard(collectionID: "none", cardID: "10", native: "native", translation: "translation", favorited: true, formality: 0, note: "some note", tags: ["N", "T"], relationships: [""])),
-                .init(object: PublicNoteCard(collectionID: "none", cardID: "11", native: "native", translation: "translation", favorited: true, formality: 0, note: "some note", tags: ["N", "T"], relationships: [""])),
-                .init(object: PublicNoteCard(collectionID: "none", cardID: "12", native: "native", translation: "translation", favorited: true, formality: 0, note: "some note", tags: ["N", "T"], relationships: [""]))
-            ]),
+            .init(type: .randomCard, title: "Random Cards", items: []),
         ]
         return model
     }()
