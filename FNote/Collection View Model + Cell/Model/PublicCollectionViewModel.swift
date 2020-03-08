@@ -11,25 +11,28 @@ import UIKit
 
 class PublicCollectionViewModel: NSObject, CollectionViewCompositionalDataSource {
     
-    typealias DataSourceSection = PublishSection
-    typealias DataSourceItem = PublishSectionItem
+    typealias DataSourceSection = PublicSection
+    typealias DataSourceItem = PublicSectionItem
     
     var dataSource: DiffableDataSource!
     
-    var sections: [PublishSection] = []
+    var sections: [PublicSection] = []
     
     var isHorizontallyCompact = true
+    
+    var onSectionScrolled: ((PublicSectionType, CGPoint) -> Void)?
 }
 
 
 extension PublicCollectionViewModel {
 
-    func updateSection(type: PublishSectionType, with section: PublishSection) {
-        if let index = sections.firstIndex(where: { $0.type == type }) {
+    func updateSection(with section: PublicSection) {
+        if let index = sections.firstIndex(where: { $0.type == section.type }) {
             sections[index] = section
         } else {
             sections.append(section)
         }
+        sections.sort(by: { $0.type.displayOrder < $1.type.displayOrder })
     }
 }
 
@@ -62,14 +65,14 @@ extension PublicCollectionViewModel {
         
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, item in
             switch self.sections[indexPath.section].type {
-            case .featuredCollection, .recentCollection:
+            case .randomCollection, .recentCollection:
                 let cell = collectionView.dequeueCell(PublicCollectionCell.self, for: indexPath)
                 let collection = item.object as! PublicCollection
                 cell.reload(with: collection)
                 self.reloadUsername(for: cell, userID: collection.authorID)
                 return cell
                 
-            case .randomCard:
+            case .recentCard:
                 let cell = collectionView.dequeueCell(NoteCardCell.self, for: indexPath)
                 let publishCard = item.object as! PublicNoteCard
                 cell.reload(with: publishCard)
@@ -117,21 +120,38 @@ extension PublicCollectionViewModel {
     func updateSnapshot(animated: Bool, completion: (() -> Void)?) {
         var snapshot = Snapshot()
         snapshot.appendSections(sections)
-        
         for section in sections {
             snapshot.appendItems(section.items, toSection: section)
         }
-        
         dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
     }
     
+    private func handleLayoutSectionScrolled(sectionType: PublicSectionType, offset: CGPoint) {
+        onSectionScrolled?(sectionType, offset)
+    }
+}
+
+
+// MARK: - Create Layout
+
+extension PublicCollectionViewModel {
+    
     private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { section, environment in
-            switch self.sections[section].type {
-            case .featuredCollection: return self.createFeaturedCollectionLayoutSection()
-            case .recentCollection: return self.createRecentCollectionLayoutSection()
-            case .randomCard: return self.createRandomCardLayoutSection()
+            let sectionType = self.sections[section].type
+            let layoutSection: NSCollectionLayoutSection
+            
+            switch sectionType {
+            case .randomCollection: layoutSection = self.createRandomCollectionLayoutSection()
+            case .recentCollection: layoutSection = self.createRecentCollectionLayoutSection()
+            case .recentCard: layoutSection = self.createRecentCardLayoutSection()
             }
+            
+            layoutSection.visibleItemsInvalidationHandler = { visibleItems, offset, environment in
+                self.handleLayoutSectionScrolled(sectionType: sectionType, offset: offset)
+            }
+            
+            return layoutSection
         }
         
         let configuration = UICollectionViewCompositionalLayoutConfiguration()
@@ -142,7 +162,7 @@ extension PublicCollectionViewModel {
         return layout
     }
     
-    private func createFeaturedCollectionLayoutSection() -> NSCollectionLayoutSection {
+    private func createRandomCollectionLayoutSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
@@ -176,7 +196,7 @@ extension PublicCollectionViewModel {
         return section
     }
     
-    private func createRandomCardLayoutSection() -> NSCollectionLayoutSection {
+    private func createRecentCardLayoutSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
@@ -203,11 +223,13 @@ extension PublicCollectionViewModel {
 }
 
 
+// MARK: - Delegate
+
 extension PublicCollectionViewModel: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch sections[indexPath.section].type {
-        case .featuredCollection, .recentCollection:
+        case .randomCollection, .recentCollection:
             guard let collection = dataSource.itemIdentifier(for: indexPath)?.object as? PublicCollection else { return }
             print(collection.cardsCount)
             
@@ -221,7 +243,59 @@ extension PublicCollectionViewModel: UICollectionViewDelegate {
                 }
             }
         
-        case .randomCard: break
+        case .recentCard: break
+        }
+    }
+}
+
+
+// MARK: - Fetch Method
+
+extension PublicCollectionViewModel {
+    
+    func fetchRecentCollections(completedWithError: ((Error?) -> Void)?) {
+        PublicRecordManager.shared.queryRecentCollections { result in
+            switch result {
+            case .success(let records):
+                let collections = records.map({ PublicCollection(record: $0) })
+                let collectionItems = collections.map({ PublicSectionItem(object: $0) })
+                
+                let section = PublicSection(type: .recentCollection, title: "Recent Collection", items: collectionItems)
+                self.updateSection(with: section)
+                DispatchQueue.main.async {
+                    self.updateSnapshot(animated: false, completion: nil)
+                    completedWithError?(nil)
+                }
+            
+            case .failure(let error):
+                print(error)
+                DispatchQueue.main.async {
+                    completedWithError?(error)
+                }
+            }
+        }
+    }
+    
+    func fetchRecentNoteCards(completedWithError: ((Error?) -> Void)?) {
+        PublicRecordManager.shared.queryRecentCards { result in
+            switch result {
+            case .success(let records):
+                let cards = records.map({ PublicNoteCard(record: $0) })
+                let cardItems = cards.map({ PublicSectionItem(object: $0) })
+                
+                let section = PublicSection(type: .recentCard, title: "Recent Note Cards", items: cardItems)
+                self.updateSection(with: section)
+                DispatchQueue.main.async {
+                    self.updateSnapshot(animated: false, completion: nil)
+                    completedWithError?(nil)
+                }
+            
+            case .failure(let error):
+                print(error)
+                DispatchQueue.main.async {
+                    completedWithError?(error)
+                }
+            }
         }
     }
 }
@@ -229,23 +303,23 @@ extension PublicCollectionViewModel: UICollectionViewDelegate {
 
 // MARK: - Section
 
-struct PublishSection: Hashable {
+struct PublicSection: Hashable {
     
-    let type: PublishSectionType
+    let type: PublicSectionType
     
     let title: String
     
-    var items: [PublishSectionItem]
+    var items: [PublicSectionItem]
 }
 
 
 // MARK: - Section Item
 
-struct PublishSectionItem: Hashable {
+struct PublicSectionItem: Hashable {
     
     let object: CloudKitRecord
     
-    static func == (lhs: PublishSectionItem, rhs: PublishSectionItem) -> Bool {
+    static func == (lhs: PublicSectionItem, rhs: PublicSectionItem) -> Bool {
         lhs.object.recordName == rhs.object.recordName
     }
     
@@ -257,10 +331,18 @@ struct PublishSectionItem: Hashable {
 
 // MARK: - Section Type
 
-enum PublishSectionType {
-    case featuredCollection
+enum PublicSectionType {
     case recentCollection
-    case randomCard
+    case randomCollection
+    case recentCard
+    
+    var displayOrder: Int {
+        switch self {
+        case .recentCollection: return 0
+        case .randomCollection: return 1
+        case .recentCard: return 2
+        }
+    }
 }
 
 
@@ -271,16 +353,16 @@ extension PublicCollectionViewModel {
     static let sample: PublicCollectionViewModel = {
         let model = PublicCollectionViewModel()
         model.sections = [
-//            .init(type: .featuredCollection, title: "Featured Collections", items: [
-//                .init(object: PublicCollection(collectionID: "01", authorID: "", name: "Korean 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "KOR", secondaryLanguage: "ENG", tags: ["Food", "Greeting", "Travel"], cardsCount: 49)),
-//                .init(object: PublicCollection(collectionID: "02", authorID: "", name: "Japanese 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "JPN", secondaryLanguage: "ENG", tags: ["Beginner", "Pro", "Noob"], cardsCount: 92)),
-//                .init(object: PublicCollection(collectionID: "03", authorID: "", name: "Korean 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "KOR", secondaryLanguage: "ENG", tags: ["Food", "Greeting", "Travel"], cardsCount: 49)),
-//                .init(object: PublicCollection(collectionID: "04", authorID: "", name: "Japanese 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "JPN", secondaryLanguage: "ENG", tags: ["Beginner", "Pro", "Noob"], cardsCount: 92))
-//            ]),
+            .init(type: .recentCollection, title: "Recent Collections", items: [
+                .init(object: PublicCollection(collectionID: "01", authorID: "", name: "Korean 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "KOR", secondaryLanguage: "ENG", tags: ["Food", "Greeting", "Travel"], cardsCount: 49)),
+                .init(object: PublicCollection(collectionID: "02", authorID: "", name: "Japanese 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "JPN", secondaryLanguage: "ENG", tags: ["Beginner", "Pro", "Noob"], cardsCount: 92)),
+                .init(object: PublicCollection(collectionID: "03", authorID: "", name: "Korean 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "KOR", secondaryLanguage: "ENG", tags: ["Food", "Greeting", "Travel"], cardsCount: 49)),
+                .init(object: PublicCollection(collectionID: "04", authorID: "", name: "Japanese 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "JPN", secondaryLanguage: "ENG", tags: ["Beginner", "Pro", "Noob"], cardsCount: 92))
+            ]),
             
-            .init(type: .recentCollection, title: "Recent Collections", items: []),
+            .init(type: .randomCollection, title: "Random Collections", items: []),
             
-            .init(type: .randomCard, title: "Random Cards", items: []),
+            .init(type: .recentCard, title: "Random Cards", items: []),
         ]
         return model
     }()

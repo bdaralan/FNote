@@ -19,7 +19,7 @@ struct HomeView: View {
     @State private var sheet: Sheet?
     @State private var modalTextFieldModel = ModalTextFieldModel()
     
-    @State private var publicCollectionViewModel = PublicCollectionViewModel.sample
+    @State private var publicCollectionViewModel = PublicCollectionViewModel()
     @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
     @State private var collectionCollectionViewModel = NoteCardCollectionCollectionViewModel()
     @State private var tagCollectionViewModel = TagCollectionViewModel()

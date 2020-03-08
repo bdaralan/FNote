@@ -46,46 +46,13 @@ struct HomeCommunityView: View {
 extension HomeCommunityView {
     
     func setupOnAppear() {
-        fetchPublicCollections()
-        fetchPublicNoteCards()
-    }
-    
-    func fetchPublicCollections() {
-        PublicRecordManager.shared.queryRecentCollections { result in
-            switch result {
-            case .success(let records):
-                let collections = records.map({ PublicCollection(record: $0) })
-                let collectionItems = collections.map({ PublishSectionItem(object: $0) })
-                
-                let section = PublishSection(type: .recentCollection, title: "Recent Collection", items: collectionItems)
-                self.viewModel.updateSection(type: .recentCollection, with: section)
-                DispatchQueue.main.async {
-                    self.viewModel.updateSnapshot(animated: false, completion: nil)
-                }
-            
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
-    
-    func fetchPublicNoteCards() {
-        PublicRecordManager.shared.queryRecentCards { result in
-            switch result {
-            case .success(let records):
-                let cards = records.map({ PublicNoteCard(record: $0) })
-                let cardItems = cards.map({ PublishSectionItem(object: $0) })
-                
-                let section = PublishSection(type: .randomCard, title: "Recent Note Cards", items: cardItems)
-                self.viewModel.updateSection(type: .randomCard, with: section)
-                DispatchQueue.main.async {
-                    self.viewModel.updateSnapshot(animated: false, completion: nil)
-                }
-            
-            case .failure(let error):
-                print(error)
-            }
-        }
+        viewModel.sections = [
+            .init(type: .recentCollection, title: "", items: []),
+            .init(type: .recentCard, title: "", items: [])
+        ]
+        viewModel.fetchRecentCollections(completedWithError: nil)
+        viewModel.fetchRecentNoteCards(completedWithError: nil)
+//        viewModel.onSectionScrolled = handleSectionScrolled
     }
     
     func configureCollectionView(with sizeClass: UserInterfaceSizeClass) {
@@ -103,6 +70,10 @@ extension HomeCommunityView {
         snapshot.reloadItems(snapshot.itemIdentifiers)
         dataSource.apply(snapshot)
     }
+    
+    func handleSectionScrolled(section: PublicSectionType, offset: CGPoint) {
+        print(section, offset)
+    }
 }
 
 
@@ -119,6 +90,6 @@ extension HomeCommunityView {
 
 struct HomeCommunityView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeCommunityView(viewModel: PublicCollectionViewModel.sample)
+        HomeCommunityView(viewModel: PublicCollectionViewModel())
     }
 }
