@@ -17,6 +17,9 @@ struct HomeCommunityView: View {
     
     var viewModel: PublicCollectionViewModel
     
+    @State private var showPublishForm = false
+    @State private var publishFormModel: PublishCollectionFormModel?
+    
     @State private var collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     
     var horizontalSizeClasses: [UserInterfaceSizeClass] {
@@ -39,6 +42,7 @@ struct HomeCommunityView: View {
         .onReceive(horizontalSizeClasses.publisher, perform: configureCollectionView)
         .onReceive(sizeCategories.publisher, perform: handleSizeCategoryChanged)
         .onAppear(perform: setupOnAppear)
+        .sheet(isPresented: $showPublishForm, content: { PublishCollectionForm(viewModel: self.publishFormModel!) })
     }
 }
 
@@ -82,7 +86,14 @@ extension HomeCommunityView {
     var trailingNavItems: some View {
         HStack(spacing: 8) {
             NavigationBarButton(imageName: "magnifyingglass", action: {})
-            NavigationBarButton(imageName: "rectangle.stack.badge.plus", action: {})
+            NavigationBarButton(imageName: "rectangle.stack.badge.plus", action: {
+                self.publishFormModel = .init()
+                self.publishFormModel?.onCancel = {
+                    self.publishFormModel = nil
+                    self.showPublishForm = false
+                }
+                self.showPublishForm = true
+            })
         }
     }
 }

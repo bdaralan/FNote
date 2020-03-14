@@ -19,6 +19,8 @@ struct SegmentControlWrapper: UIViewRepresentable {
     
     var selectedColor: UIColor?
     
+    var backgroundColor: UIColor?
+    
     var enableHapticFeedback = false
     
     
@@ -54,9 +56,11 @@ extension SegmentControlWrapper {
         init(wrapper: SegmentControlWrapper) {
             self.wrapper = wrapper
             segmentControl = .init(items: wrapper.segments)
+            segmentControl.backgroundColor = wrapper.backgroundColor
             
             super.init()
             segmentControl.addTarget(self, action: #selector(handleSegmentChanged), for: .valueChanged)
+            segmentControl.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
     }
 }

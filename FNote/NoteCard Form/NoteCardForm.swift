@@ -31,32 +31,33 @@ struct NoteCardForm: View {
     
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: true) {
+            ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 32) {
                     // MARK: Native & Translation
-                    VStack(spacing: 5) {
-                        TextFieldWrapper(
-                            isActive: $viewModel.isNativeFirstResponder,
-                            text: $viewModel.native,
-                            placeholder: viewModel.nativePlaceholder,
-                            nextResponder: translationTextField,
-                            configure: configureNativeTextField
-                        )
-                            .modifier(NoteCardFormRowModifier())
-                        
-                        TextFieldWrapper(
-                            isActive: $viewModel.isTranslationFirstResponder,
-                            text: $viewModel.translation,
-                            placeholder: viewModel.translationPlaceholder,
-                            onCommit: nil,
-                            configure: configureTranslationTextField
-                        )
-                            .modifier(NoteCardFormRowModifier())
+                    ScrollViewSection(header: "NATIVE & TRANSLATION") {
+                        VStack(spacing: 5) {
+                            TextFieldWrapper(
+                                isActive: $viewModel.isNativeFirstResponder,
+                                text: $viewModel.native,
+                                placeholder: viewModel.nativePlaceholder,
+                                nextResponder: translationTextField,
+                                configure: configureNativeTextField
+                            )
+                                .modifier(InsetRowStyle())
+
+                            TextFieldWrapper(
+                                isActive: $viewModel.isTranslationFirstResponder,
+                                text: $viewModel.translation,
+                                placeholder: viewModel.translationPlaceholder,
+                                onCommit: nil,
+                                configure: configureTranslationTextField
+                            )
+                                .modifier(InsetRowStyle())
+                        }
                     }
-                    .modifier(NoteCardFormSectionModifier(header: "NATIVE & TRANSLATION"))
                     
                     // MARK: Collection
-                    VStack {
+                    ScrollViewSection(header: "COLLECTION") {
                         HStack {
                             Text(viewModel.selectedCollection?.name ?? "None")
                                 .foregroundColor(viewModel.selectedCollection == nil ? .secondary : .primary)
@@ -68,7 +69,7 @@ struct NoteCardForm: View {
                                     .foregroundColor(Color(.tertiaryLabel))
                             }
                         }
-                        .modifier(NoteCardFormRowModifier())
+                        .modifier(InsetRowStyle())
                         .onTapGesture(perform: beginSelectCollection)
                         .onReceive(viewModel.$isSelectingCollection, perform: handleOnReceiveSelectingCollection)
                         .background(
@@ -79,99 +80,99 @@ struct NoteCardForm: View {
                             )
                         )
                     }
-                    .modifier(NoteCardFormSectionModifier(header: "COLLECTION"))
                     
                     // MARK: Formality
-                    VStack {
+                    ScrollViewSection(header: "FORMALITY") {
                         SegmentControlWrapper(
                             selectedIndex: $viewModel.formality,
                             segments: viewModel.formalities,
                             selectedColor: viewModel.selectedFormality.uiColor,
+                            backgroundColor: .noteCardBackground,
                             enableHapticFeedback: true
                         )
-                            .modifier(NoteCardFormRowModifier())
                     }
-                    .modifier(NoteCardFormSectionModifier(header: "FORMALITY"))
                     
                     // MARK: Favorite
-                    VStack(spacing: 5) {
-                        Toggle(isOn: $viewModel.isFavorite) {
-                            Image.noteCardFavorite(viewModel.isFavorite)
-                                .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
-                            Text("Favorite")
-                                .padding(.leading, 4)
-                        }
-                        .modifier(NoteCardFormRowModifier())
-                        
-                        // MARK: Relationship
-                        HStack {
-                            Image.noteCardRelationship
-                                .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
-                                .foregroundColor(.primary)
-                            Text("Links")
-                                .foregroundColor(.primary)
-                                .padding(.leading, 4)
-                            Spacer()
-                            HStack {
-                                Text("\(viewModel.selectedRelationships.count)")
-                                    .foregroundColor(.secondary)
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(Color(.tertiaryLabel))
+                    ScrollViewSection {
+                        VStack(spacing: 5) {
+                            Toggle(isOn: $viewModel.isFavorite) {
+                                Image.noteCardFavorite(viewModel.isFavorite)
+                                    .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
+                                Text("Favorite")
+                                    .padding(.leading, 4)
                             }
-                        }
-                        .modifier(NoteCardFormRowModifier())
-                        .onTapGesture(perform: beginSelectRelationship)
-                        .onReceive(viewModel.$isSelectingRelationship, perform: handleOnReceiveSelectingRelationship)
-                        .background(relationshipNavigationLink)
-                        
-                        // MARK: Tag
-                        HStack {
-                            Image.noteCardTag
-                                .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
-                                .foregroundColor(.primary)
-                            Text("Tags")
-                                .foregroundColor(.primary)
-                                .padding(.leading, 4)
-                            Spacer()
+                            .modifier(InsetRowStyle())
+
+                            // MARK: Relationship
                             HStack {
-                                Text("\(viewModel.selectedTags.count)")
-                                    .foregroundColor(.secondary)
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(Color(.tertiaryLabel))
+                                Image.noteCardRelationship
+                                    .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
+                                    .foregroundColor(.primary)
+                                Text("Links")
+                                    .foregroundColor(.primary)
+                                    .padding(.leading, 4)
+                                Spacer()
+                                HStack {
+                                    Text("\(viewModel.selectedRelationships.count)")
+                                        .foregroundColor(.secondary)
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(Color(.tertiaryLabel))
+                                }
                             }
-                        }
-                        .modifier(NoteCardFormRowModifier())
-                        .onTapGesture(perform: beginSelectTag)
-                        .onReceive(viewModel.$isSelectingTag, perform: handleOnReceiveSelectingTag)
-                        .background(
-                            NavigationLink(
-                                destination: NoteCardFormTagSelectionView(viewModel: tagViewModel, onCreateTag: handleCreateTag),
-                                isActive: $viewModel.isSelectingTag,
-                                label: EmptyView.init
+                            .modifier(InsetRowStyle())
+                            .onTapGesture(perform: beginSelectRelationship)
+                            .onReceive(viewModel.$isSelectingRelationship, perform: handleOnReceiveSelectingRelationship)
+                            .background(relationshipNavigationLink)
+
+                            // MARK: Tag
+                            HStack {
+                                Image.noteCardTag
+                                    .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
+                                    .foregroundColor(.primary)
+                                Text("Tags")
+                                    .foregroundColor(.primary)
+                                    .padding(.leading, 4)
+                                Spacer()
+                                HStack {
+                                    Text("\(viewModel.selectedTags.count)")
+                                        .foregroundColor(.secondary)
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(Color(.tertiaryLabel))
+                                }
+                            }
+                            .modifier(InsetRowStyle())
+                            .onTapGesture(perform: beginSelectTag)
+                            .onReceive(viewModel.$isSelectingTag, perform: handleOnReceiveSelectingTag)
+                            .background(
+                                NavigationLink(
+                                    destination: NoteCardFormTagSelectionView(viewModel: tagViewModel, onCreateTag: handleCreateTag),
+                                    isActive: $viewModel.isSelectingTag,
+                                    label: EmptyView.init
+                                )
                             )
-                        )
-                        
-                        // MARK: Note
-                        HStack {
-                            Image.noteCardNote
-                                .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
-                                .foregroundColor(.primary)
-                            Text("Note")
-                                .foregroundColor(.primary)
-                                .padding(.leading, 4)
-                            Spacer()
-                            HStack(spacing: 3) { // markdown logo with sf symbol
-                                Image(systemName: "m.square")
-                                Image(systemName: "arrow.down.square")
+
+                            // MARK: Note
+                            HStack {
+                                Image.noteCardNote
+                                    .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
+                                    .foregroundColor(.primary)
+                                Text("Note")
+                                    .foregroundColor(.primary)
+                                    .padding(.leading, 4)
+                                Spacer()
+                                HStack(spacing: 3) { // markdown logo with sf symbol
+                                    Image(systemName: "m.square")
+                                    Image(systemName: "arrow.down.square")
+                                }
+                                .foregroundColor(.secondary)
                             }
-                            .foregroundColor(.secondary)
+                            .modifier(InsetRowStyle())
+                            .onTapGesture(perform: beginEditNote)
                         }
-                        .modifier(NoteCardFormRowModifier())
-                        .onTapGesture(perform: beginEditNote)
                     }
                 }
+                .padding(.horizontal, 20)
                 .padding(.vertical, 32)
-                .padding(.horizontal)
             }
             .navigationBarItems(leading: cancelNavItem, trailing: commitNavItem)
             .navigationBarTitle(Text(viewModel.presentingTitle), displayMode: .inline)

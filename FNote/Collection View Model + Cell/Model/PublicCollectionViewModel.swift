@@ -188,7 +188,7 @@ extension PublicCollectionViewModel {
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
         
         let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .groupPaging
+        section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
         section.interGroupSpacing = 16
         section.contentInsets = .init(top: 12, leading: 16, bottom: 0, trailing: 16)
         section.boundarySupplementaryItems = [createSectionHeaderSupplementaryItem(height: 40)]
@@ -206,7 +206,7 @@ extension PublicCollectionViewModel {
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
         
         let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .groupPaging
+        section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
         section.interGroupSpacing = 16
         section.contentInsets = .init(top: 12, leading: 16, bottom: 32, trailing: 16)
         section.boundarySupplementaryItems = [createSectionHeaderSupplementaryItem(height: 40)]

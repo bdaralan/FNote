@@ -13,6 +13,10 @@ struct NoteCardFormRowModifier: ViewModifier {
     
     @Environment(\.colorScheme) var colorScheme
     
+    var height: CGFloat = 50
+    var background: Color = .noteCardBackground
+    var cornerRadius: CGFloat = 10
+    
     var shadowOpacity: Double {
         colorScheme == .light ? 0.17 : 0
     }
@@ -21,9 +25,9 @@ struct NoteCardFormRowModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding(.horizontal)
-            .frame(height: 50)
-            .background(Color.noteCardBackground)
-            .cornerRadius(10)
+            .frame(height: height)
+            .background(background)
+            .cornerRadius(cornerRadius)
             .shadow(color: Color.primary.opacity(shadowOpacity), radius: 0.5, x: -0.25, y: 0.25)
     }
 }

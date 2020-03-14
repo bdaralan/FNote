@@ -89,8 +89,7 @@ class CollectionPublisherTests: XCTestCase {
         wait(for: [], timeout: 3)
         
         let collection = createPublishCollection()
-        let downloader = PublicCollectionDownloader()
-        downloader.downloadCards(collectionID: collection.collectionID) { result in
+        PublicRecordManager.shared.queryCards(withCollectionID: collection.collectionID) { result in
             switch result {
             case .success(let cardRecords):
                 XCTAssertEqual(cardRecords.count, 9)

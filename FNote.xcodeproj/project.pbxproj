@@ -44,6 +44,8 @@
 		B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3404232E8214008B2088 /* ModalTextView.swift */; };
 		B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3406232E8634008B2088 /* InputViewResponder.swift */; };
 		B47460B923E66D50001D07F4 /* NoteCardSortNavigationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47460B823E66D50001D07F4 /* NoteCardSortNavigationButton.swift */; };
+		B476FE22241C6A3B0006A196 /* ScrollViewSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B476FE21241C6A3B0006A196 /* ScrollViewSection.swift */; };
+		B476FE24241C6EAB0006A196 /* InsetRowStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B476FE23241C6EAB0006A196 /* InsetRowStyle.swift */; };
 		B4816A6923D8D73C006485F7 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4816A6823D8D73C006485F7 /* AppState.swift */; };
 		B4816A6B23D912E9006485F7 /* ObjectCUDRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4816A6A23D912E9006485F7 /* ObjectCUDRequest.swift */; };
 		B4816A6D23D91327006485F7 /* NoteCardCUDRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4816A6C23D91327006485F7 /* NoteCardCUDRequest.swift */; };
@@ -96,6 +98,7 @@
 		B4BBDBFB23E525F100A0AEA1 /* ActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BBDBFA23E525F100A0AEA1 /* ActivityViewControllerWrapper.swift */; };
 		B4C529A623FFAF66002C9C50 /* CollectionPublisherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C529A523FFAF66002C9C50 /* CollectionPublisherTests.swift */; };
 		B4C76DFB232C0A520033DDEA /* TextFieldWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C76DFA232C0A520033DDEA /* TextFieldWrapper.swift */; };
+		B4CCDC52241AFFA6002D9FDE /* PublishCollectionForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4CCDC51241AFFA6002D9FDE /* PublishCollectionForm.swift */; };
 		B4D240D723DBD1EE005B4066 /* NoteCardCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D240D623DBD1EE005B4066 /* NoteCardCollectionCell.swift */; };
 		B4D240D923DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D240D823DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift */; };
 		B4DC48C923E7D4CA00104847 /* NoteCardForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DC48C823E7D4CA00104847 /* NoteCardForm.swift */; };
@@ -161,6 +164,8 @@
 		B46B3404232E8214008B2088 /* ModalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextView.swift; sourceTree = "<group>"; };
 		B46B3406232E8634008B2088 /* InputViewResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewResponder.swift; sourceTree = "<group>"; };
 		B47460B823E66D50001D07F4 /* NoteCardSortNavigationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSortNavigationButton.swift; sourceTree = "<group>"; };
+		B476FE21241C6A3B0006A196 /* ScrollViewSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewSection.swift; sourceTree = "<group>"; };
+		B476FE23241C6EAB0006A196 /* InsetRowStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsetRowStyle.swift; sourceTree = "<group>"; };
 		B4816A6823D8D73C006485F7 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		B4816A6A23D912E9006485F7 /* ObjectCUDRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectCUDRequest.swift; sourceTree = "<group>"; };
 		B4816A6C23D91327006485F7 /* NoteCardCUDRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCUDRequest.swift; sourceTree = "<group>"; };
@@ -217,6 +222,7 @@
 		B4BBDBFA23E525F100A0AEA1 /* ActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
 		B4C529A523FFAF66002C9C50 /* CollectionPublisherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionPublisherTests.swift; sourceTree = "<group>"; };
 		B4C76DFA232C0A520033DDEA /* TextFieldWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldWrapper.swift; sourceTree = "<group>"; };
+		B4CCDC51241AFFA6002D9FDE /* PublishCollectionForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishCollectionForm.swift; sourceTree = "<group>"; };
 		B4D240D623DBD1EE005B4066 /* NoteCardCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionCell.swift; sourceTree = "<group>"; };
 		B4D240D823DBF039005B4066 /* NoteCardCollectionCollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionCollectionViewModel.swift; sourceTree = "<group>"; };
 		B4DC48C823E7D4CA00104847 /* NoteCardForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardForm.swift; sourceTree = "<group>"; };
@@ -481,6 +487,7 @@
 				B4816A6723D8D71D006485F7 /* App State */,
 				B49C4C6823D628520030D9B2 /* Home View */,
 				B49C4C6B23D638EC0030D9B2 /* NoteCard Form */,
+				B4CCDC4E241AFBDC002D9FDE /* PublicCollection Form */,
 				B4113FB723D2D507004E70DC /* Collection View Model + Cell */,
 				B4BBDBDF23E4CFD400A0AEA1 /* Setting View Model + Cell */,
 				B4113FBA23D2D7BE004E70DC /* FN View & Controller */,
@@ -550,6 +557,16 @@
 				B46B3406232E8634008B2088 /* InputViewResponder.swift */,
 			);
 			path = "Text Field Wrapper";
+			sourceTree = "<group>";
+		};
+		B4CCDC4E241AFBDC002D9FDE /* PublicCollection Form */ = {
+			isa = PBXGroup;
+			children = (
+				B4CCDC51241AFFA6002D9FDE /* PublishCollectionForm.swift */,
+				B476FE21241C6A3B0006A196 /* ScrollViewSection.swift */,
+				B476FE23241C6EAB0006A196 /* InsetRowStyle.swift */,
+			);
+			path = "PublicCollection Form";
 			sourceTree = "<group>";
 		};
 		B4E8811623FF8D4300F475CE /* CloudKit */ = {
@@ -707,6 +724,7 @@
 				B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */,
 				B4D240D723DBD1EE005B4066 /* NoteCardCollectionCell.swift in Sources */,
 				B49C4C7123D65C850030D9B2 /* HomeNoteCardView.swift in Sources */,
+				B4CCDC52241AFFA6002D9FDE /* PublishCollectionForm.swift in Sources */,
 				B4A0CE9923D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift in Sources */,
 				B4816A6D23D91327006485F7 /* NoteCardCUDRequest.swift in Sources */,
 				B49C4C6F23D64AFB0030D9B2 /* SegmentControlWrapper.swift in Sources */,
@@ -750,11 +768,13 @@
 				B42BC61D2410B159000F2BA7 /* PublicUser.swift in Sources */,
 				B4BBDBE723E4D3F400A0AEA1 /* SettingCheckmarkRow.swift in Sources */,
 				B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */,
+				B476FE22241C6A3B0006A196 /* ScrollViewSection.swift in Sources */,
 				B4BAC54523206B28007EAF15 /* String.swift in Sources */,
 				B4BBDBF723E5111000A0AEA1 /* SettingImportFileList.swift in Sources */,
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,
 				B4E8811E23FF8E5E00F475CE /* PublicCollectionUploader.swift in Sources */,
 				B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */,
+				B476FE24241C6EAB0006A196 /* InsetRowStyle.swift in Sources */,
 				B4BBDBDB23E4CD8000A0AEA1 /* ManagedObjectCollectionViewCell.swift in Sources */,
 				B4EC398123DB7AD90011569C /* Alert.swift in Sources */,
 				B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */,
