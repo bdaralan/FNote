@@ -34,7 +34,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             AppCache.shouldShowOnboard = true
         }
         
-        // setup home view
+        // setup window & home view
+        let window = UIWindow(windowScene: windowScene)
+        
         let homeView = HomeView()
             .environmentObject(appState)
             .environmentObject(userPreference)
@@ -42,16 +44,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let rootViewCV = UIHostingController(rootView: homeView)
         
-        // create window
-        let window = UIWindow(windowScene: windowScene)
-        self.window = window
         window.rootViewController = rootViewCV
-        window.makeKeyAndVisible()
         
         // setup appearance
         window.tintColor = .appAccent
         userPreference.applyColorScheme()
         UISwitch.appearance().onTintColor = .appAccent
+        
+        // make key and visible
+        window.makeKeyAndVisible()
+        self.window = window
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

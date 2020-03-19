@@ -71,6 +71,7 @@ struct HomeView: View {
                 .tag(Tab.setting)
             
         }
+        .edgesIgnoringSafeArea(.top)
         .onAppear(perform: setupOnAppear)
         .sheet(item: $sheet, onDismiss: handleSheetDismissed, content: presentationSheet)
         .alert(isPresented: $appState.showDidCopyFileAlert, content: { .DidCopyFileAlert(fileName: appState.copiedFileName) })
@@ -289,7 +290,12 @@ extension HomeView {
 
 
 struct HomeView_Previews: PreviewProvider {
+    static let appState = AppState(parentContext: .sample)
+    static let userPreference = UserPreference.shared
     static var previews: some View {
         HomeView()
+            .environmentObject(appState)
+            .environmentObject(userPreference)
+            .environment(\.managedObjectContext, appState.parentContext)
     }
 }

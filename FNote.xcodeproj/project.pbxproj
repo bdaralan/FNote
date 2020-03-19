@@ -114,6 +114,7 @@
 		B4EC398423DB88460011569C /* CollectionViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EC398323DB88460011569C /* CollectionViewWrapper.swift */; };
 		B4EE3ECC2329D86500CC40B7 /* ModalTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */; };
 		B4EEF32C235D99B400869567 /* ModalDragHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EEF32B235D99B400869567 /* ModalDragHandle.swift */; };
+		B4F24A0924241A7B00E7F360 /* CommunityActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F24A0824241A7B00E7F360 /* CommunityActionButton.swift */; };
 		B4FFEB27234ED0CE00B4550F /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FFEB26234ED0CE00B4550F /* Color.swift */; };
 		B4FFEB29234ED2AA00B4550F /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4FFEB28234ED2AA00B4550F /* Image.swift */; };
 /* End PBXBuildFile section */
@@ -240,6 +241,7 @@
 		B4EC398323DB88460011569C /* CollectionViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewWrapper.swift; sourceTree = "<group>"; };
 		B4EE3ECB2329D86500CC40B7 /* ModalTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextField.swift; sourceTree = "<group>"; };
 		B4EEF32B235D99B400869567 /* ModalDragHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalDragHandle.swift; sourceTree = "<group>"; };
+		B4F24A0824241A7B00E7F360 /* CommunityActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityActionButton.swift; sourceTree = "<group>"; };
 		B4FFEB26234ED0CE00B4550F /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		B4FFEB28234ED2AA00B4550F /* Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -571,6 +573,7 @@
 				B476FE25241DDFA00006A196 /* PublishCollectionFormModel.swift */,
 				B476FE21241C6A3B0006A196 /* ScrollViewSection.swift */,
 				B476FE23241C6EAB0006A196 /* InsetRowStyle.swift */,
+				B4F24A0824241A7B00E7F360 /* CommunityActionButton.swift */,
 			);
 			path = "PublicCollection Form";
 			sourceTree = "<group>";
@@ -730,6 +733,7 @@
 				B4FFEB29234ED2AA00B4550F /* Image.swift in Sources */,
 				B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */,
 				B4D240D723DBD1EE005B4066 /* NoteCardCollectionCell.swift in Sources */,
+				B4F24A0924241A7B00E7F360 /* CommunityActionButton.swift in Sources */,
 				B49C4C7123D65C850030D9B2 /* HomeNoteCardView.swift in Sources */,
 				B4CCDC52241AFFA6002D9FDE /* PublishCollectionForm.swift in Sources */,
 				B4A0CE9923D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift in Sources */,

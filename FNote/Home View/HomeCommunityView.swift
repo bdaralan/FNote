@@ -37,8 +37,6 @@ struct HomeCommunityView: View {
             VStack(spacing: 0) {
                 // MARK: Collection & Card
                 CollectionViewWrapper(viewModel: viewModel, collectionView: collectionView)
-                    .navigationBarTitle("Communities")
-                    .navigationBarItems(trailing: trailingNavItems)
                     .edgesIgnoringSafeArea(.all)
                 
                 // MARK: Divider
@@ -77,6 +75,8 @@ struct HomeCommunityView: View {
                     .padding(16)
                 }
             }
+            .navigationBarTitle("Communities")
+            .navigationBarItems(trailing: trailingNavItems)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onReceive(horizontalSizeClasses.publisher, perform: handleSizeClassChanged)
@@ -95,7 +95,6 @@ extension HomeCommunityView {
             print("failed to fetch data with error: \(error)")
         }
         
-//        viewModel.onSectionScrolled = handleSectionScrolled
         viewModel.onItemSelected = handlePublishSectionItemSelected
     }
     
@@ -113,12 +112,6 @@ extension HomeCommunityView {
         var snapshot = dataSource.snapshot()
         snapshot.reloadItems(snapshot.itemIdentifiers)
         dataSource.apply(snapshot)
-    }
-    
-    func handleSectionScrolled(section: PublicSectionType, offset: CGPoint) {
-        guard section == .recentCollection, offset.x < -70 else { return }
-        viewModel.fetchRecentCollections(completedWithError: nil)
-        viewModel.fetchRecentNoteCards(completedWithError: nil)
     }
     
     func handlePublishSectionItemSelected(item: PublicSectionItem, sectionType: PublicSectionType) {
@@ -243,47 +236,5 @@ struct HomeCommunityView_Previews: PreviewProvider {
     static var previews: some View {
         HomeCommunityView(viewModel: viewModel)
             .environment(\.horizontalSizeClass, .regular)
-    }
-}
-
-
-struct CommunityActionButton: View {
-    
-    var action: () -> Void
-    
-    var systemImage: String?
-    
-    var offsetY: CGFloat = 0
-    
-    var title: String
-    
-    var description: String?
-    
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                systemImage.map { name in
-                    Image(systemName: name)
-                    .font(Font.body.weight(.black))
-                    .foregroundColor(.primary)
-                    .offset(y: offsetY)
-                }
-                
-                VStack(spacing: 4) {
-                    Text(title)
-                        .foregroundColor(.primary)
-                        .fontWeight(.black)
-                        .fixedSize()
-                    
-                    description.map { description in
-                        Text(description)
-                            .foregroundColor(.secondary)
-                            .font(.footnote)
-                            .fixedSize()
-                    }
-                }
-            }
-                .modifier(InsetRowStyle(height: 65))
-        }
     }
 }

@@ -20,8 +20,6 @@ class PublicCollectionViewModel: NSObject, CollectionViewCompositionalDataSource
     
     var isHorizontallyCompact = true
     
-    var onSectionScrolled: ((PublicSectionType, CGPoint) -> Void)?
-    
     var onItemSelected: ((PublicSectionItem, PublicSectionType) -> Void)?
     
     
@@ -124,10 +122,6 @@ extension PublicCollectionViewModel {
         }
         dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
     }
-    
-    private func handleLayoutSectionScrolled(sectionType: PublicSectionType, offset: CGPoint) {
-        onSectionScrolled?(sectionType, offset)
-    }
 }
 
 
@@ -145,10 +139,6 @@ extension PublicCollectionViewModel {
             case .randomCollection: layoutSection = self.createRandomCollectionLayoutSection()
             case .recentCollection: layoutSection = self.createRecentCollectionLayoutSection()
             case .recentCard: layoutSection = self.createRecentCardLayoutSection()
-            }
-            
-            layoutSection.visibleItemsInvalidationHandler = { visibleItems, offset, environment in
-                self.handleLayoutSectionScrolled(sectionType: sectionType, offset: offset)
             }
             
             return layoutSection
