@@ -63,11 +63,16 @@ class PublicRecordManager {
 
 extension PublicRecordManager {
     
-    func queryUsers(withIDs userIDs: [String], completion: @escaping QueryCompletionBlock) {
+    func queryUsers(withIDs userIDs: [String], desiredKeys: [PublicUser.RecordKeys]? = nil,  completion: @escaping QueryCompletionBlock) {
         let userID = PublicUser.RecordKeys.userID.stringValue
         let predicate = NSPredicate(format: "\(userID) IN %@", userIDs)
         let query = CKQuery(recordType: PublicUser.recordType, predicate: predicate)
         let operation = CKQueryOperation(query: query)
+        
+        if let keys = desiredKeys {
+            operation.desiredKeys = keys.map({ $0.stringValue })
+        }
+        
         performQuery(operation: operation, completion: completion)
     }
     
@@ -149,5 +154,37 @@ extension PublicRecordManager {
         
         publicDatabase.add(saveCollectionOP)
         publicDatabase.add(saveCardsOP)
+    }
+}
+
+
+extension PublicRecordManager {
+    
+    /// Fetch user records and cache them.
+    func fetchAndCacheUserRecord(userIDs: [String], completion: QueryCompletionBlock?) {
+        queryUsers(withIDs: userIDs) { result in
+            switch result {
+            case .success(let records):
+                self.cacheRecords(records, usingKey: PublicUser.RecordKeys.userID)
+                completion?(.success(records))
+            case .failure(let error):
+                completion?(.failure(error))
+            }
+        }
+    }
+}
+
+
+extension PublicRecordManager {
+    
+    func setupTestCKSubscriptions() {
+//        let collectionRecordType = PublicCollection.recordType
+//        let newCollectionPredicate = NSPredicate(value: true)
+//        let newCollectionSubID = "newCollectionSubID"
+//        let newCollectionFireOptions: CKQuerySubscription.Options = [.firesOnRecordCreation, .firesOnRecordUpdate]
+//        let newCollectionSub = CKQuerySubscription(recordType: collectionRecordType, predicate: newCollectionPredicate, subscriptionID: newCollectionSubID, options: newCollectionFireOptions)
+//
+//        let newCollectionSubOP = CKModifySubscriptionsOperation(subscriptionsToSave: [newCollectionSub], subscriptionIDsToDelete: [])
+//        publicDatabase.add(newCollectionSubOP)
     }
 }
