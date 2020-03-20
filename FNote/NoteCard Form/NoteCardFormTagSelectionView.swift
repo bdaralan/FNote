@@ -23,6 +23,7 @@ struct NoteCardFormTagSelectionView: View {
         CollectionViewWrapper(viewModel: viewModel)
             .navigationBarTitle("Tags")
             .navigationBarItems(trailing: createTagNavItem)
+            .edgesIgnoringSafeArea(.all)
             .sheet(isPresented: $showCreateTagSheet, content: createTagSheet)
     }
 }

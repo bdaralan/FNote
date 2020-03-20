@@ -32,6 +32,8 @@ struct PublishCollectionForm: View {
     @State private var collectionDescriptionTextViewModel = ModalTextViewModel()
     @State private var collectionTagTextFieldModel = ModalTextFieldModel()
     
+    let collectionViewModel = NoteCardCollectionCollectionViewModel()
+    
     
     var body: some View {
         NavigationView {
@@ -44,6 +46,7 @@ struct PublishCollectionForm: View {
                                 isActive: $isAuthorTextFieldActive,
                                 text: $viewModel.authorName,
                                 placeholder: "author name",
+                                onCommit: { self.isAuthorTextFieldActive = false },
                                 configure: configureTextField
                             )
                             .modifier(InsetRowStyle())
@@ -53,15 +56,14 @@ struct PublishCollectionForm: View {
                         ScrollViewSection(header: publishCollectionHeader) {
                             HStack {
                                 Text(viewModel.uiCollectionName)
-                                    .font(Font.body.bold())
-                                    .foregroundColor(viewModel.publishCollection == nil ? .secondary : .primary)
+                                    .foregroundColor(viewModel.publishCollection == nil ? .tertiaryLabel : .primary)
                                 Spacer()
                                 Text(viewModel.uiCollectionCardsCount)
                                     .foregroundColor(.secondary)
                                     .opacity(viewModel.publishCollection == nil ? 0 : 1)
                             }
                             .modifier(InsetRowStyle())
-                            .onTapGesture(perform: handleCollectionTapped)
+                            .onTapGesture(perform: beginSelectCollection)
                         }
                         
                         // MARK: - Publish Details
@@ -71,25 +73,35 @@ struct PublishCollectionForm: View {
                                     isActive: $isCollectionNameTextFieldActive,
                                     text: $viewModel.publishCollectionName,
                                     placeholder: "collection name",
+                                    onCommit: { self.isCollectionNameTextFieldActive = false },
                                     configure: configureTextField
                                 )
                                     .modifier(InsetRowStyle())
                                 
                                 Text(viewModel.uiCollectionDescription)
                                     .padding(.top)
-                                    .foregroundColor(viewModel.publishDescription.isEmpty ? .secondary : .primary)
+                                    .foregroundColor(viewModel.publishDescription.isEmpty ? .tertiaryLabel : .primary)
                                     .modifier(InsetRowStyle(height: 110, alignment: .topLeading))
-                                    .onTapGesture(perform: beginEditingCollectionDescription)
+                                    .onTapGesture(perform: beginEditCollectionDescription)
                                 
                                 Text(viewModel.uiCollectionTags)
-                                    .foregroundColor(viewModel.publishTags.isEmpty ? .secondary : .primary)
+                                    .foregroundColor(viewModel.publishTags.isEmpty ? .tertiaryLabel : .primary)
                                     .modifier(InsetRowStyle())
-                                    .onTapGesture(perform: beginEditingCollectionTags)
+                                    .onTapGesture(perform: beginEditCollectionTags)
                                 
-                                Text(viewModel.uiLanguages)
-                                    .foregroundColor(viewModel.isLanguagesValid ? .primary : .secondary)
-                                    .modifier(InsetRowStyle())
-                                    .onTapGesture(perform: handleLanguagesTapped)
+                                HStack(spacing: 5) {
+                                    Text("native language")
+                                        .lineLimit(1)
+                                        .foregroundColor(viewModel.isLanguagesValid ? .primary : .tertiaryLabel)
+                                        .modifier(InsetRowStyle())
+                                        .onTapGesture(perform: beginSelectCollectionLanguages)
+                                    
+                                    Text("translation language")
+                                        .lineLimit(1)
+                                        .foregroundColor(viewModel.isLanguagesValid ? .primary : .tertiaryLabel)
+                                        .modifier(InsetRowStyle())
+                                        .onTapGesture(perform: beginSelectCollectionLanguages)
+                                }
                             }
                         }
                         
@@ -102,7 +114,7 @@ struct PublishCollectionForm: View {
                     
                     // MARK: Publish Button
                     VStack {
-                        Button(action: handlePublishTapped) {
+                        Button(action: publishCollection) {
                             Text(viewModel.commitTitle)
                                 .font(Font.body.weight(.black))
                                 .frame(maxWidth: .infinity)
@@ -125,64 +137,108 @@ struct PublishCollectionForm: View {
 }
 
 
+// MARK: - Text Field
+
 extension PublishCollectionForm {
     
     func configureTextField(_ textField: UITextField) {
         textField.font = .preferredFont(forTextStyle: .body)
     }
+}
+
+
+// MARK: - Action and Handler
+
+extension PublishCollectionForm {
     
-    func handleCollectionTapped() {
-        let collection = NoteCardCollection(context: .sample)
-        collection.name = "Publish Collection \(Int.random(in: 1...100))"
-        for i in 4...9 {
-            let card = NoteCard(context: .sample)
-            let number = i + 1
-            card.native = "native \(number)"
-            card.translation = "translation \(number)"
-            card.note = "note \(number)"
-            card.formality = NoteCard.Formality.allCases.randomElement()!
-            card.collection = collection
-        }
-        viewModel.publishCollection = collection
-    }
-    
-    func handleLanguagesTapped() {
-        viewModel.publishPrimaryLanguage = "KOR"
-        viewModel.publishSecondaryLanguage = "ENG"
-    }
-    
-    func handlePublishTapped() {
+    /// Commit publishing collection.
+    func publishCollection() {
         viewModel.onCommit?()
     }
     
-    func beginEditingCollectionDescription() {
+    /// Choose a collection to publish.
+    func beginSelectCollection() {
+        // test code
+        var collections = [NoteCardCollection]()
+        for _ in 1...10 {
+            let collection = NoteCardCollection(context: .sample)
+            collection.name = "Publish Collection \(Int.random(in: 1...100))"
+            for i in 4...Int.random(in: 9...19) {
+                let card = NoteCard(context: .sample)
+                let number = i + 1
+                card.native = "native \(number)"
+                card.translation = "translation \(number)"
+                card.note = "note \(number)"
+                card.formality = NoteCard.Formality.allCases.randomElement()!
+                card.collection = collection
+            }
+            collections.append(collection)
+        }
+        viewModel.selectableCollections = collections
+        
+        // real code
+        collectionViewModel.collections = viewModel.selectableCollections
+        collectionViewModel.disableCollectionIDs = []
+        
+        let disableCollections = viewModel.selectableCollections.filter({ $0.noteCards.count < 9 })
+        for collection in disableCollections {
+            collectionViewModel.disableCollectionIDs.insert(collection.uuid)
+        }
+        
+        if let collection = viewModel.publishCollection {
+            collectionViewModel.disableCollectionIDs.insert(collection.uuid)
+        }
+        
+        collectionViewModel.onCollectionSelected = { collection in
+            self.viewModel.publishCollection = collection
+            self.sheet = nil
+        }
+        
+        sheet = .publishCollection
+    }
+    
+    /// Choose publish collection's languages.
+    func beginSelectCollectionLanguages() {
+        viewModel.publishPrimaryLanguageCode = "KOR"
+        viewModel.publishSecondaryLanguageCode = "ENG"
+    }
+    
+    /// Edit publish collection's description.
+    func beginEditCollectionDescription() {
         collectionDescriptionTextViewModel.title = "Brief Description"
         collectionDescriptionTextViewModel.text = viewModel.publishDescription
         collectionDescriptionTextViewModel.disableEditing = false
         collectionDescriptionTextViewModel.renderMarkdown = false
         collectionDescriptionTextViewModel.isFirstResponder = true
+        sheet = .publishDescription
+        
         collectionDescriptionTextViewModel.onCommit = {
             self.viewModel.publishDescription = self.collectionDescriptionTextViewModel.text
             self.collectionDescriptionTextViewModel.isFirstResponder = false
             self.sheet = nil
         }
-        sheet = .publishDescription
     }
     
-    func beginEditingCollectionTags() {
+    /// Edit publish collection's tags.
+    func beginEditCollectionTags() {
+        let maxTags = self.publishTagsLimit
+        let initialPrompt = "Can add up to \(maxTags) tags"
+        
         collectionTagTextFieldModel = .init()
         collectionTagTextFieldModel.title = "Tags"
-        collectionTagTextFieldModel.prompt = "Can add up to \(publishTagsLimit) tags"
+        collectionTagTextFieldModel.prompt = initialPrompt
         collectionTagTextFieldModel.tokens = viewModel.publishTags
         collectionTagTextFieldModel.isFirstResponder = true
         collectionTagTextFieldModel.returnKeyType = .default
         sheet = .publishTags
         
-        
-        
         // remove tag action
         collectionTagTextFieldModel.onTokenSelected = { token in
             self.collectionTagTextFieldModel.tokens.removeAll(where: { $0 == token })
+            if self.collectionTagTextFieldModel.tokens.isEmpty {
+                self.collectionTagTextFieldModel.prompt = initialPrompt
+                self.collectionTagTextFieldModel.promptColor = nil
+            }
         }
         
         // add tag action
@@ -197,9 +253,8 @@ extension PublishCollectionForm {
             }
             
             // check limit
-            let limit = self.publishTagsLimit
-            if self.collectionTagTextFieldModel.tokens.count == limit {
-                self.collectionTagTextFieldModel.prompt = "Cannot have more than \(limit) tags 🥺"
+            if self.collectionTagTextFieldModel.tokens.count == maxTags {
+                self.collectionTagTextFieldModel.prompt = "Cannot have more than \(maxTags) tags 🥺"
                 self.collectionTagTextFieldModel.promptColor = .orange
                 return
             }
@@ -223,6 +278,7 @@ extension PublishCollectionForm {
     
     enum Sheet: Identifiable {
         var id: Self { self }
+        case publishCollection
         case publishDescription
         case publishTags
     }
@@ -232,9 +288,21 @@ extension PublishCollectionForm {
         case .publishDescription:
             return ModalTextView(viewModel: $collectionDescriptionTextViewModel)
                 .eraseToAnyView()
+        
         case .publishTags:
             return ModalTextField(viewModel: $collectionTagTextFieldModel)
                 .eraseToAnyView()
+            
+        case .publishCollection:
+            let cancel = Button("Cancel", action: { self.sheet = nil })
+            return NavigationView {
+                CollectionViewWrapper(viewModel: collectionViewModel)
+                    .navigationBarTitle("Select Collection", displayMode: .inline)
+                    .navigationBarItems(leading: cancel)
+                    .edgesIgnoringSafeArea(.all)
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .eraseToAnyView()
         }
     }
 }

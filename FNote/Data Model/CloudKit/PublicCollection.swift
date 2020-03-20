@@ -78,13 +78,14 @@ extension PublicCollection: CloudKitRecord {
     
     init(record: CKRecord) {
         let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
-        collectionID = keyedRecord[.collectionID] as! String
-        authorID = keyedRecord[.authorID] as! String
-        name = keyedRecord[.name] as! String
-        description = keyedRecord[.description] as! String
-        primaryLanguage = keyedRecord[.primaryLanguage] as! String
-        secondaryLanguage = keyedRecord[.secondaryLanguage] as! String
+        collectionID = record.recordID.recordName
+        
+        authorID = keyedRecord[.authorID] as? String ?? ""
+        name = keyedRecord[.name] as? String ?? ""
+        description = keyedRecord[.description] as? String ?? ""
+        primaryLanguage = keyedRecord[.primaryLanguage] as? String ?? ""
+        secondaryLanguage = keyedRecord[.secondaryLanguage] as? String ?? ""
         tags = keyedRecord[.tags] as? [String] ?? []
-        cardsCount = keyedRecord[.cardsCount] as! Int
+        cardsCount = keyedRecord[.cardsCount] as? Int ?? 0
     }
 }

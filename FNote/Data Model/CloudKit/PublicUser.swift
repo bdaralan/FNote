@@ -50,7 +50,8 @@ extension PublicUser {
     init(record: CKRecord) {
         let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
         userID = record.recordID.recordName
-        username = keyedRecord[.username] as! String
+        
+        username = keyedRecord[.username] as? String ?? ""
         about = keyedRecord[.about] as? String ?? ""
     }
 }

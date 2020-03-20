@@ -11,6 +11,8 @@ import Foundation
 
 class PublishCollectionFormModel: ObservableObject {
     
+    var selectableCollections: [NoteCardCollection] = []
+    
     @Published var publishCollection: NoteCardCollection?
     
     @Published var authorName: String = ""
@@ -21,9 +23,9 @@ class PublishCollectionFormModel: ObservableObject {
     
     @Published var publishTags: [String] = []
     
-    @Published var publishPrimaryLanguage: String = ""
+    @Published var publishPrimaryLanguageCode: String = ""
     
-    @Published var publishSecondaryLanguage: String = ""
+    @Published var publishSecondaryLanguageCode: String = ""
     
     @Published var includesNote = true
     
@@ -66,20 +68,12 @@ extension PublishCollectionFormModel {
     }
     
     var isLanguagesValid: Bool {
-        return !publishPrimaryLanguage.isEmptyOrWhiteSpaces()
-            && !publishSecondaryLanguage.isEmptyOrWhiteSpaces()
-    }
-    
-    var uiAuthorName: String {
-        authorName.isEmpty ? "author name" : authorName
+        return !publishPrimaryLanguageCode.isEmptyOrWhiteSpaces()
+            && !publishSecondaryLanguageCode.isEmptyOrWhiteSpaces()
     }
     
     var uiCollectionName: String {
         publishCollection?.name ?? "select a collection"
-    }
-    
-    var uiCollectionPublishName: String {
-        publishCollectionName.isEmpty ? "collection name" : publishCollectionName
     }
     
     var uiCollectionCardsCount: String {
@@ -94,12 +88,5 @@ extension PublishCollectionFormModel {
     
     var uiCollectionTags: String {
         publishTags.isEmpty ? "tags" : publishTags.joined(separator: ", ")
-    }
-    
-    var uiLanguages: String {
-        if publishPrimaryLanguage.isEmptyOrWhiteSpaces() && publishSecondaryLanguage.isEmptyOrWhiteSpaces() {
-            return "languages"
-        }
-        return "\(publishPrimaryLanguage) – \(publishSecondaryLanguage)"
     }
 }

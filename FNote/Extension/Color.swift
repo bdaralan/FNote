@@ -18,6 +18,10 @@ extension Color {
     static let noteCardDivider = Color("note-card-divider")
     
     static let tagScrollPillBackground = Color("tag-scroll-pill-background")
+    
+    static let tertiaryLabel = Color(UIColor.tertiaryLabel)
+    
+    static let quaternaryLabel = Color(UIColor.quaternaryLabel)
 }
 
 

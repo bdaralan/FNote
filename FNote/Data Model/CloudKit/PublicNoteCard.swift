@@ -62,7 +62,7 @@ extension PublicNoteCard: CloudKitRecord {
         keyedRecord[.favorited] = favorited
         keyedRecord[.formality] = formality
         keyedRecord[.note] = note
-        keyedRecord[.tags] = tags.joined(separator: ",")
+        keyedRecord[.tags] = tags.isEmpty ? nil : tags
         keyedRecord[.relationships] = relationships.isEmpty ? nil : relationships
         
         let collectionRecID = CKRecord.ID(recordName: collectionID)
@@ -78,15 +78,15 @@ extension PublicNoteCard {
     
     init(record: CKRecord) {
         let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
-        collectionID = keyedRecord[.collectionID] as! String
-        cardID = keyedRecord[.cardID] as! String
+        cardID = record.recordID.recordName
         
+        collectionID = keyedRecord[.collectionID] as? String ?? ""
         native = keyedRecord[.native] as? String ?? ""
         translation = keyedRecord[.translation] as? String ?? ""
         favorited = keyedRecord[.favorited] as? Bool ?? false
         formality = keyedRecord[.formality] as? Int ?? 0
         note = keyedRecord[.note] as? String ?? ""
-        tags = (keyedRecord[.tags] as? String ?? "").components(separatedBy: ",")
+        tags = keyedRecord[.tags] as? [String] ?? []
         relationships = keyedRecord[.relationships] as? [String] ?? []
     }
 }

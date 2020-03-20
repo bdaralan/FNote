@@ -17,6 +17,7 @@ struct NoteCardFormCollectionSelectionView: View {
     var body: some View {
         CollectionViewWrapper(viewModel: viewModel)
             .navigationBarTitle("Collection")
+            .edgesIgnoringSafeArea(.all)
     }
 }
 

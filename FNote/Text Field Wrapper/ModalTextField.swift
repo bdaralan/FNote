@@ -109,7 +109,8 @@ struct ModalTextFieldTokenView: View {
                 .font(.footnote)
         }
         .padding(.vertical, 8)
-        .padding(.horizontal, 16)
+        .padding(.leading, 16)
+        .padding(.trailing, 12)
         .background(Color.noteCardBackground)
         .cornerRadius(30)
         .onTapGesture(perform: onClear ?? {})
