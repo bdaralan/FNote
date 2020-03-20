@@ -89,7 +89,7 @@ extension PublishCollectionFormModel {
     }
     
     var uiCollectionDescription: String {
-        publishDescription.isEmpty ? "a breif description of the collection..." : publishDescription
+        publishDescription.isEmpty ? "a brief description of the collection..." : publishDescription
     }
     
     var uiCollectionTags: String {

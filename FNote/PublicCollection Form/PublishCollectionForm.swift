@@ -21,6 +21,17 @@ struct PublishCollectionForm: View {
     let publishCollectionDetailHeader = "PUBLISH DETAILS"
     let publishOptionHeader = "PUBLISH OPTIONS"
     
+    let publishTagsLimit = 4
+    
+    @State private var sheet: Sheet?
+    
+    @State private var isAuthorTextFieldActive = false
+    @State private var isCollectionNameTextFieldActive = false
+    @State private var isCollectionDescriptionTextFieldActive = false
+    
+    @State private var collectionDescriptionTextViewModel = ModalTextViewModel()
+    @State private var collectionTagTextFieldModel = ModalTextFieldModel()
+    
     
     var body: some View {
         NavigationView {
@@ -29,10 +40,13 @@ struct PublishCollectionForm: View {
                     Group {
                         // MARK: Author
                         ScrollViewSection(header: publishAuthorHeader, footer: publishAuthorFooter) {
-                            Text(viewModel.uiAuthorName)
-                                .foregroundColor(viewModel.authorName.isEmpty ? .secondary : .primary)
-                                .modifier(InsetRowStyle())
-                                .onTapGesture(perform: handleAuthorTapped)
+                            TextFieldWrapper(
+                                isActive: $isAuthorTextFieldActive,
+                                text: $viewModel.authorName,
+                                placeholder: "author name",
+                                configure: configureTextField
+                            )
+                            .modifier(InsetRowStyle())
                         }
                         
                         // MARK: Publish Collection
@@ -53,21 +67,24 @@ struct PublishCollectionForm: View {
                         // MARK: - Publish Details
                         ScrollViewSection(header: publishCollectionDetailHeader) {
                             VStack(spacing: 5) {
-                                Text(viewModel.uiCollectionPublishName)
-                                    .foregroundColor(viewModel.publishCollectionName.isEmpty ? .secondary : .primary)
+                                TextFieldWrapper(
+                                    isActive: $isCollectionNameTextFieldActive,
+                                    text: $viewModel.publishCollectionName,
+                                    placeholder: "collection name",
+                                    configure: configureTextField
+                                )
                                     .modifier(InsetRowStyle())
-                                    .onTapGesture(perform: handleCollectionNameTapped)
                                 
                                 Text(viewModel.uiCollectionDescription)
                                     .padding(.top)
                                     .foregroundColor(viewModel.publishDescription.isEmpty ? .secondary : .primary)
                                     .modifier(InsetRowStyle(height: 110, alignment: .topLeading))
-                                    .onTapGesture(perform: handleDescriptionTapped)
+                                    .onTapGesture(perform: beginEditingCollectionDescription)
                                 
                                 Text(viewModel.uiCollectionTags)
                                     .foregroundColor(viewModel.publishTags.isEmpty ? .secondary : .primary)
                                     .modifier(InsetRowStyle())
-                                    .onTapGesture(perform: handleTagTapped)
+                                    .onTapGesture(perform: beginEditingCollectionTags)
                                 
                                 Text(viewModel.uiLanguages)
                                     .foregroundColor(viewModel.isLanguagesValid ? .primary : .secondary)
@@ -103,14 +120,15 @@ struct PublishCollectionForm: View {
             .navigationBarItems(leading: Button("Cancel", action: viewModel.onCancel ?? {}) )
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .sheet(item: $sheet, content: presentationSheet)
     }
 }
 
 
 extension PublishCollectionForm {
     
-    func handleAuthorTapped() {
-        viewModel.authorName = "bdlan"
+    func configureTextField(_ textField: UITextField) {
+        textField.font = .preferredFont(forTextStyle: .body)
     }
     
     func handleCollectionTapped() {
@@ -128,19 +146,6 @@ extension PublishCollectionForm {
         viewModel.publishCollection = collection
     }
     
-    func handleCollectionNameTapped() {
-        viewModel.publishCollectionName = "Publish Title"
-    }
-    
-    func handleDescriptionTapped() {
-        let name = viewModel.publishCollection?.name ?? "nil collection"
-        viewModel.publishDescription = "Short description of the \(name)"
-    }
-    
-    func handleTagTapped() {
-        viewModel.publishTags = ["Travel", "Greeting", "Food", "Street"]
-    }
-    
     func handleLanguagesTapped() {
         viewModel.publishPrimaryLanguage = "KOR"
         viewModel.publishSecondaryLanguage = "ENG"
@@ -149,19 +154,101 @@ extension PublishCollectionForm {
     func handlePublishTapped() {
         viewModel.onCommit?()
     }
+    
+    func beginEditingCollectionDescription() {
+        collectionDescriptionTextViewModel.title = "Brief Description"
+        collectionDescriptionTextViewModel.text = viewModel.publishDescription
+        collectionDescriptionTextViewModel.disableEditing = false
+        collectionDescriptionTextViewModel.renderMarkdown = false
+        collectionDescriptionTextViewModel.isFirstResponder = true
+        collectionDescriptionTextViewModel.onCommit = {
+            self.viewModel.publishDescription = self.collectionDescriptionTextViewModel.text
+            self.collectionDescriptionTextViewModel.isFirstResponder = false
+            self.sheet = nil
+        }
+        sheet = .publishDescription
+    }
+    
+    func beginEditingCollectionTags() {
+        collectionTagTextFieldModel = .init()
+        collectionTagTextFieldModel.title = "Tags"
+        collectionTagTextFieldModel.prompt = "Can add up to \(publishTagsLimit) tags"
+        collectionTagTextFieldModel.tokens = viewModel.publishTags
+        collectionTagTextFieldModel.isFirstResponder = true
+        collectionTagTextFieldModel.returnKeyType = .default
+        sheet = .publishTags
+        
+        
+        
+        // remove tag action
+        collectionTagTextFieldModel.onTokenSelected = { token in
+            self.collectionTagTextFieldModel.tokens.removeAll(where: { $0 == token })
+        }
+        
+        // add tag action
+        collectionTagTextFieldModel.onReturnKey = {
+            let newToken = self.collectionTagTextFieldModel.text.trimmed().replacingOccurrences(of: ",", with: "")
+            
+            // check duplicate
+            if self.collectionTagTextFieldModel.tokens.contains(newToken) {
+                self.collectionTagTextFieldModel.prompt = "Duplicate tag"
+                self.collectionTagTextFieldModel.promptColor = .red
+                return
+            }
+            
+            // check limit
+            let limit = self.publishTagsLimit
+            if self.collectionTagTextFieldModel.tokens.count == limit {
+                self.collectionTagTextFieldModel.prompt = "Cannot have more than \(limit) tags 🥺"
+                self.collectionTagTextFieldModel.promptColor = .orange
+                return
+            }
+            
+            // add tag
+            self.collectionTagTextFieldModel.tokens.append(newToken)
+            self.collectionTagTextFieldModel.text = ""
+            self.collectionTagTextFieldModel.prompt = ""
+        }
+        
+        // commit tags action
+        collectionTagTextFieldModel.onCommit = {
+            self.viewModel.publishTags = self.collectionTagTextFieldModel.tokens
+            self.sheet = nil
+        }
+    }
+}
+
+
+extension PublishCollectionForm {
+    
+    enum Sheet: Identifiable {
+        var id: Self { self }
+        case publishDescription
+        case publishTags
+    }
+    
+    func presentationSheet(for sheet: Sheet) -> some View {
+        switch sheet {
+        case .publishDescription:
+            return ModalTextView(viewModel: $collectionDescriptionTextViewModel)
+                .eraseToAnyView()
+        case .publishTags:
+            return ModalTextField(viewModel: $collectionTagTextFieldModel)
+                .eraseToAnyView()
+        }
+    }
 }
 
 
 struct PublishCollectionForm_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            Color.red.edgesIgnoringSafeArea(.all).sheet(isPresented: .constant(true)) {
-                PublishCollectionForm(viewModel: .init()).colorScheme(.light)
-            }
-            
-            Color.red.edgesIgnoringSafeArea(.all).sheet(isPresented: .constant(true)) {
-                PublishCollectionForm(viewModel: .init()).colorScheme(.dark)
-            }
+            PublishCollectionForm(viewModel: .init())
+                .colorScheme(.light)
+                .accentColor(.appAccent)
+            PublishCollectionForm(viewModel: .init())
+                .colorScheme(.dark)
+                .accentColor(.appAccent)
         }
     }
 }

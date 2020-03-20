@@ -186,7 +186,7 @@ extension HomeSettingView {
         textFieldModel.placeholder = "Export File Name"
         textFieldModel.prompt = "Make a backup of the current data."
         textFieldModel.isFirstResponder = true
-        textFieldModel.onCommit = commitExportData
+        textFieldModel.onReturnKey = commitExportData
         sheet = .exportFileNaming
     }
     

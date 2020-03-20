@@ -99,7 +99,7 @@ extension HomeTagView {
         modalTextFieldModel.placeholder = "Tag Name"
         modalTextFieldModel.isFirstResponder = true
         
-        modalTextFieldModel.onCommit = commitCreateTag
+        modalTextFieldModel.onReturnKey = commitCreateTag
         
         sheet = .modalTextField
     }
@@ -131,7 +131,7 @@ extension HomeTagView {
         modalTextFieldModel.placeholder = tag.name
         modalTextFieldModel.isFirstResponder = true
         
-        modalTextFieldModel.onCommit = {
+        modalTextFieldModel.onReturnKey = {
             self.commitRenameTag(tag)
         }
         
@@ -142,6 +142,7 @@ extension HomeTagView {
         let name = modalTextFieldModel.text.trimmed()
         
         if name.isEmpty {
+            modalTextFieldModel.isFirstResponder = false
             sheet = nil
             return
         }
@@ -211,6 +212,7 @@ extension HomeTagView {
             appState.fetchTags()
             viewModel.tags = appState.tags
             viewModel.updateSnapshot(animated: true)
+            modalTextFieldModel.isFirstResponder = false
             sheet = nil
             
         case .updated(_, let childContext):
@@ -219,6 +221,7 @@ extension HomeTagView {
             appState.fetchTags()
             viewModel.tags = appState.tags
             viewModel.updateSnapshot(animated: true)
+            modalTextFieldModel.isFirstResponder = false
             sheet = nil
             
         case .deleted(let childContext):
@@ -230,6 +233,7 @@ extension HomeTagView {
             sheet = nil
             
         case .unchanged:
+            modalTextFieldModel.isFirstResponder = false
             sheet = nil
             
         case .failed: // TODO: inform user if needed

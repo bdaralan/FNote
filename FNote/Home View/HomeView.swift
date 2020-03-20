@@ -206,7 +206,7 @@ extension HomeView {
         modalTextFieldModel.text = ""
         modalTextFieldModel.placeholder = "Collection Name"
         modalTextFieldModel.isFirstResponder = true
-        modalTextFieldModel.onCommit = commitCreateNoteCardCollection
+        modalTextFieldModel.onReturnKey = commitCreateNoteCardCollection
         sheet = .createNoteCardCollection
     }
     

@@ -69,8 +69,10 @@ struct TextFieldWrapper: UIViewRepresentable {
                 return false
             } else {
                 wrapper.onCommit?()
-                textField.resignFirstResponder()
-                return true
+                if !wrapper.isActive {
+                    textField.resignFirstResponder()
+                }
+                return !wrapper.isActive
             }
         }
         

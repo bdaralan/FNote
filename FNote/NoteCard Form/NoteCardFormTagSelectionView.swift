@@ -46,7 +46,7 @@ extension NoteCardFormTagSelectionView {
         textFieldModel.title = "New Tag"
         textFieldModel.text = ""
         textFieldModel.placeholder = "Tag Name"
-        textFieldModel.onCommit = commitCreateTag
+        textFieldModel.onReturnKey = commitCreateTag
         textFieldModel.isFirstResponder = true
         showCreateTagSheet = true
     }
@@ -55,11 +55,13 @@ extension NoteCardFormTagSelectionView {
         let name = textFieldModel.text.trimmed()
         
         if name.isEmpty {
+            textFieldModel.isFirstResponder = false
             showCreateTagSheet = false
             return
         }
         
         if onCreateTag?(name) == true {
+            textFieldModel.isFirstResponder = false
             showCreateTagSheet = false
         } else {
             textFieldModel.prompt = "Duplicate tag name!"

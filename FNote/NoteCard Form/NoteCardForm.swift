@@ -49,7 +49,7 @@ struct NoteCardForm: View {
                                 isActive: $viewModel.isTranslationFirstResponder,
                                 text: $viewModel.translation,
                                 placeholder: viewModel.translationPlaceholder,
-                                onCommit: nil,
+                                onCommit: commitEditTranslation,
                                 configure: configureTranslationTextField
                             )
                                 .modifier(InsetRowStyle())
@@ -221,6 +221,16 @@ extension NoteCardForm {
         if modalTextViewModel.onCommit != nil {
             viewModel.note = modalTextViewModel.text
         }
+    }
+}
+
+
+// MARK: - Native & Translation
+
+extension NoteCardForm {
+    
+    func commitEditTranslation() {
+        viewModel.isTranslationFirstResponder = false
     }
 }
 

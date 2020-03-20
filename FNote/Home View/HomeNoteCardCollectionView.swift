@@ -110,7 +110,7 @@ extension HomeNoteCardCollectionView {
         modalTextFieldModel.placeholder = "Collection Name"
         modalTextFieldModel.isFirstResponder = true
         
-        modalTextFieldModel.onCommit = commitCreateNoteCardCollection
+        modalTextFieldModel.onReturnKey = commitCreateNoteCardCollection
         
         sheet = .modalTextField
     }
@@ -142,7 +142,7 @@ extension HomeNoteCardCollectionView {
         modalTextFieldModel.placeholder = collection.name
         modalTextFieldModel.isFirstResponder = true
         
-        modalTextFieldModel.onCommit = {
+        modalTextFieldModel.onReturnKey = {
             self.commitRenameNoteCardCollection(collection)
         }
         
@@ -153,6 +153,7 @@ extension HomeNoteCardCollectionView {
         let name = modalTextFieldModel.text.trimmed()
         
         guard !name.isEmpty else {
+            modalTextFieldModel.isFirstResponder = false
             sheet = nil
             return
         }
@@ -205,6 +206,7 @@ extension HomeNoteCardCollectionView {
             }
             viewModel.collections = appState.collections
             viewModel.updateSnapshot(animated: true)
+            modalTextFieldModel.isFirstResponder = false
             sheet = nil
             
         case .updated(_, let childContext):
@@ -213,6 +215,7 @@ extension HomeNoteCardCollectionView {
             appState.fetchCollections()
             viewModel.collections = appState.collections
             viewModel.updateSnapshot(animated: true)
+            modalTextFieldModel.isFirstResponder = false
             sheet = nil
             
         case .deleted(let childContext):
@@ -228,6 +231,7 @@ extension HomeNoteCardCollectionView {
             sheet = nil
             
         case .unchanged:
+            modalTextFieldModel.isFirstResponder = false
             sheet = nil
             
         case .failed: // TODO: inform user if needed

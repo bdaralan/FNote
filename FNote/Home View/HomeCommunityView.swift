@@ -176,8 +176,10 @@ extension HomeCommunityView {
             switch state {
             case .editing: formModel.commitTitle = "PUBLISH"
             case .submitting: formModel.commitTitle = "PUBLISHING"
-            case .published: formModel.commitTitle = "PUBLISHED"
             case .rejected: formModel.commitTitle = "FAILED"
+            case .published:
+                formModel.commitTitle = "PUBLISHED"
+                self.showPublishForm = false
             }
         }
         
