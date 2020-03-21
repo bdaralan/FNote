@@ -23,9 +23,9 @@ class PublishCollectionFormModel: ObservableObject {
     
     @Published var publishTags: [String] = []
     
-    @Published var publishPrimaryLanguageCode: String = ""
+    @Published var publishPrimaryLanguage: Language?
     
-    @Published var publishSecondaryLanguageCode: String = ""
+    @Published var publishSecondaryLanguage: Language?
     
     @Published var includesNote = true
     
@@ -68,8 +68,7 @@ extension PublishCollectionFormModel {
     }
     
     var isLanguagesValid: Bool {
-        return !publishPrimaryLanguageCode.isEmptyOrWhiteSpaces()
-            && !publishSecondaryLanguageCode.isEmptyOrWhiteSpaces()
+        publishPrimaryLanguage != nil && publishSecondaryLanguage != nil
     }
     
     var uiCollectionName: String {
@@ -88,5 +87,15 @@ extension PublishCollectionFormModel {
     
     var uiCollectionTags: String {
         publishTags.isEmpty ? "tags" : publishTags.joined(separator: ", ")
+    }
+    
+    var uiCollectionLanguages: String {
+        if publishPrimaryLanguage == nil && publishSecondaryLanguage == nil {
+            return "languages"
+        }
+        
+        let primary = publishPrimaryLanguage?.localized ?? "???"
+        let secondary = publishSecondaryLanguage?.localized ?? "???"
+        return "\(primary) – \(secondary)"
     }
 }

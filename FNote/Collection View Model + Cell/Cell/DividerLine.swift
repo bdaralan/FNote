@@ -63,3 +63,27 @@ class DividerLine: UIView {
         )
     }
 }
+
+
+// MARK: - Wrapper
+
+import SwiftUI
+
+
+struct DividerLineWrapper: UIViewRepresentable {
+    
+    // MARK: Property
+    
+    var color: UIColor
+    
+    
+    // MARK: Make View
+    
+    func makeUIView(context: Context) -> DividerLine {
+        DividerLine()
+    }
+    
+    func updateUIView(_ uiView: DividerLine, context: Context) {
+        uiView.setColor(color)
+    }
+}

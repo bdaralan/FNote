@@ -24,6 +24,7 @@ struct PublishCollectionForm: View {
     let publishTagsLimit = 4
     
     @State private var sheet: Sheet?
+    @State private var showLanguagePicker = false
     
     @State private var isAuthorTextFieldActive = false
     @State private var isCollectionNameTextFieldActive = false
@@ -89,19 +90,10 @@ struct PublishCollectionForm: View {
                                     .modifier(InsetRowStyle())
                                     .onTapGesture(perform: beginEditCollectionTags)
                                 
-                                HStack(spacing: 5) {
-                                    Text("native language")
-                                        .lineLimit(1)
-                                        .foregroundColor(viewModel.isLanguagesValid ? .primary : .tertiaryLabel)
-                                        .modifier(InsetRowStyle())
-                                        .onTapGesture(perform: beginSelectCollectionLanguages)
-                                    
-                                    Text("translation language")
-                                        .lineLimit(1)
-                                        .foregroundColor(viewModel.isLanguagesValid ? .primary : .tertiaryLabel)
-                                        .modifier(InsetRowStyle())
-                                        .onTapGesture(perform: beginSelectCollectionLanguages)
-                                }
+                                Text(viewModel.uiCollectionLanguages)
+                                    .foregroundColor(viewModel.isLanguagesValid ? .primary : .tertiaryLabel)
+                                    .modifier(InsetRowStyle())
+                                    .onTapGesture(perform: beginSelectCollectionLanguages)
                             }
                         }
                         
@@ -122,7 +114,7 @@ struct PublishCollectionForm: View {
                                 .modifier(InsetRowStyle(height: 60, borderColor: .primary, borderWidth: 2))
                         }
                         .disabled(!viewModel.hasValidInputs)
-                        .opacity(viewModel.hasValidInputs ? 1 : 0.5)
+                        .opacity(viewModel.hasValidInputs ? 1 : 0.4)
                     }
                 }
                 .padding(.horizontal, 20)
@@ -133,6 +125,7 @@ struct PublishCollectionForm: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, content: presentationSheet)
+        .overlay(inputLanguagePicker, alignment: .center)
     }
 }
 
@@ -143,6 +136,28 @@ extension PublishCollectionForm {
     
     func configureTextField(_ textField: UITextField) {
         textField.font = .preferredFont(forTextStyle: .body)
+    }
+    
+    var inputLanguagePicker: some View {
+        InputOverlayView(isPresented: $showLanguagePicker) {
+            VStack(spacing: 0) {
+                HStack(spacing: 8) {
+                    Text("Native & Translation Languages")
+                        .fontWeight(.semibold)
+                        .lineLimit(1)
+                    Spacer()
+                    Button(action: commitSelectCollectionLanguage) {
+                        Text("Done").bold()
+                    }
+                }
+                .padding(.all)
+                Divider()
+                LanguagePickerWrapper(
+                    primary: $viewModel.publishPrimaryLanguage,
+                    secondary: $viewModel.publishSecondaryLanguage
+                )
+            }
+        }
     }
 }
 
@@ -199,8 +214,11 @@ extension PublishCollectionForm {
     
     /// Choose publish collection's languages.
     func beginSelectCollectionLanguages() {
-        viewModel.publishPrimaryLanguageCode = "KOR"
-        viewModel.publishSecondaryLanguageCode = "ENG"
+        showLanguagePicker = true
+    }
+    
+    func commitSelectCollectionLanguage() {
+        showLanguagePicker = false
     }
     
     /// Edit publish collection's description.

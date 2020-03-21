@@ -76,6 +76,9 @@
 		B4A0CE9623D4AB57003A4D83 /* NoteCardCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A0CE9523D4AB57003A4D83 /* NoteCardCollectionViewModel.swift */; };
 		B4A0CE9923D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A0CE9823D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift */; };
 		B4AFD4522360B1B3004BAA9B /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AFD4512360B1B3004BAA9B /* CloudKit.framework */; };
+		B4B3C39F24257E600041515E /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B3C39E24257E600041515E /* Language.swift */; };
+		B4B3C3A124257EBC0041515E /* InputOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B3C3A024257EBC0041515E /* InputOverlayView.swift */; };
+		B4B55D852425510A00D75109 /* LanguagePickerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B55D842425510A00D75109 /* LanguagePickerWrapper.swift */; };
 		B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */; };
 		B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5342320405B007EAF15 /* NoteCard.swift */; };
 		B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */; };
@@ -199,6 +202,9 @@
 		B4A0CE9823D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCompositionalDataSource.swift; sourceTree = "<group>"; };
 		B4AFD44F2360B1A8004BAA9B /* FNote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FNote.entitlements; sourceTree = "<group>"; };
 		B4AFD4512360B1B3004BAA9B /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		B4B3C39E24257E600041515E /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
+		B4B3C3A024257EBC0041515E /* InputOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputOverlayView.swift; sourceTree = "<group>"; };
+		B4B55D842425510A00D75109 /* LanguagePickerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagePickerWrapper.swift; sourceTree = "<group>"; };
 		B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedObjectContext.swift; sourceTree = "<group>"; };
 		B4BAC5342320405B007EAF15 /* NoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCard.swift; sourceTree = "<group>"; };
 		B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollection.swift; sourceTree = "<group>"; };
@@ -273,6 +279,7 @@
 				B40056F423D6CC8600997216 /* NavigationBarButton.swift */,
 				B47460B823E66D50001D07F4 /* NoteCardSortNavigationButton.swift */,
 				B45382D123EB7F7D0085400F /* NoteCardSortOptionPopoverView.swift */,
+				B4B3C3A024257EBC0041515E /* InputOverlayView.swift */,
 			);
 			path = "Reusable View";
 			sourceTree = "<group>";
@@ -291,6 +298,7 @@
 			children = (
 				B411E0502332F6B4008D99A0 /* NotificationObserver.swift */,
 				B452519823E0138C007A85CF /* ExportImportDataManager.swift */,
+				B4B3C39E24257E600041515E /* Language.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -574,6 +582,7 @@
 				B476FE21241C6A3B0006A196 /* ScrollViewSection.swift */,
 				B476FE23241C6EAB0006A196 /* InsetRowStyle.swift */,
 				B4F24A0824241A7B00E7F360 /* CommunityActionButton.swift */,
+				B4B55D842425510A00D75109 /* LanguagePickerWrapper.swift */,
 			);
 			path = "PublicCollection Form";
 			sourceTree = "<group>";
@@ -720,6 +729,7 @@
 				B43B715823FB3D13002C8A1A /* OnboardViewControllerWrapper.swift in Sources */,
 				B4BBDBED23E4EA5C00A0AEA1 /* SettingTextRow.swift in Sources */,
 				B46F6A9F241F103600DCAF6E /* ActionCollectionViewCell.swift in Sources */,
+				B4B55D852425510A00D75109 /* LanguagePickerWrapper.swift in Sources */,
 				B4DC48CB23E7E76700104847 /* NoteCardFormSectionModifier.swift in Sources */,
 				B4816A6B23D912E9006485F7 /* ObjectCUDRequest.swift in Sources */,
 				B420059B23F6433E008F5E63 /* OnboardCollectionViewModel.swift in Sources */,
@@ -772,8 +782,10 @@
 				B4DD491F238A5ED300D183CF /* WelcomeGuideView.swift in Sources */,
 				650D14E92332B96100B6E2BF /* View.swift in Sources */,
 				B4E8811A23FF8E0600F475CE /* PublicNoteCard.swift in Sources */,
+				B4B3C3A124257EBC0041515E /* InputOverlayView.swift in Sources */,
 				B448744623DEB578005EBA45 /* TagCell.swift in Sources */,
 				B4A0CE9623D4AB57003A4D83 /* NoteCardCollectionViewModel.swift in Sources */,
+				B4B3C39F24257E600041515E /* Language.swift in Sources */,
 				B4BAC541232041FE007EAF15 /* ObjectValidatable.swift in Sources */,
 				B40B519C2335C2D6002DA41D /* NotificationName.swift in Sources */,
 				B4C76DFB232C0A520033DDEA /* TextFieldWrapper.swift in Sources */,
