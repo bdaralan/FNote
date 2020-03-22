@@ -11,165 +11,120 @@ import SwiftUI
 
 struct PublishCollectionForm: View {
     
-    @Environment(\.colorScheme) private var colorScheme
-    
     @ObservedObject var viewModel: PublishCollectionFormModel
-    
-    let publishAuthorHeader = "AUTHOR"
-    let publishAuthorFooter = "This will be displayed on all published collections."
-    let publishCollectionHeader = "COLLECTION TO PUBLISH"
-    let publishCollectionDetailHeader = "PUBLISH DETAILS"
-    let publishOptionHeader = "PUBLISH OPTIONS"
     
     let publishTagsLimit = 4
     
     @State private var sheet: Sheet?
     @State private var showLanguagePicker = false
-    
-    @State private var isAuthorTextFieldActive = false
-    @State private var isCollectionNameTextFieldActive = false
-    @State private var isCollectionDescriptionTextFieldActive = false
-    
+    @State private var textFieldModel = ModalTextFieldModel()
     @State private var collectionDescriptionTextViewModel = ModalTextViewModel()
-    @State private var collectionTagTextFieldModel = ModalTextFieldModel()
     
     let collectionViewModel = NoteCardCollectionCollectionViewModel()
     
     
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 32) {
-                    Group {
-                        // MARK: Author
-                        ScrollViewSection(header: publishAuthorHeader, footer: publishAuthorFooter) {
-                            TextFieldWrapper(
-                                isActive: $isAuthorTextFieldActive,
-                                text: $viewModel.authorName,
-                                placeholder: "author name",
-                                onCommit: { self.isAuthorTextFieldActive = false },
-                                configure: configureTextField
-                            )
-                            .modifier(InsetRowStyle())
-                        }
-                        
-                        // MARK: Publish Collection
-                        ScrollViewSection(header: publishCollectionHeader) {
-                            HStack {
-                                Text(viewModel.uiCollectionName)
-                                    .foregroundColor(viewModel.publishCollection == nil ? .tertiaryLabel : .primary)
-                                Spacer()
-                                Text(viewModel.uiCollectionCardsCount)
-                                    .foregroundColor(.secondary)
-                                    .opacity(viewModel.publishCollection == nil ? 0 : 1)
-                            }
-                            .modifier(InsetRowStyle())
-                            .onTapGesture(perform: beginSelectCollection)
-                        }
-                        
-                        // MARK: - Publish Details
-                        ScrollViewSection(header: publishCollectionDetailHeader) {
-                            VStack(spacing: 5) {
-                                TextFieldWrapper(
-                                    isActive: $isCollectionNameTextFieldActive,
-                                    text: $viewModel.publishCollectionName,
-                                    placeholder: "collection name",
-                                    onCommit: { self.isCollectionNameTextFieldActive = false },
-                                    configure: configureTextField
-                                )
-                                    .modifier(InsetRowStyle())
-                                
-                                Text(viewModel.uiCollectionDescription)
-                                    .padding(.top)
-                                    .foregroundColor(viewModel.publishDescription.isEmpty ? .tertiaryLabel : .primary)
-                                    .modifier(InsetRowStyle(height: 110, alignment: .topLeading))
-                                    .onTapGesture(perform: beginEditCollectionDescription)
-                                
-                                Text(viewModel.uiCollectionTags)
-                                    .foregroundColor(viewModel.publishTags.isEmpty ? .tertiaryLabel : .primary)
-                                    .modifier(InsetRowStyle())
-                                    .onTapGesture(perform: beginEditCollectionTags)
-                                
-                                Text(viewModel.uiCollectionLanguages)
-                                    .foregroundColor(viewModel.isLanguagesValid ? .primary : .tertiaryLabel)
-                                    .modifier(InsetRowStyle())
-                                    .onTapGesture(perform: beginSelectCollectionLanguages)
-                            }
-                        }
-                        
-                        // MARK: Publish Options
-                        ScrollViewSection(header: publishOptionHeader) {
-                            Toggle(isOn: $viewModel.includesNote, label: { Text("Include Cards' Notes") })
-                                .modifier(InsetRowStyle())
-                        }
-                    }
-                    
-                    // MARK: Publish Button
-                    VStack {
-                        Button(action: publishCollection) {
-                            Text(viewModel.commitTitle)
-                                .font(Font.body.weight(.black))
-                                .frame(maxWidth: .infinity)
-                                .foregroundColor(colorScheme == .light ? .black : .white)
-                                .modifier(InsetRowStyle(height: 60, borderColor: .primary, borderWidth: 2))
-                        }
-                        .disabled(!viewModel.hasValidInputs)
-                        .opacity(viewModel.hasValidInputs ? 1 : 0.4)
-                    }
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 32)
-            }
-            .navigationBarTitle("Publish Collection", displayMode: .inline)
-            .navigationBarItems(leading: Button("Cancel", action: viewModel.onCancel ?? {}) )
+            PublishCollectionViewControllerWrapper(viewModel: viewModel, onRowSelected: handleRowSelected)
+                .navigationBarTitle("Publish Collection", displayMode: .inline)
+                .navigationBarItems(leading: Button("Cancel", action: viewModel.onCancel ?? {}) )
+                .edgesIgnoringSafeArea(.bottom)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, content: presentationSheet)
-        .overlay(inputLanguagePicker, alignment: .center)
+        .overlay(collectionLanguagePicker)
     }
 }
 
 
-// MARK: - Text Field
+// MARK: - Setup
 
 extension PublishCollectionForm {
     
-    func configureTextField(_ textField: UITextField) {
-        textField.font = .preferredFont(forTextStyle: .body)
-    }
-    
-    var inputLanguagePicker: some View {
-        InputOverlayView(isPresented: $showLanguagePicker) {
-            VStack(spacing: 0) {
-                HStack(spacing: 8) {
-                    Text("Native & Translation Languages")
-                        .fontWeight(.semibold)
-                        .lineLimit(1)
-                    Spacer()
-                    Button(action: commitSelectCollectionLanguage) {
-                        Text("Done").bold()
-                    }
-                }
-                .padding(.all)
-                Divider()
-                LanguagePickerWrapper(
-                    primary: $viewModel.publishPrimaryLanguage,
-                    secondary: $viewModel.publishSecondaryLanguage
-                )
-            }
+    func handleRowSelected(kind: PublishFormRowKind) {
+        viewModel.onRowSelected?(kind)
+        switch kind {
+        case .authorName: beginEditAuthorName()
+        case .collection: beginSelectCollection()
+        case .collectionName: beginEditCollectionName()
+        case .collectionDescription: beginEditCollectionDescription()
+        case .collectionTag: beginEditCollectionTags()
+        case .collectionLanguage: beginSelectCollectionLanguages()
+        case .publishAction: publishCollection()
+        case .includeNote: break
         }
     }
 }
 
 
-// MARK: - Action and Handler
+// MARK: - Sheet
 
 extension PublishCollectionForm {
     
-    /// Commit publishing collection.
-    func publishCollection() {
-        viewModel.onCommit?()
+    enum Sheet: Identifiable {
+        var id: Self { self }
+        case authorName
+        case collectionName
+        case publishCollection
+        case publishDescription
+        case publishTags
     }
+    
+    func presentationSheet(for sheet: Sheet) -> some View {
+        switch sheet {
+        case .authorName, .collectionName, .publishTags:
+            return ModalTextField(viewModel: $textFieldModel)
+                .eraseToAnyView()
+        
+        case .publishDescription:
+            return ModalTextView(viewModel: $collectionDescriptionTextViewModel)
+                .eraseToAnyView()
+            
+        case .publishCollection:
+            let cancel = Button("Cancel", action: { self.sheet = nil })
+            return NavigationView {
+                CollectionViewWrapper(viewModel: collectionViewModel)
+                    .navigationBarTitle("Select Collection", displayMode: .inline)
+                    .navigationBarItems(leading: cancel)
+                    .edgesIgnoringSafeArea(.all)
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .eraseToAnyView()
+        }
+    }
+}
+
+
+// MARK: - Author
+
+extension PublishCollectionForm {
+    
+    func beginEditAuthorName() {
+        textFieldModel = .init()
+        textFieldModel.title = "Author Name"
+        textFieldModel.text = viewModel.authorName
+        textFieldModel.placeholder = "author name"
+        textFieldModel.prompt = "allows A-Z, 0-9, -, and _"
+        textFieldModel.isFirstResponder = true
+        sheet = .authorName
+        
+        textFieldModel.onCancel = {
+            self.textFieldModel.isFirstResponder = false
+            self.sheet = nil
+        }
+        
+        textFieldModel.onReturnKey = {
+            self.viewModel.authorName = self.textFieldModel.text.trimmed()
+            self.textFieldModel.isFirstResponder = false
+            self.sheet = nil
+        }
+    }
+}
+
+
+// MARK: - Collection
+
+extension PublishCollectionForm {
     
     /// Choose a collection to publish.
     func beginSelectCollection() {
@@ -211,14 +166,31 @@ extension PublishCollectionForm {
         
         sheet = .publishCollection
     }
+}
+
+
+// MARK: - Publish Detail
+
+extension PublishCollectionForm {
     
-    /// Choose publish collection's languages.
-    func beginSelectCollectionLanguages() {
-        showLanguagePicker = true
-    }
-    
-    func commitSelectCollectionLanguage() {
-        showLanguagePicker = false
+    func beginEditCollectionName() {
+        textFieldModel = .init()
+        textFieldModel.title = "Collection Name"
+        textFieldModel.text = viewModel.publishCollectionName
+        textFieldModel.prompt = "publish name"
+        textFieldModel.isFirstResponder = true
+        sheet = .collectionName
+        
+        textFieldModel.onCancel = {
+            self.textFieldModel.isFirstResponder = false
+            self.sheet = nil
+        }
+        
+        textFieldModel.onReturnKey = {
+            self.viewModel.publishCollectionName = self.textFieldModel.text.trimmed()
+            self.textFieldModel.isFirstResponder = false
+            self.sheet = nil
+        }
     }
     
     /// Edit publish collection's description.
@@ -240,88 +212,116 @@ extension PublishCollectionForm {
     /// Edit publish collection's tags.
     func beginEditCollectionTags() {
         let maxTags = self.publishTagsLimit
-        let initialPrompt = "Can add up to \(maxTags) tags"
+        let setDefaultPrompt = {
+            let count = self.textFieldModel.tokens.count
+            self.textFieldModel.prompt = "collection's tags \(count)/\(maxTags)"
+            self.textFieldModel.promptColor = nil
+        }
         
-        collectionTagTextFieldModel = .init()
-        collectionTagTextFieldModel.title = "Tags"
-        collectionTagTextFieldModel.prompt = initialPrompt
-        collectionTagTextFieldModel.tokens = viewModel.publishTags
-        collectionTagTextFieldModel.isFirstResponder = true
-        collectionTagTextFieldModel.returnKeyType = .default
+        textFieldModel = .init()
+        textFieldModel.title = "Tags"
+        textFieldModel.tokens = viewModel.publishTags
+        textFieldModel.isFirstResponder = true
+        textFieldModel.returnKeyType = .default
+        setDefaultPrompt()
         sheet = .publishTags
         
         // remove tag action
-        collectionTagTextFieldModel.onTokenSelected = { token in
-            self.collectionTagTextFieldModel.tokens.removeAll(where: { $0 == token })
-            if self.collectionTagTextFieldModel.tokens.isEmpty {
-                self.collectionTagTextFieldModel.prompt = initialPrompt
-                self.collectionTagTextFieldModel.promptColor = nil
-            }
+        textFieldModel.onTokenSelected = { token in
+            self.textFieldModel.tokens.removeAll(where: { $0 == token })
+            setDefaultPrompt()
         }
         
         // add tag action
-        collectionTagTextFieldModel.onReturnKey = {
-            let newToken = self.collectionTagTextFieldModel.text.trimmed().replacingOccurrences(of: ",", with: "")
+        textFieldModel.onReturnKey = {
+            let newToken = self.textFieldModel.text.trimmed().replacingOccurrences(of: ",", with: "")
             
             // check duplicate
-            if self.collectionTagTextFieldModel.tokens.contains(newToken) {
-                self.collectionTagTextFieldModel.prompt = "Duplicate tag"
-                self.collectionTagTextFieldModel.promptColor = .red
+            if self.textFieldModel.tokens.contains(newToken) {
+                self.textFieldModel.prompt = "Duplicate tag"
+                self.textFieldModel.promptColor = .red
                 return
             }
             
             // check limit
-            if self.collectionTagTextFieldModel.tokens.count == maxTags {
-                self.collectionTagTextFieldModel.prompt = "Cannot have more than \(maxTags) tags 🥺"
-                self.collectionTagTextFieldModel.promptColor = .orange
+            if self.textFieldModel.tokens.count == maxTags {
+                self.textFieldModel.prompt = "Cannot have more than \(maxTags) tags 🥺"
+                self.textFieldModel.promptColor = .orange
                 return
             }
             
             // add tag
-            self.collectionTagTextFieldModel.tokens.append(newToken)
-            self.collectionTagTextFieldModel.text = ""
-            self.collectionTagTextFieldModel.prompt = ""
+            self.textFieldModel.tokens.append(newToken)
+            self.textFieldModel.text = ""
+            setDefaultPrompt()
         }
         
         // commit tags action
-        collectionTagTextFieldModel.onCommit = {
-            self.viewModel.publishTags = self.collectionTagTextFieldModel.tokens
+        textFieldModel.onCommit = {
+            self.viewModel.publishTags = self.textFieldModel.tokens
             self.sheet = nil
         }
     }
 }
 
 
+// MARK: - Publish Option
+
 extension PublishCollectionForm {
     
-    enum Sheet: Identifiable {
-        var id: Self { self }
-        case publishCollection
-        case publishDescription
-        case publishTags
+    
+}
+
+
+// MARK: - Language
+
+extension PublishCollectionForm {
+    
+    var collectionLanguagePicker: some View {
+        let commitAction = commitSelectCollectionLanguages
+        
+        let header = HStack(spacing: 8) {
+            Text("Native & Translation Languages")
+                .fontWeight(.semibold)
+                .lineLimit(1)
+            Spacer()
+            Button(action: commitAction) {
+                Text("Done").bold()
+            }
+        }
+        
+        let picker = LanguagePickerWrapper(
+            primary: $viewModel.publishPrimaryLanguage,
+            secondary: $viewModel.publishSecondaryLanguage
+        )
+        
+        return InputOverlayView(isPresented: $showLanguagePicker, onTouchOutside: commitAction) {
+            VStack(spacing: 0) {
+                header.padding(.all)
+                Divider()
+                picker
+            }
+        }
     }
     
-    func presentationSheet(for sheet: Sheet) -> some View {
-        switch sheet {
-        case .publishDescription:
-            return ModalTextView(viewModel: $collectionDescriptionTextViewModel)
-                .eraseToAnyView()
-        
-        case .publishTags:
-            return ModalTextField(viewModel: $collectionTagTextFieldModel)
-                .eraseToAnyView()
-            
-        case .publishCollection:
-            let cancel = Button("Cancel", action: { self.sheet = nil })
-            return NavigationView {
-                CollectionViewWrapper(viewModel: collectionViewModel)
-                    .navigationBarTitle("Select Collection", displayMode: .inline)
-                    .navigationBarItems(leading: cancel)
-                    .edgesIgnoringSafeArea(.all)
-            }
-            .navigationViewStyle(StackNavigationViewStyle())
-            .eraseToAnyView()
-        }
+    /// Choose publish collection's languages.
+    func beginSelectCollectionLanguages() {
+        showLanguagePicker = true
+    }
+    
+    func commitSelectCollectionLanguages() {
+        showLanguagePicker = false
+    }
+}
+
+
+// MARK: - Publish
+
+extension PublishCollectionForm {
+    
+    /// Commit publishing collection.
+    func publishCollection() {
+        viewModel.onCommit?()
     }
 }
 

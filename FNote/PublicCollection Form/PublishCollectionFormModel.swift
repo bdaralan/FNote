@@ -31,15 +31,17 @@ class PublishCollectionFormModel: ObservableObject {
     
     @Published var commitTitle = "PUBLISH"
     
-    private(set) var publishState: PublishState = .editing
+    private(set) var publishState: PublishFormPublishState = .editing
     
     var onCommit: (() -> Void)?
     
     var onCancel: (() -> Void)?
     
-    var onPublishStateChanged: ((PublishState) -> Void)?
+    var onPublishStateChanged: ((PublishFormPublishState) -> Void)?
     
-    func setPublishState(to newValue: PublishState) {
+    var onRowSelected: ((PublishFormRowKind) -> Void)?
+    
+    func setPublishState(to newValue: PublishFormPublishState) {
         publishState = newValue
         onPublishStateChanged?(newValue)
     }
@@ -49,13 +51,6 @@ class PublishCollectionFormModel: ObservableObject {
 // MARK: UI Property
 
 extension PublishCollectionFormModel {
-    
-    enum PublishState {
-        case editing
-        case submitting
-        case published
-        case rejected
-    }
     
     var hasValidInputs: Bool {
         return publishCollection != nil
@@ -71,8 +66,16 @@ extension PublishCollectionFormModel {
         publishPrimaryLanguage != nil && publishSecondaryLanguage != nil
     }
     
+    var uiAuthorName: String {
+        authorName.isEmpty ? "none" : authorName
+    }
+    
     var uiCollectionName: String {
-        publishCollection?.name ?? "select a collection"
+        publishCollection?.name ?? "none"
+    }
+    
+    var uiCollectionPublishName: String {
+        publishCollectionName.isEmpty ? "none" : publishCollectionName
     }
     
     var uiCollectionCardsCount: String {
@@ -82,16 +85,16 @@ extension PublishCollectionFormModel {
     }
     
     var uiCollectionDescription: String {
-        publishDescription.isEmpty ? "a brief description of the collection..." : publishDescription
+        publishDescription.isEmpty ? "none" : publishDescription
     }
     
     var uiCollectionTags: String {
-        publishTags.isEmpty ? "tags" : publishTags.joined(separator: ", ")
+        publishTags.isEmpty ? "none" : publishTags.joined(separator: ", ")
     }
     
     var uiCollectionLanguages: String {
         if publishPrimaryLanguage == nil && publishSecondaryLanguage == nil {
-            return "languages"
+            return "none"
         }
         
         let primary = publishPrimaryLanguage?.localized ?? "???"

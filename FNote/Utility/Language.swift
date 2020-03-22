@@ -11,15 +11,24 @@ import Foundation
 
 struct Language: Equatable {
     
+    /// ISO-639 language code
     let code: String
     
+    /// Language localized string of the `code`.
     let localized: String
+    
+    
+    private init(code: String, localized: String) {
+        self.code = code
+        self.localized = localized
+    }
     
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.code == rhs.code
     }
     
-    static func fromISOCodes() -> [Language] {
+    /// Load all available language from system's available language ISO codes.
+    static func availableISO639s() -> [Language] {
         Locale.isoLanguageCodes.compactMap { code -> Language? in
             guard let localized = Locale.current.localizedString(forLanguageCode: code) else { return nil }
             return Language(code: code, localized: localized)

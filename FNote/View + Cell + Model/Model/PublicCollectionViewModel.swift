@@ -21,15 +21,6 @@ class PublicCollectionViewModel: NSObject, CollectionViewCompositionalDataSource
     var isHorizontallyCompact = true
     
     var onItemSelected: ((PublicSectionItem, PublicSectionType) -> Void)?
-    
-    
-    override init() {
-        super.init()
-        sections = [
-            .init(type: .recentCollection, title: "", items: []),
-            .init(type: .recentCard, title: "", items: [])
-        ]
-    }
 }
 
 
@@ -429,4 +420,30 @@ extension PublicCollectionViewModel {
         ]
         return model
     }()
+    
+    static var placeholder: PublicCollectionViewModel {
+        let model = PublicCollectionViewModel()
+        
+        let collections = (1...9).map { number -> PublicSectionItem in
+            let collectionID = "collection\(number)"
+            let collection = PublicCollection(collectionID: collectionID, authorID: "----", name: "---------", description: "----", primaryLanguage: "---", secondaryLanguage: "---", tags: [], cardsCount: 0)
+            let item = PublicSectionItem(itemID: collectionID, object: collection)
+            return item
+        }
+        
+        let cards = (1...9).map { number -> PublicSectionItem in
+            let collectionID = "collection\(number)"
+            let cardID = "card\(number)"
+            let card = PublicNoteCard(collectionID: collectionID, cardID: cardID, native: "----", translation: "----", favorited: false, formality: 0, note: "----", tags: [], relationships: [])
+            let item = PublicSectionItem(itemID: cardID, object: card)
+            return item
+        }
+        
+        model.sections = [
+            .init(type: .recentCollection, title: "Recent Collections", items: collections),
+            .init(type: .recentCard, title: "Recent Cards", items: cards)
+        ]
+        
+        return model
+    }
 }

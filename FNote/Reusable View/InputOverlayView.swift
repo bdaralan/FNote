@@ -33,10 +33,13 @@ struct InputOverlayView<Content>: View where Content: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            overlayColor
-                .opacity(isPresented ? 0.2 : 0)
-                .animation(Animation.easeInOut(duration: 0.4))
-                .onTapGesture(perform: onTouchOutside)
+            if isPresented {
+                overlayColor
+                    .opacity(0.2)
+                    .transition(.opacity)
+                    .animation(Animation.easeInOut(duration: 0.4))
+                    .onTapGesture(perform: onTouchOutside)
+            }
             
             if isPresented {
                 content
@@ -50,6 +53,7 @@ struct InputOverlayView<Content>: View where Content: View {
                     .animation(.spring())
             }
         }
+        .animation(.default)
         .edgesIgnoringSafeArea(.all)
     }
 }

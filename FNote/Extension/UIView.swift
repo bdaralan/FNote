@@ -27,6 +27,15 @@ extension UIView {
         layer.shadowRadius = 1
         layer.shadowOffset = .init(width: -1, height: 1)
     }
+    
+    func applyRowStyle() {
+        backgroundColor = .noteCardBackground
+        layer.shadowColor = UIColor.label.cgColor
+        layer.masksToBounds = false
+        layer.shadowOpacity = 0.17
+        layer.shadowRadius = 0.5
+        layer.shadowOffset = .init(width: -0.25, height: 0.25)
+    }
 }
 
 

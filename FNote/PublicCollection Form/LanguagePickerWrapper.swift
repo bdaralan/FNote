@@ -52,7 +52,7 @@ extension LanguagePickerWrapper {
         
         init(wrapper: LanguagePickerWrapper) {
             self.wrapper = wrapper
-            languages = [nil] + Language.fromISOCodes()
+            languages = [nil] + Language.availableISO639s()
             
             super.init()
             picker.dataSource = self
@@ -119,7 +119,7 @@ extension LanguagePickerWrapper.Coordinator: UIPickerViewDataSource, UIPickerVie
 
 struct Previews: PreviewProvider {
     @State static private var primary: Language?
-    @State static private var secondary: Language? = .init(code: "ko", localized: "")
+    @State static private var secondary: Language?
     static var previews: some View {
         LanguagePickerWrapper(primary: $primary, secondary: $secondary)
     }

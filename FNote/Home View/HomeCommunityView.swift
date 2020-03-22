@@ -188,16 +188,18 @@ extension HomeCommunityView {
     }
     
     func commitPublishCollection() {
-        guard let formModel = publishFormModel else { return }
-        guard formModel.hasValidInputs, let collection = formModel.publishCollection else { return }
+        guard let formModel = publishFormModel, formModel.hasValidInputs else { return }
+        guard let collection = formModel.publishCollection else { return }
+        guard let primaryLanguage = formModel.publishPrimaryLanguage else { return }
+        guard let secondaryLanguage = formModel.publishSecondaryLanguage else { return }
         
         let publicCollection = PublicCollection(
             collectionID: collection.uuid,
             authorID: formModel.authorName,
             name: collection.name,
             description: formModel.publishDescription,
-            primaryLanguage: "KOR",
-            secondaryLanguage: "ENG",
+            primaryLanguage: primaryLanguage.code,
+            secondaryLanguage: secondaryLanguage.code,
             tags: formModel.publishTags,
             cardsCount: collection.noteCards.count
         )
