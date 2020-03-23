@@ -15,5 +15,6 @@ struct NoteCardFormRelationshipSelectionView: View {
     
     var body: some View {
         CollectionViewWrapper(viewModel: viewModel)
+            .edgesIgnoringSafeArea(.all)
     }
 }

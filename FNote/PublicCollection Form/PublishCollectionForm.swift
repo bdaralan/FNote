@@ -103,8 +103,8 @@ extension PublishCollectionForm {
         textFieldModel = .init()
         textFieldModel.title = "Author Name"
         textFieldModel.text = viewModel.authorName
-        textFieldModel.placeholder = "author name"
-        textFieldModel.prompt = "allows A-Z, 0-9, -, and _"
+        textFieldModel.placeholder = viewModel.authorName
+        textFieldModel.prompt = "name that appears on all published collections (A-Z, 0-9, -, _)"
         textFieldModel.isFirstResponder = true
         sheet = .authorName
         
@@ -114,7 +114,7 @@ extension PublishCollectionForm {
         }
         
         textFieldModel.onReturnKey = {
-            self.viewModel.authorName = self.textFieldModel.text.trimmed()
+            self.viewModel.authorName = self.textFieldModel.text.trimmedUsername()
             self.textFieldModel.isFirstResponder = false
             self.sheet = nil
         }
@@ -177,6 +177,7 @@ extension PublishCollectionForm {
         textFieldModel = .init()
         textFieldModel.title = "Collection Name"
         textFieldModel.text = viewModel.publishCollectionName
+        textFieldModel.placeholder = viewModel.publishCollectionName
         textFieldModel.prompt = "publish name"
         textFieldModel.isFirstResponder = true
         sheet = .collectionName
@@ -281,7 +282,7 @@ extension PublishCollectionForm {
         let commitAction = commitSelectCollectionLanguages
         
         let header = HStack(spacing: 8) {
-            Text("Native & Translation Languages")
+            Text("Indicate Native  ➜  Translation")
                 .fontWeight(.semibold)
                 .lineLimit(1)
             Spacer()
