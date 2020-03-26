@@ -69,8 +69,8 @@ class NoteCardFormModel: ObservableObject {
         isSelectingTag || isSelectingRelationship || isSelectingCollection ? "Card" : navigationTitle
     }
     
-    var nativePlaceholder = "안녕 (native)"
-    var translationPlaceholder = "Hi (translation)"
+    var nativePlaceholder = "안녕"
+    var translationPlaceholder = "Hi"
     var commitTitle = "Commit"
     var navigationTitle = "Note Card"
     
@@ -96,6 +96,33 @@ class NoteCardFormModel: ObservableObject {
     init(collection: NoteCardCollection? = nil, noteCard: NoteCard? = nil) {
         self.selectedCollection = collection
         self.selectedNoteCard = noteCard
+    }
+}
+
+
+extension NoteCardFormModel {
+    
+    var uiCollectionName: String {
+        selectedCollection?.name ?? "none"
+    }
+    
+    var uiCollectionCardsCount: String {
+        guard let collection = selectedCollection else { return "" }
+        let count = collection.noteCards.count
+        let card = count == 1 ? "CARD" : "CARDS"
+        return "\(count) \(card)"
+    }
+    
+    var uiTagsCount: String {
+        "\(selectedTags.count)"
+    }
+    
+    var uiRelationshipsCount: String {
+        "\(selectedRelationships.count)"
+    }
+    
+    var uiCompactNote: String {
+        note.trimmed()
     }
 }
 

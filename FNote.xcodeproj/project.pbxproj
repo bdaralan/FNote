@@ -26,6 +26,7 @@
 		B424018D23ED2BAA0042B223 /* document-type-icon-64.png in Resources */ = {isa = PBXBuildFile; fileRef = B424018923ED2BAA0042B223 /* document-type-icon-64.png */; };
 		B424018E23ED2BAA0042B223 /* document-type-icon-44.png in Resources */ = {isa = PBXBuildFile; fileRef = B424018A23ED2BAA0042B223 /* document-type-icon-44.png */; };
 		B42BC61D2410B159000F2BA7 /* PublicUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B42BC61C2410B159000F2BA7 /* PublicUser.swift */; };
+		B430FC0924284F7300E31264 /* NoteCardFormController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B430FC0824284F7300E31264 /* NoteCardFormController.swift */; };
 		B43B715623FB3CFA002C8A1A /* OnboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43B715523FB3CFA002C8A1A /* OnboardViewController.swift */; };
 		B43B715823FB3D13002C8A1A /* OnboardViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43B715723FB3D13002C8A1A /* OnboardViewControllerWrapper.swift */; };
 		B44625FA23E3D31A00B43526 /* UserStoredValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44625F923E3D31A00B43526 /* UserStoredValue.swift */; };
@@ -156,6 +157,7 @@
 		B424018923ED2BAA0042B223 /* document-type-icon-64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "document-type-icon-64.png"; sourceTree = "<group>"; };
 		B424018A23ED2BAA0042B223 /* document-type-icon-44.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "document-type-icon-44.png"; sourceTree = "<group>"; };
 		B42BC61C2410B159000F2BA7 /* PublicUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicUser.swift; sourceTree = "<group>"; };
+		B430FC0824284F7300E31264 /* NoteCardFormController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardFormController.swift; sourceTree = "<group>"; };
 		B43B715523FB3CFA002C8A1A /* OnboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardViewController.swift; sourceTree = "<group>"; };
 		B43B715723FB3D13002C8A1A /* OnboardViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardViewControllerWrapper.swift; sourceTree = "<group>"; };
 		B44625F923E3D31A00B43526 /* UserStoredValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStoredValue.swift; sourceTree = "<group>"; };
@@ -465,6 +467,7 @@
 				B49C4C6E23D64AFB0030D9B2 /* SegmentControlWrapper.swift */,
 				B4DC48CA23E7E76700104847 /* NoteCardFormSectionModifier.swift */,
 				B4DC48CC23E7E78A00104847 /* NoteCardFormRowModifier.swift */,
+				B430FC0824284F7300E31264 /* NoteCardFormController.swift */,
 			);
 			path = "NoteCard Form";
 			sourceTree = "<group>";
@@ -753,6 +756,7 @@
 			files = (
 				B452519923E0138C007A85CF /* ExportImportDataManager.swift in Sources */,
 				B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */,
+				B430FC0924284F7300E31264 /* NoteCardFormController.swift in Sources */,
 				B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */,
 				B43B715823FB3D13002C8A1A /* OnboardViewControllerWrapper.swift in Sources */,
 				B4BBDBED23E4EA5C00A0AEA1 /* SettingTextRow.swift in Sources */,

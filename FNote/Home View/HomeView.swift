@@ -71,7 +71,6 @@ struct HomeView: View {
                 .tag(Tab.setting)
             
         }
-        .edgesIgnoringSafeArea(.top)
         .onAppear(perform: setupOnAppear)
         .sheet(item: $sheet, onDismiss: handleSheetDismissed, content: presentationSheet)
         .alert(isPresented: $appState.showDidCopyFileAlert, content: { .DidCopyFileAlert(fileName: appState.copiedFileName) })

@@ -16,12 +16,12 @@ struct NoteCardForm: View {
     @State private var sheet: Sheet?
     @State private var modalTextViewModel = ModalTextViewModel()
     
-    @State private var showChooseRelationshipCollection = false
-    let chooseRelationshipCollectionViewModel = NoteCardCollectionCollectionViewModel()
+    @State private var showSelectRelationshipCollection = false
+    let selectRelationshipCollectionViewModel = NoteCardCollectionCollectionViewModel()
     
-    @State private var collectionViewModel = NoteCardCollectionCollectionViewModel()
-    @State private var tagViewModel = TagCollectionViewModel()
-    @State private var relationshipViewModel = NoteCardCollectionViewModel()
+    @State private var selectCollectionViewModel = NoteCardCollectionCollectionViewModel()
+    @State private var selectTagViewModel = TagCollectionViewModel()
+    @State private var selectRelationshipViewModel = NoteCardCollectionViewModel()
     @State private var relationshipCurrentSearchText = ""
     
     @State private var translationTextField: UITextField?
@@ -31,151 +31,16 @@ struct NoteCardForm: View {
     
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 32) {
-                    // MARK: Native & Translation
-                    ScrollViewSection(header: "NATIVE & TRANSLATION") {
-                        VStack(spacing: 5) {
-                            TextFieldWrapper(
-                                isActive: $viewModel.isNativeFirstResponder,
-                                text: $viewModel.native,
-                                placeholder: viewModel.nativePlaceholder,
-                                nextResponder: translationTextField,
-                                configure: configureNativeTextField
-                            )
-                                .modifier(InsetRowStyle())
-
-                            TextFieldWrapper(
-                                isActive: $viewModel.isTranslationFirstResponder,
-                                text: $viewModel.translation,
-                                placeholder: viewModel.translationPlaceholder,
-                                onCommit: commitEditTranslation,
-                                configure: configureTranslationTextField
-                            )
-                                .modifier(InsetRowStyle())
-                        }
-                    }
-                    
-                    // MARK: Collection
-                    ScrollViewSection(header: "COLLECTION") {
-                        HStack {
-                            Text(viewModel.selectedCollection?.name ?? "None")
-                                .foregroundColor(viewModel.selectedCollection == nil ? .secondary : .primary)
-                            Spacer()
-                            HStack {
-                                Text(viewModel.selectedCollectionNoteCardCount)
-                                    .foregroundColor(.secondary)
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(Color(.tertiaryLabel))
-                            }
-                        }
-                        .modifier(InsetRowStyle())
-                        .onTapGesture(perform: beginSelectCollection)
-                        .onReceive(viewModel.$isSelectingCollection, perform: handleOnReceiveSelectingCollection)
-                        .background(
-                            NavigationLink(
-                                destination: NoteCardFormCollectionSelectionView(viewModel: collectionViewModel),
-                                isActive: $viewModel.isSelectingCollection,
-                                label: EmptyView.init
-                            )
-                        )
-                    }
-                    
-                    // MARK: Formality
-                    ScrollViewSection(header: "FORMALITY") {
-                        SegmentControlWrapper(
-                            selectedIndex: $viewModel.formality,
-                            segments: viewModel.formalities,
-                            selectedColor: viewModel.selectedFormality.uiColor,
-                            backgroundColor: .noteCardBackground,
-                            enableHapticFeedback: true
-                        )
-                    }
-                    
-                    // MARK: Favorite
-                    ScrollViewSection {
-                        VStack(spacing: 5) {
-                            Toggle(isOn: $viewModel.isFavorite) {
-                                Image.noteCardFavorite(viewModel.isFavorite)
-                                    .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
-                                Text("Favorite")
-                                    .padding(.leading, 4)
-                            }
-                            .modifier(InsetRowStyle())
-
-                            // MARK: Relationship
-                            HStack {
-                                Image.noteCardRelationship
-                                    .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
-                                    .foregroundColor(.primary)
-                                Text("Links")
-                                    .foregroundColor(.primary)
-                                    .padding(.leading, 4)
-                                Spacer()
-                                HStack {
-                                    Text("\(viewModel.selectedRelationships.count)")
-                                        .foregroundColor(.secondary)
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(Color(.tertiaryLabel))
-                                }
-                            }
-                            .modifier(InsetRowStyle())
-                            .onTapGesture(perform: beginSelectRelationship)
-                            .onReceive(viewModel.$isSelectingRelationship, perform: handleOnReceiveSelectingRelationship)
-                            .background(relationshipNavigationLink)
-
-                            // MARK: Tag
-                            HStack {
-                                Image.noteCardTag
-                                    .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
-                                    .foregroundColor(.primary)
-                                Text("Tags")
-                                    .foregroundColor(.primary)
-                                    .padding(.leading, 4)
-                                Spacer()
-                                HStack {
-                                    Text("\(viewModel.selectedTags.count)")
-                                        .foregroundColor(.secondary)
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(Color(.tertiaryLabel))
-                                }
-                            }
-                            .modifier(InsetRowStyle())
-                            .onTapGesture(perform: beginSelectTag)
-                            .onReceive(viewModel.$isSelectingTag, perform: handleOnReceiveSelectingTag)
-                            .background(
-                                NavigationLink(
-                                    destination: NoteCardFormTagSelectionView(viewModel: tagViewModel, onCreateTag: handleCreateTag),
-                                    isActive: $viewModel.isSelectingTag,
-                                    label: EmptyView.init
-                                )
-                            )
-
-                            // MARK: Note
-                            HStack {
-                                Image.noteCardNote
-                                    .frame(width: iconSize.width, height: iconSize.height, alignment: .center)
-                                    .foregroundColor(.primary)
-                                Text("Note")
-                                    .foregroundColor(.primary)
-                                    .padding(.leading, 4)
-                                Spacer()
-                                HStack(spacing: 3) { // markdown logo with sf symbol
-                                    Image(systemName: "m.square")
-                                    Image(systemName: "arrow.down.square")
-                                }
-                                .foregroundColor(.secondary)
-                            }
-                            .modifier(InsetRowStyle())
-                            .onTapGesture(perform: beginEditNote)
-                        }
-                    }
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 32)
-            }
-            .navigationBarItems(leading: cancelNavItem, trailing: commitNavItem)
-            .navigationBarTitle(Text(viewModel.presentingTitle), displayMode: .inline)
+            NoteCardFormControllerWrapper(viewModel: viewModel, onRowSelected: handleRowSelected)
+                .navigationBarItems(leading: cancelNavItem, trailing: commitNavItem)
+                .navigationBarTitle(Text(viewModel.presentingTitle), displayMode: .inline)
+                .edgesIgnoringSafeArea(.bottom)
+                .background(selectCollectionNavigationLink)
+                .background(selectRelationshipNavigationLink)
+                .background(selectTagNavigationLink)
+                .onReceive(viewModel.$isSelectingCollection, perform: handleOnReceiveSelectingCollection)
+                .onReceive(viewModel.$isSelectingRelationship, perform: handleOnReceiveSelectingRelationship)
+                .onReceive(viewModel.$isSelectingTag, perform: handleOnReceiveSelectingTag)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, onDismiss: handleSheetDismissed, content: presentationSheet)
@@ -225,12 +90,63 @@ extension NoteCardForm {
 }
 
 
-// MARK: - Native & Translation
+// MARK: - Navigation Link
 
 extension NoteCardForm {
     
-    func commitEditTranslation() {
-        viewModel.isTranslationFirstResponder = false
+    func handleRowSelected(kind: NoteCardFormRowKind) {
+        switch kind {
+        case .native, .translation, .formality, .favorite: break
+        case .collection: beginSelectCollection()
+        case .relationship: beginSelectRelationship()
+        case .tag: beginSelectTag()
+        case .note: beginEditNote()
+        }
+    }
+    
+    var selectCollectionNavigationLink: some View {
+        NavigationLink(
+            destination: NoteCardFormCollectionSelectionView(viewModel: selectCollectionViewModel),
+            isActive: $viewModel.isSelectingCollection,
+            label: EmptyView.init
+        )
+    }
+    
+    var selectTagNavigationLink: some View {
+        NavigationLink(
+            destination: NoteCardFormTagSelectionView(viewModel: selectTagViewModel, onCreateTag: handleCreateTag),
+            isActive: $viewModel.isSelectingTag,
+            label: EmptyView.init
+        )
+    }
+    
+    var selectRelationshipNavigationLink: some View {
+        let done = { self.showSelectRelationshipCollection = false }
+        let doneLabel = { Text("Done").bold() }
+        let doneNavItem = Button(action: done, label: doneLabel)
+        
+        let chooseCollectionView = NavigationView {
+            CollectionViewWrapper(viewModel: selectRelationshipCollectionViewModel)
+                .navigationBarTitle("Link Collection", displayMode: .inline)
+                .navigationBarItems(trailing: doneNavItem)
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
+        
+        let chooseCollectionNavItem = NavigationBarButton(
+            imageName: "rectangle.stack",
+            action: beginChooseRelationshipCollection
+        )
+        
+        let destinationView = NoteCardFormRelationshipSelectionView(viewModel: selectRelationshipViewModel)
+            .navigationBarTitle(viewModel.relationshipSelectedCollection?.name ?? "???")
+            .navigationBarItems(trailing: chooseCollectionNavItem)
+            .sheet(isPresented: $showSelectRelationshipCollection, content: { chooseCollectionView })
+        
+        return NavigationLink(
+            destination: destinationView,
+            isActive: $viewModel.isSelectingRelationship,
+            label: EmptyView.init
+        )
     }
 }
 
@@ -240,6 +156,7 @@ extension NoteCardForm {
 extension NoteCardForm {
     
     func beginEditNote() {
+        modalTextViewModel = .init()
         modalTextViewModel.title = "Note"
         modalTextViewModel.text = viewModel.note
         
@@ -251,6 +168,7 @@ extension NoteCardForm {
     
     func commitEditNote() {
         viewModel.note = modalTextViewModel.text
+        modalTextViewModel.isFirstResponder = false
         sheet = nil
     }
 }
@@ -261,11 +179,11 @@ extension NoteCardForm {
 extension NoteCardForm {
     
     func beginSelectCollection() {
-        collectionViewModel.collections = viewModel.selectableCollections
-        collectionViewModel.onCollectionSelected = handleNoteCardCollectionSelected
+        selectCollectionViewModel.collections = viewModel.selectableCollections
+        selectCollectionViewModel.onCollectionSelected = handleNoteCardCollectionSelected
         
         if let collection = viewModel.selectedCollection {
-            collectionViewModel.disableCollectionIDs = [collection.uuid]
+            selectCollectionViewModel.disableCollectionIDs = [collection.uuid]
         }
         
         viewModel.isSelectingCollection = true
@@ -273,7 +191,7 @@ extension NoteCardForm {
     
     func handleOnReceiveSelectingCollection(_ isSelecting: Bool) {
         guard !isSelecting else { return }
-        collectionViewModel = .init()
+        selectCollectionViewModel = .init()
     }
     
     func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
@@ -287,76 +205,47 @@ extension NoteCardForm {
 
 extension NoteCardForm {
     
-    var relationshipNavigationLink: some View {
-        let done = { self.showChooseRelationshipCollection = false }
-        let doneLabel = { Text("Done").bold() }
-        let doneNavItem = Button(action: done, label: doneLabel)
-        
-        let chooseCollectionView = NavigationView {
-            CollectionViewWrapper(viewModel: chooseRelationshipCollectionViewModel)
-                .navigationBarTitle("Link Collection", displayMode: .inline)
-                .navigationBarItems(trailing: doneNavItem)
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-        
-        let chooseCollectionNavItem = NavigationBarButton(
-            imageName: "rectangle.stack",
-            action: beginChooseRelationshipCollection
-        )
-        
-        let destinationView = NoteCardFormRelationshipSelectionView(viewModel: relationshipViewModel)
-            .navigationBarTitle(viewModel.relationshipSelectedCollection?.name ?? "???")
-            .navigationBarItems(trailing: chooseCollectionNavItem)
-            .sheet(isPresented: $showChooseRelationshipCollection, content: { chooseCollectionView })
-        
-        return NavigationLink(
-            destination: destinationView,
-            isActive: $viewModel.isSelectingRelationship,
-            label: EmptyView.init
-        )
-    }
-    
     func beginChooseRelationshipCollection() {
-        chooseRelationshipCollectionViewModel.collections = viewModel.selectableCollections
+        selectRelationshipCollectionViewModel.collections = viewModel.selectableCollections
         
         if let collection = viewModel.relationshipSelectedCollection {
-            chooseRelationshipCollectionViewModel.disableCollectionIDs = [collection.uuid]
+            selectRelationshipCollectionViewModel.disableCollectionIDs = [collection.uuid]
         }
         
-        chooseRelationshipCollectionViewModel.onCollectionSelected = { collection in
+        selectRelationshipCollectionViewModel.onCollectionSelected = { collection in
             self.viewModel.onRelationshipCollectionSelected?(collection)
             
-            self.chooseRelationshipCollectionViewModel.disableCollectionIDs = [collection.uuid]
-            self.chooseRelationshipCollectionViewModel.updateSnapshot(animated: false)
+            self.selectRelationshipCollectionViewModel.disableCollectionIDs = [collection.uuid]
+            self.selectRelationshipCollectionViewModel.updateSnapshot(animated: false)
             
-            self.relationshipViewModel.noteCards = self.viewModel.selectableRelationships
-            self.relationshipViewModel.updateSnapshot(animated: false)
+            self.selectRelationshipViewModel.noteCards = self.viewModel.selectableRelationships
+            self.selectRelationshipViewModel.updateSnapshot(animated: false)
             
-            self.showChooseRelationshipCollection = false
+            self.showSelectRelationshipCollection = false
         }
         
-        showChooseRelationshipCollection = true
+        showSelectRelationshipCollection = true
     }
     
     func beginSelectRelationship() {
-        relationshipViewModel.noteCards = viewModel.selectableRelationships
-        relationshipViewModel.cellStyle = .short
+        selectRelationshipViewModel.noteCards = viewModel.selectableRelationships
+        selectRelationshipViewModel.cellStyle = .short
         
         viewModel.selectedRelationships.forEach { noteCard in
-            relationshipViewModel.borderedNoteCardIDs.insert(noteCard.uuid)
+            selectRelationshipViewModel.borderedNoteCardIDs.insert(noteCard.uuid)
         }
         
         if let noteCard = viewModel.selectedNoteCard {
-            relationshipViewModel.disableNoteCardIDs.insert(noteCard.uuid)
+            selectRelationshipViewModel.disableNoteCardIDs.insert(noteCard.uuid)
         }
         
-        relationshipViewModel.onNoteCardSelected = handleRelationshipNoteCardSelected
+        selectRelationshipViewModel.onNoteCardSelected = handleRelationshipNoteCardSelected
         
         // setup search
         if viewModel.relationshipSelectedCollection != nil {
-            relationshipViewModel.onSearchTextDebounced = handleRelationshipSearchTextDebounced
-            relationshipViewModel.onSearchNoteActiveChanged = handleRelationshipSearchNoteActiveChanged
-            relationshipViewModel.onSearchCancel = handleRelationshipSearchCancel
+            selectRelationshipViewModel.onSearchTextDebounced = handleRelationshipSearchTextDebounced
+            selectRelationshipViewModel.onSearchNoteActiveChanged = handleRelationshipSearchNoteActiveChanged
+            selectRelationshipViewModel.onSearchCancel = handleRelationshipSearchCancel
         }
         
         viewModel.isSelectingRelationship = true
@@ -364,14 +253,14 @@ extension NoteCardForm {
     
     func handleOnReceiveSelectingRelationship(_ isSelecting: Bool) {
         guard !isSelecting else { return }
-        relationshipViewModel = .init()
+        selectRelationshipViewModel = .init()
     }
     
     func handleRelationshipNoteCardSelected(_ noteCard: NoteCard) {
-        if relationshipViewModel.borderedNoteCardIDs.contains(noteCard.uuid) {
-            relationshipViewModel.borderedNoteCardIDs.remove(noteCard.uuid)
+        if selectRelationshipViewModel.borderedNoteCardIDs.contains(noteCard.uuid) {
+            selectRelationshipViewModel.borderedNoteCardIDs.remove(noteCard.uuid)
         } else {
-            relationshipViewModel.borderedNoteCardIDs.insert(noteCard.uuid)
+            selectRelationshipViewModel.borderedNoteCardIDs.insert(noteCard.uuid)
         }
         viewModel.onRelationshipSelected?(noteCard)
     }
@@ -380,15 +269,15 @@ extension NoteCardForm {
         relationshipCurrentSearchText = searchText
         
         guard !searchText.trimmed().isEmpty else {
-            relationshipViewModel.noteCards = viewModel.selectableRelationships
-            relationshipViewModel.updateSnapshot(animated: true)
+            selectRelationshipViewModel.noteCards = viewModel.selectableRelationships
+            selectRelationshipViewModel.updateSnapshot(animated: true)
             return
         }
         
         let searchResults = viewModel.selectableRelationships.filter { noteCard in
             let matchNative = noteCard.native.range(of: searchText, options: .caseInsensitive) != nil
             let matchTranslation = noteCard.translation.range(of: searchText, options: .caseInsensitive) != nil
-            if relationshipViewModel.isSearchNoteActive {
+            if selectRelationshipViewModel.isSearchNoteActive {
                 let matchNote = noteCard.note.range(of: searchText, options: .caseInsensitive) != nil
                 return matchNote || matchTranslation || matchNote
             } else {
@@ -396,8 +285,8 @@ extension NoteCardForm {
             }
         }
         
-        relationshipViewModel.noteCards = searchResults
-        relationshipViewModel.updateSnapshot(animated: true)
+        selectRelationshipViewModel.noteCards = searchResults
+        selectRelationshipViewModel.updateSnapshot(animated: true)
     }
     
     func handleRelationshipSearchNoteActiveChanged(_ isActive: Bool) {
@@ -405,8 +294,8 @@ extension NoteCardForm {
     }
     
     func handleRelationshipSearchCancel() {
-        relationshipViewModel.noteCards = viewModel.selectableRelationships
-        relationshipViewModel.updateSnapshot(animated: true)
+        selectRelationshipViewModel.noteCards = viewModel.selectableRelationships
+        selectRelationshipViewModel.updateSnapshot(animated: true)
     }
 }
 
@@ -416,36 +305,36 @@ extension NoteCardForm {
 extension NoteCardForm {
     
     func beginSelectTag() {
-        tagViewModel.tags = viewModel.selectableTags
+        selectTagViewModel.tags = viewModel.selectableTags
         
         for tag in viewModel.selectedTags {
-            tagViewModel.borderedTagIDs.insert(tag.uuid)
+            selectTagViewModel.borderedTagIDs.insert(tag.uuid)
         }
         
-        tagViewModel.onTagSelected = handleTagViewTagSelected
+        selectTagViewModel.onTagSelected = handleTagViewTagSelected
         
         viewModel.isSelectingTag = true
     }
     
     func handleOnReceiveSelectingTag(_ isSelecting: Bool) {
         guard !isSelecting else { return }
-        tagViewModel = .init()
+        selectTagViewModel = .init()
     }
     
     func handleTagViewTagSelected(_ tag: Tag) {
-        if tagViewModel.borderedTagIDs.contains(tag.uuid) {
-            tagViewModel.borderedTagIDs.remove(tag.uuid)
+        if selectTagViewModel.borderedTagIDs.contains(tag.uuid) {
+            selectTagViewModel.borderedTagIDs.remove(tag.uuid)
         } else {
-            tagViewModel.borderedTagIDs.insert(tag.uuid)
+            selectTagViewModel.borderedTagIDs.insert(tag.uuid)
         }
         viewModel.onTagSelected?(tag)
     }
     
     func handleCreateTag(withName name: String) -> Bool {
         if let tag = viewModel.onCreateTag?(name) {
-            tagViewModel.tags.insert(tag, at: 0)
-            tagViewModel.borderedTagIDs.insert(tag.uuid)
-            tagViewModel.updateSnapshot(animated: true)
+            selectTagViewModel.tags.insert(tag, at: 0)
+            selectTagViewModel.borderedTagIDs.insert(tag.uuid)
+            selectTagViewModel.updateSnapshot(animated: true)
             return true
         }
         return false

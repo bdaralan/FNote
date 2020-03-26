@@ -42,6 +42,10 @@ class TextFieldInputView: UIView {
         
         label.font = .preferredFont(forTextStyle: .caption1)
         label.textColor = .secondaryLabel
+        label.adjustsFontForContentSizeCategory = true
+        label.setContentHuggingPriority(.required, for: .vertical)
+        
+        textField.adjustsFontForContentSizeCategory = true
         
         stack.addArrangedSubviews(textField, label)
         addSubviews(stack, useAutoLayout: true)
@@ -50,6 +54,11 @@ class TextFieldInputView: UIView {
             stack.trailingAnchor.constraint(equalTo: trailingAnchor),
             stack.topAnchor.constraint(equalTo: topAnchor),
             stack.bottomAnchor.constraint(equalTo: bottomAnchor)
+        )
+        
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activateConstraints(
+            textField.widthAnchor.constraint(equalTo: stack.widthAnchor)
         )
     }
 }
