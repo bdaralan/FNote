@@ -56,7 +56,7 @@ class SettingViewController: UITableViewController {
     
     let markdownNoteToggleCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .default, reuseIdentifier: nil)
-        cell.textLabel?.text = "Use in Note"
+        cell.textLabel?.text = "Use Markdown in Note"
         cell.useToggle(true)
         cell.onLayoutSubviews = cell.applyRowStyle
         cell.selectionStyle = .none
