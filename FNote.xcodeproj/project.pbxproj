@@ -71,6 +71,7 @@
 		B49796EC23F7AAA90035DF63 /* onboard-pages.json in Resources */ = {isa = PBXBuildFile; fileRef = B49796EB23F7AAA90035DF63 /* onboard-pages.json */; };
 		B49796EE23F7AF850035DF63 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49796ED23F7AF850035DF63 /* Bundle.swift */; };
 		B49796F223F7B8C30035DF63 /* OnboardPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49796F123F7B8C20035DF63 /* OnboardPage.swift */; };
+		B49865E6242C6C7800145EBB /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49865E5242C6C7800145EBB /* SettingViewController.swift */; };
 		B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35B2326D988002D16A0 /* CoreDataStack.swift */; };
 		B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35D2326D9A7002D16A0 /* AppCache.swift */; };
 		B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C6923D628760030D9B2 /* HomeView.swift */; };
@@ -201,6 +202,7 @@
 		B49796EB23F7AAA90035DF63 /* onboard-pages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "onboard-pages.json"; sourceTree = "<group>"; };
 		B49796ED23F7AF850035DF63 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		B49796F123F7B8C20035DF63 /* OnboardPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardPage.swift; sourceTree = "<group>"; };
+		B49865E5242C6C7800145EBB /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		B499A35B2326D988002D16A0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		B499A35D2326D9A7002D16A0 /* AppCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCache.swift; sourceTree = "<group>"; };
 		B49C4C6923D628760030D9B2 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -585,6 +587,7 @@
 				B4BBDBEC23E4EA5C00A0AEA1 /* SettingTextRow.swift */,
 				B4BBDBEE23E4F1B000A0AEA1 /* SettingSectionModifier.swift */,
 				B4BBDBF023E4F1C400A0AEA1 /* SettingRowModifier.swift */,
+				B49865E5242C6C7800145EBB /* SettingViewController.swift */,
 			);
 			path = "Setting View Model + Cell";
 			sourceTree = "<group>";
@@ -788,6 +791,7 @@
 				B48AC69723D93C150033DF6F /* NoteCardFormCollectionSelectionView.swift in Sources */,
 				B40ECAD424131C7400267DC7 /* PublicRecordManager.swift in Sources */,
 				B40056F323D6C82900997216 /* ModalTextViewModel.swift in Sources */,
+				B49865E6242C6C7800145EBB /* SettingViewController.swift in Sources */,
 				B40056F023D6C26500997216 /* HomeTagView.swift in Sources */,
 				B43B715623FB3CFA002C8A1A /* OnboardViewController.swift in Sources */,
 				B4BB117623145DC400A380AA /* FNote.xcdatamodeld in Sources */,

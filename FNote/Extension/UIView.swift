@@ -64,3 +64,14 @@ extension UILabel {
         self.text = text
     }
 }
+
+
+extension UITableViewCell {
+    
+    func applyInsetSelectionRowStyle() {
+        selectedBackgroundView?.layer.masksToBounds = true
+        selectedBackgroundView?.layer.cornerRadius = layer.cornerRadius
+        selectedBackgroundView?.layer.maskedCorners = layer.maskedCorners
+        applyRowStyle()
+    }
+}

@@ -11,39 +11,12 @@ import SwiftUI
 
 struct HomeSettingView: View {
     
-    @ObservedObject var userPreference: UserPreference
+    @ObservedObject var preference: UserPreference
     
     @State private var sheet: Sheet?
+    
     @State private var textFieldModel = ModalTextFieldModel()
-    
-    @State private var onboardViewModel: OnboardCollectionViewModel?
-    
-    var useMarkdown: Binding<Bool> {
-        .init(
-            get: { self.userPreference.useMarkdown },
-            set: { self.userPreference.objectWillChange.send(); self.userPreference.useMarkdown = $0 }
-        )
-    }
-    
-    var useMarkdownSoftBreak: Binding<Bool> {
-        .init(
-            get: { self.userPreference.useMarkdownSoftBreak },
-            set: { self.userPreference.objectWillChange.send(); self.userPreference.useMarkdownSoftBreak = $0 }
-        )
-    }
-    
-    var checkedSystem: Bool {
-        userPreference.colorScheme == UserPreference.ColorScheme.system.rawValue
-    }
-    
-    var checkedLight: Bool {
-        userPreference.colorScheme == UserPreference.ColorScheme.light.rawValue
-    }
-    
-    var checkedDark: Bool {
-        userPreference.colorScheme == UserPreference.ColorScheme.dark.rawValue
-    }
-    
+        
     var documentFolder: URL {
         let fileManager = FileManager.default
         let document = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -61,68 +34,9 @@ struct HomeSettingView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: true) {
-                VStack(spacing: 32) {
-                    // MARK: Color Scheme
-                    VStack(spacing: 5) {
-                        
-                        SettingCheckmarkRow(label: "Dark", checked: checkedDark)
-                            .onTapGesture(perform: { self.handleColorSchemeTapped(.dark) })
-                        
-                        SettingCheckmarkRow(label: "Light", checked: checkedLight)
-                        .onTapGesture(perform: { self.handleColorSchemeTapped(.light) })
-                        
-                        SettingCheckmarkRow(label: "System", checked: checkedSystem)
-                            .onTapGesture(perform: { self.handleColorSchemeTapped(.system) })
-                    }
-                    .modifier(SettingSectionModifier(header: "COLOR SCHEME"))
-                    
-                    // MARK: Markdown
-                    VStack(spacing: 5) {
-                        Toggle(isOn: useMarkdown) {
-                            Text("Use in Note")
-                        }
-                        .modifier(SettingRowModifier())
-                        
-                        Toggle(isOn: useMarkdownSoftBreak) {
-                            Text("Use Soft Break")
-                                .foregroundColor(userPreference.useMarkdown ? .primary : Color(.tertiaryLabel))
-                        }
-                        .modifier(SettingRowModifier())
-                        .disabled(!userPreference.useMarkdown)
-                    }
-                    .modifier(SettingSectionModifier(header: "MARKDOWN", footer: "If soft break is off, to create a new line, two return keys are required. Otherwise, the sentences continue."))
-                    
-                    // MARK: Export & Import
-                    VStack(spacing: 5) {
-                        Button(action: beginExportData) {
-                            SettingTextRow(label: "Export Data", detail: "backup data")
-                        }
-                        
-                        Button(action: beginImportData) {
-                            SettingTextRow(label: "Import Data", detail: "override data")
-                        }
-                    }
-                    .modifier(SettingSectionModifier(header: "DATA", footer: "Make a backup or import from a file. The files are stored locally on the phone."))
-                    
-                    // MARK: About
-                    VStack(spacing: 5) {
-                        SettingTextRow(label: "Version", detail: Bundle.main.appVersion)
-                        
-                        Button(action: showOnboardView) {
-                            SettingTextRow(label: "See Welcome Pages", detail: "")
-                        }
-                        
-//                        Button(action: resetOnboardView) {
-//                            SettingTextRow(label: "Reset Welcome Pages", detail: "developer")
-//                        }
-                    }
-                    .modifier(SettingSectionModifier(header: "ABOUT"))
-                }
-                .padding(.vertical, 32)
-                .padding(.horizontal)
-            }
-            .navigationBarTitle("Settings")
+            SettingViewControllerWrapper(preference: preference, onRowSelected: handleRowSelected)
+                .navigationBarTitle("Settings", displayMode: .large)
+                .edgesIgnoringSafeArea(.all)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, content: presentationSheet)
@@ -161,24 +75,25 @@ extension HomeSettingView {
             
         case .onboardView:
             let done = { self.sheet = nil }
-            return OnboardView(viewModel: onboardViewModel!, alwaysShowXButton: true, onDismiss: done)
+            return OnboardView(viewModel: .init(), alwaysShowXButton: true, onDismiss: done)
                 .eraseToAnyView()
+        }
+    }
+    
+    func handleRowSelected(_ row: SettingSection.Row) {
+        switch row {
+        case .welcome:
+            sheet = .onboardView
+        
+        default: break
         }
     }
 }
 
 
-// MARK: Action
+// MARK: Export & Import
 
 extension HomeSettingView {
-    
-    func handleColorSchemeTapped(_ colorScheme: UserPreference.ColorScheme) {
-        guard userPreference.colorScheme != colorScheme.rawValue else { return }
-        userPreference.objectWillChange.send()
-        userPreference.colorScheme = colorScheme.rawValue
-        userPreference.applyColorScheme()
-        UISelectionFeedbackGenerator().selectionChanged()
-    }
     
     func beginExportData() {
         textFieldModel.title = "Export File"
@@ -216,23 +131,15 @@ extension HomeSettingView {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         sheet = nil
     }
-    
-    func showOnboardView() {
-        onboardViewModel = .init()
-        sheet = .onboardView
-    }
-    
-    func resetOnboardView() {
-        AppCache.shouldShowOnboard = true
-    }
 }
 
 
 struct HomeSettingView_Previews: PreviewProvider {
+    static let preference = UserPreference.shared
     static var previews: some View {
         Group {
-            HomeSettingView(userPreference: .shared).colorScheme(.light)
-            HomeSettingView(userPreference: .shared).colorScheme(.dark)
+            HomeSettingView(preference: preference).colorScheme(.light)
+            HomeSettingView(preference: preference).colorScheme(.dark)
         }
     }
 }

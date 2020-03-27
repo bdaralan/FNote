@@ -66,7 +66,7 @@ struct HomeView: View {
                 .tag(Tab.community)
             
             // MARK: Setting Tab
-            HomeSettingView(userPreference: .shared)
+            HomeSettingView(preference: .shared)
                 .tabItem(Tab.setting.tabItem)
                 .tag(Tab.setting)
             

@@ -94,7 +94,7 @@ extension NoteCardForm {
 
 extension NoteCardForm {
     
-    func handleRowSelected(kind: NoteCardFormRowKind) {
+    func handleRowSelected(kind: NoteCardFormSection.Row) {
         switch kind {
         case .native, .translation, .formality, .favorite: break
         case .collection: beginSelectCollection()

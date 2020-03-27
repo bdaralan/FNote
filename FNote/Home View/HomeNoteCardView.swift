@@ -129,6 +129,7 @@ extension HomeNoteCardView {
         let currentAscending = appState.noteCardSortOptionAscending
         
         guard option != currentOption || ascending != currentAscending else { return }
+        userPreference.objectWillChange.send()
         userPreference.noteCardSortOption = option
         userPreference.noteCardSortOptionAscending = ascending
         appState.noteCardSortOption = option

@@ -16,32 +16,44 @@ class UserPreference: ObservableObject {
     
     // MARK: iCloud
         
-    @UserStoredValue(in: .iCloud, key: "kUserPreference.useMarkdown", defaultValue: true)
+    @UserStoredValue(in: .iCloud, key: key("useMarkdown"), defaultValue: true)
     var useMarkdown: Bool
     
-    @UserStoredValue(in: .iCloud, key: "kUserPreference.useMarkdownSoftBreak", defaultValue: true)
+    @UserStoredValue(in: .iCloud, key: key("useMarkdownSoftBreak"), defaultValue: true)
     var useMarkdownSoftBreak: Bool
+    
+    @UserStoredValue(in: .iCloud, key: key("generalKeyboardUsage"), defaultValue: true)
+    var showGeneralKeyboardUsage: Bool
     
     
     // MARK: User Defaults
     
-    @UserStoredValue(in: .userDefaults, key: "kUserPreference.colorScheme", defaultValue: ColorScheme.system.rawValue)
-    var colorScheme: Int
+    let colorSchemeKey = key("colorScheme")
+    var colorScheme: ColorScheme {
+        set {
+            UserStoredValue.Storage.userDefaults.setValue(newValue.rawValue, forKey: colorSchemeKey)
+        }
+        get {
+            let storage = UserStoredValue<Int>.Storage.userDefaults
+            let defaultValue = ColorScheme.system
+            let rawValue = storage.value(forKey: colorSchemeKey, defaultValue: defaultValue.rawValue)
+            return ColorScheme(rawValue: rawValue) ?? defaultValue
+        }
+    }
     
-    @UserStoredValue(in: .userDefaults, key: "kUserPreference.noteCardSortOptionAscending", defaultValue: true)
+    @UserStoredValue(in: .userDefaults, key: key("noteCardSortOptionAscending"), defaultValue: true)
     var noteCardSortOptionAscending: Bool
     
-    let noteCardSortOptionKey = "kUserPreference.noteCardSortOption"
+    let noteCardSortOptionKey = key("noteCardSortOption")
     var noteCardSortOption: NoteCardSortOption {
         set {
-            objectWillChange.send()
             UserStoredValue.Storage.userDefaults.setValue(newValue.rawValue, forKey: noteCardSortOptionKey)
         }
         get {
             let storage = UserStoredValue<Int>.Storage.userDefaults
-            let defaultValue = NoteCardSortOption.translation.rawValue
-            let rawValue = storage.value(forKey: noteCardSortOptionKey, defaultValue: defaultValue)
-            return NoteCardSortOption(rawValue: rawValue) ?? .translation
+            let defaultValue = NoteCardSortOption.translation
+            let rawValue = storage.value(forKey: noteCardSortOptionKey, defaultValue: defaultValue.rawValue)
+            return NoteCardSortOption(rawValue: rawValue) ?? defaultValue
         }
     }
     
@@ -50,9 +62,8 @@ class UserPreference: ObservableObject {
     
     
     func applyColorScheme() {
-        let preferredStyle = ColorScheme(rawValue: colorScheme)?.userInterfaceStyle ?? .unspecified
         for window in UIApplication.shared.windows {
-            window.overrideUserInterfaceStyle = preferredStyle
+            window.overrideUserInterfaceStyle = colorScheme.userInterfaceStyle
         }
     }
 }
@@ -73,4 +84,9 @@ extension UserPreference {
             }
         }
     }
+}
+
+
+private func key(_ appending: String) -> String {
+    "kUserPreference.\(appending)"
 }

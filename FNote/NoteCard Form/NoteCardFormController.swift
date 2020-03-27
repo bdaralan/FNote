@@ -16,13 +16,15 @@ class NoteCardFormController: UITableViewController {
     
     let viewModel: NoteCardFormModel
     
-    var onRowSelected: ((NoteCardFormRowKind) -> Void)?
+    var showGeneralKeyboardUsage = true
     
-    let sections: [[NoteCardFormRowKind]] = [
-        [.native, .translation],
-        [.collection],
-        [.formality],
-        [.favorite, .relationship, .tag, .note]
+    var onRowSelected: ((NoteCardFormSection.Row) -> Void)?
+    
+    let sections: [NoteCardFormSection] = [
+        .init(header: "NATIVE & TRANSLATION", footer: nil, rows: [.native, .translation]),
+        .init(header: "COLLECTION", footer: nil, rows: [.collection]),
+        .init(header: "FORMALITY", footer: nil, rows: [.formality]),
+        .init(header: nil, footer: nil, rows: [.favorite, .relationship, .tag, .note])
     ]
     
     private var viewModelSubscribers: [AnyCancellable] = []
@@ -34,7 +36,7 @@ class NoteCardFormController: UITableViewController {
     
     let nativeCell: TableViewCell<TextFieldInputView> = {
         let cell = TableViewCell<TextFieldInputView>(style: .default, reuseIdentifier: nil)
-        cell.uiView.label.text = "native"
+        cell.uiView.label.text = "native: the current learning laguage"
         cell.uiView.textField.clearButtonMode = .whileEditing
         cell.uiView.textField.font = .preferredFont(forTextStyle: .headline)
         cell.setStackViewInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
@@ -46,7 +48,7 @@ class NoteCardFormController: UITableViewController {
     
     let translationCell: TableViewCell<TextFieldInputView> = {
         let cell = TableViewCell<TextFieldInputView>(style: .default, reuseIdentifier: nil)
-        cell.uiView.label.text = "translation"
+        cell.uiView.label.text = "translation: the translated language"
         cell.uiView.textField.clearButtonMode = .whileEditing
         cell.uiView.textField.font = .preferredFont(forTextStyle: .body)
         cell.setStackViewInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
@@ -58,8 +60,7 @@ class NoteCardFormController: UITableViewController {
     let collectionCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
         cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyRowStyle
-        cell.selectionStyle = .none
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
@@ -89,8 +90,7 @@ class NoteCardFormController: UITableViewController {
         cell.imageView?.tintColor = .label
         cell.textLabel?.text = "Links"
         cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyRowStyle
-        cell.selectionStyle = .none
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
@@ -101,8 +101,7 @@ class NoteCardFormController: UITableViewController {
         cell.imageView?.tintColor = .label
         cell.textLabel?.text = "Tags"
         cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyRowStyle
-        cell.selectionStyle = .none
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
@@ -113,8 +112,7 @@ class NoteCardFormController: UITableViewController {
         cell.imageView?.tintColor = .label
         cell.textLabel?.text = "Note"
         cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyRowStyle
-        cell.selectionStyle = .none
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
@@ -150,12 +148,12 @@ extension NoteCardFormController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        sections[section].count
+        sections[section].rows.count
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let rowKind = sections[indexPath.section][indexPath.row]
-        switch rowKind {
+        let row = sections[indexPath.section].rows[indexPath.row]
+        switch row {
         case .formality: return 35
         case .native, .translation: return 75
         default: return 60
@@ -163,17 +161,18 @@ extension NoteCardFormController {
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch section {
-        case 0: return "NATIVE & TRANSLATION"
-        case 1: return "COLLECTION"
-        case 2: return "FORMALITY"
-        default: return nil
-        }
+        sections[section].header
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        guard section == 0 else { return sections[section].footer }
+        guard showGeneralKeyboardUsage else { return nil }
+        return "To change keyboard, tap the globe 🌐 icon on the keyboard. To add new keyboards, go to device's Settings → General → Keyboard."
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let rowKind = sections[indexPath.section][indexPath.row]
-        switch rowKind {
+        let row = sections[indexPath.section].rows[indexPath.row]
+        switch row {
         case .native: return nativeCell
         case .translation: return translationCell
         case .collection: return collectionCell
@@ -186,20 +185,23 @@ extension NoteCardFormController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let rowKind = sections[indexPath.section][indexPath.row]
+        let row = sections[indexPath.section].rows[indexPath.row]
         
-        switch rowKind {
+        switch row {
         case .native:
             nativeCell.uiView.textField.becomeFirstResponder()
         
         case .translation:
             translationCell.uiView.textField.becomeFirstResponder()
+            
+        case .note:
+            tableView.deselectRow(at: indexPath, animated: true)
         
         default:
             tableView.endEditing(true)
         }
         
-        onRowSelected?(rowKind)
+        onRowSelected?(row)
     }
 }
 
@@ -207,7 +209,9 @@ extension NoteCardFormController {
 extension NoteCardFormController {
     
     private func setupView() {
-        tableView.separatorStyle = .none
+        tableView.separatorStyle = .singleLine
+        tableView.separatorInset = .zero
+        tableView.separatorColor = UIColor.label.withAlphaComponent(0.04)
         
         for (index, formality) in viewModel.formalities.enumerated() {
             formalityCell.uiView.insertSegment(withTitle: formality, at: index, animated: false)
@@ -319,17 +323,26 @@ extension NoteCardFormController {
 }
 
 
-// MARK: - Enum
+// MARK: - Section & Enum
 
-enum NoteCardFormRowKind {
-    case native
-    case translation
-    case collection
-    case formality
-    case favorite
-    case relationship
-    case tag
-    case note
+struct NoteCardFormSection {
+    
+    let header: String?
+    
+    let footer: String?
+    
+    let rows: [Row]
+    
+    enum Row {
+        case native
+        case translation
+        case collection
+        case formality
+        case favorite
+        case relationship
+        case tag
+        case note
+    }
 }
 
 
@@ -339,12 +352,13 @@ struct NoteCardFormControllerWrapper: UIViewControllerRepresentable {
     
     var viewModel: NoteCardFormModel
     
-    var onRowSelected: ((NoteCardFormRowKind) -> Void)?
+    var onRowSelected: ((NoteCardFormSection.Row) -> Void)?
         
     
     func makeUIViewController(context: Context) -> NoteCardFormController {
         let controller = NoteCardFormController(viewModel: viewModel)
         controller.tableView.backgroundColor = .clear
+        controller.showGeneralKeyboardUsage = UserPreference.shared.showGeneralKeyboardUsage
         return controller
     }
     
