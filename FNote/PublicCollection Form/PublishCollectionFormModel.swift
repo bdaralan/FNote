@@ -39,7 +39,7 @@ class PublishCollectionFormModel: ObservableObject {
     
     var onPublishStateChanged: ((PublishFormPublishState) -> Void)?
     
-    var onRowSelected: ((PublishFormRowKind) -> Void)?
+    var onRowSelected: ((PublishFormSection.Row) -> Void)?
     
     func setPublishState(to newValue: PublishFormPublishState) {
         publishState = newValue
@@ -59,7 +59,6 @@ extension PublishCollectionFormModel {
             && !publishDescription.isEmptyOrWhiteSpaces()
             && !publishTags.isEmpty
             && isLanguagesValid
-        
     }
     
     var isLanguagesValid: Bool {
@@ -67,15 +66,15 @@ extension PublishCollectionFormModel {
     }
     
     var uiAuthorName: String {
-        authorName.isEmpty ? "none" : authorName
+        authorName.isEmpty ? "required" : authorName
     }
     
     var uiCollectionName: String {
-        publishCollection?.name ?? "none"
+        publishCollection?.name ?? "required"
     }
     
     var uiCollectionPublishName: String {
-        publishCollectionName.isEmpty ? "none" : publishCollectionName
+        publishCollectionName.isEmpty ? "required" : publishCollectionName
     }
     
     var uiCollectionCardsCount: String {
@@ -85,20 +84,18 @@ extension PublishCollectionFormModel {
     }
     
     var uiCollectionDescription: String {
-        publishDescription.isEmpty ? "none" : publishDescription
+        publishDescription.isEmpty ? "required" : publishDescription
     }
     
     var uiCollectionTags: String {
-        publishTags.isEmpty ? "none" : publishTags.joined(separator: ", ")
+        publishTags.isEmpty ? "required" : publishTags.joined(separator: ", ")
     }
     
-    var uiCollectionLanguages: String {
-        if publishPrimaryLanguage == nil && publishSecondaryLanguage == nil {
-            return "none"
-        }
-        
-        let primary = publishPrimaryLanguage?.localized ?? "???"
-        let secondary = publishSecondaryLanguage?.localized ?? "???"
-        return "\(primary) – \(secondary)"
+    var uiCollectionPrimaryLanguage: String {
+        publishPrimaryLanguage?.localized ?? "required"
+    }
+    
+    var uiCollectionSecondaryLanguage: String {
+        publishSecondaryLanguage?.localized ?? "required"
     }
 }

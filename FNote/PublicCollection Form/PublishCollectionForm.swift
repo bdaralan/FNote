@@ -16,8 +16,11 @@ struct PublishCollectionForm: View {
     let publishTagsLimit = 4
     
     @State private var sheet: Sheet?
-    @State private var showLanguagePicker = false
+    
     @State private var textFieldModel = ModalTextFieldModel()
+    @State private var languageTextFieldModel = ModalTextFieldModel()
+    @State private var filteredLanguages: [Language] = []
+    
     @State private var collectionDescriptionTextViewModel = ModalTextViewModel()
     
     let collectionViewModel = NoteCardCollectionCollectionViewModel()
@@ -32,7 +35,6 @@ struct PublishCollectionForm: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, content: presentationSheet)
-        .overlay(collectionLanguagePicker)
     }
 }
 
@@ -41,7 +43,7 @@ struct PublishCollectionForm: View {
 
 extension PublishCollectionForm {
     
-    func handleRowSelected(kind: PublishFormRowKind) {
+    func handleRowSelected(kind: PublishFormSection.Row) {
         viewModel.onRowSelected?(kind)
         switch kind {
         case .authorName: beginEditAuthorName()
@@ -49,7 +51,8 @@ extension PublishCollectionForm {
         case .collectionName: beginEditCollectionName()
         case .collectionDescription: beginEditCollectionDescription()
         case .collectionTag: beginEditCollectionTags()
-        case .collectionLanguage: beginSelectCollectionLanguages()
+        case .collectionPrimaryLanguage: beginSelectPrimaryLanguage()
+        case .collectionSecondaryLanguage: beginSelectSecondaryLanguage()
         case .publishAction: publishCollection()
         case .includeNote: break
         }
@@ -68,12 +71,20 @@ extension PublishCollectionForm {
         case publishCollection
         case publishDescription
         case publishTags
+        case publishLanguages
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
         case .authorName, .collectionName, .publishTags:
             return ModalTextField(viewModel: $textFieldModel)
+                .eraseToAnyView()
+            
+        case .publishLanguages:
+            return ModalTextField(viewModel: $languageTextFieldModel)
+                .onReceive(languageTextFieldModel.text.publisher.count(), perform: { _ in
+                    self.filterLanguageForLanguageTextFieldModel()
+                })
                 .eraseToAnyView()
         
         case .publishDescription:
@@ -222,6 +233,7 @@ extension PublishCollectionForm {
         textFieldModel = .init()
         textFieldModel.title = "Tags"
         textFieldModel.tokens = viewModel.publishTags
+        textFieldModel.showClearTokenIndicator = true
         textFieldModel.isFirstResponder = true
         textFieldModel.returnKeyType = .default
         setDefaultPrompt()
@@ -266,52 +278,67 @@ extension PublishCollectionForm {
 }
 
 
-// MARK: - Publish Option
-
-extension PublishCollectionForm {
-    
-    
-}
-
-
 // MARK: - Language
 
 extension PublishCollectionForm {
     
-    var collectionLanguagePicker: some View {
-        let commitAction = commitSelectCollectionLanguages
+    func beginSelectPrimaryLanguage() {
+        languageTextFieldModel = .init()
+        languageTextFieldModel.title = "Primary Language"
+        languageTextFieldModel.placeholder = viewModel.publishPrimaryLanguage?.localized ?? "Search"
+        languageTextFieldModel.prompt = "Select the language to learn"
+        languageTextFieldModel.returnKeyType = .default
         
-        let header = HStack(spacing: 8) {
-            Text("Indicate Native  ➜  Translation")
-                .fontWeight(.semibold)
-                .lineLimit(1)
-            Spacer()
-            Button(action: commitAction) {
-                Text("Done").bold()
-            }
+        languageTextFieldModel.onTokenSelected = { token in
+            let language = self.filteredLanguages.first(where: { $0.localized == token })
+            self.viewModel.publishPrimaryLanguage = language
+            self.languageTextFieldModel.isFirstResponder = false
+            self.sheet = nil
         }
         
-        let picker = LanguagePickerWrapper(
-            primary: $viewModel.publishPrimaryLanguage,
-            secondary: $viewModel.publishSecondaryLanguage
-        )
+        languageTextFieldModel.onCancel = {
+            self.languageTextFieldModel.isFirstResponder = false
+            self.sheet = nil
+        }
         
-        return InputOverlayView(isPresented: $showLanguagePicker, onTouchOutside: commitAction) {
-            VStack(spacing: 0) {
-                header.padding(.all)
-                Divider()
-                picker
+        languageTextFieldModel.isFirstResponder = true
+        sheet = .publishLanguages
+    }
+    
+    func beginSelectSecondaryLanguage() {
+        languageTextFieldModel = .init()
+        languageTextFieldModel.title = "Secondary Language"
+        languageTextFieldModel.placeholder = viewModel.publishSecondaryLanguage?.localized ?? "Search"
+        languageTextFieldModel.prompt = "Select the language used to translate"
+        languageTextFieldModel.returnKeyType = .default
+        
+        languageTextFieldModel.onTokenSelected = { token in
+            let language = self.filteredLanguages.first(where: { $0.localized == token })
+            self.viewModel.publishSecondaryLanguage = language
+            self.languageTextFieldModel.isFirstResponder = false
+            self.sheet = nil
+        }
+        
+        languageTextFieldModel.onCancel = {
+            self.languageTextFieldModel.isFirstResponder = false
+            self.sheet = nil
+        }
+        
+        languageTextFieldModel.isFirstResponder = true
+        sheet = .publishLanguages
+    }
+    
+    /// Filter languages for `languageTextFieldModel`'s tokens.
+    func filterLanguageForLanguageTextFieldModel() {
+        let text = languageTextFieldModel.text
+        if text.isEmpty {
+            filteredLanguages = Language.availableISO639s
+        } else {
+            filteredLanguages = Language.availableISO639s.filter { language in
+                language.localized.range(of: text, options: .caseInsensitive) != nil
             }
         }
-    }
-    
-    /// Choose publish collection's languages.
-    func beginSelectCollectionLanguages() {
-        showLanguagePicker = true
-    }
-    
-    func commitSelectCollectionLanguages() {
-        showLanguagePicker = false
+        languageTextFieldModel.tokens = filteredLanguages.map(\.localized)
     }
 }
 

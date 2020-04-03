@@ -28,11 +28,11 @@ struct Language: Equatable {
     }
     
     /// Load all available language from system's available language ISO codes.
-    static func availableISO639s() -> [Language] {
+    static let availableISO639s: [Language] = {
         Locale.isoLanguageCodes.compactMap { code -> Language? in
             guard let localized = Locale.current.localizedString(forLanguageCode: code) else { return nil }
             return Language(code: code, localized: localized)
         }
         .sorted(by: { $0.localized < $1.localized })
-    }
+    }()
 }

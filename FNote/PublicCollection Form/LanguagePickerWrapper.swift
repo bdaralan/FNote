@@ -52,7 +52,7 @@ extension LanguagePickerWrapper {
         
         init(wrapper: LanguagePickerWrapper) {
             self.wrapper = wrapper
-            languages = [nil] + Language.availableISO639s()
+            languages = [nil] + Language.availableISO639s
             
             super.init()
             picker.dataSource = self

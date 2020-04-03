@@ -16,14 +16,14 @@ class PublishCollectionViewController: UITableViewController {
     
     let viewModel: PublishCollectionFormModel
     
-    var onRowSelected: ((PublishFormRowKind) -> Void)?
+    var onRowSelected: ((PublishFormSection.Row) -> Void)?
     
     let sections: [PublishFormSection] = [
-        .init(kind: .author, rows: [.authorName]),
-        .init(kind: .publishCollection, rows: [.collection]),
-        .init(kind: .publishDetail, rows: [.collectionName, .collectionDescription, .collectionTag, .collectionLanguage]),
-        .init(kind: .publishOption, rows: [.includeNote]),
-        .init(kind: .action, rows: [.publishAction])
+        .init(header: "AUTHOR", footer: nil, rows: [.authorName]),
+        .init(header: "COLLECTION TO PUBLISH", footer: nil, rows: [.collection]),
+        .init(header: "PUBLISH DETAILS", footer: nil, rows: [.collectionName, .collectionDescription, .collectionTag, .collectionPrimaryLanguage, .collectionSecondaryLanguage]),
+        .init(header: "PUBLISH OPTIONS", footer: nil, rows: [.includeNote]),
+        .init(header: nil, footer: nil, rows: [.publishAction])
     ]
     
     private var viewModelSubscribers = [AnyCancellable]()
@@ -70,7 +70,15 @@ class PublishCollectionViewController: UITableViewController {
         return cell
     }()
     
-    let languageCell: StaticTableViewCell = {
+    let primaryLanguageCell: StaticTableViewCell = {
+        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        cell.selectionStyle = .none
+        cell.accessoryType = .disclosureIndicator
+        cell.onLayoutSubviews = cell.applyRowStyle
+        return cell
+    }()
+    
+    let secondaryLanguageCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
         cell.selectionStyle = .none
         cell.accessoryType = .disclosureIndicator
@@ -132,12 +140,26 @@ class PublishCollectionViewController: UITableViewController {
     
     private func handleViewModelObjectWillChange() {
         authorNameCell.detailTextLabel?.text = viewModel.uiAuthorName
+        authorNameCell.detailTextLabel?.textColor = viewModel.authorName.trimmed().isEmpty ? .quaternaryLabel : .secondaryLabel
+        
         collectionCell.detailTextLabel?.text = viewModel.uiCollectionName
+        collectionCell.detailTextLabel?.textColor = viewModel.publishCollection == nil ? .quaternaryLabel : .secondaryLabel
+        
         collectionNameCell.detailTextLabel?.text = viewModel.uiCollectionPublishName
+        collectionNameCell.detailTextLabel?.textColor = viewModel.publishCollectionName.trimmed().isEmpty ? .quaternaryLabel : .secondaryLabel
+        
         collectionDescriptionCell.detailTextLabel?.text = viewModel.uiCollectionDescription
+        collectionDescriptionCell.detailTextLabel?.textColor = viewModel.publishDescription.trimmed().isEmpty ? .quaternaryLabel : .secondaryLabel
+        
         tagCell.detailTextLabel?.text = viewModel.uiCollectionTags
-        languageCell.detailTextLabel?.text = viewModel.uiCollectionLanguages
-        languageCell.detailTextLabel?.text = viewModel.uiCollectionLanguages
+        tagCell.detailTextLabel?.textColor = viewModel.publishTags.isEmpty ? .quaternaryLabel : .secondaryLabel
+        
+        primaryLanguageCell.detailTextLabel?.text = viewModel.uiCollectionPrimaryLanguage
+        primaryLanguageCell.detailTextLabel?.textColor = viewModel.publishPrimaryLanguage == nil ? .quaternaryLabel : .secondaryLabel
+        
+        secondaryLanguageCell.detailTextLabel?.text = viewModel.uiCollectionSecondaryLanguage
+        secondaryLanguageCell.detailTextLabel?.textColor = viewModel.publishSecondaryLanguage == nil ? .quaternaryLabel : .secondaryLabel
+        
         includeNoteCell.toggle?.setOn(viewModel.includesNote, animated: true)
         
         let enablePublish = viewModel.hasValidInputs
@@ -167,13 +189,7 @@ class PublishCollectionViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch sections[section].kind {
-        case .author: return "AUTHOR"
-        case .publishCollection: return "COLLECTION TO PUBLISH"
-        case .publishDetail: return "PUBLISH DETAILS"
-        case .publishOption: return "PUBLISH OPTIONS"
-        case .action: return nil
-        }
+        sections[section].header
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -201,9 +217,13 @@ class PublishCollectionViewController: UITableViewController {
             tagCell.textLabel?.text = "Tags"
             return tagCell
             
-        case .collectionLanguage:
-            languageCell.textLabel?.text = "Languages"
-            return languageCell
+        case .collectionPrimaryLanguage:
+            primaryLanguageCell.textLabel?.text = "Primary Language"
+            return primaryLanguageCell
+            
+        case .collectionSecondaryLanguage:
+            secondaryLanguageCell.textLabel?.text = "Secondary Language"
+            return secondaryLanguageCell
             
         case .includeNote:
             includeNoteCell.textLabel?.text = "Include Card's Note"
@@ -242,7 +262,7 @@ struct PublishCollectionViewControllerWrapper: UIViewControllerRepresentable {
     
     @ObservedObject var viewModel: PublishCollectionFormModel
     
-    var onRowSelected: ((PublishFormRowKind) -> Void)?
+    var onRowSelected: ((PublishFormSection.Row) -> Void)?
     
     func makeUIViewController(context: Context) -> PublishCollectionViewController {
         let controller = PublishCollectionViewController(viewModel: viewModel)
@@ -276,29 +296,24 @@ struct Preview: PreviewProvider {
 // MARK: - Model & Enum
 
 struct PublishFormSection {
-    let kind: PublishFormSectionKind
-    let rows: [PublishFormRowKind]
-}
-
-
-enum PublishFormSectionKind {
-    case author
-    case publishCollection
-    case publishDetail
-    case publishOption
-    case action
-}
-
-
-enum PublishFormRowKind {
-    case authorName
-    case collection
-    case collectionName
-    case collectionDescription
-    case collectionTag
-    case collectionLanguage
-    case includeNote
-    case publishAction
+    
+    let header: String?
+    
+    let footer: String?
+    
+    let rows: [Row]
+    
+    enum Row {
+        case authorName
+        case collection
+        case collectionName
+        case collectionDescription
+        case collectionTag
+        case collectionPrimaryLanguage
+        case collectionSecondaryLanguage
+        case includeNote
+        case publishAction
+    }
 }
 
 enum PublishFormPublishState {

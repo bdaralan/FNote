@@ -23,6 +23,7 @@ struct ModalTextField: View {
                     Text(viewModel.title)
                         .font(.largeTitle)
                         .bold()
+                        .lineLimit(1)
                     Spacer()
                     HStack(spacing: 16) {
                         viewModel.onCancel.map { action in
@@ -111,8 +112,8 @@ struct ModalTextFieldTokenView: View {
             Text(token)
             if showClear {
                 Image(systemName: "xmark.circle")
-                .foregroundColor(.secondary)
-                .font(.body)
+                    .foregroundColor(.secondary)
+                    .font(.body)
             }
         }
         .padding(.vertical, 8)
