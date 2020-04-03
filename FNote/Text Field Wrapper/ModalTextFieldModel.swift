@@ -18,20 +18,21 @@ struct ModalTextFieldModel {
     var promptColor: Color?
     
     var tokens: [String] = []
+    var showClearTokenIndicator = false
     
     var isFirstResponder = false
     
     var returnKeyType: UIReturnKeyType = .done
     
-    /// Action for *Cancel* nav button.
+    /// An action for *Cancel* nav button.
     var onCancel: (() -> Void)?
     
-    /// Action for *Done* nav button.
+    /// An action for *Done* nav button.
     var onCommit: (() -> Void)?
     
-    /// Action for keyboard return key.
+    /// An action for keyboard return key.
     var onReturnKey: (() -> Void)?
     
-    /// Action for token tapped.
+    /// An action for token tapped.
     var onTokenSelected: ((String) -> Void)?
 }

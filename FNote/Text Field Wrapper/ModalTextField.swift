@@ -16,7 +16,9 @@ struct ModalTextField: View {
     
     var body: some View {
         VStack(spacing: 16) {
+            // MARK: Title & Text Field
             VStack(alignment: .leading) {
+                
                 HStack(alignment: .firstTextBaseline) {
                     Text(viewModel.title)
                         .font(.largeTitle)
@@ -48,6 +50,7 @@ struct ModalTextField: View {
             }
             .padding(.horizontal, 20)
             
+            // MARK: Prompt & Token
             VStack(alignment: .leading, spacing: 16) {
                 if !viewModel.prompt.isEmpty {
                     Text(viewModel.prompt)
@@ -58,11 +61,12 @@ struct ModalTextField: View {
                 
                 if !viewModel.tokens.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
+                        HStack(spacing: 16) {
                             ForEach(viewModel.tokens, id: \.self) { token in
                                 ModalTextFieldTokenView(
                                     token: token,
-                                    onClear: { self.handleTokenClear(token) }
+                                    showClear: self.viewModel.showClearTokenIndicator,
+                                    onSelected: self.viewModel.onTokenSelected
                                 )
                             }
                         }
@@ -85,34 +89,59 @@ extension ModalTextField {
                 .padding(.top, 8)
     }
     
-    func handleTokenClear(_ token: String) {
-        viewModel.onTokenSelected?(token)
-    }
-    
     func configureTextField(_ textField: UITextField) {
         textField.returnKeyType = viewModel.returnKeyType
     }
 }
 
 
+// MARK: - Token View
+
 struct ModalTextFieldTokenView: View {
     
     var token: String
     
-    var onClear: (() -> Void)?
+    var showClear: Bool
+    
+    var onSelected: ((String) -> Void)?
+    
     
     var body: some View {
         HStack(spacing: 8) {
             Text(token)
-            Image(systemName: "xmark.circle")
+            if showClear {
+                Image(systemName: "xmark.circle")
                 .foregroundColor(.secondary)
-                .font(.footnote)
+                .font(.body)
+            }
         }
         .padding(.vertical, 8)
         .padding(.leading, 16)
-        .padding(.trailing, 12)
+        .padding(.trailing, showClear ? 12 : 16)
         .background(Color.noteCardBackground)
         .cornerRadius(30)
-        .onTapGesture(perform: onClear ?? {})
+        .onTapGesture(perform: { self.onSelected?(self.token) })
+    }
+}
+
+
+// MARK: - Preview
+
+struct ModalTextField_Previews: PreviewProvider {
+    
+    static var model: ModalTextFieldModel = {
+        var model = ModalTextFieldModel()
+        model.title = "Title"
+        model.placeholder = "placeholder"
+        model.text = "text"
+        model.tokens = ["ABC", "DEF", "GHIJK"]
+        model.showClearTokenIndicator = true
+        model.onTokenSelected = { _ in }
+        model.onCancel = {}
+        return model
+    }()
+    
+    static var previews: some View {
+        ModalTextField(viewModel: .constant(model))
     }
 }
