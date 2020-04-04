@@ -133,7 +133,10 @@ extension HomeCommunityView {
             PublicRecordManager.shared.queryCards(withCollectionID: collection.collectionID) { result in
                 guard case .success(let records) = result else { return }
                 print(collection.name)
-                records.forEach({ print(PublicNoteCard(record: $0).native) })
+                records.forEach {
+                    let card = PublicNoteCard(record: $0)
+                    print(card.native, card.note)
+                }
             }
         }
     }
@@ -205,7 +208,7 @@ extension HomeCommunityView {
         let collectionToPublish = PublicCollection(
             collectionID: collection.uuid,
             authorID: formModel.authorName,
-            name: collection.name,
+            name: formModel.publishCollectionName,
             description: formModel.publishDescription,
             primaryLanguage: primaryLanguage.code,
             secondaryLanguage: secondaryLanguage.code,
@@ -221,8 +224,8 @@ extension HomeCommunityView {
                 translation: noteCard.translation,
                 favorited: noteCard.isFavorite,
                 formality: Int(noteCard.formality.rawValue),
-                note: noteCard.note,
-                tags: noteCard.tags.map({ $0.name }),
+                note: formModel.includesNote ? noteCard.note : "",
+                tags: noteCard.tags.map(\.name),
                 relationships: []
             )
         }

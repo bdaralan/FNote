@@ -70,7 +70,7 @@ extension PublicCollection: CloudKitRecord {
         keyedRecord[.description] = description
         keyedRecord[.primaryLanguage] = primaryLanguage
         keyedRecord[.secondaryLanguage] = secondaryLanguage
-        keyedRecord[.tags] = tags.isEmpty ? nil : tags
+        keyedRecord[.tags] = tags.joined(separator: ",")
         keyedRecord[.cardsCount] = cardsCount
         
         return record
@@ -85,7 +85,7 @@ extension PublicCollection: CloudKitRecord {
         description = keyedRecord[.description] as? String ?? ""
         primaryLanguage = keyedRecord[.primaryLanguage] as? String ?? ""
         secondaryLanguage = keyedRecord[.secondaryLanguage] as? String ?? ""
-        tags = keyedRecord[.tags] as? [String] ?? []
+        tags = (keyedRecord[.tags] as? String)?.components(separatedBy: ",") ?? []
         cardsCount = keyedRecord[.cardsCount] as? Int ?? 0
     }
 }

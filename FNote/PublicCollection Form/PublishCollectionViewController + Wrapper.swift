@@ -93,7 +93,6 @@ class PublishCollectionViewController: UITableViewController {
         cell.uiView.font = .systemFont(ofSize: UIFont.labelFontSize, weight: .black)
         cell.backgroundColor = .noteCardBackground
         cell.layer.borderWidth = 2
-        cell.layer.borderColor = UIColor.label.cgColor
         return cell
     }()
     
@@ -155,9 +154,11 @@ class PublishCollectionViewController: UITableViewController {
         includeNoteCell.toggle?.setOn(viewModel.includesNote, animated: true)
         
         let enablePublish = viewModel.hasValidInputs
+        let color = enablePublish ? UIColor.label : .tertiaryLabel
         publishActionCell.uiView.text = viewModel.commitTitle
         publishActionCell.isUserInteractionEnabled = enablePublish
-        publishActionCell.alpha = enablePublish ? 1 : 0.4
+        publishActionCell.uiView.textColor = color
+        publishActionCell.layer.borderColor = color.cgColor
         
         tableView.reloadData()
     }
