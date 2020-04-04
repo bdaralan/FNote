@@ -139,15 +139,15 @@ extension PublishCollectionForm {
     /// Choose a collection to publish.
     func beginSelectCollection() {
         collectionViewModel.collections = viewModel.selectableCollections
-        collectionViewModel.disableCollectionIDs = []
+        collectionViewModel.disabledCollectionIDs = []
         
         let disableCollections = viewModel.selectableCollections.filter({ $0.noteCards.count < 9 })
         for collection in disableCollections {
-            collectionViewModel.disableCollectionIDs.insert(collection.uuid)
+            collectionViewModel.disabledCollectionIDs.insert(collection.uuid)
         }
         
         if let collection = viewModel.publishCollection {
-            collectionViewModel.disableCollectionIDs.insert(collection.uuid)
+            collectionViewModel.disabledCollectionIDs.insert(collection.uuid)
         }
         
         collectionViewModel.onCollectionSelected = { collection in

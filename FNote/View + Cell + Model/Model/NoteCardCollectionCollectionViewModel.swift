@@ -19,17 +19,33 @@ class NoteCardCollectionCollectionViewModel: NSObject, CollectionViewComposition
     
     var dataSource: UICollectionViewDiffableDataSource<Int, NoteCardCollection>!
     
+    /// Collections to be displayed.
     var collections: [NoteCardCollection] = []
     
-    var disableCollectionIDs: Set<String> = []
+    /// A set of IDs indicate that cells should be bordered.
+    var borderedCollectionIDs: Set<String> = []
+    
+    /// A set of IDs indicate that cells should be disabled.
+    var disabledCollectionIDs: Set<String> = []
+    
+    /// A set of IDs indicate that cells should show selected indicator.
     var selectedCollectionIDs: Set<String> = []
     
+    /// A set of IDs that should ignore selection.
+    ///
+    /// `onCollectionSelected` will not be called.
+    var ignoreSelectionCollectionIDs: Set<String> = []
+    
+    /// Context menus to be shown.
     var contextMenus: [NoteCardCollectionCell.ContextMenu] = []
     
     
     // MARK: Action
     
+    /// An action to perform on collection selected.
     var onCollectionSelected: ((NoteCardCollection) -> Void)?
+    
+    /// An action to perform on context menu selected.
     var onContextMenuSelected: ((NoteCardCollectionCell.ContextMenu, NoteCardCollection) -> Void)?
     
     
@@ -54,6 +70,7 @@ extension NoteCardCollectionCollectionViewModel: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let collection = dataSource.itemIdentifier(for: indexPath) else { return }
+        guard !ignoreSelectionCollectionIDs.contains(collection.uuid) else { return }
         guard let cell = collectionView.cellForItem(at: indexPath) as? NoteCardCollectionCell else { return }
         onCollectionSelected?(collection)
         
@@ -124,7 +141,8 @@ extension NoteCardCollectionCollectionViewModel {
         dataSource = .init(collectionView: collectionView, cellProvider: { collectionView, indexPath, collection in
             let cell = collectionView.dequeueCell(NoteCardCollectionCell.self, for: indexPath)
             cell.reload(with: collection)
-            cell.disableCell(self.disableCollectionIDs.contains(collection.uuid))
+            cell.disableCell(self.disabledCollectionIDs.contains(collection.uuid))
+            cell.showCellBorder(self.borderedCollectionIDs.contains(collection.uuid))
             
             let isCollectionSelected = self.selectedCollectionIDs.contains(collection.uuid)
             let icon = isCollectionSelected ? "checkmark" : nil

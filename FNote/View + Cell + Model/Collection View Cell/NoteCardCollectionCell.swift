@@ -45,6 +45,15 @@ class NoteCardCollectionCell: ManagedObjectCollectionViewCell<NoteCardCollection
         iconImageView.image = image
     }
     
+    func showCellBorder(_ show: Bool) {
+        layer.borderColor = UIColor.appAccent.cgColor
+        layer.borderWidth = show ? 3 : 0
+    }
+    
+    /// Disable user interaction.
+    /// - Parameters:
+    ///   - disabled: A value indicate whether the cell should be disabled.
+    ///   - faded: A value indicate whether the disabled cell should be faded.
     func disableCell(_ disabled: Bool) {
         isUserInteractionEnabled = disabled ? false : true
         contentView.layer.opacity = disabled ? 0.35 : 1

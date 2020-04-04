@@ -180,10 +180,15 @@ extension NoteCardForm {
     
     func beginSelectCollection() {
         selectCollectionViewModel.collections = viewModel.selectableCollections
-        selectCollectionViewModel.onCollectionSelected = handleNoteCardCollectionSelected
         
         if let collection = viewModel.selectedCollection {
-            selectCollectionViewModel.disableCollectionIDs = [collection.uuid]
+            selectCollectionViewModel.borderedCollectionIDs = [collection.uuid]
+            selectCollectionViewModel.ignoreSelectionCollectionIDs = [collection.uuid]
+        }
+        
+        selectCollectionViewModel.onCollectionSelected = { collection in
+            self.viewModel.onCollectionSelected?(collection)
+            self.viewModel.isSelectingCollection = false
         }
         
         viewModel.isSelectingCollection = true
@@ -192,11 +197,6 @@ extension NoteCardForm {
     func handleOnReceiveSelectingCollection(_ isSelecting: Bool) {
         guard !isSelecting else { return }
         selectCollectionViewModel = .init()
-    }
-    
-    func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
-        viewModel.onCollectionSelected?(collection)
-        viewModel.isSelectingCollection = false
     }
 }
 
@@ -209,13 +209,13 @@ extension NoteCardForm {
         selectRelationshipCollectionViewModel.collections = viewModel.selectableCollections
         
         if let collection = viewModel.relationshipSelectedCollection {
-            selectRelationshipCollectionViewModel.disableCollectionIDs = [collection.uuid]
+            selectRelationshipCollectionViewModel.disabledCollectionIDs = [collection.uuid]
         }
         
         selectRelationshipCollectionViewModel.onCollectionSelected = { collection in
             self.viewModel.onRelationshipCollectionSelected?(collection)
             
-            self.selectRelationshipCollectionViewModel.disableCollectionIDs = [collection.uuid]
+            self.selectRelationshipCollectionViewModel.disabledCollectionIDs = [collection.uuid]
             self.selectRelationshipCollectionViewModel.updateSnapshot(animated: false)
             
             self.selectRelationshipViewModel.noteCards = self.viewModel.selectableRelationships
