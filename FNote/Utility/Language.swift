@@ -35,4 +35,8 @@ struct Language: Equatable {
         }
         .sorted(by: { $0.localized < $1.localized })
     }()
+    
+    static let availableLocalizedISO639s: [String] = {
+        availableISO639s.map(\.localized)
+    }()
 }

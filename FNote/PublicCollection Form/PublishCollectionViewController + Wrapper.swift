@@ -32,65 +32,57 @@ class PublishCollectionViewController: UITableViewController {
     
     let authorNameCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
-        cell.selectionStyle = .none
         cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyRowStyle
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
     let collectionNameCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
-        cell.selectionStyle = .none
         cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyRowStyle
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
     let collectionCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
-        cell.selectionStyle = .none
         cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyRowStyle
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
     let collectionDescriptionCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
-        cell.selectionStyle = .none
         cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyRowStyle
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
     let tagCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
-        cell.selectionStyle = .none
         cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyRowStyle
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
     let primaryLanguageCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
-        cell.selectionStyle = .none
         cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyRowStyle
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
     let secondaryLanguageCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
-        cell.selectionStyle = .none
         cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyRowStyle
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
     let includeNoteCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .default, reuseIdentifier: nil)
         cell.useToggle(true)
-        cell.selectionStyle = .none
-        cell.onLayoutSubviews = cell.applyRowStyle
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
@@ -166,6 +158,8 @@ class PublishCollectionViewController: UITableViewController {
         publishActionCell.uiView.text = viewModel.commitTitle
         publishActionCell.isUserInteractionEnabled = enablePublish
         publishActionCell.alpha = enablePublish ? 1 : 0.4
+        
+        tableView.reloadData()
     }
     
     @objc private func handleToggleChanged(_ sender: UISwitch) {
@@ -238,6 +232,8 @@ class PublishCollectionViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let rowKind = sections[indexPath.section].rows[indexPath.row]
         
+        tableView.deselectRow(at: indexPath, animated: true)
+        
         onRowSelected?(rowKind)
         
         if rowKind == .publishAction {
@@ -247,7 +243,7 @@ class PublishCollectionViewController: UITableViewController {
 }
 
 
-extension PublishCollectionViewController: UITextFieldDelegate {
+extension PublishCollectionViewController {
     
     private func setupView() {
         tableView.separatorStyle = .none
