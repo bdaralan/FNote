@@ -244,6 +244,8 @@ extension SettingViewController {
         markdownSoftBreakToggleCell.toggle!.setOn(preference.useMarkdownSoftBreak, animated: true)
         markdownSoftBreakToggleCell.toggle!.isEnabled = preference.useMarkdown
         markdownSoftBreakToggleCell.textLabel?.textColor = preference.useMarkdown ? .label : .tertiaryLabel
+        
+        tableView.reloadData()
     }
 }
 
