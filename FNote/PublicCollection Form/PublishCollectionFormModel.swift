@@ -69,8 +69,16 @@ extension PublishCollectionFormModel {
         authorName.isEmpty ? "required" : authorName
     }
     
+    var uiAuthorNamePlaceholder: String {
+        authorName.isEmpty ? "author" : authorName
+    }
+    
     var uiCollectionName: String {
         publishCollection?.name ?? "required"
+    }
+    
+    var uiPublishCollectionNamePlaceholder: String {
+        publishCollectionName.isEmpty ? "publish name" : publishCollectionName
     }
     
     var uiCollectionPublishName: String {

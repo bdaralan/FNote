@@ -15,9 +15,11 @@ struct HomeCommunityView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.sizeCategory) var sizeCategory
     
+    @EnvironmentObject var appState: AppState
+    
     var viewModel: PublicCollectionViewModel
     
-    @State private var showPublishForm = false
+    @State private var sheet = PresentingSheet<Sheet>()
     @State private var publishFormModel: PublishCollectionFormModel?
     
     @State private var collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
@@ -76,13 +78,12 @@ struct HomeCommunityView: View {
                 }
             }
             .navigationBarTitle("Communities")
-            .navigationBarItems(trailing: trailingNavItems)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onReceive(horizontalSizeClasses.publisher, perform: handleSizeClassChanged)
         .onReceive(sizeCategories.publisher, perform: handleSizeCategoryChanged)
         .onAppear(perform: setupOnAppear)
-        .sheet(isPresented: $showPublishForm, content: { PublishCollectionForm(viewModel: self.publishFormModel!) })
+        .sheet(item: $sheet.presenting, content: presentationSheet)
     }
 }
 
@@ -157,19 +158,27 @@ extension HomeCommunityView {
 
 extension HomeCommunityView {
     
-    var trailingNavItems: some View {
-        EmptyView()
+    enum Sheet: PresentingSheetEnum {
+        case publishCollection
+    }
+    
+    func presentationSheet(for sheet: Sheet) -> some View {
+        switch sheet {
+        case .publishCollection:
+            return PublishCollectionForm(viewModel: self.publishFormModel!)
+        }
     }
     
     func beginPublishCollection() {
         let formModel = PublishCollectionFormModel()
         formModel.commitTitle = "PUBLISH"
         
+        formModel.selectableCollections = appState.collections
         formModel.onCommit = commitPublishCollection
         
         formModel.onCancel = {
             self.publishFormModel = nil
-            self.showPublishForm = false
+            self.sheet.dismiss()
         }
         
         formModel.onPublishStateChanged = { state in
@@ -178,13 +187,13 @@ extension HomeCommunityView {
             case .submitting: formModel.commitTitle = "PUBLISHING"
             case .rejected: formModel.commitTitle = "FAILED"
             case .published:
-                formModel.commitTitle = "PUBLISHED"
-                self.showPublishForm = false
+                self.publishFormModel = nil
+                self.sheet.dismiss()
             }
         }
         
         publishFormModel = formModel
-        showPublishForm = true
+        sheet.present(.publishCollection)
     }
     
     func commitPublishCollection() {
@@ -193,7 +202,7 @@ extension HomeCommunityView {
         guard let primaryLanguage = formModel.publishPrimaryLanguage else { return }
         guard let secondaryLanguage = formModel.publishSecondaryLanguage else { return }
         
-        let publicCollection = PublicCollection(
+        let collectionToPublish = PublicCollection(
             collectionID: collection.uuid,
             authorID: formModel.authorName,
             name: collection.name,
@@ -204,9 +213,9 @@ extension HomeCommunityView {
             cardsCount: collection.noteCards.count
         )
         
-        let cards = collection.noteCards.map { noteCard in
+        let cardsToPublish = collection.noteCards.map { noteCard in
             PublicNoteCard(
-                collectionID: publicCollection.collectionID,
+                collectionID: collectionToPublish.collectionID,
                 cardID: noteCard.uuid,
                 native: noteCard.native,
                 translation: noteCard.translation,
@@ -220,7 +229,7 @@ extension HomeCommunityView {
         
         formModel.setPublishState(to: .submitting)
         
-        PublicRecordManager.shared.upload(collection: publicCollection, with: cards) { result in
+        PublicRecordManager.shared.upload(collection: collectionToPublish, with: cardsToPublish) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success:

@@ -15,7 +15,7 @@ struct PublishCollectionForm: View {
     
     let publishTagsLimit = 4
     
-    @State private var sheet: Sheet?
+    @State private var sheet = PresentingSheet<Sheet>()
     
     @State private var textFieldModel = ModalTextFieldModel()
     @State private var languageTextFieldModel = ModalTextFieldModel()
@@ -34,7 +34,7 @@ struct PublishCollectionForm: View {
                 .edgesIgnoringSafeArea(.bottom)
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .sheet(item: $sheet, content: presentationSheet)
+        .sheet(item: $sheet.presenting, content: presentationSheet)
     }
 }
 
@@ -64,8 +64,7 @@ extension PublishCollectionForm {
 
 extension PublishCollectionForm {
     
-    enum Sheet: Identifiable {
-        var id: Self { self }
+    enum Sheet: PresentingSheetEnum {
         case authorName
         case collectionName
         case publishCollection
@@ -92,7 +91,7 @@ extension PublishCollectionForm {
                 .eraseToAnyView()
             
         case .publishCollection:
-            let cancel = Button("Cancel", action: { self.sheet = nil })
+            let cancel = Button("Cancel", action: { self.sheet.dismiss() })
             return NavigationView {
                 CollectionViewWrapper(viewModel: collectionViewModel)
                     .navigationBarTitle("Select Collection", displayMode: .inline)
@@ -114,20 +113,20 @@ extension PublishCollectionForm {
         textFieldModel = .init()
         textFieldModel.title = "Author Name"
         textFieldModel.text = viewModel.authorName
-        textFieldModel.placeholder = viewModel.authorName
-        textFieldModel.prompt = "name that appears on all published collections (A-Z, 0-9, -, _)"
+        textFieldModel.placeholder = viewModel.uiAuthorNamePlaceholder
+        textFieldModel.prompt = "The name that appears on all published collections (A-Z, 0-9, -, _)"
         textFieldModel.isFirstResponder = true
-        sheet = .authorName
+        sheet.present(.authorName)
         
         textFieldModel.onCancel = {
             self.textFieldModel.isFirstResponder = false
-            self.sheet = nil
+            self.sheet.dismiss()
         }
         
         textFieldModel.onReturnKey = {
             self.viewModel.authorName = self.textFieldModel.text.trimmedUsername()
             self.textFieldModel.isFirstResponder = false
-            self.sheet = nil
+            self.sheet.dismiss()
         }
     }
 }
@@ -139,25 +138,6 @@ extension PublishCollectionForm {
     
     /// Choose a collection to publish.
     func beginSelectCollection() {
-        // test code
-        var collections = [NoteCardCollection]()
-        for _ in 1...10 {
-            let collection = NoteCardCollection(context: .sample)
-            collection.name = "Publish Collection \(Int.random(in: 1...100))"
-            for i in 4...Int.random(in: 9...19) {
-                let card = NoteCard(context: .sample)
-                let number = i + 1
-                card.native = "native \(number)"
-                card.translation = "translation \(number)"
-                card.note = "note \(number)"
-                card.formality = NoteCard.Formality.allCases.randomElement()!
-                card.collection = collection
-            }
-            collections.append(collection)
-        }
-        viewModel.selectableCollections = collections
-        
-        // real code
         collectionViewModel.collections = viewModel.selectableCollections
         collectionViewModel.disableCollectionIDs = []
         
@@ -172,10 +152,10 @@ extension PublishCollectionForm {
         
         collectionViewModel.onCollectionSelected = { collection in
             self.viewModel.publishCollection = collection
-            self.sheet = nil
+            self.sheet.dismiss()
         }
         
-        sheet = .publishCollection
+        sheet.present(.publishCollection)
     }
 }
 
@@ -188,20 +168,20 @@ extension PublishCollectionForm {
         textFieldModel = .init()
         textFieldModel.title = "Collection Name"
         textFieldModel.text = viewModel.publishCollectionName
-        textFieldModel.placeholder = viewModel.publishCollectionName
-        textFieldModel.prompt = "publish name"
+        textFieldModel.placeholder = viewModel.uiPublishCollectionNamePlaceholder
+        textFieldModel.prompt = "The collection's publish name"
         textFieldModel.isFirstResponder = true
-        sheet = .collectionName
+        sheet.present(.collectionName)
         
         textFieldModel.onCancel = {
             self.textFieldModel.isFirstResponder = false
-            self.sheet = nil
+            self.sheet.dismiss()
         }
         
         textFieldModel.onReturnKey = {
             self.viewModel.publishCollectionName = self.textFieldModel.text.trimmed()
             self.textFieldModel.isFirstResponder = false
-            self.sheet = nil
+            self.sheet.dismiss()
         }
     }
     
@@ -212,12 +192,12 @@ extension PublishCollectionForm {
         collectionDescriptionTextViewModel.disableEditing = false
         collectionDescriptionTextViewModel.renderMarkdown = false
         collectionDescriptionTextViewModel.isFirstResponder = true
-        sheet = .publishDescription
+        sheet.present(.publishDescription)
         
         collectionDescriptionTextViewModel.onCommit = {
             self.viewModel.publishDescription = self.collectionDescriptionTextViewModel.text
             self.collectionDescriptionTextViewModel.isFirstResponder = false
-            self.sheet = nil
+            self.sheet.dismiss()
         }
     }
     
@@ -232,12 +212,13 @@ extension PublishCollectionForm {
         
         textFieldModel = .init()
         textFieldModel.title = "Tags"
+        textFieldModel.placeholder = "tag"
         textFieldModel.tokens = viewModel.publishTags
         textFieldModel.showClearTokenIndicator = true
         textFieldModel.isFirstResponder = true
         textFieldModel.returnKeyType = .default
         setDefaultPrompt()
-        sheet = .publishTags
+        sheet.present(.publishTags)
         
         // remove tag action
         textFieldModel.onTokenSelected = { token in
@@ -272,7 +253,7 @@ extension PublishCollectionForm {
         // commit tags action
         textFieldModel.onCommit = {
             self.viewModel.publishTags = self.textFieldModel.tokens
-            self.sheet = nil
+            self.sheet.dismiss()
         }
     }
 }
@@ -293,16 +274,16 @@ extension PublishCollectionForm {
             let language = self.filteredLanguages.first(where: { $0.localized == token })
             self.viewModel.publishPrimaryLanguage = language
             self.languageTextFieldModel.isFirstResponder = false
-            self.sheet = nil
+            self.sheet.dismiss()
         }
         
         languageTextFieldModel.onCancel = {
             self.languageTextFieldModel.isFirstResponder = false
-            self.sheet = nil
+            self.sheet.dismiss()
         }
         
         languageTextFieldModel.isFirstResponder = true
-        sheet = .publishLanguages
+        sheet.present(.publishLanguages)
     }
     
     func beginSelectSecondaryLanguage() {
@@ -316,16 +297,16 @@ extension PublishCollectionForm {
             let language = self.filteredLanguages.first(where: { $0.localized == token })
             self.viewModel.publishSecondaryLanguage = language
             self.languageTextFieldModel.isFirstResponder = false
-            self.sheet = nil
+            self.sheet.dismiss()
         }
         
         languageTextFieldModel.onCancel = {
             self.languageTextFieldModel.isFirstResponder = false
-            self.sheet = nil
+            self.sheet.dismiss()
         }
         
         languageTextFieldModel.isFirstResponder = true
-        sheet = .publishLanguages
+        sheet.present(.publishLanguages)
     }
     
     /// Filter languages for `languageTextFieldModel`'s tokens.

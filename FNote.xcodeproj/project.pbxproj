@@ -74,6 +74,7 @@
 		B49865E6242C6C7800145EBB /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49865E5242C6C7800145EBB /* SettingViewController.swift */; };
 		B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35B2326D988002D16A0 /* CoreDataStack.swift */; };
 		B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35D2326D9A7002D16A0 /* AppCache.swift */; };
+		B499D63724381CB90005CAFA /* PresentingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499D63624381CB90005CAFA /* PresentingSheet.swift */; };
 		B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C6923D628760030D9B2 /* HomeView.swift */; };
 		B49C4C6F23D64AFB0030D9B2 /* SegmentControlWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C6E23D64AFB0030D9B2 /* SegmentControlWrapper.swift */; };
 		B49C4C7123D65C850030D9B2 /* HomeNoteCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C7023D65C850030D9B2 /* HomeNoteCardView.swift */; };
@@ -205,6 +206,7 @@
 		B49865E5242C6C7800145EBB /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		B499A35B2326D988002D16A0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		B499A35D2326D9A7002D16A0 /* AppCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCache.swift; sourceTree = "<group>"; };
+		B499D63624381CB90005CAFA /* PresentingSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentingSheet.swift; sourceTree = "<group>"; };
 		B49C4C6923D628760030D9B2 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B49C4C6E23D64AFB0030D9B2 /* SegmentControlWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentControlWrapper.swift; sourceTree = "<group>"; };
 		B49C4C7023D65C850030D9B2 /* HomeNoteCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeNoteCardView.swift; sourceTree = "<group>"; };
@@ -311,6 +313,7 @@
 				B411E0502332F6B4008D99A0 /* NotificationObserver.swift */,
 				B452519823E0138C007A85CF /* ExportImportDataManager.swift */,
 				B4B3C39E24257E600041515E /* Language.swift */,
+				B499D63624381CB90005CAFA /* PresentingSheet.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -833,6 +836,7 @@
 				B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */,
 				B476FE22241C6A3B0006A196 /* ScrollViewSection.swift in Sources */,
 				B4BAC54523206B28007EAF15 /* String.swift in Sources */,
+				B499D63724381CB90005CAFA /* PresentingSheet.swift in Sources */,
 				B4BBDBF723E5111000A0AEA1 /* SettingImportFileList.swift in Sources */,
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,
 				B4E8811E23FF8E5E00F475CE /* PublicCollectionUploader.swift in Sources */,
