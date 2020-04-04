@@ -45,6 +45,13 @@ class PublishCollectionFormModel: ObservableObject {
         publishState = newValue
         onPublishStateChanged?(newValue)
     }
+    
+    func validateInputs() {
+        authorName = authorName.trimmedUsername()
+        publishCollectionName = publishCollectionName.trimmed()
+        publishDescription = publishDescription.trimmed()
+        publishTags = publishTags.map({ $0.replacingOccurrences(of: ",", with: "") })
+    }
 }
 
 

@@ -200,6 +200,8 @@ extension HomeCommunityView {
     }
     
     func commitPublishCollection() {
+        publishFormModel?.validateInputs()
+        
         guard let formModel = publishFormModel, formModel.hasValidInputs else { return }
         guard let collection = formModel.publishCollection else { return }
         guard let primaryLanguage = formModel.publishPrimaryLanguage else { return }
