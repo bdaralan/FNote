@@ -36,7 +36,7 @@ class NoteCardFormController: UITableViewController {
     
     let nativeCell: TableViewCell<TextFieldInputView> = {
         let cell = TableViewCell<TextFieldInputView>(style: .default, reuseIdentifier: nil)
-        cell.uiView.label.text = "native: the current learning laguage"
+        cell.uiView.label.text = "native word or phrase"
         cell.uiView.textField.clearButtonMode = .whileEditing
         cell.uiView.textField.font = .preferredFont(forTextStyle: .headline)
         cell.setStackViewInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
@@ -48,7 +48,7 @@ class NoteCardFormController: UITableViewController {
     
     let translationCell: TableViewCell<TextFieldInputView> = {
         let cell = TableViewCell<TextFieldInputView>(style: .default, reuseIdentifier: nil)
-        cell.uiView.label.text = "translation: the translated language"
+        cell.uiView.label.text = "translation"
         cell.uiView.textField.clearButtonMode = .whileEditing
         cell.uiView.textField.font = .preferredFont(forTextStyle: .body)
         cell.setStackViewInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
@@ -195,7 +195,8 @@ extension NoteCardFormController {
             translationCell.uiView.textField.becomeFirstResponder()
             
         case .note:
-            tableView.deselectRow(at: indexPath, animated: true)
+            tableView.endEditing(true)
+            tableView.deselectRow(at: indexPath, animated: false)
         
         default:
             tableView.endEditing(true)
