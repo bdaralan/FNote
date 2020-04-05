@@ -52,7 +52,8 @@ extension Tag {
     }
     
     func validateData() {
-        setPrimitiveValue(name.trimmed(), forKey: #keyPath(Tag.name))
+        let name = self.name.replacingOccurrences(of: ",", with: "").trimmed()
+        setPrimitiveValue(name, forKey: #keyPath(Tag.name))
     }
 }
 

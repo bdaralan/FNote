@@ -61,6 +61,28 @@ class NoteCardCollectionCollectionViewModel: NSObject, CollectionViewComposition
         let visibleCells = collectionView.visibleCells as! [NoteCardCollectionCell]
         visibleCells.forEach({ $0.setIconImage(systemName: nil) })
     }
+    
+    func reloadVisibleCells() {
+        guard let collectionView = collectionView else { return }
+        let visibleIndexPaths = collectionView.indexPathsForVisibleItems
+        for indexPath in visibleIndexPaths {
+            let cell = collectionView.cellForItem(at: indexPath) as! NoteCardCollectionCell
+            if let collection = dataSource.itemIdentifier(for: indexPath) {
+                setupCollectionCell(cell, for: collection)
+            }
+        }
+    }
+    
+    func setupCollectionCell(_ cell: NoteCardCollectionCell, for collection: NoteCardCollection) {
+        cell.reload(with: collection)
+        cell.disableCell(disabledCollectionIDs.contains(collection.uuid))
+        cell.showCellBorder(borderedCollectionIDs.contains(collection.uuid))
+        
+        let isCollectionSelected = selectedCollectionIDs.contains(collection.uuid)
+        let icon = isCollectionSelected ? "checkmark" : nil
+        cell.setIconImage(systemName: icon)
+        
+    }
 }
 
 
@@ -140,14 +162,7 @@ extension NoteCardCollectionCollectionViewModel {
         
         dataSource = .init(collectionView: collectionView, cellProvider: { collectionView, indexPath, collection in
             let cell = collectionView.dequeueCell(NoteCardCollectionCell.self, for: indexPath)
-            cell.reload(with: collection)
-            cell.disableCell(self.disabledCollectionIDs.contains(collection.uuid))
-            cell.showCellBorder(self.borderedCollectionIDs.contains(collection.uuid))
-            
-            let isCollectionSelected = self.selectedCollectionIDs.contains(collection.uuid)
-            let icon = isCollectionSelected ? "checkmark" : nil
-            cell.setIconImage(systemName: icon)
-            
+            self.setupCollectionCell(cell, for: collection)
             return cell
         })
     }

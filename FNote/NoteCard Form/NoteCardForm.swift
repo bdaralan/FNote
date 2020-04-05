@@ -129,6 +129,7 @@ extension NoteCardForm {
             CollectionViewWrapper(viewModel: selectRelationshipCollectionViewModel)
                 .navigationBarTitle("Link Collection", displayMode: .inline)
                 .navigationBarItems(trailing: doneNavItem)
+                .edgesIgnoringSafeArea(.all)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         
@@ -187,6 +188,9 @@ extension NoteCardForm {
         }
         
         selectCollectionViewModel.onCollectionSelected = { collection in
+            self.selectCollectionViewModel.borderedCollectionIDs = [collection.uuid]
+            self.selectCollectionViewModel.ignoreSelectionCollectionIDs = [collection.uuid]
+            self.selectCollectionViewModel.reloadVisibleCells()
             self.viewModel.onCollectionSelected?(collection)
             self.viewModel.isSelectingCollection = false
         }
@@ -209,13 +213,15 @@ extension NoteCardForm {
         selectRelationshipCollectionViewModel.collections = viewModel.selectableCollections
         
         if let collection = viewModel.relationshipSelectedCollection {
-            selectRelationshipCollectionViewModel.disabledCollectionIDs = [collection.uuid]
+            selectRelationshipCollectionViewModel.borderedCollectionIDs = [collection.uuid]
+            selectRelationshipCollectionViewModel.ignoreSelectionCollectionIDs = [collection.uuid]
         }
         
         selectRelationshipCollectionViewModel.onCollectionSelected = { collection in
             self.viewModel.onRelationshipCollectionSelected?(collection)
             
-            self.selectRelationshipCollectionViewModel.disabledCollectionIDs = [collection.uuid]
+            self.selectRelationshipCollectionViewModel.borderedCollectionIDs = [collection.uuid]
+            self.selectRelationshipCollectionViewModel.ignoreSelectionCollectionIDs = [collection.uuid]
             self.selectRelationshipCollectionViewModel.updateSnapshot(animated: false)
             
             self.selectRelationshipViewModel.noteCards = self.viewModel.selectableRelationships
