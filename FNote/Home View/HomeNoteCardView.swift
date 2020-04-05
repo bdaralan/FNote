@@ -400,26 +400,33 @@ extension HomeNoteCardView {
     func handleNoteCardQuickButtonTapped(_ button: NoteCardCell.QuickButtonType, noteCard: NoteCard) {
         switch button {
         case .relationship:
-            if relationshipViewModel == nil {
-                relationshipViewModel = .init()
+            let model = NoteCardCollectionViewModel()
+            model.cellStyle = .short
+            model.contextMenus = [.copyNative]
+            
+            let setupDisplayRelationships: (NoteCard) -> Void = { noteCard in
+                let relationships = noteCard.relationships.sorted(by: { $0.translation < $1.translation })
+                model.noteCards = [noteCard] + relationships
+                model.borderedNoteCardIDs = [noteCard.uuid]
+                model.ignoreSelectionNoteCardIDs = [noteCard.uuid]
             }
             
-            let relationships = noteCard.relationships.sorted(by: { $0.translation < $1.translation })
-            relationshipViewModel?.noteCards = [noteCard] + relationships
-            relationshipViewModel?.cellStyle = .short
-            relationshipViewModel?.contextMenus = [.copyNative]
-            relationshipViewModel?.disableNoteCardIDs = [noteCard.uuid]
-            
-            relationshipViewModel?.onContextMenuSelected = { menu, noteCard in
+            model.onContextMenuSelected = { menu, noteCard in
                 guard menu == .copyNative else { return }
                 UIPasteboard.general.string = noteCard.native
             }
             
-            relationshipViewModel?.onNoteCardSelected = { noteCard in
-                self.handleNoteCardQuickButtonTapped(.relationship, noteCard: noteCard)
-                self.relationshipViewModel?.reloadDisableCells()
-                self.relationshipViewModel?.updateSnapshot(animated: true)
+            model.onNoteCardSelected = { noteCard in
+                // setup cards to display
+                // clear current bordered cells
+                // show the cards to display
+                setupDisplayRelationships(noteCard)
+                model.reloadedVisibleCells()
+                model.updateSnapshot(animated: true)
             }
+            
+            setupDisplayRelationships(noteCard)
+            relationshipViewModel = model
             sheet = .noteCardRelationship
         
         case .tag:

@@ -28,8 +28,18 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     var cellStyle: NoteCardCell.Style = .regular
     
+    /// A set of IDs indicate that cells should be bordered.
     var borderedNoteCardIDs: Set<String> = []
+    
+    /// A set of IDs indicate that cells should be disabled.
     var disableNoteCardIDs: Set<String> = []
+    
+    /// A set of IDs that should ignore selection.
+    ///
+    /// `onNoteCardSelected` will not be called.
+    var ignoreSelectionNoteCardIDs: Set<String> = []
+    
+    /// Context menus to be shown.
     var contextMenus: [NoteCardCell.ContextMenu] = []
     
     private var sections: [Section] {
@@ -77,13 +87,13 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     // MARK: Method
     
-    func reloadDisableCells() {
+    func reloadedVisibleCells() {
         guard let collectionView = collectionView else { return }
         let visibleIndexPaths = collectionView.indexPathsForVisibleItems
         for indexPath in visibleIndexPaths {
             let cell = collectionView.cellForItem(at: indexPath) as! NoteCardCell
             if let noteCard = dataSource.itemIdentifier(for: indexPath) {
-                cell.disableCell(disableNoteCardIDs.contains(noteCard.uuid))
+                setupNoteCardCell(cell, for: noteCard)
             }
         }
     }
@@ -157,6 +167,7 @@ extension NoteCardCollectionViewModel: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let noteCard = dataSource.itemIdentifier(for: indexPath) else { return }
+        guard !ignoreSelectionNoteCardIDs.contains(noteCard.uuid) else { return }
         guard let cell = collectionView.cellForItem(at: indexPath) as? NoteCardCell else { return }
         onNoteCardSelected?(noteCard)
         cell.showCellBorder(borderedNoteCardIDs.contains(noteCard.uuid))
