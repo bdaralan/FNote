@@ -85,6 +85,7 @@
 		B4AFD4522360B1B3004BAA9B /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AFD4512360B1B3004BAA9B /* CloudKit.framework */; };
 		B4B3C39F24257E600041515E /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B3C39E24257E600041515E /* Language.swift */; };
 		B4B3C3A124257EBC0041515E /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B3C3A024257EBC0041515E /* OverlayView.swift */; };
+		B4B4550F243FCEBD00FC3283 /* BDUIKnit in Frameworks */ = {isa = PBXBuildFile; productRef = B4B4550E243FCEBD00FC3283 /* BDUIKnit */; };
 		B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */; };
 		B4BAC53A2320405B007EAF15 /* NoteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5342320405B007EAF15 /* NoteCard.swift */; };
 		B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */; };
@@ -270,6 +271,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B4928E8C239054FF0060AD45 /* Down in Frameworks */,
+				B4B4550F243FCEBD00FC3283 /* BDUIKnit in Frameworks */,
 				B4AFD4522360B1B3004BAA9B /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -663,6 +665,7 @@
 			name = FNote;
 			packageProductDependencies = (
 				B4928E8B239054FF0060AD45 /* Down */,
+				B4B4550E243FCEBD00FC3283 /* BDUIKnit */,
 			);
 			productName = FNote;
 			productReference = B4BB116D23145DC400A380AA /* FNote.app */;
@@ -716,6 +719,7 @@
 			mainGroup = B4BB116423145DC400A380AA;
 			packageReferences = (
 				B4928E8A239054FF0060AD45 /* XCRemoteSwiftPackageReference "Down" */,
+				B4B4550D243FCEBD00FC3283 /* XCRemoteSwiftPackageReference "BDUIKnit" */,
 			);
 			productRefGroup = B4BB116E23145DC400A380AA /* Products */;
 			projectDirPath = "";
@@ -1143,6 +1147,14 @@
 				minimumVersion = 0.9.0;
 			};
 		};
+		B4B4550D243FCEBD00FC3283 /* XCRemoteSwiftPackageReference "BDUIKnit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/iDara09/BDUIKnit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1150,6 +1162,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B4928E8A239054FF0060AD45 /* XCRemoteSwiftPackageReference "Down" */;
 			productName = Down;
+		};
+		B4B4550E243FCEBD00FC3283 /* BDUIKnit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B4B4550D243FCEBD00FC3283 /* XCRemoteSwiftPackageReference "BDUIKnit" */;
+			productName = BDUIKnit;
 		};
 /* End XCSwiftPackageProductDependency section */
 

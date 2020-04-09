@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "BDUIKnit",
+        "repositoryURL": "https://github.com/iDara09/BDUIKnit.git",
+        "state": {
+          "branch": null,
+          "revision": "5458956c3a652462ff5f1e3404d305822964be60",
+          "version": "1.0.2"
+        }
+      },
+      {
         "package": "Down",
         "repositoryURL": "https://github.com/iwasrobbed/Down.git",
         "state": {
