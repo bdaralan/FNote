@@ -28,6 +28,8 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     var cellStyle: NoteCardCell.Style = .regular
     
+    var sectionContentInsets = NSDirectionalEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
+    
     /// A set of IDs indicate that cells should be bordered.
     var borderedNoteCardIDs: Set<String> = []
     
@@ -286,7 +288,7 @@ extension NoteCardCollectionViewModel {
         
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 12
-        section.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
+        section.contentInsets = sectionContentInsets
         
         return section
     }
