@@ -100,6 +100,13 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
         }
     }
     
+    func scrollToTop(animated: Bool) {
+        guard let collectionView = collectionView else { return }
+        guard let firstCard = noteCards.first else { return }
+        guard let firstIndexPath = dataSource.indexPath(for: firstCard) else { return }
+        collectionView.scrollToItem(at: firstIndexPath, at: .bottom, animated: animated)
+    }
+    
     /// The method does not trigger `onSearchCancel` block.
     func cancelSearch() {
         let headerIndexPath = IndexPath(item: 0, section: 0)

@@ -8,6 +8,7 @@
 
 import SwiftUI
 import CoreData
+import BDUIKnit
 
 
 struct HomeNoteCardView: View {
@@ -17,39 +18,47 @@ struct HomeNoteCardView: View {
     
     var viewModel: NoteCardCollectionViewModel
     
-    var collection: NoteCardCollection
-    
-    var collectionView: UICollectionView
+    @State private var collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     
     @State private var sheet: Sheet?
     @State private var showSortOption = false
 
+    @State private var trayViewModel = BDButtonTrayViewModel()
+    @State private var trayConfiguration = BDButtonTrayConfiguration()
+    
     @State private var noteCardFormModel: NoteCardFormModel?
     @State private var relationshipViewModel: NoteCardCollectionViewModel?
     @State private var tagViewModel: TagCollectionViewModel?
     @State private var textViewModel = ModalTextViewModel()
+    @State private var textFieldModel = ModalTextFieldModel()
     
     @State private var noteCardToDelete: NoteCard?
     
     @State private var searchFetchController: NSFetchedResultsController<NoteCard>?
     @State private var currentSearchText = ""
     
-    var iPad: Bool {
-        UIDevice.current.userInterfaceIdiom == .pad
+    var currentCollection: NoteCardCollection? {
+        appState.currentCollection
     }
     
     
     var body: some View {
         NavigationView {
-            CollectionViewWrapper(viewModel: viewModel, collectionView: collectionView)
-                .navigationBarTitle(Text(collection.name), displayMode: .large)
-                .navigationBarItems(trailing: trailingNavItems)
-                .edgesIgnoringSafeArea(.all)
+            ZStack {
+                CollectionViewWrapper(viewModel: viewModel, collectionView: collectionView)
+                    .navigationBarTitle(Text(currentCollection?.name ?? "FNote"), displayMode: .large)
+                    .edgesIgnoringSafeArea(.all)
+                
+                if appState.currentCollection?.managedObjectContext == nil || !appState.iCloudActive {
+                    WelcomeGuideView(iCloudActive: appState.iCloudActive, action: beginCreateNoteCardCollection)
+                }
+                
+                Color.clear.overlay(buttonTrayView, alignment: .bottomTrailing)
+            }
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, onDismiss: presentationSheetDismissed, content: presentationSheet)
         .alert(item: $noteCardToDelete, content: deleteNoteCardAlert)
-        .actionSheet(isPresented: iPad ? .constant(false) : $showSortOption, content: presentationActionSheet)
         .onReceive(appState.currentNoteCardsWillChange, perform: handleOnReceiveCurrentNotesCardWillChange)
         .onAppear(perform: setupOnAppear)
     }
@@ -66,6 +75,8 @@ extension HomeNoteCardView {
         case noteCardRelationship
         case noteCardTag
         case noteCardNote
+        case noteCardCollection
+        case modalTextField
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
@@ -101,6 +112,23 @@ extension HomeNoteCardView {
         case .noteCardNote:
             return ModalTextView(viewModel: $textViewModel)
                 .eraseToAnyView()
+            
+        case .noteCardCollection:
+            let selected = handleNoteCardCollectionSelected
+            let deleted = handleNoteCardCollectionDeleted
+            let done = { self.sheet = nil }
+            return HomeNoteCardCollectionView(
+                onSelected: selected,
+                onRenamed: nil,
+                onDeleted: deleted,
+                onDone: done
+            )
+                .environmentObject(appState)
+                .eraseToAnyView()
+            
+        case .modalTextField:
+            return ModalTextField(viewModel: $textFieldModel)
+                .eraseToAnyView()
         }
     }
     
@@ -108,35 +136,6 @@ extension HomeNoteCardView {
         noteCardFormModel = nil
         relationshipViewModel = nil
         tagViewModel = nil
-    }
-    
-    func presentationActionSheet() -> ActionSheet {
-        let nativeAscending = { self.setNoteCardSortOption(.native, ascending: true) }
-        let nativeDescending = { self.setNoteCardSortOption(.native, ascending: false) }
-        let translationAscending = { self.setNoteCardSortOption(.translation, ascending: true) }
-        let translationDescending = { self.setNoteCardSortOption(.translation, ascending: false) }
-        return ActionSheet(title: Text("Sort By"), message: nil, buttons: [
-            .default(Text("Native Ascending"), action: nativeAscending),
-            .default(Text("Native Descending"), action: nativeDescending),
-            .default(Text("Translation Ascending"), action: translationAscending),
-            .default(Text("Translation Descending"), action: translationDescending),
-            .cancel()
-        ])
-    }
-    
-    func setNoteCardSortOption(_ option: NoteCardSortOption, ascending: Bool) {
-        let currentOption = appState.noteCardSortOption
-        let currentAscending = appState.noteCardSortOptionAscending
-        
-        guard option != currentOption || ascending != currentAscending else { return }
-        userPreference.objectWillChange.send()
-        userPreference.noteCardSortOption = option
-        userPreference.noteCardSortOptionAscending = ascending
-        appState.noteCardSortOption = option
-        appState.noteCardSortOptionAscending = ascending
-        appState.fetchCurrentNoteCards()
-        viewModel.noteCards = appState.currenNoteCards
-        viewModel.updateSnapshot(animated: true)
     }
 }
 
@@ -146,14 +145,186 @@ extension HomeNoteCardView {
 extension HomeNoteCardView {
     
     func setupOnAppear() {
+        setupViewModel()
+        setupButtonTrayViewModel()
+    }
+    
+    func setupViewModel() {
+        viewModel.sectionContentInsets.bottom = 140
         viewModel.contextMenus = [.copyNative, .delete]
-        viewModel.noteCards = appState.currenNoteCards
+        viewModel.noteCards = appState.currentNoteCards
         viewModel.onNoteCardSelected = beginEditNoteCard
         viewModel.onNoteCardQuickButtonTapped = handleNoteCardQuickButtonTapped
         viewModel.onContextMenuSelected = handleContextMenuSelected
         viewModel.onSearchTextDebounced = handleSearchTextDebounced
         viewModel.onSearchCancel = handleSearchCancel
         viewModel.onSearchNoteActiveChanged = handleSearchNoteActiveChanged
+        
+        viewModel.setupCollectionView(collectionView)
+    }
+}
+
+
+// MARK: - Button Tray View
+
+extension HomeNoteCardView {
+    
+    var buttonTrayView: some View {
+        BDButtonTrayView(viewModel: trayViewModel, configuration: trayConfiguration)
+            .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 16))
+            .disabled(searchFetchController != nil)
+    }
+    
+    func setupButtonTrayViewModel() {
+        // show all collections
+        let collectionItem = BDButtonTrayItem(title: "Collections", systemImage: "rectangle.stack") { item in
+            self.sheet = .noteCardCollection
+        }
+        
+        // create new collection
+        let addCollectionItem = BDButtonTrayItem(title: "New Collection", systemImage: "rectangle.stack.badge.plus") { item in
+            self.beginCreateNoteCardCollection()
+        }
+        
+        let sortCardsItem = BDButtonTrayItem(title: "Sort", systemImage: "arrow.up.arrow.down.circle") { item in
+            self.trayViewModel.subitems = self.createNoteCardSortOptionTrayItems()
+        }
+        
+        trayViewModel.items = [addCollectionItem, collectionItem, sortCardsItem]
+        
+        trayViewModel.action = {
+            self.beginCreateNoteCard()
+        }
+        
+        trayViewModel.onTrayWillExpand = { willExpand in
+            // when collapsed, remove subitems
+            // delay a bit so it doesn't show the main item label sliding down
+            guard !willExpand else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+                self.trayViewModel.subitems = []
+            }
+        }
+        
+        // setup configuration
+        trayConfiguration.buttonSystemImage = "plus"
+    }
+    
+    func createNoteCardSortOptionTrayItems() -> [BDButtonTrayItem] {
+        var nativeItem: BDButtonTrayItem!
+        var translationItem: BDButtonTrayItem!
+        
+        // give the next correct ascending boolean value for the item once triggered
+        // example if currently N ascending, then select a different option should still return ascending
+        let computeAscending = { (option: NoteCardSortOption) -> Bool in
+            let currentOption = self.appState.noteCardSortOption
+            let currentAscending = self.appState.noteCardSortOptionAscending
+            let ascending = currentOption == option ? !currentAscending : currentAscending
+            return ascending
+        }
+        
+        // give the correct title for the item match with app state's sort option
+        // current active item has arrow attached to it
+        // example if currently or select N and it shows N↓, then select T should should show T↓ (not T↑)
+        let computeItemTitle = { (option: NoteCardSortOption) -> String in
+            let currentOption = self.appState.noteCardSortOption
+            let arrow = self.appState.noteCardSortOptionAscending ? "↓" : "↑"
+            let attachingArrow = currentOption == option ? " \(arrow)" : ""
+            let title = "\(option.trayItemTitle)\(attachingArrow)"
+            return title
+        }
+        
+        nativeItem = BDButtonTrayItem(title: computeItemTitle(.native), systemImage: "n.circle") { item in
+            self.setNoteCardSortOption(.native, ascending: computeAscending(.native))
+            item.title = computeItemTitle(.native)
+            translationItem.title = computeItemTitle(.translation)
+        }
+        
+        translationItem = BDButtonTrayItem(title: computeItemTitle(.translation), systemImage: "t.circle") { item in
+            self.setNoteCardSortOption(.translation, ascending: computeAscending(.translation))
+            item.title = computeItemTitle(.translation)
+            nativeItem.title = computeItemTitle(.native)
+        }
+        
+        return [nativeItem, translationItem]
+    }
+    
+    func beginCreateNoteCardCollection() {
+        textFieldModel = .init()
+        textFieldModel.title = "New Collection"
+        textFieldModel.placeholder = "name"
+        textFieldModel.isFirstResponder = true
+        
+        textFieldModel.onCancel = {
+            self.sheet = nil
+        }
+        
+        textFieldModel.onReturnKey = {
+            self.commitCreateNoteCardCollection()
+        }
+        
+        sheet = .modalTextField
+    }
+    
+    func commitCreateNoteCardCollection() {
+        let name = textFieldModel.text.trimmed()
+        
+        guard !name.isEmpty else {
+            sheet = nil
+            return
+        }
+        
+        let request = NoteCardCollectionCUDRequest(name: name)
+        let result = appState.createNoteCardCollection(with: request)
+        
+        switch result {
+        case .deleted, .updated, .unchanged:
+            fatalError("🧨 unexpected use case for commitCreateNoteCardCollection 🧨")
+        
+        case .created(let collection, let childContext):
+            childContext.quickSave()
+            childContext.parent?.quickSave()
+            let collection = collection.get(from: appState.parentContext)
+            appState.fetchCollections()
+            appState.setCurrentCollection(collection)
+            textFieldModel.isFirstResponder = false
+            trayViewModel.expanded = false
+            sheet = nil
+        
+        case .failed:
+            textFieldModel.prompt = "Duplicate collection name!"
+            textFieldModel.promptColor = .orange
+        }
+    }
+    
+    func setNoteCardSortOption(_ option: NoteCardSortOption, ascending: Bool) {
+        let currentOption = appState.noteCardSortOption
+        let currentAscending = appState.noteCardSortOptionAscending
+        
+        guard currentOption != option || currentAscending != ascending else { return }
+        userPreference.noteCardSortOption = option
+        userPreference.noteCardSortOptionAscending = ascending
+        
+        appState.noteCardSortOption = option
+        appState.noteCardSortOptionAscending = ascending
+        appState.fetchCurrentNoteCards()
+        
+        viewModel.noteCards = appState.currentNoteCards
+        viewModel.updateSnapshot(animated: true)
+    }
+    
+    func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
+        viewModel.scrollToTop(animated: false)
+        
+        viewModel.noteCards = appState.currentNoteCards
+        viewModel.updateSnapshot(animated: false)
+        
+        trayViewModel.expanded = false
+        sheet = nil
+    }
+    
+    func handleNoteCardCollectionDeleted(collectionID: String) {
+        guard currentCollection == nil else { return }
+        viewModel.noteCards = appState.currentNoteCards
         viewModel.updateSnapshot(animated: false)
     }
 }
@@ -166,8 +337,13 @@ extension HomeNoteCardView {
     func handleSearchTextDebounced(_ searchText: String) {
         currentSearchText = searchText
         
-        guard !searchText.trimmed().isEmpty else {
-            viewModel.noteCards = appState.currenNoteCards
+        if trayViewModel.expanded {
+            trayViewModel.expanded = false
+            trayViewModel.subitems = []
+        }
+        
+        guard !searchText.trimmed().isEmpty, let collection = currentCollection else {
+            viewModel.noteCards = appState.currentNoteCards
             viewModel.updateSnapshot(animated: true)
             searchFetchController = nil
             return
@@ -199,7 +375,7 @@ extension HomeNoteCardView {
     }
     
     func handleSearchCancel() {
-        viewModel.noteCards = appState.currenNoteCards
+        viewModel.noteCards = appState.currentNoteCards
         viewModel.updateSnapshot(animated: true)
         searchFetchController = nil
     }
@@ -215,62 +391,18 @@ extension HomeNoteCardView {
 }
 
 
-// MARK: - Nav Bar Item
-
-extension HomeNoteCardView {
-    
-    var trailingNavItems: some View {
-        HStack(spacing: 8) {
-            if iPad {
-                sortOptionPopoverNavItem
-            } else {
-                sortOptionNavItem
-            }
-            createNoteCardNavItem
-        }
-    }
-    
-    var sortOptionNavItem: some View {
-        NoteCardSortNavigationButton(
-            sortOption: userPreference.noteCardSortOption,
-            ascending: userPreference.noteCardSortOptionAscending,
-            action: { self.showSortOption = true }
-        )
-            .disabled(searchFetchController != nil)
-    }
-    
-    var sortOptionPopoverNavItem: some View {
-        let popoverView = NoteCardSortOptionPopoverView(onSelected: { option, ascending in
-            self.setNoteCardSortOption(option, ascending: ascending)
-            self.showSortOption = false
-        })
-        
-        return sortOptionNavItem.popover(
-            isPresented: $showSortOption,
-            attachmentAnchor: .point(.bottom),
-            arrowEdge: .top,
-            content: { popoverView }
-        )
-    }
-    
-    var createNoteCardNavItem: some View {
-        NavigationBarButton(imageName: "plus", action: beginCreateNoteCard)
-    }
-}
-
-
 // MARK: - Create Note Card
 
 extension HomeNoteCardView {
     
     func beginCreateNoteCard() {
-        let formModel = NoteCardFormModel(collection: collection)
+        let formModel = NoteCardFormModel(collection: currentCollection)
         noteCardFormModel = formModel
         
         formModel.selectableCollections = appState.collections
-        formModel.selectableRelationships = appState.currenNoteCards
+        formModel.selectableRelationships = appState.currentNoteCards
         formModel.selectableTags = appState.tags
-        formModel.relationshipSelectedCollection = collection
+        formModel.relationshipSelectedCollection = currentCollection
         
         formModel.onCancel = cancelCreateNoteCard
         formModel.onCommit = commitCreateNoteCard
@@ -324,7 +456,7 @@ extension HomeNoteCardView {
         noteCardFormModel = formModel
         
         formModel.selectableCollections = appState.collections
-        formModel.selectableRelationships = appState.currenNoteCards
+        formModel.selectableRelationships = appState.currentNoteCards
         formModel.selectableTags = appState.tags
         formModel.relationshipSelectedCollection = collection
         
@@ -378,16 +510,13 @@ extension HomeNoteCardView {
 extension HomeNoteCardView {
     
     func deleteNoteCardAlert(_ noteCard: NoteCard) -> Alert {
-        Alert.DeleteNoteCard(noteCard, onCancel: cancelDeleteNoteCard, onDelete: commitDeleteNoteCard)
+        Alert.DeleteNoteCard(noteCard, onCancel: nil, onDelete: {
+            self.commitDeleteNoteCard(noteCard)
+        })
     }
     
-    func cancelDeleteNoteCard() {
-        noteCardToDelete = nil
-    }
-    
-    func commitDeleteNoteCard() {
-        guard let noteCardToDelete = noteCardToDelete else { return }
-        let result = appState.deleteObject(noteCardToDelete)
+    func commitDeleteNoteCard(_ noteCard: NoteCard) {
+        let result = appState.deleteObject(noteCard)
         handleNoteCardCUDResult(result)
     }
 }
@@ -530,16 +659,16 @@ extension HomeNoteCardView {
             childContext.quickSave()
             childContext.parent?.quickSave()
             appState.fetchCurrentNoteCards()
-            viewModel.noteCards = appState.currenNoteCards
+            viewModel.noteCards = appState.currentNoteCards
             viewModel.updateSnapshot(animated: true)
             sheet = nil
             
         case .updated(let noteCard, let childContext):
             childContext.quickSave()
             childContext.parent?.quickSave()
-            if noteCard.collection?.uuid != collection.uuid {
+            if noteCard.collection?.uuid != currentCollection?.uuid {
                 appState.fetchCurrentNoteCards()
-                viewModel.noteCards = appState.currenNoteCards
+                viewModel.noteCards = appState.currentNoteCards
                 viewModel.updateSnapshot(animated: true)
             }
             sheet = nil
@@ -548,9 +677,8 @@ extension HomeNoteCardView {
             childContext.quickSave()
             childContext.parent?.quickSave()
             appState.fetchCurrentNoteCards()
-            viewModel.noteCards = appState.currenNoteCards
+            viewModel.noteCards = appState.currentNoteCards
             viewModel.updateSnapshot(animated: true)
-            sheet = nil
             
         case .failed, .unchanged: // TODO: show alert if needed
             sheet = nil
@@ -560,7 +688,14 @@ extension HomeNoteCardView {
 
 
 struct HomeNoteCardView_Previews: PreviewProvider {
+    static let appState = AppState(parentContext: .sample)
+    static let preference = UserPreference.shared
+    static let viewModel = NoteCardCollectionViewModel()
+    static let collection = NoteCardCollection.sample
+    static let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     static var previews: some View {
-        HomeNoteCardView(viewModel: .init(), collection: .sample, collectionView: .init(frame: .zero, collectionViewLayout: .init()))
+        HomeNoteCardView(viewModel: viewModel)
+            .environmentObject(preference)
+            .environmentObject(appState)
     }
 }

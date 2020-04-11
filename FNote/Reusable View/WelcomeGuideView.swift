@@ -11,7 +11,7 @@ import SwiftUI
 
 struct WelcomeGuideView: View {
     
-    var iCloudActive = false
+    var iCloudActive: Bool
     
     var action: (() -> Void)?
     
@@ -33,35 +33,30 @@ struct WelcomeGuideView: View {
     
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: iCloudActive ? 16 : 0) {
-                Button(action: action ?? {}) {
-                    Image(systemName: imageName)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 150, height: 150)
-                        .foregroundColor(iCloudActive ? .appAccent : .primary)
-                }
-                .buttonStyle(PlainButtonStyle())
-                .disabled(!iCloudActive)
-                
-                VStack(spacing: 8) {
-                    Text(firstString)
-                        .fontWeight(iCloudActive ? .regular : .bold)
-                    Text(secondString)
-                }
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
+        VStack(spacing: iCloudActive ? 16 : 0) {
+            Button(action: action ?? {}) {
+                Image(systemName: imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 150, height: 150)
+                    .foregroundColor(iCloudActive ? .appAccent : .primary)
             }
-            .navigationBarTitle("FNote")
+            .disabled(!iCloudActive)
+            
+            VStack(spacing: 8) {
+                Text(firstString)
+                    .fontWeight(iCloudActive ? .regular : .bold)
+                Text(secondString)
+            }
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.center)
         }
-        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
 
 struct CreateNoteCardCollectionGuideView_Previews: PreviewProvider {
     static var previews: some View {
-        WelcomeGuideView()
+        WelcomeGuideView(iCloudActive: false, action: nil)
     }
 }

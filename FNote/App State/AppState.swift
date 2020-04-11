@@ -22,7 +22,7 @@ class AppState: ObservableObject {
     
     let currentNoteCardsWillChange = ObjectWillChangePublisher()
     
-    var currenNoteCards: [NoteCard] {
+    var currentNoteCards: [NoteCard] {
         currentNoteCardsFetchController.fetchedObjects ?? []
     }
     
@@ -96,6 +96,11 @@ class AppState: ObservableObject {
 
 extension AppState {
     
+    /// Set the current collection.
+    ///
+    /// The method also updates the `currentNoteCards`.
+    ///
+    /// - Parameter collection: The collection to assign or `nil` for none.
     func setCurrentCollection(_ collection: NoteCardCollection?) {
         AppCache.currentCollectionUUID = collection?.uuid
         currentCollectionID = collection?.uuid

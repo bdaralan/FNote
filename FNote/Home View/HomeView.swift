@@ -21,9 +21,7 @@ struct HomeView: View {
     
     @State private var publicCollectionViewModel = PublicCollectionViewModel.placeholder
     @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
-    @State private var collectionCollectionViewModel = NoteCardCollectionCollectionViewModel()
     @State private var tagCollectionViewModel = TagCollectionViewModel()
-    @State private var cardCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     
     @State private var onboardViewModel: OnboardCollectionViewModel?
     
@@ -33,28 +31,9 @@ struct HomeView: View {
     var body: some View {
         TabView(selection: $currentTab) {
             // MARK: Card Tab
-            if appState.currentCollection?.managedObjectContext != nil && appState.iCloudActive {
-                HomeNoteCardView(
-                    viewModel: cardCollectionViewModel,
-                    collection: appState.currentCollection!,
-                    collectionView: cardCollectionView
-                )
-                    .tabItem(Tab.card.tabItem)
-                    .tag(Tab.card)
-            
-            } else {
-                WelcomeGuideView(
-                    iCloudActive: appState.iCloudActive,
-                    action: beginCreateNoteCardCollection
-                )
-                    .tabItem(Tab.card.tabItem)
-                    .tag(Tab.card)
-            }
-            
-            // MARK: Collection Tab
-            HomeNoteCardCollectionView(viewModel: collectionCollectionViewModel)
-                .tabItem(Tab.collection.tabItem)
-                .tag(Tab.collection)
+            HomeNoteCardView(viewModel: cardCollectionViewModel)
+                .tabItem(Tab.card.tabItem)
+                .tag(Tab.card)
             
             // MARK: Tag Tab
             HomeTagView(viewModel: tagCollectionViewModel)
@@ -75,8 +54,7 @@ struct HomeView: View {
         .sheet(item: $sheet, onDismiss: handleSheetDismissed, content: presentationSheet)
         .alert(isPresented: $appState.showDidCopyFileAlert, content: { .DidCopyFileAlert(fileName: appState.copiedFileName) })
         .disabled(!appState.iCloudActive)
-        .onReceive(appState.$currentCollectionID, perform: handleOnReceiveCurrentCollectionID)
-        .onReceive(currentTab.rawValue.description.publisher.last(), perform: handleOnReceiveCurrentTab)
+        .onReceive([currentTab].publisher.last(), perform: handleOnReceiveCurrentTab)
     }
 }
 
@@ -90,13 +68,7 @@ extension HomeView {
         showOnboardIfNeeded()
     }
     
-    func handleOnReceiveCurrentCollectionID(_ collectionID: String?) {
-        cardCollectionView = .init(frame: .zero, collectionViewLayout: .init())
-        cardCollectionViewModel.setupDataSource(with: cardCollectionView)
-        currentTab = .card
-    }
-    
-    func handleOnReceiveCurrentTab(_ : Character) {
+    func handleOnReceiveCurrentTab(_ tab: Tab) {
         cardCollectionViewModel.cancelSearch()
     }
     
@@ -117,15 +89,11 @@ extension HomeView {
     
     enum Sheet: Identifiable {
         var id: Self { self }
-        case createNoteCardCollection
         case onboard
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
-        case .createNoteCardCollection:
-            return ModalTextField(viewModel: $modalTextFieldModel)
-                .eraseToAnyView()
         
         case .onboard:
             return OnboardView(viewModel: onboardViewModel!, onDismiss: dismissOnboard)
@@ -171,15 +139,12 @@ extension HomeView {
     }
     
     func updateModels() {
-        cardCollectionViewModel.noteCards = appState.currenNoteCards
-        collectionCollectionViewModel.collections = appState.collections
+        cardCollectionViewModel.noteCards = appState.currentNoteCards
         tagCollectionViewModel.tags = appState.tags
     }
     
     func refreshUIs() {
         switch currentTab {
-        case .collection:
-            collectionCollectionViewModel.updateSnapshot(animated: true)
             
         case .tag:
             tagCollectionViewModel.updateSnapshot(animated: true)
@@ -196,58 +161,12 @@ extension HomeView {
 }
 
 
-// MARK: - Create Collection
-
-extension HomeView {
-    
-    func beginCreateNoteCardCollection() {
-        modalTextFieldModel.title = "New Collection"
-        modalTextFieldModel.text = ""
-        modalTextFieldModel.placeholder = "Collection Name"
-        modalTextFieldModel.isFirstResponder = true
-        modalTextFieldModel.onReturnKey = commitCreateNoteCardCollection
-        sheet = .createNoteCardCollection
-    }
-    
-    func commitCreateNoteCardCollection() {
-        let name = modalTextFieldModel.text.trimmed()
-        
-        guard !name.isEmpty else {
-            sheet = nil
-            return
-        }
-        
-        let request = NoteCardCollectionCUDRequest(name: name)
-        let result = appState.createNoteCardCollection(with: request)
-        
-        switch result {
-        case .created(let collection, let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            let parentContextCollection = collection.get(from: appState.parentContext)
-            appState.setCurrentCollection(parentContextCollection)
-            appState.fetchCollections()
-            collectionCollectionViewModel.collections = appState.collections
-            sheet = nil
-            
-        case .failed: // TODO: inform user if needed
-            modalTextFieldModel.prompt = "Duplicate collection name!"
-            modalTextFieldModel.promptColor = .red
-            
-        case .updated, .deleted, .unchanged:
-            fatalError("🧨 hmm... tried to \(result) collection in commitCreateNoteCardCollection method 🧨")
-        }
-    }
-}
-
-
 // MARK: - Tab Enum
 
 extension HomeView {
     
     enum Tab: Int {
         case card
-        case collection
         case tag
         case setting
         case community
@@ -256,7 +175,6 @@ extension HomeView {
         var title: String {
             switch self {
             case .card: return "Cards"
-            case .collection: return "Collections"
             case .tag: return "Tags"
             case .setting: return "Settings"
             case .community: return "Communities"
@@ -266,7 +184,6 @@ extension HomeView {
         var systemImage: String {
             switch self {
             case .card: return "rectangle.fill.on.rectangle.angled.fill"
-            case .collection: return "rectangle.stack.fill"
             case .tag: return "tag.fill"
             case .setting: return "gear"
             case .community: return "person.3.fill"

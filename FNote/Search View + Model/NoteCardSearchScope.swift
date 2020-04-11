@@ -28,18 +28,10 @@ enum NoteCardSortOption: Int {
     case native
     case translation
     
-    
-    var title: String {
+    var trayItemTitle: String {
         switch self {
-        case .native: return "Native"
-        case .translation: return "Translation"
-        }
-    }
-    
-    var optionImageName: String {
-        switch self {
-        case .native: return "n.square"
-        case .translation: return "t.square"
+        case .native: return "By Native"
+        case .translation: return "By Translation"
         }
     }
 }

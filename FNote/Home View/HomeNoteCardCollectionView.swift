@@ -13,20 +13,26 @@ struct HomeNoteCardCollectionView: View {
     
     @EnvironmentObject var appState: AppState
     
-    var viewModel: NoteCardCollectionCollectionViewModel
+    @State private var viewModel = NoteCardCollectionCollectionViewModel()
         
     @State private var sheet: Sheet?
     @State private var modalTextFieldModel = ModalTextFieldModel()
     
     @State private var collectionToDelete: NoteCardCollection?
+    @State private var collectionIDToDelete: String?
+    
+    var onSelected: ((NoteCardCollection) -> Void)?
+    var onRenamed: ((NoteCardCollection) -> Void)?
+    var onDeleted: ((String) -> Void)?
+    var onDone: (() -> Void)?
     
     
     var body: some View {
         NavigationView {
             CollectionViewWrapper(viewModel: viewModel)
+                .navigationBarTitle("Collections", displayMode: .inline)
+                .navigationBarItems(trailing: doneNavItem)
                 .edgesIgnoringSafeArea(.all)
-                .navigationBarTitle("Collections", displayMode: .large)
-                .navigationBarItems(trailing: createNoteCardCollectionNavItem)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, content: presentationSheet)
@@ -55,18 +61,24 @@ extension HomeNoteCardCollectionView {
 
 
 // MARK: - On Appear
+
 extension HomeNoteCardCollectionView {
     
     func setupOnAppear() {
+        appState.fetchCollections()
         viewModel.collections = appState.collections
         viewModel.contextMenus = [.rename, .delete]
         viewModel.onCollectionSelected = handleNoteCardCollectionSelected
-        viewModel.onContextMenuSelected = handleContextMenuSelected
+        viewModel.onContextMenuSelected = { menu, collection in
+            self.handleContextMenuSelected(menu, collection: collection)
+        }
         
         if let collection = appState.currentCollection {
             viewModel.selectedCollectionIDs = [collection.uuid]
+            viewModel.ignoreSelectionCollectionIDs = [collection.uuid]
         } else {
             viewModel.selectedCollectionIDs = []
+            viewModel.ignoreSelectionCollectionIDs = []
         }
     }
 }
@@ -76,12 +88,19 @@ extension HomeNoteCardCollectionView {
 
 extension HomeNoteCardCollectionView {
     
+    var doneNavItem: some View {
+        Button(action: onDone ?? {}) {
+            Text("Done").bold()
+        }
+    }
+    
     func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
-        guard collection !== appState.currentCollection else { return }
         viewModel.clearCellIconImages()
         viewModel.selectedCollectionIDs = [collection.uuid]
+        viewModel.ignoreSelectionCollectionIDs = [collection.uuid]
         appState.setCurrentCollection(collection)
         UISelectionFeedbackGenerator().selectionChanged()
+        onSelected?(collection)
     }
     
     func handleContextMenuSelected(_ menu: NoteCardCollectionCell.ContextMenu, collection: NoteCardCollection) {
@@ -91,41 +110,6 @@ extension HomeNoteCardCollectionView {
         case .delete:
             beginDeleteNoteCardCollection(collection)
         }
-    }
-}
-
-
-// MARK: Create Collection
-
-extension HomeNoteCardCollectionView {
-    
-    var createNoteCardCollectionNavItem: some View {
-        NavigationBarButton(imageName: "plus", action: beginCreateNoteCardCollection)
-    }
-    
-    func beginCreateNoteCardCollection() {
-        modalTextFieldModel = .init()
-        
-        modalTextFieldModel.title = "New Collection"
-        modalTextFieldModel.placeholder = "Collection Name"
-        modalTextFieldModel.isFirstResponder = true
-        
-        modalTextFieldModel.onReturnKey = commitCreateNoteCardCollection
-        
-        sheet = .modalTextField
-    }
-    
-    func commitCreateNoteCardCollection() {
-        let name = modalTextFieldModel.text.trimmed()
-        
-        guard !name.isEmpty else {
-            sheet = nil
-            return
-        }
-        
-        let request = NoteCardCollectionCUDRequest(name: name)
-        let result = appState.createNoteCardCollection(with: request)
-        handleNoteCardCollectionCUDResult(result)
     }
 }
 
@@ -170,19 +154,22 @@ extension HomeNoteCardCollectionView {
 extension HomeNoteCardCollectionView {
     
     func deleteNoteCardCollectionAlert(_ collection: NoteCardCollection) -> Alert {
-        Alert.DeleteNoteCardCollection(collection, onCancel: cancelDeleteNoteCardCollection, onDelete: commitDeleteNoteCardCollection)
+        let cancel = cancelDeleteNoteCardCollection
+        let delete = { self.commitDeleteNoteCardCollection(collection) }
+        return Alert.DeleteNoteCardCollection(collection, onCancel: cancel, onDelete: delete)
     }
     
     func beginDeleteNoteCardCollection(_ collection: NoteCardCollection) {
         collectionToDelete = collection
+        collectionIDToDelete = collection.uuid
     }
     
     func cancelDeleteNoteCardCollection() {
         collectionToDelete = nil
+        collectionIDToDelete = nil
     }
     
-    func commitDeleteNoteCardCollection() {
-        guard let collection = collectionToDelete else { return }
+    func commitDeleteNoteCardCollection(_ collection: NoteCardCollection) {
         let result = appState.deleteObject(collection)
         handleNoteCardCollectionCUDResult(result)
     }
@@ -195,19 +182,8 @@ extension HomeNoteCardCollectionView {
 
     func handleNoteCardCollectionCUDResult(_ result: ObjectCUDResult<NoteCardCollection>) {
         switch result {
-        case .created(let collection, let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            appState.fetchCollections()
-            if appState.currentCollection == nil {
-                let collection = collection.get(from: appState.parentContext)
-                appState.setCurrentCollection(collection)
-                viewModel.selectedCollectionIDs = [collection.uuid]
-            }
-            viewModel.collections = appState.collections
-            viewModel.updateSnapshot(animated: true)
-            modalTextFieldModel.isFirstResponder = false
-            sheet = nil
+        case .created:
+            fatalError("🧨 unexpected use case for handleNoteCardCollectionCUDResult 🧨")
             
         case .updated(_, let childContext):
             childContext.quickSave()
@@ -219,7 +195,11 @@ extension HomeNoteCardCollectionView {
             sheet = nil
             
         case .deleted(let childContext):
-            if collectionToDelete == appState.currentCollection {
+            guard let collectionID = collectionIDToDelete else {
+                fatalError("🧨 attempt to delete collection without keeping a reference of its ID 🧨")
+            }
+            
+            if collectionID == appState.currentCollection?.uuid {
                 appState.setCurrentCollection(nil)
                 UISelectionFeedbackGenerator().selectionChanged()
             }
@@ -228,7 +208,10 @@ extension HomeNoteCardCollectionView {
             appState.fetchCollections()
             viewModel.collections = appState.collections
             viewModel.updateSnapshot(animated: true)
-            sheet = nil
+
+            collectionToDelete = nil
+            collectionIDToDelete = nil
+            onDeleted?(collectionID)
             
         case .unchanged:
             modalTextFieldModel.isFirstResponder = false
@@ -236,15 +219,14 @@ extension HomeNoteCardCollectionView {
             
         case .failed: // TODO: inform user if needed
             modalTextFieldModel.prompt = "Duplicate collection name!"
-            modalTextFieldModel.promptColor = .red
+            modalTextFieldModel.promptColor = .orange
         }
     }
 }
 
 
 struct HomeNoteCardCollectionView_Previews: PreviewProvider {
-    static let samples = [NoteCardCollection.sample, .sample, .sample]
     static var previews: some View {
-        HomeNoteCardCollectionView(viewModel: .init())
+        HomeNoteCardCollectionView()
     }
 }
