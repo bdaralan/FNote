@@ -135,6 +135,12 @@ class NoteCardFormController: UITableViewController {
         super.viewDidLoad()
         setupView()
         setupViewModelObjectWillChange()
+        presentWithKeyboard(viewModel.presentWithKeyboard)
+    }
+    
+    func presentWithKeyboard(_ present: Bool) {
+        guard present else { return }
+        nativeCell.uiView.textField.becomeFirstResponder()
     }
 }
 

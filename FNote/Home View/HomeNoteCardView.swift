@@ -426,6 +426,7 @@ extension HomeNoteCardView {
         
         formModel.commitTitle = "Create"
         formModel.navigationTitle = "New Card"
+        formModel.presentWithKeyboard = true
         
         sheet = .noteCardForm
     }
