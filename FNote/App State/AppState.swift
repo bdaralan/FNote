@@ -275,6 +275,24 @@ extension AppState {
         context.delete(objectToDelete)
         return .deleted(context)
     }
+    
+    func deleteUnusedTags() -> ObjectCUDResult<Tag> {
+        let tagsToDelete = tags.filter({ $0.noteCards.isEmpty })
+        
+        if tagsToDelete.isEmpty {
+            let result = ObjectCUDResult<Tag>.unchanged
+            return result
+        }
+        
+        let context = parentContext.newChildContext()
+        for tag in tagsToDelete {
+            let tagInContext = tag.get(from: context)
+            context.delete(tagInContext)
+        }
+        
+        let result = ObjectCUDResult<Tag>.deleted(context)
+        return result
+    }
 }
 
 

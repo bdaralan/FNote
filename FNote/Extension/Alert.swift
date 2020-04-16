@@ -37,6 +37,14 @@ extension Alert {
         return Alert(title: title, message: message, primaryButton: cancel, secondaryButton: delete)
     }
     
+    static func DeleteUnusedTags(onCancel: (() -> Void)?, onDelete: (() -> Void)?) -> Alert {
+        let title = Text("Delete Unused Tags")
+        let message = Text("All tags with zero count will also be deleted.")
+        let cancel = Alert.Button.cancel(onCancel)
+        let delete = Alert.Button.destructive(Text("Delete"), action: onDelete)
+        return Alert(title: title, message: message, primaryButton: cancel, secondaryButton: delete)
+    }
+    
     static func DidCopyFileAlert(fileName: String) -> Alert {
         let title = Text("File Copied")
         let message = Text("File '\(fileName)' is copied to the document folder.")

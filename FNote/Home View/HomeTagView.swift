@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import BDUIKnit
 
 
 struct HomeTagView: View {
@@ -15,25 +16,34 @@ struct HomeTagView: View {
     
     var viewModel: TagCollectionViewModel
     
+    @State private var trayViewModel = BDButtonTrayViewModel()
+    
     @State private var sheet: Sheet?
     @State private var selectedTagName = ""
+    
+    @State private var alert: Alert?
+    @State private var showAlert = false
     
     @State private var modalTextFieldModel = ModalTextFieldModel()
     let noteCardCollectionModel = NoteCardCollectionViewModel()
     
-    @State private var tagToDelete: Tag?
-    
     
     var body: some View {
         NavigationView {
-            CollectionViewWrapper(viewModel: viewModel)
-                .navigationBarTitle("Tags")
-                .navigationBarItems(trailing: createTagNavItem)
-                .edgesIgnoringSafeArea(.all)
+            ZStack {
+                CollectionViewWrapper(viewModel: viewModel)
+                    .navigationBarTitle("Tags")
+                    .edgesIgnoringSafeArea(.all)
+                
+                Color.clear.overlay(
+                    BDButtonTrayView(viewModel: trayViewModel).padding(16),
+                    alignment: .bottomTrailing
+                )
+            }
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, content: presentationSheet)
-        .alert(item: $tagToDelete, content: deleteTagAlert)
+        .alert(isPresented: $showAlert, content: { self.alert! })
         .onAppear(perform: setupOnAppear)
     }
 }
@@ -76,10 +86,30 @@ extension HomeTagView {
 extension HomeTagView {
     
     func setupOnAppear() {
+        setupViewModel()
+        setupTrayViewModel()
+    }
+    
+    func setupViewModel() {
+        viewModel.sectionContentInsets.bottom = 140
         viewModel.tags = appState.tags
         viewModel.contextMenus = [.rename, .delete]
         viewModel.onTagSelected = handleTagSelected
         viewModel.onContextMenuSelected = handleContextMenuSelected
+    }
+    
+    func setupTrayViewModel() {
+        trayViewModel.buttonSystemImage = "plus"
+        
+        trayViewModel.action = {
+            self.beginCreateTag()
+        }
+        
+        let removeUnusedTags = BDButtonTrayItem(title: "Delete Unused Tags", systemImage: "trash") { item in
+            self.beginDeleteUnusedTags()
+        }
+        
+        trayViewModel.items = [removeUnusedTags]
     }
 }
 
@@ -87,10 +117,6 @@ extension HomeTagView {
 // MARK: - Create Tag
 
 extension HomeTagView {
-    
-    var createTagNavItem: some View {
-        NavigationBarButton(imageName: "plus", action: beginCreateTag)
-    }
     
     func beginCreateTag() {
         modalTextFieldModel = .init()
@@ -108,6 +134,7 @@ extension HomeTagView {
         let name = modalTextFieldModel.text.trimmed()
         
         if name.isEmpty {
+            modalTextFieldModel.isFirstResponder = false
             sheet = nil
             return
         }
@@ -158,22 +185,34 @@ extension HomeTagView {
 
 extension HomeTagView {
     
-    func deleteTagAlert(_ tag: Tag) -> Alert {
-        Alert.DeleteTag(tag, onCancel: cancelDeleteTag, onDelete: commitDeleteTag)
-    }
-    
     func beginDeleteTag(_ tag: Tag) {
-        tagToDelete = tag
+        let delete = { self.commitDeleteTag(tag) }
+        let cancel = { self.alert = nil }
+        alert = Alert.DeleteTag(tag, onCancel: cancel, onDelete: delete)
+        showAlert = true
     }
     
-    func cancelDeleteTag() {
-        tagToDelete = nil
-    }
-    
-    func commitDeleteTag() {
-        guard let tag = tagToDelete else { return }
+    func commitDeleteTag(_ tag: Tag) {
         let result = appState.deleteObject(tag)
         handleTagCUDResult(result)
+    }
+    
+    func beginDeleteUnusedTags() {
+        let delete = { self.commitDeleteUnusedTags() }
+        let cancel = { self.alert = nil }
+        alert = Alert.DeleteUnusedTags(onCancel: cancel, onDelete: delete)
+        showAlert = true
+    }
+    
+    func commitDeleteUnusedTags() {
+        defer { trayViewModel.expanded = false }
+        let result = appState.deleteUnusedTags()
+        guard case .deleted(let childContext) = result else { return }
+        childContext.quickSave()
+        childContext.parent?.quickSave()
+        appState.fetchTags()
+        viewModel.tags = appState.tags
+        viewModel.updateSnapshot(animated: true)
     }
 }
 

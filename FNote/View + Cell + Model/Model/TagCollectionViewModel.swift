@@ -24,6 +24,8 @@ class TagCollectionViewModel: NSObject, CollectionViewCompositionalDataSource {
     var borderedTagIDs: Set<String> = []
     
     var contextMenus: [TagCell.ContextMenu] = []
+    
+    var sectionContentInsets = NSDirectionalEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
  
     
     // MARK: Action
@@ -142,7 +144,7 @@ extension TagCollectionViewModel {
         
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 12
-        section.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
+        section.contentInsets = sectionContentInsets
         
         return section
     }

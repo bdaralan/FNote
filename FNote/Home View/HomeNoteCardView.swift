@@ -52,7 +52,10 @@ struct HomeNoteCardView: View {
                     WelcomeGuideView(iCloudActive: appState.iCloudActive, action: beginCreateNoteCardCollection)
                 }
                 
-                Color.clear.overlay(buttonTrayView, alignment: .bottomTrailing)
+                Color.clear.overlay(
+                    BDButtonTrayView(viewModel: trayViewModel).padding(16).disabled(searchFetchController != nil),
+                    alignment: .bottomTrailing
+                )
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
@@ -167,12 +170,6 @@ extension HomeNoteCardView {
 // MARK: - Button Tray View
 
 extension HomeNoteCardView {
-    
-    var buttonTrayView: some View {
-        BDButtonTrayView(viewModel: trayViewModel)
-            .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 16))
-            .disabled(searchFetchController != nil)
-    }
     
     func setupButtonTrayViewModel() {
         // show all collections
