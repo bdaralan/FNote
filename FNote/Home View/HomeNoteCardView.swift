@@ -24,7 +24,6 @@ struct HomeNoteCardView: View {
     @State private var showSortOption = false
 
     @State private var trayViewModel = BDButtonTrayViewModel()
-    @State private var trayConfiguration = BDButtonTrayConfiguration()
     
     @State private var noteCardFormModel: NoteCardFormModel?
     @State private var relationshipViewModel: NoteCardCollectionViewModel?
@@ -170,7 +169,7 @@ extension HomeNoteCardView {
 extension HomeNoteCardView {
     
     var buttonTrayView: some View {
-        BDButtonTrayView(viewModel: trayViewModel, configuration: trayConfiguration)
+        BDButtonTrayView(viewModel: trayViewModel)
             .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 16))
             .disabled(searchFetchController != nil)
     }
@@ -190,6 +189,7 @@ extension HomeNoteCardView {
             self.trayViewModel.subitems = self.createNoteCardSortOptionTrayItems()
         }
         
+        trayViewModel.buttonSystemImage = "plus"
         trayViewModel.items = [addCollectionItem, collectionItem, sortCardsItem]
         
         trayViewModel.action = {
@@ -204,9 +204,6 @@ extension HomeNoteCardView {
                 self.trayViewModel.subitems = []
             }
         }
-        
-        // setup configuration
-        trayConfiguration.buttonSystemImage = "plus"
     }
     
     func createNoteCardSortOptionTrayItems() -> [BDButtonTrayItem] {
