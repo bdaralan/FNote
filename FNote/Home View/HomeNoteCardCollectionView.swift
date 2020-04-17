@@ -12,7 +12,7 @@ import BDUIKnit
 
 struct HomeNoteCardCollectionView: View {
     
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject private var appState: AppState
     
     @State private var viewModel = NoteCardCollectionCollectionViewModel()
         

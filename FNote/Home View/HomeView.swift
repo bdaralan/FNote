@@ -11,8 +11,8 @@ import SwiftUI
 
 struct HomeView: View {
     
-    @EnvironmentObject var appState: AppState
-    @EnvironmentObject var userPreference: UserPreference
+    @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var userPreference: UserPreference
     
     @State private var currentTab = Tab.card
     

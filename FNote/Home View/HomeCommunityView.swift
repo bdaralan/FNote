@@ -15,7 +15,7 @@ struct HomeCommunityView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.sizeCategory) var sizeCategory
     
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject private var appState: AppState
     
     var viewModel: PublicCollectionViewModel
     

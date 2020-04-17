@@ -22,6 +22,10 @@ extension Color {
     static let tertiaryLabel = Color(UIColor.tertiaryLabel)
     
     static let quaternaryLabel = Color(UIColor.quaternaryLabel)
+    
+    static let buttonTray = Color("bd-button-tray-view")
+    
+    static let buttonTrayShadow = Color("bd-button-tray-view-shadow")
 }
 
 

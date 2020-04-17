@@ -13,8 +13,8 @@ import BDUIKnit
 
 struct HomeNoteCardView: View {
         
-    @EnvironmentObject var appState: AppState
-    @EnvironmentObject var userPreference: UserPreference
+    @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var userPreference: UserPreference
     
     var viewModel: NoteCardCollectionViewModel
     
@@ -183,6 +183,9 @@ extension HomeNoteCardView {
     }
     
     func setupButtonTrayViewModel() {
+        trayViewModel.buttonSystemImage = "plus"
+        trayViewModel.setDefaultColors()
+        
         // show all collections
         let collectionItem = BDButtonTrayItem(title: "Collections", systemImage: "rectangle.stack") { item in
             self.sheet = .noteCardCollection
@@ -197,7 +200,6 @@ extension HomeNoteCardView {
             self.trayViewModel.subitems = self.createNoteCardSortOptionTrayItems()
         }
         
-        trayViewModel.buttonSystemImage = "plus"
         trayViewModel.items = [addCollectionItem, collectionItem, sortCardsItem]
         
         trayViewModel.action = {

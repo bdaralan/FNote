@@ -11,8 +11,8 @@ import BDUIKnit
 
 
 struct HomeTagView: View {
-    
-    @EnvironmentObject var appState: AppState
+        
+    @EnvironmentObject private var appState: AppState
     
     var viewModel: TagCollectionViewModel
     
@@ -35,10 +35,7 @@ struct HomeTagView: View {
                     .navigationBarTitle("Tags")
                     .edgesIgnoringSafeArea(.all)
                 
-                Color.clear.overlay(
-                    BDButtonTrayView(viewModel: trayViewModel).padding(16),
-                    alignment: .bottomTrailing
-                )
+                Color.clear.overlay(buttonTrayView, alignment: .bottomTrailing)
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
@@ -97,9 +94,21 @@ extension HomeTagView {
         viewModel.onTagSelected = handleTagSelected
         viewModel.onContextMenuSelected = handleContextMenuSelected
     }
+}
+
+
+// MARK: - Button Tray
+
+extension HomeTagView {
+    
+    var buttonTrayView: some View {
+        BDButtonTrayView(viewModel: trayViewModel)
+            .padding(16)
+    }
     
     func setupTrayViewModel() {
         trayViewModel.buttonSystemImage = "plus"
+        trayViewModel.setDefaultColors()
         
         trayViewModel.action = {
             self.beginCreateTag()
