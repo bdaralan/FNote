@@ -31,7 +31,8 @@ struct HomeNoteCardView: View {
     @State private var textViewModel = ModalTextViewModel()
     @State private var textFieldModel = BDModalTextFieldModel()
     
-    @State private var noteCardToDelete: NoteCard?
+    @State private var alert: Alert?
+    @State private var presentAlert = false
     
     @State private var searchFetchController: NSFetchedResultsController<NoteCard>?
     @State private var currentSearchText = ""
@@ -40,27 +41,31 @@ struct HomeNoteCardView: View {
         appState.currentCollection
     }
     
+    var navigationTitle: String {
+        if currentCollection?.managedObjectContext == nil {
+            return "FNote"
+        }
+        return currentCollection?.name ?? ""
+    }
+    
     
     var body: some View {
         NavigationView {
             ZStack {
                 CollectionViewWrapper(viewModel: viewModel, collectionView: collectionView)
-                    .navigationBarTitle(Text(currentCollection?.name ?? "FNote"), displayMode: .large)
+                    .navigationBarTitle(Text(navigationTitle), displayMode: .large)
                     .edgesIgnoringSafeArea(.all)
                 
                 if appState.currentCollection?.managedObjectContext == nil || !appState.iCloudActive {
                     WelcomeGuideView(iCloudActive: appState.iCloudActive, action: beginCreateNoteCardCollection)
                 }
                 
-                Color.clear.overlay(
-                    BDButtonTrayView(viewModel: trayViewModel).padding(16).disabled(searchFetchController != nil),
-                    alignment: .bottomTrailing
-                )
+                Color.clear.overlay(buttonTrayView, alignment: .bottomTrailing)
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet, onDismiss: presentationSheetDismissed, content: presentationSheet)
-        .alert(item: $noteCardToDelete, content: deleteNoteCardAlert)
+        .alert(isPresented: $presentAlert, content: { self.alert! })
         .onReceive(appState.currentNoteCardsWillChange, perform: handleOnReceiveCurrentNotesCardWillChange)
         .onAppear(perform: setupOnAppear)
     }
@@ -171,6 +176,12 @@ extension HomeNoteCardView {
 
 extension HomeNoteCardView {
     
+    var buttonTrayView: some View {
+        BDButtonTrayView(viewModel: trayViewModel)
+            .padding(16)
+            .disabled(searchFetchController != nil)
+    }
+    
     func setupButtonTrayViewModel() {
         // show all collections
         let collectionItem = BDButtonTrayItem(title: "Collections", systemImage: "rectangle.stack") { item in
@@ -190,7 +201,11 @@ extension HomeNoteCardView {
         trayViewModel.items = [addCollectionItem, collectionItem, sortCardsItem]
         
         trayViewModel.action = {
-            self.beginCreateNoteCard()
+            if self.currentCollection == nil {
+                self.presentCannotCreateNoteCardAlert()
+            } else {
+                self.beginCreateNoteCard()
+            }
         }
         
         trayViewModel.onTrayWillExpand = { willExpand in
@@ -322,6 +337,14 @@ extension HomeNoteCardView {
         guard currentCollection == nil else { return }
         viewModel.noteCards = appState.currentNoteCards
         viewModel.updateSnapshot(animated: false)
+    }
+    
+    func presentCannotCreateNoteCardAlert() {
+        let title = Text("Cannot Create Note Card")
+        let message = Text("Make sure a collection is selected")
+        let dismiss = Alert.Button.default(Text("Dismiss"), action: { self.alert  = nil })
+        alert = Alert(title: title, message: message, dismissButton: dismiss)
+        presentAlert = true
     }
 }
 
@@ -506,10 +529,11 @@ extension HomeNoteCardView {
 
 extension HomeNoteCardView {
     
-    func deleteNoteCardAlert(_ noteCard: NoteCard) -> Alert {
-        Alert.DeleteNoteCard(noteCard, onCancel: nil, onDelete: {
-            self.commitDeleteNoteCard(noteCard)
-        })
+    func beginDeleteNoteCard(_ noteCard: NoteCard) {
+        let delete = { self.commitDeleteNoteCard(noteCard) }
+        let cancel = { self.alert = nil }
+        alert = Alert.DeleteNoteCard(noteCard, onCancel: cancel, onDelete: delete)
+        presentAlert = true
     }
     
     func commitDeleteNoteCard(_ noteCard: NoteCard) {
@@ -587,7 +611,7 @@ extension HomeNoteCardView {
     func handleContextMenuSelected(_ menu: NoteCardCell.ContextMenu, noteCard: NoteCard) {
         switch menu {
         case .delete:
-            noteCardToDelete = noteCard
+            beginDeleteNoteCard(noteCard)
         case .copyNative:
             UIPasteboard.general.string = noteCard.native
         }
@@ -676,9 +700,11 @@ extension HomeNoteCardView {
             appState.fetchCurrentNoteCards()
             viewModel.noteCards = appState.currentNoteCards
             viewModel.updateSnapshot(animated: true)
+            alert = nil
             
         case .failed, .unchanged: // TODO: show alert if needed
             sheet = nil
+            alert = nil
         }
     }
 }
@@ -688,8 +714,6 @@ struct HomeNoteCardView_Previews: PreviewProvider {
     static let appState = AppState(parentContext: .sample)
     static let preference = UserPreference.shared
     static let viewModel = NoteCardCollectionViewModel()
-    static let collection = NoteCardCollection.sample
-    static let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     static var previews: some View {
         HomeNoteCardView(viewModel: viewModel)
             .environmentObject(preference)

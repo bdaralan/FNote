@@ -125,7 +125,6 @@ extension HomeView {
         DispatchQueue.global(qos: .default).async {
             self.refetchObjects()
             DispatchQueue.main.async {
-                self.updateModels()
                 self.refreshUIs()
             }
         }
@@ -137,23 +136,28 @@ extension HomeView {
         appState.fetchTags()
     }
     
-    func updateModels() {
-        cardCollectionViewModel.noteCards = appState.currentNoteCards
-        tagCollectionViewModel.tags = appState.tags
-    }
-    
     func refreshUIs() {
+        // case where other device delete the current collection
+        if let collection = appState.currentCollection, !appState.collections.contains(collection) {
+            appState.setCurrentCollection(nil)
+        }
+        
+        tagCollectionViewModel.tags = appState.tags
+        cardCollectionViewModel.noteCards = appState.currentNoteCards
+        
         switch currentTab {
+        case .setting, .community: break
             
         case .tag:
             tagCollectionViewModel.updateSnapshot(animated: true)
             
-        case .setting, .community:
-            break
-            
         case .card:
-            if appState.currentCollection != nil, !cardCollectionViewModel.isSearchActive {
+            if appState.currentCollection == nil {
                 cardCollectionViewModel.updateSnapshot(animated: true)
+            } else {
+                if !cardCollectionViewModel.isSearchActive {
+                    cardCollectionViewModel.updateSnapshot(animated: true)
+                }
             }
         }
     }
