@@ -122,7 +122,7 @@ extension HomeTagView {
         modalTextFieldModel = .init()
         
         modalTextFieldModel.title = "New Tag"
-        modalTextFieldModel.placeholder = "Tag Name"
+        modalTextFieldModel.placeholder = "name"
         modalTextFieldModel.isFirstResponder = true
         
         modalTextFieldModel.onReturnKey = commitCreateTag

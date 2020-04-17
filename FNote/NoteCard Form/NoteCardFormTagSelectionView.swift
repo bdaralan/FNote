@@ -46,7 +46,7 @@ extension NoteCardFormTagSelectionView {
         textFieldModel = .init()
         textFieldModel.title = "New Tag"
         textFieldModel.text = ""
-        textFieldModel.placeholder = "Tag Name"
+        textFieldModel.placeholder = "name"
         textFieldModel.onReturnKey = commitCreateTag
         textFieldModel.isFirstResponder = true
         showCreateTagSheet = true

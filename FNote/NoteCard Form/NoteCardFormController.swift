@@ -216,6 +216,7 @@ extension NoteCardFormController {
 extension NoteCardFormController {
     
     private func setupView() {
+        tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .singleLine
         tableView.separatorInset = .zero
         tableView.separatorColor = UIColor.label.withAlphaComponent(0.04)
