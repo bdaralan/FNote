@@ -123,6 +123,7 @@ extension HomeTagView {
         
         textFieldModel.title = "New Tag"
         textFieldModel.placeholder = "name"
+        textFieldModel.prompt = "Tag cannot contain comma ,"
         textFieldModel.isFirstResponder = true
         
         textFieldModel.onReturnKey = commitCreateTag

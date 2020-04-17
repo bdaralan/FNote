@@ -11,9 +11,15 @@ import Foundation
 
 extension String {
     
-    /// Trim all whitespace and newline characters.
+    /// Trim all whitespaces and newline characters.
     func trimmed() -> String {
         self.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
+    /// Trim all whitespaces and commas.
+    /// - Returns: The trimmed and lowercased string.
+    func trimmedTagName() -> String {
+        self.replacingOccurrences(of: ",", with: "").trimmed().lowercased()
     }
     
     func trimmedUsername() -> String {

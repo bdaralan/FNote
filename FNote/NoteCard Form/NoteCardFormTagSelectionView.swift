@@ -48,6 +48,7 @@ extension NoteCardFormTagSelectionView {
         textFieldModel.title = "New Tag"
         textFieldModel.text = ""
         textFieldModel.placeholder = "name"
+        textFieldModel.prompt = "Tag cannot contain comma ,"
         textFieldModel.onReturnKey = commitCreateTag
         
         textFieldModel.configure = { textField in
