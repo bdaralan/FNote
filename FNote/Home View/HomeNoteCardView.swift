@@ -246,7 +246,7 @@ extension HomeNoteCardView {
         textFieldModel = .init()
         textFieldModel.title = "New Collection"
         textFieldModel.placeholder = "name"
-        textFieldModel.isFirstResponder = true
+        textFieldModel.prompt = "Name cannot contain comma ,"
         
         textFieldModel.onCancel = {
             self.sheet = nil
@@ -256,6 +256,7 @@ extension HomeNoteCardView {
             self.commitCreateNoteCardCollection()
         }
         
+        textFieldModel.isFirstResponder = true
         sheet = .modalTextField
     }
     
@@ -263,6 +264,7 @@ extension HomeNoteCardView {
         let name = textFieldModel.text.trimmed()
         
         guard !name.isEmpty else {
+            textFieldModel.isFirstResponder = false
             sheet = nil
             return
         }

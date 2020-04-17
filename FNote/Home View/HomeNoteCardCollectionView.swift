@@ -125,12 +125,13 @@ extension HomeNoteCardCollectionView {
         textFieldModel.title = "Rename"
         textFieldModel.text = collection.name
         textFieldModel.placeholder = collection.name
-        textFieldModel.isFirstResponder = true
+        textFieldModel.prompt = "Name cannot contain comma ,"
         
         textFieldModel.onReturnKey = {
             self.commitRenameNoteCardCollection(collection)
         }
         
+        textFieldModel.isFirstResponder = true
         sheet = .modalTextField
     }
     

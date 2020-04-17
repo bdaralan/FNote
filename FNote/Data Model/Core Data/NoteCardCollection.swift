@@ -47,7 +47,7 @@ extension NoteCardCollection {
     }
     
     func validateData() {
-        setPrimitiveValue(name.trimmed(), forKey: #keyPath(NoteCardCollection.name))
+        setPrimitiveValue(name.trimmedComma(), forKey: #keyPath(NoteCardCollection.name))
     }
 }
 

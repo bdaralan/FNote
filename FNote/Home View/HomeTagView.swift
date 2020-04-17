@@ -123,7 +123,7 @@ extension HomeTagView {
         
         textFieldModel.title = "New Tag"
         textFieldModel.placeholder = "name"
-        textFieldModel.prompt = "Tag cannot contain comma ,"
+        textFieldModel.prompt = "Name cannot contain comma ,"
         textFieldModel.isFirstResponder = true
         
         textFieldModel.onReturnKey = commitCreateTag
@@ -161,12 +161,13 @@ extension HomeTagView {
         textFieldModel.title = "Rename"
         textFieldModel.text = tag.name
         textFieldModel.placeholder = tag.name
-        textFieldModel.isFirstResponder = true
+        textFieldModel.prompt = "Name cannot contain comma ,"
         
         textFieldModel.onReturnKey = {
             self.commitRenameTag(tag)
         }
         
+        textFieldModel.isFirstResponder = true
         sheet = .modalTextField
     }
     

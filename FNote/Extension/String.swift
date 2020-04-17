@@ -18,8 +18,8 @@ extension String {
     
     /// Trim all whitespaces and commas.
     /// - Returns: The trimmed and lowercased string.
-    func trimmedTagName() -> String {
-        self.replacingOccurrences(of: ",", with: "").trimmed().lowercased()
+    func trimmedComma() -> String {
+        self.replacingOccurrences(of: ",", with: "").trimmed()
     }
     
     func trimmedUsername() -> String {

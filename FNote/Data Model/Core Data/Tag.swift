@@ -28,11 +28,6 @@ class Tag: NSManagedObject, Identifiable, ObjectValidatable {
         uuid = "FNT+\(UUID().uuidString)"
     }
     
-    override func awakeFromFetch() {
-        super.awakeFromFetch()
-        validateData()
-    }
-    
     override func willSave() {
         if !isDeleted {
             validateData()
@@ -57,7 +52,8 @@ extension Tag {
     }
     
     func validateData() {
-        setPrimitiveValue(name.trimmedTagName(), forKey: #keyPath(Tag.name))
+        let name = self.name.trimmedComma().lowercased()
+        setPrimitiveValue(name, forKey: #keyPath(Tag.name))
     }
 }
 
