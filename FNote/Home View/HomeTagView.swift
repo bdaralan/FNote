@@ -24,7 +24,7 @@ struct HomeTagView: View {
     @State private var alert: Alert?
     @State private var showAlert = false
     
-    @State private var modalTextFieldModel = ModalTextFieldModel()
+    @State private var textFieldModel = BDModalTextFieldModel()
     let noteCardCollectionModel = NoteCardCollectionViewModel()
     
     
@@ -62,7 +62,7 @@ extension HomeTagView {
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
         case .modalTextField:
-            return ModalTextField(viewModel: $modalTextFieldModel)
+            return BDModalTextField(viewModel: $textFieldModel)
                 .eraseToAnyView()
             
         case .noteCard:
@@ -119,22 +119,26 @@ extension HomeTagView {
 extension HomeTagView {
     
     func beginCreateTag() {
-        modalTextFieldModel = .init()
+        textFieldModel = .init()
         
-        modalTextFieldModel.title = "New Tag"
-        modalTextFieldModel.placeholder = "name"
-        modalTextFieldModel.isFirstResponder = true
+        textFieldModel.title = "New Tag"
+        textFieldModel.placeholder = "name"
+        textFieldModel.isFirstResponder = true
         
-        modalTextFieldModel.onReturnKey = commitCreateTag
+        textFieldModel.onReturnKey = commitCreateTag
+        
+        textFieldModel.configure = { textField in
+            textField.autocapitalizationType = .none
+        }
         
         sheet = .modalTextField
     }
     
     func commitCreateTag() {
-        let name = modalTextFieldModel.text.trimmed()
+        let name = textFieldModel.text.trimmed()
         
         if name.isEmpty {
-            modalTextFieldModel.isFirstResponder = false
+            textFieldModel.isFirstResponder = false
             sheet = nil
             return
         }
@@ -151,14 +155,14 @@ extension HomeTagView {
 extension HomeTagView {
     
     func beginRenameTag(_ tag: Tag) {
-        modalTextFieldModel = .init()
+        textFieldModel = .init()
         
-        modalTextFieldModel.title = "Rename"
-        modalTextFieldModel.text = tag.name
-        modalTextFieldModel.placeholder = tag.name
-        modalTextFieldModel.isFirstResponder = true
+        textFieldModel.title = "Rename"
+        textFieldModel.text = tag.name
+        textFieldModel.placeholder = tag.name
+        textFieldModel.isFirstResponder = true
         
-        modalTextFieldModel.onReturnKey = {
+        textFieldModel.onReturnKey = {
             self.commitRenameTag(tag)
         }
         
@@ -166,10 +170,10 @@ extension HomeTagView {
     }
     
     func commitRenameTag(_ tag: Tag) {
-        let name = modalTextFieldModel.text.trimmed()
+        let name = textFieldModel.text.trimmed()
         
         if name.isEmpty {
-            modalTextFieldModel.isFirstResponder = false
+            textFieldModel.isFirstResponder = false
             sheet = nil
             return
         }
@@ -251,7 +255,7 @@ extension HomeTagView {
             appState.fetchTags()
             viewModel.tags = appState.tags
             viewModel.updateSnapshot(animated: true)
-            modalTextFieldModel.isFirstResponder = false
+            textFieldModel.isFirstResponder = false
             sheet = nil
             
         case .updated(_, let childContext):
@@ -260,7 +264,7 @@ extension HomeTagView {
             appState.fetchTags()
             viewModel.tags = appState.tags
             viewModel.updateSnapshot(animated: true)
-            modalTextFieldModel.isFirstResponder = false
+            textFieldModel.isFirstResponder = false
             sheet = nil
             
         case .deleted(let childContext):
@@ -272,12 +276,12 @@ extension HomeTagView {
             sheet = nil
             
         case .unchanged:
-            modalTextFieldModel.isFirstResponder = false
+            textFieldModel.isFirstResponder = false
             sheet = nil
             
         case .failed: // TODO: inform user if needed
-            modalTextFieldModel.prompt = "Duplicate tag name!"
-            modalTextFieldModel.promptColor = .red
+            textFieldModel.prompt = "Duplicate tag name!"
+            textFieldModel.promptColor = .red
         }
     }
 }

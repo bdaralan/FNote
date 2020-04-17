@@ -29,7 +29,7 @@ struct HomeNoteCardView: View {
     @State private var relationshipViewModel: NoteCardCollectionViewModel?
     @State private var tagViewModel: TagCollectionViewModel?
     @State private var textViewModel = ModalTextViewModel()
-    @State private var textFieldModel = ModalTextFieldModel()
+    @State private var textFieldModel = BDModalTextFieldModel()
     
     @State private var noteCardToDelete: NoteCard?
     
@@ -129,7 +129,7 @@ extension HomeNoteCardView {
                 .eraseToAnyView()
             
         case .modalTextField:
-            return ModalTextField(viewModel: $textFieldModel)
+            return BDModalTextField(viewModel: $textFieldModel)
                 .eraseToAnyView()
         }
     }

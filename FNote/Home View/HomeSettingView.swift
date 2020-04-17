@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import BDUIKnit
 
 
 struct HomeSettingView: View {
@@ -15,7 +16,7 @@ struct HomeSettingView: View {
     
     @State private var sheet: Sheet?
     
-    @State private var textFieldModel = ModalTextFieldModel()
+    @State private var textFieldModel = BDModalTextFieldModel()
         
     var documentFolder: URL {
         let fileManager = FileManager.default
@@ -70,7 +71,7 @@ extension HomeSettingView {
             .eraseToAnyView()
         
         case .exportFileNaming:
-            return ModalTextField(viewModel: $textFieldModel)
+            return BDModalTextField(viewModel: $textFieldModel)
                 .eraseToAnyView()
             
         case .onboardView:

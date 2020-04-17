@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import BDUIKnit
 
 
 struct NoteCardFormTagSelectionView: View {
@@ -15,7 +16,7 @@ struct NoteCardFormTagSelectionView: View {
     
     var onCreateTag: ((String) -> Bool)?
     
-    @State private var textFieldModel = ModalTextFieldModel()
+    @State private var textFieldModel = BDModalTextFieldModel()
     @State private var showCreateTagSheet = false
     
     
@@ -39,7 +40,7 @@ extension NoteCardFormTagSelectionView {
     }
     
     func createTagSheet() -> some View {
-        ModalTextField(viewModel: $textFieldModel)
+        BDModalTextField(viewModel: $textFieldModel)
     }
     
     func beginCreateTag() {
@@ -48,6 +49,11 @@ extension NoteCardFormTagSelectionView {
         textFieldModel.text = ""
         textFieldModel.placeholder = "name"
         textFieldModel.onReturnKey = commitCreateTag
+        
+        textFieldModel.configure = { textField in
+            textField.autocapitalizationType = .none
+        }
+        
         textFieldModel.isFirstResponder = true
         showCreateTagSheet = true
     }

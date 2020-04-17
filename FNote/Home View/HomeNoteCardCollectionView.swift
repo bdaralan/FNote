@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import BDUIKnit
 
 
 struct HomeNoteCardCollectionView: View {
@@ -16,7 +17,7 @@ struct HomeNoteCardCollectionView: View {
     @State private var viewModel = NoteCardCollectionCollectionViewModel()
         
     @State private var sheet: Sheet?
-    @State private var modalTextFieldModel = ModalTextFieldModel()
+    @State private var textFieldModel = BDModalTextFieldModel()
     
     @State private var collectionToDelete: NoteCardCollection?
     @State private var collectionIDToDelete: String?
@@ -54,7 +55,7 @@ extension HomeNoteCardCollectionView {
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
         case .modalTextField:
-            return ModalTextField(viewModel: $modalTextFieldModel)
+            return BDModalTextField(viewModel: $textFieldModel)
         }
     }
 }
@@ -119,14 +120,14 @@ extension HomeNoteCardCollectionView {
 extension HomeNoteCardCollectionView {
     
     func beginRenameNoteCardCollection(_ collection: NoteCardCollection) {
-        modalTextFieldModel = .init()
+        textFieldModel = .init()
         
-        modalTextFieldModel.title = "Rename"
-        modalTextFieldModel.text = collection.name
-        modalTextFieldModel.placeholder = collection.name
-        modalTextFieldModel.isFirstResponder = true
+        textFieldModel.title = "Rename"
+        textFieldModel.text = collection.name
+        textFieldModel.placeholder = collection.name
+        textFieldModel.isFirstResponder = true
         
-        modalTextFieldModel.onReturnKey = {
+        textFieldModel.onReturnKey = {
             self.commitRenameNoteCardCollection(collection)
         }
         
@@ -134,10 +135,10 @@ extension HomeNoteCardCollectionView {
     }
     
     func commitRenameNoteCardCollection(_ collection: NoteCardCollection) {
-        let name = modalTextFieldModel.text.trimmed()
+        let name = textFieldModel.text.trimmed()
         
         guard !name.isEmpty else {
-            modalTextFieldModel.isFirstResponder = false
+            textFieldModel.isFirstResponder = false
             sheet = nil
             return
         }
@@ -191,7 +192,7 @@ extension HomeNoteCardCollectionView {
             appState.fetchCollections()
             viewModel.collections = appState.collections
             viewModel.updateSnapshot(animated: true)
-            modalTextFieldModel.isFirstResponder = false
+            textFieldModel.isFirstResponder = false
             sheet = nil
             
         case .deleted(let childContext):
@@ -214,12 +215,12 @@ extension HomeNoteCardCollectionView {
             onDeleted?(collectionID)
             
         case .unchanged:
-            modalTextFieldModel.isFirstResponder = false
+            textFieldModel.isFirstResponder = false
             sheet = nil
             
         case .failed: // TODO: inform user if needed
-            modalTextFieldModel.prompt = "Duplicate collection name!"
-            modalTextFieldModel.promptColor = .orange
+            textFieldModel.prompt = "Duplicate collection name!"
+            textFieldModel.promptColor = .orange
         }
     }
 }

@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import BDUIKnit
 
 
 struct PublishCollectionForm: View {
@@ -17,8 +18,8 @@ struct PublishCollectionForm: View {
     
     @State private var sheet = PresentingSheet<Sheet>()
     
-    @State private var textFieldModel = ModalTextFieldModel()
-    @State private var languageTextFieldModel = ModalTextFieldModel()
+    @State private var textFieldModel = BDModalTextFieldModel()
+    @State private var languageTextFieldModel = BDModalTextFieldModel()
     @State private var filteredLanguages: [Language] = []
     
     @State private var collectionDescriptionTextViewModel = ModalTextViewModel()
@@ -76,11 +77,11 @@ extension PublishCollectionForm {
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
         case .authorName, .collectionName, .publishTags:
-            return ModalTextField(viewModel: $textFieldModel)
+            return BDModalTextField(viewModel: $textFieldModel)
                 .eraseToAnyView()
             
         case .publishLanguages:
-            return ModalTextField(viewModel: $languageTextFieldModel)
+            return BDModalTextField(viewModel: $languageTextFieldModel)
                 .onReceive(languageTextFieldModel.text.publisher.count(), perform: { _ in
                     self.filterLanguageForLanguageTextFieldModel()
                 })

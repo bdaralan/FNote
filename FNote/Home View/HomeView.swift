@@ -17,7 +17,6 @@ struct HomeView: View {
     @State private var currentTab = Tab.card
     
     @State private var sheet: Sheet?
-    @State private var modalTextFieldModel = ModalTextFieldModel()
     
     @State private var publicCollectionViewModel = PublicCollectionViewModel.placeholder
     @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
