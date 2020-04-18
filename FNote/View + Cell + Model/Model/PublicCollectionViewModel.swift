@@ -20,6 +20,8 @@ class PublicCollectionViewModel: NSObject, CollectionViewCompositionalDataSource
     
     var isHorizontallyCompact = true
     
+    var lastSectionContentInsets = NSDirectionalEdgeInsets(top: 12, leading: 16, bottom: 32, trailing: 16)
+    
     var onItemSelected: ((PublicSectionItem, PublicSectionType) -> Void)?
 }
 
@@ -132,6 +134,11 @@ extension PublicCollectionViewModel {
             case .recentCard: layoutSection = self.createRecentCardLayoutSection()
             }
             
+            // set last section content insets
+            if section == self.sections.count - 1 {
+                layoutSection.contentInsets.bottom = 140
+            }
+            
             return layoutSection
         }
         
@@ -211,7 +218,7 @@ extension PublicCollectionViewModel {
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
         section.interGroupSpacing = 16
-        section.contentInsets = .init(top: 12, leading: 16, bottom: 32, trailing: 16)
+        section.contentInsets = lastSectionContentInsets
         section.boundarySupplementaryItems = [createSectionHeaderSupplementaryItem(height: 40)]
         
         return section
@@ -273,15 +280,14 @@ extension PublicCollectionViewModel {
                 let recordManager = PublicRecordManager.shared
                 let collectionSection = self.sections.first(where: { $0.type == .recentCollection })
                 let userIDs = collectionSection?.items.compactMap { item -> String? in
-                    guard let collection = item.object as? PublicCollection else { return nil }
-                    guard recordManager.cachedRecord(forKey: collection.authorID) == nil else { return nil }
-                    return collection.authorID
+                    let collection = item.object as? PublicCollection
+                    return collection?.authorID
                 }
                 
                 recordManager.queryUsers(withIDs: userIDs ?? []) { result in
                     switch result {
                     case .success(let userRecords):
-                        recordManager.cacheRecords(userRecords, usingKey: PublicUser.RecordKeys.userID)
+                        recordManager.cacheRecords(userRecords, usingRecordKey: PublicUser.RecordKeys.userID)
                         updateSnapshot(error)
                     case .failure(let error):
                         updateSnapshot(error)

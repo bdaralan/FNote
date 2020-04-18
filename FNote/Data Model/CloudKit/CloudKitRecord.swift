@@ -17,7 +17,10 @@ protocol CloudKitRecord {
     
     var recordName: String { get }
     
-    /// A KeyedCKRecord with the object's values.
+    /// A CKRecord newly created from the object's values.
+    ///
+    /// - Important: Use this to create a new record to upload.
+    /// Do not use it for record modification.
     func createCKRecord() -> CKRecord
     
     init(record: CKRecord)

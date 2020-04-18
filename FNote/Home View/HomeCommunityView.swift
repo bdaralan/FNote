@@ -7,17 +7,19 @@
 //
 
 import SwiftUI
-import CloudKit
+import BDUIKnit
 
 
 struct HomeCommunityView: View {
     
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @Environment(\.sizeCategory) var sizeCategory
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.sizeCategory) private var sizeCategory
     
     @EnvironmentObject private var appState: AppState
     
     var viewModel: PublicCollectionViewModel
+    
+    @State private var trayViewModel = BDButtonTrayViewModel()
     
     @State private var sheet = PresentingSheet<Sheet>()
     @State private var publishFormModel: PublishCollectionFormModel?
@@ -37,47 +39,11 @@ struct HomeCommunityView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // MARK: Collection & Card
                 CollectionViewWrapper(viewModel: viewModel, collectionView: collectionView)
                     .edgesIgnoringSafeArea(.all)
-                
-                // MARK: Divider
-                Divider()
-                
-                // MARK: Action Buttons
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 16) {
-                        CommunityActionButton(
-                            action: beginPublishCollection,
-                            title: "PUBLISH COLLECTION",
-                            description: "share a copy of your collection with the world"
-                        )
-                        
-                        CommunityActionButton(
-                            action: handleRefreshTapped,
-                            systemImage: "arrow.2.circlepath",
-                            offsetY: -1,
-                            title: "REFRESH"
-                        )
-                            .opacity(isFetchingData ? 0.4 : 1)
-                            .disabled(isFetchingData)
-                        
-                        CommunityActionButton(
-                            action: handleSearchTapped,
-                            systemImage: "magnifyingglass",
-                            title: "SEARCH"
-                        )
-                        
-                        CommunityActionButton(
-                            action: handleFilterTapped,
-                            systemImage: "slider.horizontal.3",
-                            title: "FILTER"
-                        )
-                    }
-                    .padding(16)
-                }
             }
             .navigationBarTitle("Communities")
+            .overlay(buttonTrayView, alignment: .bottomTrailing)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .onReceive(horizontalSizeClasses.publisher, perform: handleSizeClassChanged)
@@ -91,6 +57,12 @@ struct HomeCommunityView: View {
 extension HomeCommunityView {
     
     func setupOnAppear() {
+        setupViewModel()
+        setupTrayViewModel()
+    }
+    
+    func setupViewModel() {
+        viewModel.lastSectionContentInsets.bottom = 140
         viewModel.fetchData { error in
             guard let error = error else { return }
             print("failed to fetch data with error: \(error)")
@@ -140,21 +112,48 @@ extension HomeCommunityView {
             }
         }
     }
+}
+
+
+
+// MARK: - Button Tray View
+
+extension HomeCommunityView {
     
-    func handleRefreshTapped() {
-        guard !isFetchingData else { return }
-        isFetchingData = true
-        viewModel.fetchData { error in
-            self.isFetchingData = false
+    var buttonTrayView: some View {
+        BDButtonTrayView(viewModel: trayViewModel)
+            .padding(16)
+    }
+    
+    func setupTrayViewModel() {
+        trayViewModel.buttonSystemImage = "arrow.clockwise.circle"
+        trayViewModel.setDefaultColors()
+        trayViewModel.items = createTrayItems()
+        
+        trayViewModel.action = {
+            guard self.isFetchingData == false else { return }
+            self.isFetchingData = true
+            self.viewModel.fetchData { error in
+                self.isFetchingData = false
+            }
         }
     }
     
-    func handleSearchTapped() {
+    func createTrayItems() -> [BDButtonTrayItem] {
+        let publish = BDButtonTrayItem(title: "Publish Collection", systemImage: "rectangle.stack.badge.person.crop") { item in
+            self.trayViewModel.expanded = false
+            self.beginPublishCollection()
+        }
         
-    }
-    
-    func handleFilterTapped() {
+        let search = BDButtonTrayItem(title: "Search", systemImage: "magnifyingglass") { item in
+            print(item.title)
+        }
         
+        let filter = BDButtonTrayItem(title: "Filter", systemImage: "slider.horizontal.3") { item in
+            print(item.title)
+        }
+        
+        return [publish, search, filter]
     }
 }
 
@@ -184,6 +183,11 @@ extension HomeCommunityView {
             self.sheet.dismiss()
         }
         
+        formModel.onPublicUserFetched = { user in
+            formModel.authorName = user.username
+            formModel.author = user
+        }
+        
         formModel.onPublishStateChanged = { state in
             switch state {
             case .editing: formModel.commitTitle = "PUBLISH"
@@ -206,10 +210,11 @@ extension HomeCommunityView {
         guard let collection = formModel.publishCollection else { return }
         guard let primaryLanguage = formModel.publishPrimaryLanguage else { return }
         guard let secondaryLanguage = formModel.publishSecondaryLanguage else { return }
+        guard let user = formModel.author else { return }
         
         let collectionToPublish = PublicCollection(
             collectionID: collection.uuid,
-            authorID: formModel.authorName,
+            authorID: user.userID,
             name: formModel.publishCollectionName,
             description: formModel.publishDescription,
             primaryLanguage: primaryLanguage.code,
@@ -234,7 +239,8 @@ extension HomeCommunityView {
         
         formModel.setPublishState(to: .submitting)
         
-        PublicRecordManager.shared.upload(collection: collectionToPublish, with: cardsToPublish) { result in
+        let recordManager = PublicRecordManager.shared
+        recordManager.upload(collection: collectionToPublish, with: cardsToPublish) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success:
@@ -243,6 +249,21 @@ extension HomeCommunityView {
                     print(error)
                     formModel.setPublishState(to: .rejected)
                 }
+            }
+        }
+        
+        // update username if needed
+        guard user.username != formModel.authorName, let record = user.record else { return }
+        let usernameKey = PublicUser.RecordKeys.username.stringValue
+        record[usernameKey] = formModel.authorName
+        recordManager.save(record: record) { result in
+            switch result {
+            case .success(let record):
+                print("updated username: old(\(user.username)) new(\(record[usernameKey]!))")
+                recordManager.cacheRecords([record], usingRecordKey: usernameKey)
+                
+            case .failure(let error):
+                print("🧨 failed to update username with error: \(error) 🧨")
             }
         }
     }

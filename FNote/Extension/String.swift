@@ -32,3 +32,13 @@ extension String {
         self.trimmed().isEmpty
     }
 }
+
+
+extension Array where Element == String {
+    
+    func filterRecordTags() -> [String] {
+        var tags = self
+        tags.removeAll(where: { $0.trimmedComma().isEmpty })
+        return tags
+    }
+}

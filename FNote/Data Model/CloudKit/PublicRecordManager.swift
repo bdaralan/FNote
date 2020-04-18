@@ -27,16 +27,16 @@ class PublicRecordManager {
         cache.object(forKey: NSString(string: key))
     }
     
-    func cacheRecords(_ records: [CKRecord], usingKey recordKey: String) {
+    func cacheRecords(_ records: [CKRecord], usingRecordKey key: String) {
         for record in records {
-            guard let key = record[recordKey] as? String else { return }
+            guard let key = record[key] as? String else { return }
             cache.setObject(record, forKey: NSString(string: key))
         }
     }
     
-    func cacheRecords(_ records: [CKRecord], usingKey recordKey: CodingKey) {
+    func cacheRecords(_ records: [CKRecord], usingRecordKey key: CodingKey) {
         for record in records {
-            guard let key = record[recordKey.stringValue] as? String else { return }
+            guard let key = record[key.stringValue] as? String else { return }
             cache.setObject(record, forKey: NSString(string: key))
         }
     }
@@ -165,10 +165,55 @@ extension PublicRecordManager {
         queryUsers(withIDs: userIDs) { result in
             switch result {
             case .success(let records):
-                self.cacheRecords(records, usingKey: PublicUser.RecordKeys.userID)
+                self.cacheRecords(records, usingRecordKey: PublicUser.RecordKeys.userID)
                 completion?(.success(records))
             case .failure(let error):
                 completion?(.failure(error))
+            }
+        }
+    }
+    
+    func fetchPublicUserRecord(desiredKeys: [PublicUser.RecordKeys] = [], completion: @escaping (Result<CKRecord, Error>) -> Void) {
+        // fetch current user ID
+        CKContainer.default().fetchUserRecordID { record, error in
+            guard let record = record else {
+                completion(.failure(error!))
+                return
+            }
+            
+            // remove the underscore _ from the ID and use that ID to fetch PublicUser record
+            let publicUserID = record.recordName.replacingOccurrences(of: "_", with: "")
+            let recordID = CKRecord.ID(recordName: publicUserID)
+            let operation = CKFetchRecordsOperation(recordIDs: [recordID])
+            operation.qualityOfService = .userInitiated
+            
+            // set desired keys if provided
+            if desiredKeys.isEmpty == false {
+                let desiredKeys = [.userID] + desiredKeys
+                operation.desiredKeys = desiredKeys.map(\.stringValue)
+            }
+            
+            // set completion block
+            operation.fetchRecordsCompletionBlock = { recordMap, error in
+                guard let record = recordMap?[recordID] else {
+                    completion(.failure(error!))
+                    return
+                }
+                
+                completion(.success(record))
+            }
+            
+            // begin the operation
+            self.publicDatabase.add(operation)
+        }
+    }
+    
+    func save(record: CKRecord, completion: ((Result<CKRecord, Error>) -> Void)?) {
+        publicDatabase.save(record) { record, error in
+            if let record = record {
+                completion?(.success(record))
+            } else {
+                completion?(.failure(error!))
             }
         }
     }

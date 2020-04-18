@@ -13,6 +13,8 @@ class PublishCollectionFormModel: ObservableObject {
     
     var selectableCollections: [NoteCardCollection] = []
     
+    @Published var author: PublicUser?
+    
     @Published var publishCollection: NoteCardCollection?
     
     @Published var authorName: String = ""
@@ -33,9 +35,13 @@ class PublishCollectionFormModel: ObservableObject {
     
     private(set) var publishState: PublishFormPublishState = .editing
     
+    let publishTagsLimit = 4
+    
     var onCommit: (() -> Void)?
     
     var onCancel: (() -> Void)?
+    
+    var onPublicUserFetched: ((PublicUser) -> Void)?
     
     var onPublishStateChanged: ((PublishFormPublishState) -> Void)?
     
@@ -66,6 +72,7 @@ extension PublishCollectionFormModel {
             && !publishDescription.isEmptyOrWhiteSpaces()
             && !publishTags.isEmpty
             && isLanguagesValid
+            && author != nil
     }
     
     var isLanguagesValid: Bool {

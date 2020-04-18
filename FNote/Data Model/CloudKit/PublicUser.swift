@@ -13,6 +13,8 @@ struct PublicUser: CloudKitRecord {
     
     let userID: String
     
+    private(set) var record: CKRecord?
+    
     let username: String
     
     let about: String
@@ -50,6 +52,7 @@ extension PublicUser {
     init(record: CKRecord) {
         let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
         userID = record.recordID.recordName
+        self.record = record
         
         username = keyedRecord[.username] as? String ?? ""
         about = keyedRecord[.about] as? String ?? ""

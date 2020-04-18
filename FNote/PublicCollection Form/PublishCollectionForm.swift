@@ -14,9 +14,9 @@ struct PublishCollectionForm: View {
     
     @ObservedObject var viewModel: PublishCollectionFormModel
     
-    let publishTagsLimit = 4
-    
     @State private var sheet = PresentingSheet<Sheet>()
+    @State private var alert: Alert?
+    @State private var presentAlert = false
     
     @State private var textFieldModel = BDModalTextFieldModel()
     @State private var languageTextFieldModel = BDModalTextFieldModel()
@@ -31,11 +31,13 @@ struct PublishCollectionForm: View {
         NavigationView {
             PublishCollectionViewControllerWrapper(viewModel: viewModel, onRowSelected: handleRowSelected)
                 .navigationBarTitle("Publish Collection", displayMode: .inline)
-                .navigationBarItems(leading: Button("Cancel", action: viewModel.onCancel ?? {}) )
+                .navigationBarItems(leading: cancelNavButton, trailing: errorNavButton)
                 .edgesIgnoringSafeArea(.bottom)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet.presenting, content: presentationSheet)
+        .alert(isPresented: $presentAlert, content: { self.alert! })
+        .onAppear(perform: setupOnAppear)
     }
 }
 
@@ -43,6 +45,10 @@ struct PublishCollectionForm: View {
 // MARK: - Setup
 
 extension PublishCollectionForm {
+    
+    func setupOnAppear() {
+        fetchUserRecord()
+    }
     
     func handleRowSelected(kind: PublishFormSection.Row) {
         viewModel.onRowSelected?(kind)
@@ -56,6 +62,58 @@ extension PublishCollectionForm {
         case .collectionSecondaryLanguage: beginSelectSecondaryLanguage()
         case .publishAction: publishCollection()
         case .includeNote: break
+        }
+    }
+}
+
+
+extension PublishCollectionForm {
+    
+    var cancelNavButton: some View {
+        Button("Cancel", action: viewModel.onCancel ?? {})
+    }
+    
+    var errorNavButton: some View {
+        let action = { self.presentAlert = true }
+        let warning = Button(action: action) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(.orange)
+                .imageScale(.large)
+                .opacity(alert == nil ? 0 : 1)
+        }
+        .disabled(alert == nil)
+        
+        let fill = Button("Fill") {
+            let randomNumber = Int.random(in: 4...49)
+            self.viewModel.publishCollectionName = "CName \(randomNumber)"
+            self.viewModel.publishTags = ["\(randomNumber)", "\(randomNumber + 1)"]
+            self.viewModel.publishDescription = "Description \(randomNumber)"
+            self.viewModel.publishPrimaryLanguage = Language.availableISO639s.randomElement()
+            self.viewModel.publishSecondaryLanguage = Language.availableISO639s.randomElement()
+        }
+        
+        return HStack(spacing: 8) {
+            warning
+            fill
+        }
+    }
+    
+    func fetchUserRecord() {
+        PublicRecordManager.shared.fetchPublicUserRecord { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let record):
+                    let user = PublicUser(record: record)
+                    self.viewModel.onPublicUserFetched?(user)
+                    self.alert = nil
+                    
+                case .failure(let error):
+                    print("⚠️ failed to fetch current user with error: \(error) ⚠️")
+                    let title = Text("Cannot Fetch Author")
+                    let message = Text("Unable to fetch author record. Please try again.")
+                    self.alert = Alert(title: title, message: message, dismissButton: nil)
+                }
+            }
         }
     }
 }
@@ -180,7 +238,7 @@ extension PublishCollectionForm {
         }
         
         textFieldModel.onReturnKey = {
-            self.viewModel.publishCollectionName = self.textFieldModel.text.trimmed()
+            self.viewModel.publishCollectionName = self.textFieldModel.text.trimmedComma()
             self.textFieldModel.isFirstResponder = false
             self.sheet.dismiss()
         }
@@ -204,7 +262,7 @@ extension PublishCollectionForm {
     
     /// Edit publish collection's tags.
     func beginEditCollectionTags() {
-        let maxTags = self.publishTagsLimit
+        let maxTags = viewModel.publishTagsLimit
         let setDefaultPrompt = {
             let count = self.textFieldModel.tokens.count
             self.textFieldModel.prompt = "collection's tags \(count)/\(maxTags)"
@@ -227,9 +285,18 @@ extension PublishCollectionForm {
             setDefaultPrompt()
         }
         
+        textFieldModel.configure = { textField in
+            textField.autocapitalizationType = .none
+        }
+        
         // add tag action
         textFieldModel.onReturnKey = {
-            let newToken = self.textFieldModel.text.trimmed().replacingOccurrences(of: ",", with: "")
+            let newToken = self.textFieldModel.text.trimmedComma().lowercased()
+            
+            if newToken.isEmpty {
+                self.textFieldModel.text = ""
+                return
+            }
             
             // check duplicate
             if self.textFieldModel.tokens.contains(newToken) {
