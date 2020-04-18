@@ -107,18 +107,22 @@ extension HomeTagView {
     }
     
     func setupTrayViewModel() {
-        trayViewModel.buttonSystemImage = "plus"
         trayViewModel.setDefaultColors()
-        
-        trayViewModel.action = {
+        trayViewModel.mainItem = createTrayMainItem()
+        trayViewModel.items = createTrayItems()
+    }
+    
+    func createTrayMainItem() -> BDButtonTrayItem {
+        BDButtonTrayItem(title: "", systemImage: "plus") { item in
             self.beginCreateTag()
         }
-        
+    }
+    
+    func createTrayItems() -> [BDButtonTrayItem] {
         let removeUnusedTags = BDButtonTrayItem(title: "Delete Unused Tags", systemImage: "trash") { item in
             self.beginDeleteUnusedTags()
         }
-        
-        trayViewModel.items = [removeUnusedTags]
+        return [removeUnusedTags]
     }
 }
 

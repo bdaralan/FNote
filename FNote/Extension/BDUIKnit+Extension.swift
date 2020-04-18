@@ -15,8 +15,8 @@ import SwiftUI
 extension BDButtonTrayViewModel {
     
     func setDefaultColors() {
-        buttonActiveColor = Color.accentColor
-        buttonInactiveColor = Color(.quaternaryLabel)
+        mainItem.activeColor = Color.accentColor
+        mainItem.inactiveColor = Color(.quaternaryLabel)
         itemActiveColor = Color.accentColor
         itemInactiveColor = Color(.quaternaryLabel)
         subitemActiveColor = Color.accentColor

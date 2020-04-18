@@ -126,15 +126,19 @@ extension HomeCommunityView {
     }
     
     func setupTrayViewModel() {
-        trayViewModel.buttonSystemImage = "arrow.clockwise.circle"
         trayViewModel.setDefaultColors()
+        trayViewModel.mainItem = createTrayMainItem()
         trayViewModel.items = createTrayItems()
-        
-        trayViewModel.action = {
+    }
+    
+    func createTrayMainItem() -> BDButtonTrayItem {
+        BDButtonTrayItem(title: "", systemImage: "arrow.2.circlepath") { item in
             guard self.isFetchingData == false else { return }
+            self.trayViewModel.mainItem.disabled = true
             self.isFetchingData = true
             self.viewModel.fetchData { error in
                 self.isFetchingData = false
+                self.trayViewModel.mainItem.disabled = false
             }
         }
     }

@@ -183,32 +183,9 @@ extension HomeNoteCardView {
     }
     
     func setupButtonTrayViewModel() {
-        trayViewModel.buttonSystemImage = "plus"
         trayViewModel.setDefaultColors()
-        
-        // show all collections
-        let collectionItem = BDButtonTrayItem(title: "Collections", systemImage: "rectangle.stack") { item in
-            self.sheet = .noteCardCollection
-        }
-        
-        // create new collection
-        let addCollectionItem = BDButtonTrayItem(title: "New Collection", systemImage: "rectangle.stack.badge.plus") { item in
-            self.beginCreateNoteCardCollection()
-        }
-        
-        let sortCardsItem = BDButtonTrayItem(title: "Sort", systemImage: "arrow.up.arrow.down.circle") { item in
-            self.trayViewModel.subitems = self.createNoteCardSortOptionTrayItems()
-        }
-        
-        trayViewModel.items = [addCollectionItem, collectionItem, sortCardsItem]
-        
-        trayViewModel.action = {
-            if self.currentCollection == nil {
-                self.presentCannotCreateNoteCardAlert()
-            } else {
-                self.beginCreateNoteCard()
-            }
-        }
+        trayViewModel.mainItem = createTrayMainItem()
+        trayViewModel.items = createTrayItems()
         
         trayViewModel.onTrayWillExpand = { willExpand in
             // when collapsed, remove subitems
@@ -218,6 +195,34 @@ extension HomeNoteCardView {
                 self.trayViewModel.subitems = []
             }
         }
+    }
+    
+    func createTrayMainItem() -> BDButtonTrayItem {
+        BDButtonTrayItem(title: "", systemImage: "plus") { item in
+            if self.currentCollection == nil {
+                self.presentCannotCreateNoteCardAlert()
+            } else {
+                self.beginCreateNoteCard()
+            }
+        }
+    }
+    
+    func createTrayItems() -> [BDButtonTrayItem] {
+        // show all collections
+        let collections = BDButtonTrayItem(title: "Collections", systemImage: "rectangle.stack") { item in
+            self.sheet = .noteCardCollection
+        }
+        
+        // create new collection
+        let createCollection = BDButtonTrayItem(title: "New Collection", systemImage: "rectangle.stack.badge.plus") { item in
+            self.beginCreateNoteCardCollection()
+        }
+        
+        let sortCards = BDButtonTrayItem(title: "Sort", systemImage: "arrow.up.arrow.down.circle") { item in
+            self.trayViewModel.subitems = self.createNoteCardSortOptionTrayItems()
+        }
+        
+        return [collections, createCollection, sortCards]
     }
     
     func createNoteCardSortOptionTrayItems() -> [BDButtonTrayItem] {
