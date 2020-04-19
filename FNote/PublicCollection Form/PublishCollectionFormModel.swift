@@ -56,7 +56,7 @@ class PublishCollectionFormModel: ObservableObject {
         authorName = authorName.trimmedUsername()
         publishCollectionName = publishCollectionName.trimmed()
         publishDescription = publishDescription.trimmed()
-        publishTags = publishTags.map({ $0.replacingOccurrences(of: ",", with: "") })
+        publishTags = publishTags.map({ $0.trimmedComma() })
     }
 }
 

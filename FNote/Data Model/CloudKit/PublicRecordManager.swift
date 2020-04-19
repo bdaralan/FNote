@@ -102,6 +102,21 @@ extension PublicRecordManager {
         performQuery(operation: operation, completion: completion)
     }
     
+    func queryCards(withIDs cardIDs: [String], completion: @escaping QueryCompletionBlock) {
+        let cardID = PublicNoteCard.RecordKeys.cardID.stringValue
+        let cardNative = PublicNoteCard.RecordKeys.native.stringValue
+        let cardTranslation = PublicNoteCard.RecordKeys.translation.stringValue
+        let predicate = NSPredicate(format: "\(cardID) IN %@", cardIDs)
+        let sortByNative = NSSortDescriptor(key: cardNative, ascending: true)
+        let sortByTranslation = NSSortDescriptor(key: cardTranslation, ascending: true)
+        
+        let query = CKQuery(recordType: PublicNoteCard.recordType, predicate: predicate)
+        query.sortDescriptors = [sortByNative, sortByTranslation]
+        
+        let operation = CKQueryOperation(query: query)
+        performQuery(operation: operation, completion: completion)
+    }
+    
     func queryRecentCards(completion: @escaping QueryCompletionBlock) {
         let creationDate = #keyPath(CKRecord.creationDate)
         let predicate = NSPredicate(value: true)

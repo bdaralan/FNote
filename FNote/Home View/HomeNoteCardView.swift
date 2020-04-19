@@ -222,7 +222,7 @@ extension HomeNoteCardView {
             self.trayViewModel.subitems = self.createNoteCardSortOptionTrayItems()
         }
         
-        return [collections, createCollection, sortCards]
+        return [createCollection, collections, sortCards]
     }
     
     func createNoteCardSortOptionTrayItems() -> [BDButtonTrayItem] {

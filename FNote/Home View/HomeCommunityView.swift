@@ -89,7 +89,23 @@ extension HomeCommunityView {
     
     func handlePublishSectionItemSelected(item: PublicSectionItem, sectionType: PublicSectionType) {
         switch sectionType {
-        case .randomCollection, .recentCard: break
+        case .randomCollection: break
+    
+        case .recentCard:
+            guard let publicCard = item.object as? PublicNoteCard else { return }
+            guard publicCard.relationships.isEmpty == false else {
+                print("card \(publicCard.native) has no relationships")
+                return
+            }
+            PublicRecordManager.shared.queryCards(withIDs: publicCard.relationships) { result in
+                switch result {
+                case .success(let records):
+                    let cards = records.map({ PublicNoteCard(record: $0) })
+                    cards.forEach({ print($0) })
+                case .failure(let error):
+                    print("⚠️ failed to fetch relationship card with error: \(error) ⚠️")
+                }
+            }
         
         case .action:
             guard let action = item.object as? PublicSectionAction else { return }
@@ -162,6 +178,8 @@ extension HomeCommunityView {
 }
 
 
+// MARK: - Sheet
+
 extension HomeCommunityView {
     
     enum Sheet: PresentingSheetEnum {
@@ -174,6 +192,12 @@ extension HomeCommunityView {
             return PublishCollectionForm(viewModel: self.publishFormModel!)
         }
     }
+}
+
+
+// MARK: - Publish Collection
+
+extension HomeCommunityView {
     
     func beginPublishCollection() {
         let formModel = PublishCollectionFormModel()
@@ -216,35 +240,55 @@ extension HomeCommunityView {
         guard let secondaryLanguage = formModel.publishSecondaryLanguage else { return }
         guard let user = formModel.author else { return }
         
-        let collectionToPublish = PublicCollection(
-            collectionID: collection.uuid,
+        // create ID map for public card and use it to set relationships
+        // map value is [localID: publicID]
+        var cardIDMap = [String: String]()
+        for noteCard in collection.noteCards {
+            let localID = noteCard.uuid
+            let publicID = UUID().uuidString
+            cardIDMap[localID] = publicID
+        }
+        
+        // create a new public collection ID
+        let publicCollectionID = UUID().uuidString
+        
+        // unwrapping the map is safe here
+        let publicCards = collection.noteCards.map { noteCard -> PublicNoteCard in
+            let localID = noteCard.uuid
+            let publicID = cardIDMap[localID]!
+            let publicRelationshipIDs = noteCard.relationships.map({ cardIDMap[$0.uuid]! })
+            let publicTags = noteCard.tags.map(\.name).sorted()
+            let publicNote = formModel.includesNote ? noteCard.note : ""
+            
+            let publicCard = PublicNoteCard(
+                collectionID: publicCollectionID,
+                cardID: publicID,
+                native: noteCard.native,
+                translation: noteCard.translation,
+                favorited: noteCard.isFavorite,
+                formality: Int(noteCard.formality.rawValue),
+                note: publicNote,
+                tags: publicTags,
+                relationships: publicRelationshipIDs
+            )
+            return publicCard
+        }
+        
+        let publicCollection = PublicCollection(
+            collectionID: publicCollectionID,
             authorID: user.userID,
             name: formModel.publishCollectionName,
             description: formModel.publishDescription,
             primaryLanguage: primaryLanguage.code,
             secondaryLanguage: secondaryLanguage.code,
             tags: formModel.publishTags,
-            cardsCount: collection.noteCards.count
+            cardsCount: publicCards.count
         )
-        
-        let cardsToPublish = collection.noteCards.map { noteCard in
-            PublicNoteCard(
-                collectionID: collectionToPublish.collectionID,
-                cardID: noteCard.uuid,
-                native: noteCard.native,
-                translation: noteCard.translation,
-                favorited: noteCard.isFavorite,
-                formality: Int(noteCard.formality.rawValue),
-                note: formModel.includesNote ? noteCard.note : "",
-                tags: noteCard.tags.map(\.name),
-                relationships: []
-            )
-        }
         
         formModel.setPublishState(to: .submitting)
         
         let recordManager = PublicRecordManager.shared
-        recordManager.upload(collection: collectionToPublish, with: cardsToPublish) { result in
+        recordManager.upload(collection: publicCollection, with: publicCards) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success:
@@ -256,19 +300,12 @@ extension HomeCommunityView {
             }
         }
         
-        // update username if needed
+        // update username if changed
         guard user.username != formModel.authorName, let record = user.record else { return }
         let usernameKey = PublicUser.RecordKeys.username.stringValue
         record[usernameKey] = formModel.authorName
         recordManager.save(record: record) { result in
-            switch result {
-            case .success(let record):
-                print("updated username: old(\(user.username)) new(\(record[usernameKey]!))")
-                recordManager.cacheRecords([record], usingRecordKey: usernameKey)
-                
-            case .failure(let error):
-                print("🧨 failed to update username with error: \(error) 🧨")
-            }
+            print("📝 updated username with result: \(result) 📝")
         }
     }
 }
