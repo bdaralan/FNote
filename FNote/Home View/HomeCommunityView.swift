@@ -173,7 +173,22 @@ extension HomeCommunityView {
             print(item.title)
         }
         
-        return [publish, search, filter]
+        let updateUserItem = { (item: BDButtonTrayItem) in
+            let username = AppCache.username
+            let image = username.isEmpty ? "person.crop.circle.badge.exclam" : "person.crop.circle.badge.checkmark"
+            item.title = username
+            item.systemImage = image
+            item.activeColor = username.isEmpty ? .red : nil
+        }
+    
+        let user = BDButtonTrayItem(title: "", systemImage: "") { item in
+            updateUserItem(item)
+            print(AppCache.userAbout)
+        }
+        
+        updateUserItem(user)
+        
+        return [publish, search, filter, user]
     }
 }
 

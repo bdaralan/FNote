@@ -77,6 +77,10 @@ extension PublicCollection: CloudKitRecord {
     }
     
     init(record: CKRecord) {
+        guard record.recordType == Self.recordType else {
+            fatalError("🧨 attempt to construct \(Self.self) with unmatched record type '\(record.recordType)' 🧨")
+        }
+        
         let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
         collectionID = record.recordID.recordName
         

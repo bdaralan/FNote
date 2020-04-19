@@ -58,8 +58,20 @@ class PublicRecordManager {
         
         publicDatabase.add(operation)
     }
+    
+    func save(record: CKRecord, completion: ((Result<CKRecord, Error>) -> Void)?) {
+        publicDatabase.save(record) { record, error in
+            if let record = record {
+                completion?(.success(record))
+            } else {
+                completion?(.failure(error!))
+            }
+        }
+    }
 }
 
+
+// MARK: - Query Record
 
 extension PublicRecordManager {
     
@@ -132,6 +144,8 @@ extension PublicRecordManager {
 }
 
 
+// MARK: - Upload Record
+
 extension PublicRecordManager {
     
     func upload(collection: PublicCollection, with cards: [PublicNoteCard], completion: @escaping (Result<(CKRecord, [CKRecord]), Error>) -> Void) {
@@ -173,6 +187,8 @@ extension PublicRecordManager {
 }
 
 
+// MARK: - Fetch User Record
+
 extension PublicRecordManager {
     
     /// Fetch user records and cache them.
@@ -190,16 +206,16 @@ extension PublicRecordManager {
     
     func fetchPublicUserRecord(desiredKeys: [PublicUser.RecordKeys] = [], completion: @escaping (Result<CKRecord, Error>) -> Void) {
         // fetch current user ID
-        CKContainer.default().fetchUserRecordID { record, error in
-            guard let record = record else {
+        CKContainer.default().fetchUserRecordID { recordID, error in
+            guard let recordID = recordID else {
                 completion(.failure(error!))
                 return
             }
             
             // remove the underscore _ from the ID and use that ID to fetch PublicUser record
-            let publicUserID = record.recordName.replacingOccurrences(of: "_", with: "")
-            let recordID = CKRecord.ID(recordName: publicUserID)
-            let operation = CKFetchRecordsOperation(recordIDs: [recordID])
+            let publicUserID = recordID.recordName.replacingOccurrences(of: "_", with: "")
+            let publicRecordID = CKRecord.ID(recordName: publicUserID)
+            let operation = CKFetchRecordsOperation(recordIDs: [publicRecordID])
             operation.qualityOfService = .userInitiated
             
             // set desired keys if provided
@@ -210,7 +226,7 @@ extension PublicRecordManager {
             
             // set completion block
             operation.fetchRecordsCompletionBlock = { recordMap, error in
-                guard let record = recordMap?[recordID] else {
+                guard let record = recordMap?[publicRecordID] else {
                     completion(.failure(error!))
                     return
                 }
@@ -223,12 +239,37 @@ extension PublicRecordManager {
         }
     }
     
-    func save(record: CKRecord, completion: ((Result<CKRecord, Error>) -> Void)?) {
-        publicDatabase.save(record) { record, error in
-            if let record = record {
-                completion?(.success(record))
-            } else {
-                completion?(.failure(error!))
+    /// Attempt to create a public user record if first time user.
+    ///
+    /// - Parameter completion: Return a newly created or an existing record, or an error if failed.
+    func createInitialPublicUserRecord(completion: @escaping (Result<CKRecord, Error>) -> Void) {
+        CKContainer.default().fetchUserRecordID { recordID, error in
+            guard let recordID = recordID else {
+                completion(.failure(error!))
+                return
+            }
+            
+            // remove the underscore _ from the ID and use that ID to fetch PublicUser record
+            let publicUserID = recordID.recordName.replacingOccurrences(of: "_", with: "")
+            let publicRecordID = CKRecord.ID(recordName: publicUserID)
+            
+            self.publicDatabase.fetch(withRecordID: publicRecordID) { record, error in
+                if let record = record {
+                    completion(.success(record))
+                    return
+                }
+                
+                // create initial public use record here
+                if let ckError = error as? CKError, ckError.code == .unknownItem {
+                    let newUser = PublicUser(userID: publicUserID, username: "", about: "")
+                    let newRecord = newUser.createCKRecord()
+                    self.save(record: newRecord) { result in
+                        completion(result)
+                    }
+                    return
+                }
+                
+                completion(.failure(error!))
             }
         }
     }

@@ -77,6 +77,10 @@ extension PublicNoteCard: CloudKitRecord {
 extension PublicNoteCard {
     
     init(record: CKRecord) {
+        guard record.recordType == Self.recordType else {
+            fatalError("🧨 attempt to construct \(Self.self) with unmatched record type '\(record.recordType)' 🧨")
+        }
+        
         let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
         cardID = record.recordID.recordName
         

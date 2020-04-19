@@ -27,4 +27,11 @@ struct AppCache {
     
     @UserStoredValue(in: .userDefaults, key: "kAppCache.lastKnownVersion", defaultValue: nil)
     static var lastKnownVersion: String?
+    
+    @UserStoredValue(in: .userDefaults, key: "kAppCache.username", defaultValue: "")
+    static var username: String
+    
+    @UserStoredValue(in: .userDefaults, key: "kAppCache.userAbout", defaultValue: "")
+    static var userAbout: String
+    
 }

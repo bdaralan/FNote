@@ -18,6 +18,13 @@ struct PublicUser: CloudKitRecord {
     let username: String
     
     let about: String
+    
+    
+    init(userID: String, username: String, about: String) {
+        self.userID = userID
+        self.username = username
+        self.about = about
+    }
 }
 
 
@@ -50,6 +57,10 @@ extension PublicUser {
     }
     
     init(record: CKRecord) {
+        guard record.recordType == Self.recordType else {
+            fatalError("🧨 attempt to construct \(Self.self) with unmatched record type '\(record.recordType)' 🧨")
+        }
+        
         let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
         userID = record.recordID.recordName
         self.record = record
