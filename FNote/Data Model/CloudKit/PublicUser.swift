@@ -9,7 +9,7 @@
 import CloudKit
 
 
-struct PublicUser: CloudKitRecord {
+struct PublicUser: PublicRecord {
     
     let userID: String
     

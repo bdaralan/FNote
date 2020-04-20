@@ -40,7 +40,7 @@ struct PublicCollection {
 
 // MARK: - Database Record
 
-extension PublicCollection: CloudKitRecord {
+extension PublicCollection: PublicRecord {
     
     static let recordType = "PublicCollection"
     

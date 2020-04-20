@@ -29,7 +29,7 @@ struct PublicNoteCard {
 }
 
 
-extension PublicNoteCard: CloudKitRecord {
+extension PublicNoteCard: PublicRecord {
     
     static let recordType = "PublicNoteCard"
     

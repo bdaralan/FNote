@@ -276,6 +276,42 @@ extension PublicRecordManager {
 }
 
 
+// MARK: - Record Token
+
+extension PublicRecordManager {
+    
+    func sendLikeToken(senderID: String, receiverID: String, token: PublicRecordToken.TokenType, completion: ((Result<CKRecord, Error>) -> Void)?) {
+        // check if it exist
+        
+        let tokenID = PublicRecordToken.createTokenID(for: token, senderID: senderID, receiverID: receiverID)
+        let tokenRID = CKRecord.ID(recordName: tokenID)
+        
+        publicDatabase.fetch(withRecordID: tokenRID) { record, error in
+            if let record = record { // delete action
+                self.publicDatabase.delete(withRecordID: tokenRID) { recordID, error in
+                    print("📝 delete token with ID:    \(record.recordID.recordName) 📝")
+                }
+                return
+            }
+            
+            if let error = error as? CKError, error.code == .unknownItem { // create action
+                let likeToken = PublicRecordToken(tokenID: tokenID, senderID: senderID, receiverID: receiverID, tokenType: token)
+                let tokenRecord = likeToken.createCKRecord()
+                self.publicDatabase.save(tokenRecord) { record, error in
+                    // handle completion
+                    if let record = record {
+                        print("📝 save like token with ID: \(record.recordID.recordName) 📝")
+                    } else {
+                        print("save failed with error: \(error!)")
+                    }
+                }
+                return
+            }
+        }
+    }
+}
+
+
 extension PublicRecordManager {
     
     func setupTestCKSubscriptions() {

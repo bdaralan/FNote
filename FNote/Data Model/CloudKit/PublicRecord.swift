@@ -1,5 +1,5 @@
 //
-//  PublishableRecord.swift
+//  PublicRecord.swift
 //  FNote
 //
 //  Created by Dara Beng on 2/23/20.
@@ -11,7 +11,7 @@ import CloudKit
 
 // MARK: - Record Protocol
 
-protocol CloudKitRecord {
+protocol PublicRecord {
     
     static var recordType: CKRecord.RecordType { get }
     
