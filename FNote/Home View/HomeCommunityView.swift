@@ -68,7 +68,17 @@ extension HomeCommunityView {
             print("failed to fetch data with error: \(error)")
         }
         
-        viewModel.onItemSelected = handlePublishSectionItemSelected
+        viewModel.onItemSelected = { item, section in
+            switch section {
+            case .recentCard:
+                let card = item.object as! PublicNoteCard
+                self.handleRecentCardSelected(card)
+            case .recentCollection:
+                let collection = item.object as! PublicCollection
+                self.handleRecentCollectionSelected(collection)
+            case .randomCollection, .action: break
+            }
+        }
     }
     
     func handleSizeClassChanged(with sizeClass: UserInterfaceSizeClass) {
@@ -87,45 +97,28 @@ extension HomeCommunityView {
         dataSource.apply(snapshot)
     }
     
-    func handlePublishSectionItemSelected(item: PublicSectionItem, sectionType: PublicSectionType) {
-        switch sectionType {
-        case .randomCollection: break
+    func handleRecentCardSelected(_ card: PublicNoteCard) {
+        guard card.relationships.isEmpty == false else {
+            print("card \(card.native) has no relationships")
+            return
+        }
+        PublicRecordManager.shared.queryCards(withIDs: card.relationships) { result in
+            switch result {
+            case .success(let records):
+                let cards = records.map({ PublicNoteCard(record: $0) })
+                cards.forEach({ print($0) })
+            case .failure(let error):
+                print("⚠️ failed to fetch relationship card with error: \(error) ⚠️")
+            }
+        }
+    }
     
-        case .recentCard:
-            guard let publicCard = item.object as? PublicNoteCard else { return }
-            guard publicCard.relationships.isEmpty == false else {
-                print("card \(publicCard.native) has no relationships")
-                return
-            }
-            PublicRecordManager.shared.queryCards(withIDs: publicCard.relationships) { result in
-                switch result {
-                case .success(let records):
-                    let cards = records.map({ PublicNoteCard(record: $0) })
-                    cards.forEach({ print($0) })
-                case .failure(let error):
-                    print("⚠️ failed to fetch relationship card with error: \(error) ⚠️")
-                }
-            }
-        
-        case .action:
-            guard let action = item.object as? PublicSectionAction else { return }
-            switch action {
-            case .publishCollection:
-                beginPublishCollection()
-            case .refreshData:
-                viewModel.fetchData(completedWithError: nil)
-            }
-        
-        case .recentCollection:
-            guard let collection = item.object as? PublicCollection else { return }
-            PublicRecordManager.shared.queryCards(withCollectionID: collection.collectionID) { result in
-                guard case .success(let records) = result else { return }
-                print(collection.name)
-                records.forEach {
-                    let card = PublicNoteCard(record: $0)
-                    print(card.native, card.note)
-                }
-            }
+    func handleRecentCollectionSelected(_ collection: PublicCollection) {
+        let senderID = collection.authorID
+        let receiverID = collection.collectionID
+        let recordManager = PublicRecordManager.shared
+        recordManager.sendLikeToken(senderID: senderID, receiverID: receiverID, token: .like) { result in
+            
         }
     }
 }
