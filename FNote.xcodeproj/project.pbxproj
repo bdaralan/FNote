@@ -33,7 +33,6 @@
 		B435DD4F244EBC7500D8A7C9 /* PublicUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B435DD4E244EBC7500D8A7C9 /* PublicUserViewModel.swift */; };
 		B43B715623FB3CFA002C8A1A /* OnboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43B715523FB3CFA002C8A1A /* OnboardViewController.swift */; };
 		B43B715823FB3D13002C8A1A /* OnboardViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43B715723FB3D13002C8A1A /* OnboardViewControllerWrapper.swift */; };
-		B44625FA23E3D31A00B43526 /* UserStoredValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44625F923E3D31A00B43526 /* UserStoredValue.swift */; };
 		B44625FC23E3DE2D00B43526 /* UserPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44625FB23E3DE2D00B43526 /* UserPreference.swift */; };
 		B448744623DEB578005EBA45 /* TagCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B448744523DEB578005EBA45 /* TagCell.swift */; };
 		B448744823DEB73A005EBA45 /* TagCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B448744723DEB73A005EBA45 /* TagCollectionViewModel.swift */; };
@@ -169,7 +168,6 @@
 		B435DD4E244EBC7500D8A7C9 /* PublicUserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicUserViewModel.swift; sourceTree = "<group>"; };
 		B43B715523FB3CFA002C8A1A /* OnboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardViewController.swift; sourceTree = "<group>"; };
 		B43B715723FB3D13002C8A1A /* OnboardViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardViewControllerWrapper.swift; sourceTree = "<group>"; };
-		B44625F923E3D31A00B43526 /* UserStoredValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStoredValue.swift; sourceTree = "<group>"; };
 		B44625FB23E3DE2D00B43526 /* UserPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreference.swift; sourceTree = "<group>"; };
 		B448744523DEB578005EBA45 /* TagCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCell.swift; sourceTree = "<group>"; };
 		B448744723DEB73A005EBA45 /* TagCollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewModel.swift; sourceTree = "<group>"; };
@@ -380,14 +378,6 @@
 			path = "PublicUser View";
 			sourceTree = "<group>";
 		};
-		B44625F823E3D28E00B43526 /* Property Wrapper */ = {
-			isa = PBXGroup;
-			children = (
-				B44625F923E3D31A00B43526 /* UserStoredValue.swift */,
-			);
-			path = "Property Wrapper";
-			sourceTree = "<group>";
-		};
 		B4493C9424130EB000C72E34 /* Core Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -570,7 +560,6 @@
 				B40BB6172335B11900E2F98B /* Utility */,
 				B4BAC52223203F60007EAF15 /* Extension */,
 				B499A3572326D932002D16A0 /* CoreDataStack */,
-				B44625F823E3D28E00B43526 /* Property Wrapper */,
 				B424018623ED2B750042B223 /* Resource */,
 				B4BB117023145DC400A380AA /* AppDelegate.swift */,
 				B4BB117223145DC400A380AA /* SceneDelegate.swift */,
@@ -800,7 +789,6 @@
 				B4BBDBEB23E4D79B00A0AEA1 /* HomeSettingView.swift in Sources */,
 				B4BAC52423203F83007EAF15 /* ManagedObjectContext.swift in Sources */,
 				B402DE46244A6BDC00FBF0FE /* PresentationAlert.swift in Sources */,
-				B44625FA23E3D31A00B43526 /* UserStoredValue.swift in Sources */,
 				B4FFEB29234ED2AA00B4550F /* Image.swift in Sources */,
 				B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */,
 				B4D240D723DBD1EE005B4066 /* NoteCardCollectionCell.swift in Sources */,

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import BDSwiftility
 
 
 class UserPreference: ObservableObject {
@@ -16,13 +17,13 @@ class UserPreference: ObservableObject {
     
     // MARK: iCloud
         
-    @UserStoredValue(in: .iCloud, key: key("useMarkdown"), defaultValue: true)
+    @BDStoredValue(in: .iCloud, key: key("useMarkdown"), default: true)
     var useMarkdown: Bool
     
-    @UserStoredValue(in: .iCloud, key: key("useMarkdownSoftBreak"), defaultValue: true)
+    @BDStoredValue(in: .iCloud, key: key("useMarkdownSoftBreak"), default: true)
     var useMarkdownSoftBreak: Bool
     
-    @UserStoredValue(in: .iCloud, key: key("generalKeyboardUsage"), defaultValue: true)
+    @BDStoredValue(in: .iCloud, key: key("generalKeyboardUsage"), default: true)
     var showGeneralKeyboardUsage: Bool
     
     
@@ -31,28 +32,30 @@ class UserPreference: ObservableObject {
     let colorSchemeKey = key("colorScheme")
     var colorScheme: ColorScheme {
         set {
-            UserStoredValue.Storage.userDefaults.setValue(newValue.rawValue, forKey: colorSchemeKey)
+            let storage = BDStorableValueSystemStorage.userDefaults.object
+            storage.setValue(newValue.rawValue, forKey: colorSchemeKey)
         }
         get {
-            let storage = UserStoredValue<Int>.Storage.userDefaults
+            let storage = BDStorableValueSystemStorage.userDefaults.object
             let defaultValue = ColorScheme.system
-            let rawValue = storage.value(forKey: colorSchemeKey, defaultValue: defaultValue.rawValue)
+            let rawValue = storage.value(forKey: colorSchemeKey) as? Int ?? defaultValue.rawValue
             return ColorScheme(rawValue: rawValue) ?? defaultValue
         }
     }
     
-    @UserStoredValue(in: .userDefaults, key: key("noteCardSortOptionAscending"), defaultValue: true)
+    @BDStoredValue(in: .userDefaults, key: key("noteCardSortOptionAscending"), default: true)
     var noteCardSortOptionAscending: Bool
     
     let noteCardSortOptionKey = key("noteCardSortOption")
     var noteCardSortOption: NoteCardSortOption {
         set {
-            UserStoredValue.Storage.userDefaults.setValue(newValue.rawValue, forKey: noteCardSortOptionKey)
+            let storage = BDStorableValueSystemStorage.userDefaults.object
+            storage.setValue(newValue.rawValue, forKey: noteCardSortOptionKey)
         }
         get {
-            let storage = UserStoredValue<Int>.Storage.userDefaults
+            let storage = BDStorableValueSystemStorage.userDefaults.object
             let defaultValue = NoteCardSortOption.translation
-            let rawValue = storage.value(forKey: noteCardSortOptionKey, defaultValue: defaultValue.rawValue)
+            let rawValue = storage.value(forKey: noteCardSortOptionKey) as? Int ?? defaultValue.rawValue
             return NoteCardSortOption(rawValue: rawValue) ?? defaultValue
         }
     }

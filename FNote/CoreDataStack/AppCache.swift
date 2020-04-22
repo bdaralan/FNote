@@ -21,16 +21,16 @@ struct AppCache {
     
     // MARK: Setup
     
-    @UserStoredValue(in: .userDefaults, key: "kAppCache.ubiquityIdentityToken", defaultValue: nil)
+    @BDStoredValue(in: .userDefaults, key: "kAppCache.ubiquityIdentityToken", default: nil)
     static var ubiquityIdentityToken: UbiquityIdentityToken?
     
-    @UserStoredValue(in: .userDefaults, key: "kAppCache.currentCollectionUUID", defaultValue: nil)
+    @BDStoredValue(in: .userDefaults, key: "kAppCache.currentCollectionUUID", default: nil)
     static var currentCollectionUUID: String?
     
-    @UserStoredValue(in: .userDefaults, key: "kAppCache.shouldShowOnboard", defaultValue: true)
+    @BDStoredValue(in: .userDefaults, key: "kAppCache.shouldShowOnboard", default: true)
     static var shouldShowOnboard: Bool
     
-    @UserStoredValue(in: .userDefaults, key: "kAppCache.lastKnownVersion", defaultValue: nil)
+    @BDStoredValue(in: .userDefaults, key: "kAppCache.lastKnownVersion", default: nil)
     static var lastKnownVersion: String?
     
     @BDStoredValue(in: .userDefaults, key: "kAppCache.hasSetupCKSubscriptions", default: false)
