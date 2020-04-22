@@ -25,7 +25,7 @@ class Tag: NSManagedObject, Identifiable, ObjectValidatable {
     
     override func awakeFromInsert() {
         super.awakeFromInsert()
-        uuid = "FNT+\(UUID().uuidString)"
+        uuid = UUID().uuidString
     }
     
     override func willSave() {

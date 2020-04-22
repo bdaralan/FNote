@@ -27,13 +27,13 @@ class NoteCard: NSManagedObject, Identifiable, ObjectValidatable {
     
     var formality: Formality {
         set { formalityValue = newValue.rawValue }
-        get { Formality(rawValue: formalityValue)! }
+        get { Formality(rawValue: formalityValue) ?? .unspecified }
     }
     
     
     override func awakeFromInsert() {
         super.awakeFromInsert()
-        uuid = "FNNC+\(UUID().uuidString)"
+        uuid = UUID().uuidString
     }
     
     override func willSave() {
@@ -60,6 +60,7 @@ extension NoteCard {
     }
     
     func validateData() {
+        setPrimitiveValue(formality.rawValue, forKey: #keyPath(NoteCard.formalityValue))
         setPrimitiveValue(native.trimmed(), forKey: #keyPath(NoteCard.native))
         setPrimitiveValue(translation.trimmed(), forKey: #keyPath(NoteCard.translation))
         setPrimitiveValue(note.trimmed(), forKey: #keyPath(NoteCard.note))

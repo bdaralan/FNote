@@ -20,7 +20,7 @@ class NoteCardCollection: NSManagedObject, Identifiable, ObjectValidatable {
     
     override func awakeFromInsert() {
         super.awakeFromInsert()
-        uuid = "FNNCC+\(UUID().uuidString)"
+        uuid = UUID().uuidString
     }
     
     override func willSave() {
