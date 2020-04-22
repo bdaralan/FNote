@@ -24,7 +24,7 @@ struct HomeView: View {
     
     @State private var onboardViewModel: OnboardCollectionViewModel?
     
-    @State private var storeRemoteChangeObserver = NotificationObserver(name: .persistentStoreRemoteChange)
+    let storeRemoteChange = NotificationCenter.default.publisher(for: .persistentStoreRemoteChange)
     
     
     var body: some View {
@@ -54,6 +54,7 @@ struct HomeView: View {
         .alert(isPresented: $appState.showDidCopyFileAlert, content: { .DidCopyFileAlert(fileName: appState.copiedFileName) })
         .disabled(!appState.iCloudActive)
         .onReceive([currentTab].publisher.last(), perform: handleOnReceiveCurrentTab)
+        .onReceive(storeRemoteChange.receive(on: DispatchQueue.main), perform: handleStoreRemoteChangeNotification)
     }
 }
 
@@ -63,7 +64,6 @@ struct HomeView: View {
 extension HomeView {
     
     func setupOnAppear() {
-        storeRemoteChangeObserver.onReceived = handleStoreRemoteChangeNotification
         showOnboardIfNeeded()
     }
     
