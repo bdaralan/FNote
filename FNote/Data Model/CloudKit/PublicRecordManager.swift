@@ -11,9 +11,22 @@ import CloudKit
 
 class PublicRecordManager {
     
+    // MARK: Typealias
+    
     typealias QueryCompletionBlock = (Result<[CKRecord], Error>) -> Void
     
+    
+    // MARK: Singleton
+    
     static let shared = PublicRecordManager()
+    
+    
+    // MARK: Notification
+    
+    static let nPublicUserDidUpdate = Notification.Name("PublicRecordManager.nPublicUserDidUpdate")
+    
+    
+    // MARK: Property
     
     let publicDatabase = CKContainer.default().publicCloudDatabase
     
@@ -323,5 +336,32 @@ extension PublicRecordManager {
 //
 //        let newCollectionSubOP = CKModifySubscriptionsOperation(subscriptionsToSave: [newCollectionSub], subscriptionIDsToDelete: [])
 //        publicDatabase.add(newCollectionSubOP)
+    }
+    
+    func setupPublicUserUpdateSubscriptions(userID: String, completion: ((Result<CKSubscription, CKError>) -> Void)?) {
+        let subscriptionID = "CKSUBID.PublicUser.CU"
+        let options: CKQuerySubscription.Options = [.firesOnRecordCreation, .firesOnRecordUpdate]
+        let userIDField = PublicUser.RecordKeys.userID.stringValue
+        let predicate = NSPredicate(format: "\(userIDField) == %@", userID)
+        
+        let subscription = CKQuerySubscription(
+            recordType: PublicUser.recordType,
+            predicate: predicate,
+            subscriptionID: subscriptionID,
+            options: options
+        )
+        
+        let notification = CKQuerySubscription.NotificationInfo()
+        notification.shouldSendContentAvailable = true
+        
+        subscription.notificationInfo = notification
+        
+        publicDatabase.save(subscription) { subscription, error in
+            if let subscription = subscription {
+                completion?(.success(subscription))
+            } else {
+                completion?(.failure(error as! CKError))
+            }
+        }
     }
 }

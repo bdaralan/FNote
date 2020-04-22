@@ -30,6 +30,8 @@ struct PublishCollectionForm: View {
     var body: some View {
         NavigationView {
             PublishCollectionViewControllerWrapper(viewModel: viewModel, onRowSelected: handleRowSelected)
+                .opacity(viewModel.author.isValid ? 1 : 0.4)
+                .disabled(viewModel.author.isValid == false)
                 .navigationBarTitle("Publish Collection", displayMode: .inline)
                 .navigationBarItems(leading: cancelNavButton, trailing: errorNavButton)
                 .edgesIgnoringSafeArea(.bottom)
@@ -47,13 +49,11 @@ struct PublishCollectionForm: View {
 extension PublishCollectionForm {
     
     func setupOnAppear() {
-        fetchUserRecord()
     }
     
     func handleRowSelected(kind: PublishFormSection.Row) {
         viewModel.onRowSelected?(kind)
         switch kind {
-        case .authorName: beginEditAuthorName()
         case .collection: beginSelectCollection()
         case .collectionName: beginEditCollectionName()
         case .collectionDescription: beginEditCollectionDescription()
@@ -61,7 +61,7 @@ extension PublishCollectionForm {
         case .collectionPrimaryLanguage: beginSelectPrimaryLanguage()
         case .collectionSecondaryLanguage: beginSelectSecondaryLanguage()
         case .publishAction: publishCollection()
-        case .includeNote: break
+        case .includeNote, .authorName: break
         }
     }
 }
@@ -97,25 +97,6 @@ extension PublishCollectionForm {
             fill
         }
     }
-    
-    func fetchUserRecord() {
-        PublicRecordManager.shared.fetchPublicUserRecord { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let record):
-                    let user = PublicUser(record: record)
-                    self.viewModel.onPublicUserFetched?(user)
-                    self.alert = nil
-                    
-                case .failure(let error):
-                    print("⚠️ failed to fetch current user with error: \(error) ⚠️")
-                    let title = Text("Cannot Fetch Author")
-                    let message = Text("Unable to fetch author record. Please try again.")
-                    self.alert = Alert(title: title, message: message, dismissButton: nil)
-                }
-            }
-        }
-    }
 }
 
 
@@ -123,8 +104,7 @@ extension PublishCollectionForm {
 
 extension PublishCollectionForm {
     
-    enum Sheet: PresentingSheetEnum {
-        case authorName
+    enum Sheet: PresentationSheetItem {
         case collectionName
         case publishCollection
         case publishDescription
@@ -134,7 +114,7 @@ extension PublishCollectionForm {
     
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
-        case .authorName, .collectionName, .publishTags:
+        case .collectionName, .publishTags:
             return BDModalTextField(viewModel: $textFieldModel)
                 .eraseToAnyView()
             
@@ -159,33 +139,6 @@ extension PublishCollectionForm {
             }
             .navigationViewStyle(StackNavigationViewStyle())
             .eraseToAnyView()
-        }
-    }
-}
-
-
-// MARK: - Author
-
-extension PublishCollectionForm {
-    
-    func beginEditAuthorName() {
-        textFieldModel = .init()
-        textFieldModel.title = "Author Name"
-        textFieldModel.text = viewModel.authorName
-        textFieldModel.placeholder = viewModel.uiAuthorNamePlaceholder
-        textFieldModel.prompt = "The name that appears on all published collections (A-Z, 0-9, -, _)"
-        textFieldModel.isFirstResponder = true
-        sheet.present(.authorName)
-        
-        textFieldModel.onCancel = {
-            self.textFieldModel.isFirstResponder = false
-            self.sheet.dismiss()
-        }
-        
-        textFieldModel.onReturnKey = {
-            self.viewModel.authorName = self.textFieldModel.text.trimmedUsername()
-            self.textFieldModel.isFirstResponder = false
-            self.sheet.dismiss()
         }
     }
 }
@@ -404,12 +357,17 @@ extension PublishCollectionForm {
 
 
 struct PublishCollectionForm_Previews: PreviewProvider {
+    static let viewModel: PublishCollectionFormModel = {
+        let user = PublicUser(userID: "someID0409", username: "DLan", about: "This is a test user.")
+        let model = PublishCollectionFormModel(user: user)
+        return model
+    }()
     static var previews: some View {
         Group {
-            PublishCollectionForm(viewModel: .init())
+            PublishCollectionForm(viewModel: viewModel)
                 .colorScheme(.light)
                 .accentColor(.appAccent)
-            PublishCollectionForm(viewModel: .init())
+            PublishCollectionForm(viewModel: viewModel)
                 .colorScheme(.dark)
                 .accentColor(.appAccent)
         }

@@ -9,21 +9,38 @@
 import CloudKit
 
 
-struct PublicUser: PublicRecord {
-    
-    let userID: String
+struct PublicUser: PublicRecord, Codable {
     
     private(set) var record: CKRecord?
+    
+    let userID: String
     
     let username: String
     
     let about: String
     
+    var isValid: Bool {
+        !userID.isEmpty && !username.trimmedUsername().isEmpty
+    }
     
     init(userID: String, username: String, about: String) {
         self.userID = userID
         self.username = username
         self.about = about
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: RecordKeys.self)
+        userID = try container.decode(String.self, forKey: .userID)
+        username = try container.decode(String.self, forKey: .username)
+        about = try container.decode(String.self, forKey: .about)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: RecordKeys.self)
+        try container.encode(userID, forKey: .userID)
+        try container.encode(username, forKey: .username)
+        try container.encode(about, forKey: .about)
     }
 }
 

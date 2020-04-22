@@ -70,32 +70,20 @@ struct ModalTextViewWrapper: UIViewRepresentable {
             
             guard shouldUpdateText else { return }
             let renderMarkdown = wrapper.renderMarkdown
-            let colorScheme = wrapper.colorScheme
             
             if renderMarkdown {
+                let down = Down(markdownString: wrapper.text)
                 let options = wrapper.renderSoftBreak ? DownOptions.hardBreaks : .safe
-                let markdown = createMarkdown(from: wrapper.text, options: options, colorScheme: colorScheme)
-                textView.attributedText = markdown
+                let downColors: ColorCollection
+                if wrapper.colorScheme == .dark {
+                    downColors = DarkSchemeColorCollection()
+                } else {
+                    downColors = LightSchemeColorCollection()
+                }
+                textView.attributedText = down.markdown(options: options, colors: downColors)
             } else {
                 textView.text = wrapper.text
             }
-        }
-        
-        func createMarkdown(from string: String, options: DownOptions, colorScheme: ColorScheme) -> NSAttributedString? {
-            var config = DownStylerConfiguration()
-            
-            switch colorScheme {
-            case .dark:
-                config.colors = DarkSchemeColorCollection()
-            case .light:
-                config.colors = LightSchemeColorCollection()
-            @unknown default:
-                config.colors = LightSchemeColorCollection()
-            }
-            
-            let styler = DownStyler(configuration: config)
-            let down = Down(markdownString: string)
-            return try? down.toAttributedString(options, styler: styler)
         }
         
         func setupTextView() {

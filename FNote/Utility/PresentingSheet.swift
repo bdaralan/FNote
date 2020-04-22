@@ -13,7 +13,7 @@ import Foundation
 ///
 /// The object provides a way to set the presenting sheet and
 /// also keep track of the last presented sheet.
-struct PresentingSheet<Sheet> where Sheet: PresentingSheetEnum {
+struct PresentingSheet<Sheet> where Sheet: PresentationSheetItem {
     
     // MARK: Property
     
@@ -47,10 +47,10 @@ struct PresentingSheet<Sheet> where Sheet: PresentingSheetEnum {
 }
 
 
-// MARK: - Presenting Sheet Enum
+// MARK: - Presenting Sheet Item
 
-protocol PresentingSheetEnum: Identifiable {}
+protocol PresentationSheetItem: Identifiable {}
 
-extension PresentingSheetEnum {
+extension PresentationSheetItem {
     var id: Self { self }
 }

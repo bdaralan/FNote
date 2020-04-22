@@ -13,11 +13,9 @@ class PublishCollectionFormModel: ObservableObject {
     
     var selectableCollections: [NoteCardCollection] = []
     
-    @Published var author: PublicUser?
+    @Published var author: PublicUser
     
     @Published var publishCollection: NoteCardCollection?
-    
-    @Published var authorName: String = ""
     
     @Published var publishCollectionName: String = ""
     
@@ -40,12 +38,15 @@ class PublishCollectionFormModel: ObservableObject {
     var onCommit: (() -> Void)?
     
     var onCancel: (() -> Void)?
-    
-    var onPublicUserFetched: ((PublicUser) -> Void)?
-    
+        
     var onPublishStateChanged: ((PublishFormPublishState) -> Void)?
     
     var onRowSelected: ((PublishFormSection.Row) -> Void)?
+    
+    
+    init(user: PublicUser) {
+        self.author = user
+    }
     
     func setPublishState(to newValue: PublishFormPublishState) {
         publishState = newValue
@@ -53,7 +54,6 @@ class PublishCollectionFormModel: ObservableObject {
     }
     
     func validateInputs() {
-        authorName = authorName.trimmedUsername()
         publishCollectionName = publishCollectionName.trimmed()
         publishDescription = publishDescription.trimmed()
         publishTags = publishTags.map({ $0.trimmedComma() })
@@ -66,13 +66,12 @@ class PublishCollectionFormModel: ObservableObject {
 extension PublishCollectionFormModel {
     
     var hasValidInputs: Bool {
-        return publishCollection != nil
-            && !authorName.isEmptyOrWhiteSpaces()
+        return author.isValid
+            && publishCollection != nil
             && !publishCollectionName.isEmptyOrWhiteSpaces()
             && !publishDescription.isEmptyOrWhiteSpaces()
             && !publishTags.isEmpty
             && isLanguagesValid
-            && author != nil
     }
     
     var isLanguagesValid: Bool {
@@ -80,11 +79,7 @@ extension PublishCollectionFormModel {
     }
     
     var uiAuthorName: String {
-        authorName.isEmpty ? "required" : authorName
-    }
-    
-    var uiAuthorNamePlaceholder: String {
-        authorName.isEmpty ? "author" : authorName
+        author.isValid ? author.username : "required"
     }
     
     var uiCollectionName: String {

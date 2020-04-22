@@ -51,6 +51,22 @@ extension CKRecord {
     func keyedRecord<Key>(keys: Key.Type) -> KeyedRecord<Key> where Key: CodingKey {
         KeyedRecord<Key>(record: self)
     }
+    
+    func systemFields() -> Data {
+        let encoder = NSKeyedArchiver(requiringSecureCoding: true)
+        self.encodeSystemFields(with: encoder)
+        return encoder.encodedData
+    }
+    
+    convenience init?(systemFields: Data) {
+        do {
+            let unarchiver = try NSKeyedUnarchiver(forReadingFrom: systemFields)
+            self.init(coder: unarchiver)
+        } catch {
+            print("⚠️ failed to unarchive CKRecord from systemFields ⚠️")
+            return nil
+        }
+    }
 }
 
 

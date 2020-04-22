@@ -8,6 +8,7 @@
 
 import SwiftUI
 import BDUIKnit
+import BDSwiftility
 
 
 struct HomeCommunityView: View {
@@ -21,8 +22,9 @@ struct HomeCommunityView: View {
     
     @State private var trayViewModel = BDButtonTrayViewModel()
     
-    @State private var sheet = PresentingSheet<Sheet>()
+    @State private var sheet = BDPresentationItem<Sheet>()
     @State private var publishFormModel: PublishCollectionFormModel?
+    @State private var publicUserViewModel: PublicUserViewModel?
     
     @State private var collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     @State private var isFetchingData = false
@@ -35,6 +37,10 @@ struct HomeCommunityView: View {
         [sizeCategory]
     }
     
+    let userTrayItemID = "publicUserTrayItemID"
+    
+    let userDidUpdate = NotificationCenter.default.publisher(for: PublicRecordManager.nPublicUserDidUpdate)
+    
     
     var body: some View {
         NavigationView {
@@ -46,10 +52,11 @@ struct HomeCommunityView: View {
             .overlay(buttonTrayView, alignment: .bottomTrailing)
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .onAppear(perform: setupOnAppear)
+        .sheet(item: $sheet.current, onDismiss: handleSheetDismissed, content: presentationSheet)
         .onReceive(horizontalSizeClasses.publisher, perform: handleSizeClassChanged)
         .onReceive(sizeCategories.publisher, perform: handleSizeCategoryChanged)
-        .onAppear(perform: setupOnAppear)
-        .sheet(item: $sheet.presenting, content: presentationSheet)
+        .onReceive(userDidUpdate.receive(on: DispatchQueue.main), perform: handlePublicUserDidUpdate)
     }
 }
 
@@ -95,6 +102,14 @@ extension HomeCommunityView {
         var snapshot = dataSource.snapshot()
         snapshot.reloadItems(snapshot.itemIdentifiers)
         dataSource.apply(snapshot)
+    }
+    
+    func handlePublicUserDidUpdate(notification: Notification) {
+        guard let user = notification.object as? PublicUser else { return }
+        guard let userTrayItem = trayViewModel.items.first(where: { $0.id == userTrayItemID }) else { return }
+        updateUserTrayItem(item: userTrayItem, user: user)
+        publicUserViewModel?.update(with: user)
+        publishFormModel?.author = user
     }
     
     func handleRecentCardSelected(_ card: PublicNoteCard) {
@@ -153,8 +168,11 @@ extension HomeCommunityView {
     }
     
     func createTrayItems() -> [BDButtonTrayItem] {
+        let user = BDButtonTrayItem(id: userTrayItemID, title: "", systemImage: "") { item in
+            self.presentPublicUserProfile(sender: item)
+        }
+        
         let publish = BDButtonTrayItem(title: "Publish Collection", systemImage: "rectangle.stack.badge.person.crop") { item in
-            self.trayViewModel.expanded = false
             self.beginPublishCollection()
         }
         
@@ -166,22 +184,46 @@ extension HomeCommunityView {
             print(item.title)
         }
         
-        let updateUserItem = { (item: BDButtonTrayItem) in
-            let username = AppCache.username
-            let image = username.isEmpty ? "person.crop.circle.badge.exclam" : "person.crop.circle.badge.checkmark"
-            item.title = username
-            item.systemImage = image
-            item.activeColor = username.isEmpty ? .red : nil
-        }
+        let cachedUser = AppCache.cachedUser()
+        updateUserTrayItem(item: user, user: cachedUser)
+        
+        return [user, publish, search, filter]
+    }
     
-        let user = BDButtonTrayItem(title: "", systemImage: "") { item in
-            updateUserItem(item)
-            print(AppCache.userAbout)
+    func updateUserTrayItem(item: BDButtonTrayItem, user: PublicUser) {
+        if user.username.isEmpty {
+            item.title = "Username Required"
+            item.systemImage = "person.crop.circle.badge.exclam"
+            item.activeColor = .red
+        } else {
+            item.title = user.username
+            item.systemImage = "person.crop.circle.badge.checkmark"
+            item.activeColor = .green
+        }
+    }
+    
+    func presentPublicUserProfile(sender: BDButtonTrayItem) {
+        let user = AppCache.cachedUser()
+        let model = PublicUserViewModel(user: user)
+        
+        model.onDone = {
+            self.publicUserViewModel = nil
+            self.sheet.dismiss()
         }
         
-        updateUserItem(user)
+        model.onUserUpdated = { user in
+            model.disableUserInteraction = false
+            model.update(with: user)
+            self.updateUserTrayItem(item: sender, user: user)
+            AppCache.cacheUser(user)
+        }
         
-        return [publish, search, filter, user]
+        model.onUserUpdateFailed = { error in
+            model.disableUserInteraction = false
+        }
+        
+        publicUserViewModel = model
+        sheet.present(.user)
     }
 }
 
@@ -190,14 +232,26 @@ extension HomeCommunityView {
 
 extension HomeCommunityView {
     
-    enum Sheet: PresentingSheetEnum {
+    enum Sheet: PresentationSheetItem {
         case publishCollection
+        case user
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
         case .publishCollection:
             return PublishCollectionForm(viewModel: self.publishFormModel!)
+                .eraseToAnyView()
+        case .user:
+            return PublicUserView(viewModel: publicUserViewModel!)
+                .eraseToAnyView()
+        }
+    }
+    
+    func handleSheetDismissed() {
+        switch sheet.previous {
+        case .publishCollection, nil: break
+        case .user: publicUserViewModel = nil
         }
     }
 }
@@ -208,7 +262,8 @@ extension HomeCommunityView {
 extension HomeCommunityView {
     
     func beginPublishCollection() {
-        let formModel = PublishCollectionFormModel()
+        let user = AppCache.cachedUser()
+        let formModel = PublishCollectionFormModel(user: user)
         formModel.commitTitle = "PUBLISH"
         
         formModel.selectableCollections = appState.collections
@@ -219,17 +274,16 @@ extension HomeCommunityView {
             self.sheet.dismiss()
         }
         
-        formModel.onPublicUserFetched = { user in
-            formModel.authorName = user.username
-            formModel.author = user
-        }
-        
         formModel.onPublishStateChanged = { state in
             switch state {
-            case .editing: formModel.commitTitle = "PUBLISH"
-            case .submitting: formModel.commitTitle = "PUBLISHING"
-            case .rejected: formModel.commitTitle = "FAILED"
+            case .editing:
+                formModel.commitTitle = "PUBLISH"
+            case .submitting:
+                formModel.commitTitle = "PUBLISHING"
+            case .rejected:
+                formModel.commitTitle = "FAILED"
             case .published:
+                self.trayViewModel.expanded = false
                 self.publishFormModel = nil
                 self.sheet.dismiss()
             }
@@ -246,7 +300,6 @@ extension HomeCommunityView {
         guard let collection = formModel.publishCollection else { return }
         guard let primaryLanguage = formModel.publishPrimaryLanguage else { return }
         guard let secondaryLanguage = formModel.publishSecondaryLanguage else { return }
-        guard let user = formModel.author else { return }
         
         // create ID map for public card and use it to set relationships
         // map value is [localID: publicID]
@@ -284,7 +337,7 @@ extension HomeCommunityView {
         
         let publicCollection = PublicCollection(
             collectionID: publicCollectionID,
-            authorID: user.userID,
+            authorID: formModel.author.userID,
             name: formModel.publishCollectionName,
             description: formModel.publishDescription,
             primaryLanguage: primaryLanguage.code,
@@ -306,14 +359,6 @@ extension HomeCommunityView {
                     formModel.setPublishState(to: .rejected)
                 }
             }
-        }
-        
-        // update username if changed
-        guard user.username != formModel.authorName, let record = user.record else { return }
-        let usernameKey = PublicUser.RecordKeys.username.stringValue
-        record[usernameKey] = formModel.authorName
-        recordManager.save(record: record) { result in
-            print("📝 updated username with result: \(result) 📝")
         }
     }
 }

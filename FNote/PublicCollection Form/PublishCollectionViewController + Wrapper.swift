@@ -19,26 +19,28 @@ class PublishCollectionViewController: UITableViewController {
     var onRowSelected: ((PublishFormSection.Row) -> Void)?
     
     let sections: [PublishFormSection] = [
-        .init(header: "AUTHOR", footer: nil, rows: [.authorName]),
+        .init(header: nil, footer: nil, rows: [.authorName]),
         .init(header: "COLLECTION TO PUBLISH", footer: nil, rows: [.collection]),
         .init(header: "PUBLISH DETAILS", footer: nil, rows: [.collectionName, .collectionDescription, .collectionTag, .collectionPrimaryLanguage, .collectionSecondaryLanguage]),
         .init(header: "PUBLISH OPTIONS", footer: nil, rows: [.includeNote]),
         .init(header: nil, footer: nil, rows: [.publishAction])
     ]
     
-    private var viewModelSubscribers = [AnyCancellable]()
+    private var cancellables = [AnyCancellable]()
     
     // MARK: Cell
     
     let authorNameCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
-        cell.accessoryType = .disclosureIndicator
+        cell.textLabel?.text = "Author"
+        cell.isUserInteractionEnabled = false
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
     let collectionNameCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        cell.textLabel?.text = "Collection Name"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
@@ -46,6 +48,7 @@ class PublishCollectionViewController: UITableViewController {
     
     let collectionCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        cell.textLabel?.text = "Collection"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
@@ -53,6 +56,7 @@ class PublishCollectionViewController: UITableViewController {
     
     let collectionDescriptionCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        cell.textLabel?.text = "Description"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
@@ -60,6 +64,7 @@ class PublishCollectionViewController: UITableViewController {
     
     let tagCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        cell.textLabel?.text = "Tags"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
@@ -67,6 +72,7 @@ class PublishCollectionViewController: UITableViewController {
     
     let primaryLanguageCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        cell.textLabel?.text = "Primary Language"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
@@ -74,6 +80,7 @@ class PublishCollectionViewController: UITableViewController {
     
     let secondaryLanguageCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        cell.textLabel?.text = "Secondary Language"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
@@ -81,6 +88,7 @@ class PublishCollectionViewController: UITableViewController {
     
     let includeNoteCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .default, reuseIdentifier: nil)
+        cell.textLabel?.text = "Include Card's Note"
         cell.useToggle(true)
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
@@ -89,10 +97,11 @@ class PublishCollectionViewController: UITableViewController {
     let publishActionCell: TableViewCell<UILabel> = {
         let cell = TableViewCell<UILabel>(style: .default, reuseIdentifier: nil)
         cell.uiView.textAlignment = .center
-        cell.uiView.textColor = .label
+        cell.uiView.textColor = .appAccent
         cell.uiView.font = .systemFont(ofSize: UIFont.labelFontSize, weight: .black)
         cell.backgroundColor = .noteCardBackground
         cell.layer.borderWidth = 2
+        cell.layer.borderColor = UIColor.appAccent.cgColor
         return cell
     }()
     
@@ -112,60 +121,6 @@ class PublishCollectionViewController: UITableViewController {
         super.viewDidLoad()
         setupView()
         setupViewModelObjectWillChange()
-    }
-    
-    private func setupViewModelObjectWillChange() {
-        let objectWillChange = viewModel
-            .objectWillChange
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] _ in
-                self?.handleViewModelObjectWillChange()
-            })
-        
-        viewModelSubscribers.append(objectWillChange)
-        
-        includeNoteCell.toggle!.addTarget(self, action: #selector(handleToggleChanged), for: .valueChanged)
-        
-        viewModel.objectWillChange.send()
-    }
-    
-    private func handleViewModelObjectWillChange() {
-        authorNameCell.detailTextLabel?.text = viewModel.uiAuthorName
-        authorNameCell.detailTextLabel?.textColor = viewModel.authorName.trimmed().isEmpty ? .quaternaryLabel : .secondaryLabel
-        
-        collectionCell.detailTextLabel?.text = viewModel.uiCollectionName
-        collectionCell.detailTextLabel?.textColor = viewModel.publishCollection == nil ? .quaternaryLabel : .secondaryLabel
-        
-        collectionNameCell.detailTextLabel?.text = viewModel.uiCollectionPublishName
-        collectionNameCell.detailTextLabel?.textColor = viewModel.publishCollectionName.trimmed().isEmpty ? .quaternaryLabel : .secondaryLabel
-        
-        collectionDescriptionCell.detailTextLabel?.text = viewModel.uiCollectionDescription
-        collectionDescriptionCell.detailTextLabel?.textColor = viewModel.publishDescription.trimmed().isEmpty ? .quaternaryLabel : .secondaryLabel
-        
-        tagCell.detailTextLabel?.text = viewModel.uiCollectionTags
-        tagCell.detailTextLabel?.textColor = viewModel.publishTags.isEmpty ? .quaternaryLabel : .secondaryLabel
-        
-        primaryLanguageCell.detailTextLabel?.text = viewModel.uiCollectionPrimaryLanguage
-        primaryLanguageCell.detailTextLabel?.textColor = viewModel.publishPrimaryLanguage == nil ? .quaternaryLabel : .secondaryLabel
-        
-        secondaryLanguageCell.detailTextLabel?.text = viewModel.uiCollectionSecondaryLanguage
-        secondaryLanguageCell.detailTextLabel?.textColor = viewModel.publishSecondaryLanguage == nil ? .quaternaryLabel : .secondaryLabel
-        
-        includeNoteCell.toggle?.setOn(viewModel.includesNote, animated: true)
-        
-        let enablePublish = viewModel.hasValidInputs
-        let color = enablePublish ? UIColor.label : .tertiaryLabel
-        publishActionCell.uiView.text = viewModel.commitTitle
-        publishActionCell.isUserInteractionEnabled = enablePublish
-        publishActionCell.uiView.textColor = color
-        publishActionCell.layer.borderColor = color.cgColor
-        
-        tableView.reloadData()
-    }
-    
-    @objc private func handleToggleChanged(_ sender: UISwitch) {
-        guard sender === includeNoteCell.toggle else { return }
-        viewModel.includesNote = sender.isOn
     }
     
     
@@ -189,44 +144,16 @@ class PublishCollectionViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let rowKind = sections[indexPath.section].rows[indexPath.row]
-        
         switch rowKind {
-            
-        case .authorName:
-            authorNameCell.textLabel?.text = "Name"
-            return authorNameCell
-            
-        case .collectionName:
-            collectionNameCell.textLabel?.text = "Collection Name"
-            return collectionNameCell
-            
-        case .collection:
-            collectionCell.textLabel?.text = "Collection"
-            return collectionCell
-            
-        case .collectionDescription:
-            collectionDescriptionCell.textLabel?.text = "Description"
-            return collectionDescriptionCell
-            
-        case .collectionTag:
-            tagCell.textLabel?.text = "Tags"
-            return tagCell
-            
-        case .collectionPrimaryLanguage:
-            primaryLanguageCell.textLabel?.text = "Primary Language"
-            return primaryLanguageCell
-            
-        case .collectionSecondaryLanguage:
-            secondaryLanguageCell.textLabel?.text = "Secondary Language"
-            return secondaryLanguageCell
-            
-        case .includeNote:
-            includeNoteCell.textLabel?.text = "Include Card's Note"
-            publishActionCell.uiView.text = viewModel.commitTitle
-            return includeNoteCell
-            
-        case .publishAction:
-            return publishActionCell
+        case .authorName: return authorNameCell
+        case .collectionName: return collectionNameCell
+        case .collection: return collectionCell
+        case .collectionDescription: return collectionDescriptionCell
+        case .collectionTag: return tagCell
+        case .collectionPrimaryLanguage: return primaryLanguageCell
+        case .collectionSecondaryLanguage: return secondaryLanguageCell
+        case .includeNote: return includeNoteCell
+        case .publishAction: return publishActionCell
         }
     }
     
@@ -244,11 +171,68 @@ class PublishCollectionViewController: UITableViewController {
 }
 
 
+// MARK: - Setup
+
 extension PublishCollectionViewController {
     
     private func setupView() {
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
+    }
+    
+    private func setupViewModelObjectWillChange() {
+        viewModel.objectWillChange
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] _ in
+                self?.handleViewModelObjectWillChange()
+            })
+            .store(in: &cancellables)
+        
+        includeNoteCell.toggle!.addTarget(self, action: #selector(handleToggleChanged), for: .valueChanged)
+        
+        viewModel.objectWillChange.send()
+    }
+    
+    private func handleViewModelObjectWillChange() {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: viewModel.author.isValid ? UIColor.secondaryLabel : .red
+        ]
+        let attributeString = NSAttributedString(string: viewModel.uiAuthorName, attributes: attributes)
+        authorNameCell.detailTextLabel?.attributedText = attributeString
+        
+        collectionCell.detailTextLabel?.text = viewModel.uiCollectionName
+        collectionCell.detailTextLabel?.textColor = viewModel.publishCollection == nil ? .quaternaryLabel : .secondaryLabel
+        
+        collectionNameCell.detailTextLabel?.text = viewModel.uiCollectionPublishName
+        collectionNameCell.detailTextLabel?.textColor = viewModel.publishCollectionName.trimmed().isEmpty ? .quaternaryLabel : .secondaryLabel
+        
+        collectionDescriptionCell.detailTextLabel?.text = viewModel.uiCollectionDescription
+        collectionDescriptionCell.detailTextLabel?.textColor = viewModel.publishDescription.trimmed().isEmpty ? .quaternaryLabel : .secondaryLabel
+        
+        tagCell.detailTextLabel?.text = viewModel.uiCollectionTags
+        tagCell.detailTextLabel?.textColor = viewModel.publishTags.isEmpty ? .quaternaryLabel : .secondaryLabel
+        
+        primaryLanguageCell.detailTextLabel?.text = viewModel.uiCollectionPrimaryLanguage
+        primaryLanguageCell.detailTextLabel?.textColor = viewModel.publishPrimaryLanguage == nil ? .quaternaryLabel : .secondaryLabel
+        
+        secondaryLanguageCell.detailTextLabel?.text = viewModel.uiCollectionSecondaryLanguage
+        secondaryLanguageCell.detailTextLabel?.textColor = viewModel.publishSecondaryLanguage == nil ? .quaternaryLabel : .secondaryLabel
+        
+        includeNoteCell.toggle?.setOn(viewModel.includesNote, animated: true)
+        
+        let enablePublish = viewModel.hasValidInputs
+        let textColor = publishActionCell.uiView.textColor
+        publishActionCell.uiView.text = viewModel.commitTitle
+        publishActionCell.isUserInteractionEnabled = enablePublish
+        publishActionCell.uiView.textColor = textColor?.withAlphaComponent(enablePublish ? 1 : 0.4)
+        publishActionCell.layer.borderColor = textColor?.withAlphaComponent(enablePublish ? 1 : 0.4).cgColor
+        
+        tableView.reloadData()
+    }
+    
+    @objc private func handleToggleChanged(_ sender: UISwitch) {
+        guard sender === includeNoteCell.toggle else { return }
+        viewModel.includesNote = sender.isOn
     }
 }
 
@@ -274,14 +258,19 @@ struct PublishCollectionViewControllerWrapper: UIViewControllerRepresentable {
 
 
 struct Preview: PreviewProvider {
+    static let viewModel: PublishCollectionFormModel = {
+        let user = PublicUser(userID: "someID0409", username: "DLan", about: "This is a test user.")
+        let model = PublishCollectionFormModel(user: user)
+        return model
+    }()
     static var previews: some View {
         Group {
             NavigationView {
-                PublishCollectionViewControllerWrapper(viewModel: .init())
+                PublishCollectionViewControllerWrapper(viewModel: viewModel)
                     .navigationBarTitle("Publish Collection", displayMode: .inline)
             }
             NavigationView {
-                PublishCollectionViewControllerWrapper(viewModel: .init())
+                PublishCollectionViewControllerWrapper(viewModel: viewModel)
                     .navigationBarTitle("Publish Collection", displayMode: .inline)
             }
             .colorScheme(.dark)

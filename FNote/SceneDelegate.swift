@@ -20,12 +20,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
         
+        let recordManager = PublicRecordManager.shared
+        
         // create initial user if needed and cache the info for offline access.
-        PublicRecordManager.shared.createInitialPublicUserRecord { result in
-            guard case .success(let record) = result else { return }
-            let user = PublicUser(record: record)
-            AppCache.username = user.username
-            AppCache.userAbout = user.about
+        recordManager.createInitialPublicUserRecord { result in
+            switch result {
+            case .success(let record):
+                let user = PublicUser(record: record)
+                AppCache.cacheUser(user)
+                if AppCache.hasSetupCKSubscriptions == false {
+                    recordManager.setupPublicUserUpdateSubscriptions(userID: user.userID) { result in
+                        guard case .success = result else { return }
+                        AppCache.hasSetupCKSubscriptions = true
+                    }
+                }
+            case .failure(let error):
+                print("failed to create initial user: \(error)")
+            }
+            
         }
         
         // setup app state
