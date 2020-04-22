@@ -34,6 +34,7 @@ class PublishCollectionFormModel: ObservableObject {
     private(set) var publishState: PublishFormPublishState = .editing
     
     let publishTagsLimit = 4
+    let publishDescriptionLimit = 250
     
     var onCommit: (() -> Void)?
     
@@ -55,7 +56,7 @@ class PublishCollectionFormModel: ObservableObject {
     
     func validateInputs() {
         publishCollectionName = publishCollectionName.trimmed()
-        publishDescription = publishDescription.trimmed()
+        publishDescription = String(publishDescription.prefix(publishDescriptionLimit)).trimmed()
         publishTags = publishTags.map({ $0.trimmedComma() })
     }
 }
@@ -69,9 +70,9 @@ extension PublishCollectionFormModel {
         return author.isValid
             && publishCollection != nil
             && !publishCollectionName.isEmptyOrWhiteSpaces()
-            && !publishDescription.isEmptyOrWhiteSpaces()
             && !publishTags.isEmpty
             && isLanguagesValid
+            && publishDescription.trimmed().count <= publishDescriptionLimit
     }
     
     var isLanguagesValid: Bool {

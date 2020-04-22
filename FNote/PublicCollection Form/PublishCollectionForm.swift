@@ -23,7 +23,7 @@ struct PublishCollectionForm: View {
     @State private var languageTextFieldModel = BDModalTextFieldModel()
     @State private var filteredLanguages: [Language] = []
     
-    @State private var collectionDescriptionTextViewModel = ModalTextViewModel()
+    @State private var textViewModel = BDModalTextViewModel()
     
     let collectionViewModel = NoteCardCollectionCollectionViewModel()
     
@@ -127,7 +127,7 @@ extension PublishCollectionForm {
                 .eraseToAnyView()
         
         case .publishDescription:
-            return ModalTextView(viewModel: $collectionDescriptionTextViewModel)
+            return BDModalTextView(viewModel: $textViewModel)
                 .eraseToAnyView()
             
         case .publishCollection:
@@ -200,16 +200,16 @@ extension PublishCollectionForm {
     
     /// Edit publish collection's description.
     func beginEditCollectionDescription() {
-        collectionDescriptionTextViewModel.title = "Brief Description"
-        collectionDescriptionTextViewModel.text = viewModel.publishDescription
-        collectionDescriptionTextViewModel.disableEditing = false
-        collectionDescriptionTextViewModel.renderMarkdown = false
-        collectionDescriptionTextViewModel.isFirstResponder = true
+        textViewModel.title = "Brief Description"
+        textViewModel.text = viewModel.publishDescription
+        textViewModel.characterLimit = viewModel.publishDescriptionLimit
+        textViewModel.characterLimitColor = .secondary
+        textViewModel.isFirstResponder = true
         sheet.present(.publishDescription)
         
-        collectionDescriptionTextViewModel.onCommit = {
-            self.viewModel.publishDescription = self.collectionDescriptionTextViewModel.text
-            self.collectionDescriptionTextViewModel.isFirstResponder = false
+        textViewModel.onCommit = {
+            self.viewModel.publishDescription = self.textViewModel.text.trimmed()
+            self.textViewModel.isFirstResponder = false
             self.sheet.dismiss()
         }
     }

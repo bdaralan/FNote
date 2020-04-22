@@ -206,8 +206,14 @@ extension PublishCollectionViewController {
         collectionNameCell.detailTextLabel?.text = viewModel.uiCollectionPublishName
         collectionNameCell.detailTextLabel?.textColor = viewModel.publishCollectionName.trimmed().isEmpty ? .quaternaryLabel : .secondaryLabel
         
+        let descriptionColor: UIColor
+        if viewModel.publishDescription.count > viewModel.publishDescriptionLimit {
+            descriptionColor = .red
+        } else {
+            descriptionColor = viewModel.publishDescription.isEmpty ? .quaternaryLabel : .secondaryLabel
+        }
         collectionDescriptionCell.detailTextLabel?.text = viewModel.uiCollectionDescription
-        collectionDescriptionCell.detailTextLabel?.textColor = viewModel.publishDescription.trimmed().isEmpty ? .quaternaryLabel : .secondaryLabel
+        collectionDescriptionCell.detailTextLabel?.textColor = descriptionColor
         
         tagCell.detailTextLabel?.text = viewModel.uiCollectionTags
         tagCell.detailTextLabel?.textColor = viewModel.publishTags.isEmpty ? .quaternaryLabel : .secondaryLabel
