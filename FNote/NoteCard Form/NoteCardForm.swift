@@ -7,13 +7,14 @@
 //
 
 import SwiftUI
+import BDSwiftility
 
 
 struct NoteCardForm: View {
     
     @ObservedObject var viewModel: NoteCardFormModel
     
-    @State private var sheet: Sheet?
+    @State private var sheet = BDPresentationItem<Sheet>()
     @State private var modalTextViewModel = ModalTextViewModel()
     
     @State private var showSelectRelationshipCollection = false
@@ -43,7 +44,7 @@ struct NoteCardForm: View {
                 .onReceive(viewModel.$isSelectingTag, perform: handleOnReceiveSelectingTag)
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .sheet(item: $sheet, onDismiss: handleSheetDismissed, content: presentationSheet)
+        .sheet(item: $sheet.current, onDismiss: handleSheetDismissed, content: presentationSheet)
     }
 }
 
@@ -169,13 +170,13 @@ extension NoteCardForm {
         modalTextViewModel.isFirstResponder = true
         modalTextViewModel.onCommit = commitEditNote
         
-        sheet = .note
+        sheet.present(.note)
     }
     
     func commitEditNote() {
         viewModel.note = modalTextViewModel.text
         modalTextViewModel.isFirstResponder = false
-        sheet = nil
+        sheet.dismiss()
     }
 }
 

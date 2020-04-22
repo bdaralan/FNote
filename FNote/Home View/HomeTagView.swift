@@ -8,6 +8,7 @@
 
 import SwiftUI
 import BDUIKnit
+import BDSwiftility
 
 
 struct HomeTagView: View {
@@ -18,7 +19,7 @@ struct HomeTagView: View {
     
     @State private var trayViewModel = BDButtonTrayViewModel()
     
-    @State private var sheet: Sheet?
+    @State private var sheet = BDPresentationItem<Sheet>()
     @State private var selectedTagName = ""
     
     @State private var alert: Alert?
@@ -39,7 +40,7 @@ struct HomeTagView: View {
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .sheet(item: $sheet, content: presentationSheet)
+        .sheet(item: $sheet.current, content: presentationSheet)
         .alert(isPresented: $showAlert, content: { self.alert! })
         .onAppear(perform: setupOnAppear)
     }
@@ -50,8 +51,7 @@ struct HomeTagView: View {
 
 extension HomeTagView {
     
-    enum Sheet: Identifiable {
-        var id: Self { self }
+    enum Sheet: BDPresentationSheetItem {
         case modalTextField
         case noteCard
     }
@@ -63,7 +63,7 @@ extension HomeTagView {
                 .eraseToAnyView()
             
         case .noteCard:
-            let action = { self.sheet = nil }
+            let action = { self.sheet.dismiss() }
             let label = { Text("Done").bold() }
             let doneNavItem = Button(action: action, label: label)
             return NavigationView {
@@ -145,7 +145,7 @@ extension HomeTagView {
             textField.autocapitalizationType = .none
         }
         
-        sheet = .modalTextField
+        sheet.present(.modalTextField)
     }
     
     func commitCreateTag() {
@@ -153,7 +153,7 @@ extension HomeTagView {
         
         if name.isEmpty {
             textFieldModel.isFirstResponder = false
-            sheet = nil
+            sheet.dismiss()
             return
         }
         
@@ -181,7 +181,7 @@ extension HomeTagView {
         }
         
         textFieldModel.isFirstResponder = true
-        sheet = .modalTextField
+        sheet.present(.modalTextField)
     }
     
     func commitRenameTag(_ tag: Tag) {
@@ -189,7 +189,7 @@ extension HomeTagView {
         
         if name.isEmpty {
             textFieldModel.isFirstResponder = false
-            sheet = nil
+            sheet.dismiss()
             return
         }
         
@@ -252,7 +252,7 @@ extension HomeTagView {
         }
         
         selectedTagName = tag.name
-        sheet = .noteCard
+        sheet.present(.noteCard)
     }
     
     func handleContextMenuSelected(_ menu: TagCell.ContextMenu, tag: Tag) {
@@ -271,7 +271,7 @@ extension HomeTagView {
             viewModel.tags = appState.tags
             viewModel.updateSnapshot(animated: true)
             textFieldModel.isFirstResponder = false
-            sheet = nil
+            sheet.dismiss()
             
         case .updated(_, let childContext):
             childContext.quickSave()
@@ -280,7 +280,7 @@ extension HomeTagView {
             viewModel.tags = appState.tags
             viewModel.updateSnapshot(animated: true)
             textFieldModel.isFirstResponder = false
-            sheet = nil
+            sheet.dismiss()
             
         case .deleted(let childContext):
             childContext.quickSave()
@@ -288,11 +288,11 @@ extension HomeTagView {
             appState.fetchTags()
             viewModel.tags = appState.tags
             viewModel.updateSnapshot(animated: true)
-            sheet = nil
+            sheet.dismiss()
             
         case .unchanged:
             textFieldModel.isFirstResponder = false
-            sheet = nil
+            sheet.dismiss()
             
         case .failed: // TODO: inform user if needed
             textFieldModel.prompt = "Duplicate tag name!"

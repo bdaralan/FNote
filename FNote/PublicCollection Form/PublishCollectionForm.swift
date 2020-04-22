@@ -105,7 +105,7 @@ extension PublishCollectionForm {
 
 extension PublishCollectionForm {
     
-    enum Sheet: PresentationSheetItem {
+    enum Sheet: BDPresentationSheetItem {
         case collectionName
         case publishCollection
         case publishDescription

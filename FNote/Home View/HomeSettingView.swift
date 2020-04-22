@@ -8,13 +8,14 @@
 
 import SwiftUI
 import BDUIKnit
+import BDSwiftility
 
 
 struct HomeSettingView: View {
     
     @ObservedObject var preference: UserPreference
     
-    @State private var sheet: Sheet?
+    @State private var sheet = BDPresentationItem<Sheet>()
     
     @State private var textFieldModel = BDModalTextFieldModel()
         
@@ -40,7 +41,7 @@ struct HomeSettingView: View {
                 .edgesIgnoringSafeArea(.all)
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .sheet(item: $sheet, content: presentationSheet)
+        .sheet(item: $sheet.current, content: presentationSheet)
     }
 }
 
@@ -49,8 +50,7 @@ struct HomeSettingView: View {
 
 extension HomeSettingView {
     
-    enum Sheet: Identifiable {
-        var id: Self { self }
+    enum Sheet: BDPresentationSheetItem {
         case importFileList
         case exportFileNaming
         case onboardView
@@ -59,7 +59,7 @@ extension HomeSettingView {
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
         case .importFileList:
-            let done = { self.sheet = nil }
+            let done = { self.sheet.dismiss() }
             let label = { Text("Done").bold() }
             let doneNavItem = Button(action: done, label: label)
             return NavigationView {
@@ -75,7 +75,7 @@ extension HomeSettingView {
                 .eraseToAnyView()
             
         case .onboardView:
-            let done = { self.sheet = nil }
+            let done = { self.sheet.dismiss() }
             return OnboardView(viewModel: .init(), alwaysShowXButton: true, onDismiss: done)
                 .eraseToAnyView()
         }
@@ -84,7 +84,7 @@ extension HomeSettingView {
     func handleRowSelected(_ row: SettingViewController.Row) {
         switch row {
         case .welcome:
-            sheet = .onboardView
+            sheet.present(.onboardView)
         
         default: break
         }
@@ -103,7 +103,7 @@ extension HomeSettingView {
         textFieldModel.prompt = "Make a backup of the current data."
         textFieldModel.isFirstResponder = true
         textFieldModel.onReturnKey = commitExportData
-        sheet = .exportFileNaming
+        sheet.present(.exportFileNaming)
     }
     
     func commitExportData() {
@@ -117,11 +117,11 @@ extension HomeSettingView {
             }
         }
         
-        sheet = nil
+        sheet.dismiss()
     }
     
     func beginImportData() {
-        sheet = .importFileList
+        sheet.present(.importFileList)
     }
     
     func commitImportData(file: URL) {
@@ -130,7 +130,7 @@ extension HomeSettingView {
         result?.quickSave()
         result?.parent?.quickSave()
         UINotificationFeedbackGenerator().notificationOccurred(.success)
-        sheet = nil
+        sheet.dismiss()
     }
 }
 

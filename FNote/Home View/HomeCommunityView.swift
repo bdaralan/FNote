@@ -232,7 +232,7 @@ extension HomeCommunityView {
 
 extension HomeCommunityView {
     
-    enum Sheet: PresentationSheetItem {
+    enum Sheet: BDPresentationSheetItem {
         case publishCollection
         case user
     }

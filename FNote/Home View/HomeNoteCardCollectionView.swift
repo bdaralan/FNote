@@ -8,6 +8,7 @@
 
 import SwiftUI
 import BDUIKnit
+import BDSwiftility
 
 
 struct HomeNoteCardCollectionView: View {
@@ -16,7 +17,7 @@ struct HomeNoteCardCollectionView: View {
     
     @State private var viewModel = NoteCardCollectionCollectionViewModel()
         
-    @State private var sheet: Sheet?
+    @State private var sheet = BDPresentationItem<Sheet>()
     @State private var textFieldModel = BDModalTextFieldModel()
     
     @State private var collectionToDelete: NoteCardCollection?
@@ -36,7 +37,7 @@ struct HomeNoteCardCollectionView: View {
                 .edgesIgnoringSafeArea(.all)
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .sheet(item: $sheet, content: presentationSheet)
+        .sheet(item: $sheet.current, content: presentationSheet)
         .alert(item: $collectionToDelete, content: deleteNoteCardCollectionAlert)
         .onAppear(perform: setupOnAppear)
     }
@@ -47,8 +48,7 @@ struct HomeNoteCardCollectionView: View {
 
 extension HomeNoteCardCollectionView {
     
-    enum Sheet: Identifiable {
-        var id: Self { self }
+    enum Sheet: BDPresentationSheetItem {
         case modalTextField
     }
     
@@ -132,7 +132,7 @@ extension HomeNoteCardCollectionView {
         }
         
         textFieldModel.isFirstResponder = true
-        sheet = .modalTextField
+        sheet.present(.modalTextField)
     }
     
     func commitRenameNoteCardCollection(_ collection: NoteCardCollection) {
@@ -140,7 +140,7 @@ extension HomeNoteCardCollectionView {
         
         guard !name.isEmpty else {
             textFieldModel.isFirstResponder = false
-            sheet = nil
+            sheet.dismiss()
             return
         }
         
@@ -194,7 +194,7 @@ extension HomeNoteCardCollectionView {
             viewModel.collections = appState.collections
             viewModel.updateSnapshot(animated: true)
             textFieldModel.isFirstResponder = false
-            sheet = nil
+            sheet.dismiss()
             
         case .deleted(let childContext):
             guard let collectionID = collectionIDToDelete else {
@@ -217,7 +217,7 @@ extension HomeNoteCardCollectionView {
             
         case .unchanged:
             textFieldModel.isFirstResponder = false
-            sheet = nil
+            sheet.dismiss()
             
         case .failed: // TODO: inform user if needed
             textFieldModel.prompt = "Duplicate collection name!"

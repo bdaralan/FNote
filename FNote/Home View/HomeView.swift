@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import BDSwiftility
 
 
 struct HomeView: View {
@@ -16,7 +17,7 @@ struct HomeView: View {
     
     @State private var currentTab = Tab.card
     
-    @State private var sheet: Sheet?
+    @State private var sheet = BDPresentationItem<Sheet>()
     
     @State private var publicCollectionViewModel = CommunityViewModel.placeholder
     @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
@@ -50,7 +51,7 @@ struct HomeView: View {
             
         }
         .onAppear(perform: setupOnAppear)
-        .sheet(item: $sheet, onDismiss: handleSheetDismissed, content: presentationSheet)
+        .sheet(item: $sheet.current, onDismiss: handleSheetDismissed, content: presentationSheet)
         .alert(isPresented: $appState.showDidCopyFileAlert, content: { .DidCopyFileAlert(fileName: appState.copiedFileName) })
         .disabled(!appState.iCloudActive)
         .onReceive([currentTab].publisher.last(), perform: handleOnReceiveCurrentTab)
@@ -74,20 +75,19 @@ extension HomeView {
     func showOnboardIfNeeded() {
         guard AppCache.shouldShowOnboard else { return }
         onboardViewModel = .init()
-        sheet = .onboard
+        sheet.present(.onboard)
     }
     
     func dismissOnboard() {
         AppCache.shouldShowOnboard = false
-        sheet = nil
+        sheet.dismiss()
     }
 }
 
 
 extension HomeView {
     
-    enum Sheet: Identifiable {
-        var id: Self { self }
+    enum Sheet: BDPresentationSheetItem {
         case onboard
     }
     

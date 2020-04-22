@@ -9,6 +9,7 @@
 import SwiftUI
 import CoreData
 import BDUIKnit
+import BDSwiftility
 
 
 struct HomeNoteCardView: View {
@@ -20,7 +21,7 @@ struct HomeNoteCardView: View {
     
     @State private var collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     
-    @State private var sheet: Sheet?
+    @State private var sheet = BDPresentationItem<Sheet>()
     @State private var showSortOption = false
 
     @State private var trayViewModel = BDButtonTrayViewModel()
@@ -64,7 +65,7 @@ struct HomeNoteCardView: View {
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .sheet(item: $sheet, onDismiss: presentationSheetDismissed, content: presentationSheet)
+        .sheet(item: $sheet.current, onDismiss: presentationSheetDismissed, content: presentationSheet)
         .alert(isPresented: $presentAlert, content: { self.alert! })
         .onReceive(appState.currentNoteCardsWillChange, perform: handleOnReceiveCurrentNotesCardWillChange)
         .onAppear(perform: setupOnAppear)
@@ -76,8 +77,7 @@ struct HomeNoteCardView: View {
 
 extension HomeNoteCardView {
     
-    enum Sheet: Identifiable {
-        var id: Self { self }
+    enum Sheet: BDPresentationSheetItem {
         case noteCardForm
         case noteCardRelationship
         case noteCardTag
@@ -93,7 +93,7 @@ extension HomeNoteCardView {
                 .eraseToAnyView()
             
         case .noteCardRelationship:
-            let done = { self.sheet = nil }
+            let done = { self.sheet.dismiss() }
             let label = { Text("Done").bold() }
             let doneNavItem = Button(action: done, label: label)
             return NavigationView {
@@ -106,7 +106,7 @@ extension HomeNoteCardView {
             .eraseToAnyView()
             
         case .noteCardTag:
-            let done = { self.sheet = nil }
+            let done = { self.sheet.dismiss() }
             let label = { Text("Done").bold() }
             let doneNavItem = Button(action: done, label: label)
             return NavigationView {
@@ -124,7 +124,7 @@ extension HomeNoteCardView {
         case .noteCardCollection:
             let selected = handleNoteCardCollectionSelected
             let deleted = handleNoteCardCollectionDeleted
-            let done = { self.sheet = nil }
+            let done = { self.sheet.dismiss() }
             return HomeNoteCardCollectionView(
                 onSelected: selected,
                 onRenamed: nil,
@@ -211,7 +211,7 @@ extension HomeNoteCardView {
     func createTrayItems() -> [BDButtonTrayItem] {
         // show all collections
         let collections = BDButtonTrayItem(title: "Collections", systemImage: "rectangle.stack") { item in
-            self.sheet = .noteCardCollection
+            self.sheet.present(.noteCardCollection)
         }
         
         // create new collection
@@ -272,7 +272,7 @@ extension HomeNoteCardView {
         textFieldModel.prompt = "Name cannot contain comma ,"
         
         textFieldModel.onCancel = {
-            self.sheet = nil
+            self.sheet.dismiss()
         }
         
         textFieldModel.onReturnKey = {
@@ -280,7 +280,7 @@ extension HomeNoteCardView {
         }
         
         textFieldModel.isFirstResponder = true
-        sheet = .modalTextField
+        sheet.present(.modalTextField)
     }
     
     func commitCreateNoteCardCollection() {
@@ -288,7 +288,7 @@ extension HomeNoteCardView {
         
         guard !name.isEmpty else {
             textFieldModel.isFirstResponder = false
-            sheet = nil
+            sheet.dismiss()
             return
         }
         
@@ -307,7 +307,7 @@ extension HomeNoteCardView {
             appState.setCurrentCollection(collection)
             textFieldModel.isFirstResponder = false
             trayViewModel.expanded = false
-            sheet = nil
+            sheet.dismiss()
         
         case .failed:
             textFieldModel.prompt = "Duplicate collection name!"
@@ -338,7 +338,7 @@ extension HomeNoteCardView {
         viewModel.updateSnapshot(animated: false)
         
         trayViewModel.expanded = false
-        sheet = nil
+        sheet.dismiss()
     }
     
     func handleNoteCardCollectionDeleted(collectionID: String) {
@@ -458,7 +458,7 @@ extension HomeNoteCardView {
         formModel.navigationTitle = "New Card"
         formModel.presentWithKeyboard = true
         
-        sheet = .noteCardForm
+        sheet.present(.noteCardForm)
     }
     
     func commitCreateNoteCard() {
@@ -469,7 +469,7 @@ extension HomeNoteCardView {
     }
     
     func cancelCreateNoteCard() {
-        sheet = nil
+        sheet.dismiss()
     }
 }
 
@@ -517,11 +517,11 @@ extension HomeNoteCardView {
         formModel.nativePlaceholder = noteCard.native
         formModel.translationPlaceholder = noteCard.translation
         
-        sheet = .noteCardForm
+        sheet.present(.noteCardForm)
     }
     
     func cancelEditNoteCard() {
-        sheet = nil
+        sheet.dismiss()
     }
     
     func commitEditNoteCard(_ noteCard: NoteCard) {
@@ -585,12 +585,12 @@ extension HomeNoteCardView {
             
             setupDisplayRelationships(noteCard)
             relationshipViewModel = model
-            sheet = .noteCardRelationship
+            sheet.present(.noteCardRelationship)
         
         case .tag:
             tagViewModel = .init()
             tagViewModel?.tags = noteCard.tags.sortedByName()
-            sheet = .noteCardTag
+            sheet.present(.noteCardTag)
         
         case .favorite:
             noteCard.isFavorite.toggle()
@@ -604,9 +604,9 @@ extension HomeNoteCardView {
             textViewModel.title = "Note"
             textViewModel.text = noteCard.note
             textViewModel.onCommit = {
-                self.sheet = nil
+                self.sheet.dismiss()
             }
-            sheet = .noteCardNote
+            sheet.present(.noteCardNote)
         }
     }
 }
@@ -690,7 +690,7 @@ extension HomeNoteCardView {
             appState.fetchCurrentNoteCards()
             viewModel.noteCards = appState.currentNoteCards
             viewModel.updateSnapshot(animated: true)
-            sheet = nil
+            sheet.dismiss()
             
         case .updated(let noteCard, let childContext):
             childContext.quickSave()
@@ -700,7 +700,7 @@ extension HomeNoteCardView {
                 viewModel.noteCards = appState.currentNoteCards
                 viewModel.updateSnapshot(animated: true)
             }
-            sheet = nil
+            sheet.dismiss()
             
         case .deleted(let childContext):
             childContext.quickSave()
@@ -711,7 +711,7 @@ extension HomeNoteCardView {
             alert = nil
             
         case .failed, .unchanged: // TODO: show alert if needed
-            sheet = nil
+            sheet.dismiss()
             alert = nil
         }
     }

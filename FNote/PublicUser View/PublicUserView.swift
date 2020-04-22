@@ -8,13 +8,14 @@
 
 import SwiftUI
 import BDUIKnit
+import BDSwiftility
 
 
 struct PublicUserView: View {
     
     @ObservedObject var viewModel: PublicUserViewModel
     
-    @State private var sheet: Sheet?
+    @State private var sheet = BDPresentationItem<Sheet>()
     @State private var textFieldModel = BDModalTextFieldModel()
     @State private var textViewModel = BDModalTextViewModel()
 
@@ -26,7 +27,7 @@ struct PublicUserView: View {
                 .navigationBarItems(leading: cancelNavItem, trailing: trailingNavItems)
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .sheet(item: $sheet, content: presentationSheet)
+        .sheet(item: $sheet.current, content: presentationSheet)
         .disabled(viewModel.disableUserInteraction)
     }
 }
@@ -77,7 +78,7 @@ extension PublicUserView {
 
 extension PublicUserView {
     
-    enum Sheet: PresentationSheetItem {
+    enum Sheet: BDPresentationSheetItem {
         case textField
         case textView
     }
@@ -115,13 +116,13 @@ extension PublicUserView {
         
         textFieldModel.onCancel = {
             self.textFieldModel.isFirstResponder = false
-            self.sheet = nil
+            self.sheet.dismiss()
         }
         
         textFieldModel.onReturnKey = {
             defer {
                 self.textFieldModel.isFirstResponder = false
-                self.sheet = nil
+                self.sheet.dismiss()
             }
             let username = self.textFieldModel.text.trimmedUsername()
             guard username.isEmpty == false else { return }
@@ -129,7 +130,7 @@ extension PublicUserView {
         }
         
         textFieldModel.isFirstResponder = true
-        sheet = .textField
+        sheet.present(.textField)
     }
     
     func beginEditUserBio() {
@@ -141,11 +142,11 @@ extension PublicUserView {
             let bio = self.textViewModel.text.trimmed()
             self.viewModel.userBio = bio
             self.textViewModel.isFirstResponder = false
-            self.sheet = nil
+            self.sheet.dismiss()
         }
         
         textViewModel.isFirstResponder = true
-        sheet = .textView
+        sheet.present(.textView)
     }
 }
 
