@@ -168,17 +168,18 @@ class SearchField: ObservableObject {
     /// An action to perform when debounce text changed.
     var onSearchTextDebounced: ((String) -> Void)?
     
-    private var searchTextDebounceCancellable: AnyCancellable?
+    private var cancellables: [AnyCancellable] = []
     
     
     init() {
-        searchTextDebounceCancellable = $searchText
+        $searchText
             .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .sink(receiveValue: { newValue in
                 self.objectWillChange.send()
                 self.onSearchTextDebounced?(newValue)
             })
+            .store(in: &cancellables)
     }
     
     

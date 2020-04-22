@@ -1,5 +1,5 @@
 //
-//  FNCollectionViewCell.swift
+//  ObjectCollectionViewCell.swift
 //  FNote
 //
 //  Created by Dara Beng on 1/17/20.
@@ -9,7 +9,7 @@
 import UIKit
 
 
-class FNCollectionViewCell<Object>: UICollectionViewCell {
+class ObjectCollectionViewCell<Object>: UICollectionViewCell {
         
     private(set) var object: Object?
     

@@ -38,15 +38,6 @@ struct AppCache {
     
     // MARK: Public User
     
-    @BDStoredValue(in: .userDefaults, key: "kAppCache.userID", default: "")
-    static var userID: String
-    
-    @BDStoredValue(in: .userDefaults, key: "kAppCache.username", default: "")
-    static var username: String
-    
-    @BDStoredValue(in: .userDefaults, key: "kAppCache.userBio", default: "")
-    static var userBio: String
-    
     @BDStoredValue(in: .userDefaults, key: "kAppCache.publicUser", default: Data())
     static private var encodedPublicUser: Data
 }
@@ -55,12 +46,8 @@ struct AppCache {
 extension AppCache {
     
     static func cacheUser(_ user: PublicUser) {
-        userID = user.userID
-        username = user.username
-        userBio = user.about
-        if let data = try? JSONEncoder().encode(user) {
-            encodedPublicUser = data
-        }
+        guard let data = try? JSONEncoder().encode(user) else { return }
+        encodedPublicUser = data
     }
     
     static func cachedUser() -> PublicUser {
@@ -68,7 +55,8 @@ extension AppCache {
             let user = try JSONDecoder().decode(PublicUser.self, from: encodedPublicUser)
             return user
         } catch {
-            return PublicUser(userID: AppCache.userID, username: AppCache.username, about: AppCache.userBio)
+            print("⚠️ failed to encode PublicUser with error: \(error) ⚠️")
+            return PublicUser(userID: "", username: "", about: "")
         }
     }
 }

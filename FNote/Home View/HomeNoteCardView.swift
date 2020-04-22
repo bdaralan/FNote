@@ -97,7 +97,8 @@ extension HomeNoteCardView {
             let label = { Text("Done").bold() }
             let doneNavItem = Button(action: done, label: label)
             return NavigationView {
-                NoteCardFormRelationshipSelectionView(viewModel: relationshipViewModel!)
+                CollectionViewWrapper(viewModel: relationshipViewModel!)
+                    .edgesIgnoringSafeArea(.all)
                     .navigationBarTitle("Links", displayMode: .inline)
                     .navigationBarItems(trailing: doneNavItem)
             }

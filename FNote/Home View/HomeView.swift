@@ -18,7 +18,7 @@ struct HomeView: View {
     
     @State private var sheet: Sheet?
     
-    @State private var publicCollectionViewModel = PublicCollectionViewModel.placeholder
+    @State private var publicCollectionViewModel = CommunityViewModel.placeholder
     @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
     @State private var tagCollectionViewModel = TagCollectionViewModel()
     

@@ -31,10 +31,10 @@ class SearchFieldCollectionHeader: UICollectionReusableView {
     var onNoteActive: ((Bool) -> Void)?
     
     @Published private var debounceSearchText = ""
-    private var searchTextSubscription: AnyCancellable?
     
     @Published private(set) var isNoteActive = false
-    private var noteActiveSubscription: AnyCancellable?
+    
+    private var cancellables: [AnyCancellable] = []
     
     
     override init(frame: CGRect) {
@@ -123,20 +123,22 @@ extension SearchFieldCollectionHeader {
     }
     
     private func setupSearchTextSubscription() {
-        searchTextSubscription = $debounceSearchText
+        $debounceSearchText
             .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .sink(receiveValue: { [weak self] newValue in
                 self?.onSearchTextDebounced?(newValue)
             })
+            .store(in: &cancellables)
     }
     
     private func setupNoteActiveSubscription() {
-        noteActiveSubscription = $isNoteActive
+        $isNoteActive
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] isActive in
                 self?.noteButton.tintColor = isActive ? .appAccent : .secondaryLabel
             })
+            .store(in: &cancellables)
     }
     
     private func setupTargets() {

@@ -11,11 +11,12 @@ import UIKit
 
 class StaticTableViewCell: UITableViewCell {
     
+    private(set) var toggle: UISwitch?
+    
     var onLayoutSubviews: (() -> Void)?
     
-    private(set) var toggle: UISwitch?
         
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String? = nil) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     
@@ -27,6 +28,7 @@ class StaticTableViewCell: UITableViewCell {
         super.layoutSubviews()
         onLayoutSubviews?()
     }
+    
     
     func useToggle(_ use: Bool) {
         guard use else {

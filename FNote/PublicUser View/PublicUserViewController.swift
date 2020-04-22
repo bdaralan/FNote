@@ -15,17 +15,17 @@ class PublicUserViewController: UITableViewController {
     
     let viewModel: PublicUserViewModel
     
-    private var sections: [PublicUserSection] = [
+    private var sections: [Section] = [
         .init(header: "USERNAME", footer: nil, rows: [.username]),
         .init(header: "ABOUT", footer: nil, rows: [.userBio])
     ]
     
-    var onRowSelected: ((PublicUserSection.Row) -> Void)?
+    var onRowSelected: ((Row) -> Void)?
     
     private var cancellables = [AnyCancellable]()
     
     let usernameCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
@@ -42,7 +42,7 @@ class PublicUserViewController: UITableViewController {
     }()
     
     let saveChangesCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .default, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .default)
         cell.textLabel?.text = "Save Changes"
         cell.textLabel?.textColor = .appAccent
         cell.textLabel?.textAlignment = .center
@@ -156,18 +156,18 @@ class PublicUserViewController: UITableViewController {
 
 extension PublicUserViewController {
     
-    struct PublicUserSection {
+    struct Section {
         
         let header: String?
         
         let footer: String?
         
         let rows: [Row]
-        
-        enum Row {
-            case username
-            case userBio
-        }
+    }
+    
+    enum Row {
+        case username
+        case userBio
     }
 }
 
@@ -179,7 +179,7 @@ struct PublicUserViewControllerWrapper: UIViewControllerRepresentable {
     
     @ObservedObject var viewModel: PublicUserViewModel
     
-    var onRowSelected: ((PublicUserViewController.PublicUserSection.Row) -> Void)?
+    var onRowSelected: ((PublicUserViewController.Row) -> Void)?
     
     func makeUIViewController(context: Context) -> PublicUserViewController {
         let controller = PublicUserViewController(viewModel: viewModel)

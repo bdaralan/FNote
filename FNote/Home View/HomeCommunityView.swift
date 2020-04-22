@@ -18,7 +18,7 @@ struct HomeCommunityView: View {
     
     @EnvironmentObject private var appState: AppState
     
-    var viewModel: PublicCollectionViewModel
+    var viewModel: CommunityViewModel
     
     @State private var trayViewModel = BDButtonTrayViewModel()
     
@@ -365,7 +365,7 @@ extension HomeCommunityView {
 
 
 struct HomeCommunityView_Previews: PreviewProvider {
-    static var viewModel = PublicCollectionViewModel()
+    static var viewModel = CommunityViewModel()
     static var previews: some View {
         HomeCommunityView(viewModel: viewModel)
             .environment(\.horizontalSizeClass, .regular)

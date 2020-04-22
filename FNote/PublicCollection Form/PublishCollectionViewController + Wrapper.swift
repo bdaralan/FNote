@@ -31,7 +31,7 @@ class PublishCollectionViewController: UITableViewController {
     // MARK: Cell
     
     let authorNameCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.textLabel?.text = "Author"
         cell.isUserInteractionEnabled = false
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
@@ -39,7 +39,7 @@ class PublishCollectionViewController: UITableViewController {
     }()
     
     let collectionNameCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.textLabel?.text = "Collection Name"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
@@ -47,7 +47,7 @@ class PublishCollectionViewController: UITableViewController {
     }()
     
     let collectionCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.textLabel?.text = "Collection"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
@@ -55,7 +55,7 @@ class PublishCollectionViewController: UITableViewController {
     }()
     
     let collectionDescriptionCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.textLabel?.text = "Description"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
@@ -63,7 +63,7 @@ class PublishCollectionViewController: UITableViewController {
     }()
     
     let tagCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.textLabel?.text = "Tags"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
@@ -71,7 +71,7 @@ class PublishCollectionViewController: UITableViewController {
     }()
     
     let primaryLanguageCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.textLabel?.text = "Primary Language"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
@@ -79,7 +79,7 @@ class PublishCollectionViewController: UITableViewController {
     }()
     
     let secondaryLanguageCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.textLabel?.text = "Secondary Language"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
@@ -87,7 +87,7 @@ class PublishCollectionViewController: UITableViewController {
     }()
     
     let includeNoteCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .default, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .default)
         cell.textLabel?.text = "Include Card's Note"
         cell.useToggle(true)
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle

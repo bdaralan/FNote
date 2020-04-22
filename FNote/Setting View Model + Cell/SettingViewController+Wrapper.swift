@@ -14,13 +14,13 @@ class SettingViewController: UITableViewController {
     
     let preference: UserPreference
         
-    let sections: [SettingSection] = [
+    let sections: [Section] = [
         .init(header: "APPEARANCE", footer: nil, rows: [.appearanceDark, .appearanceLight, .appearanceSystem]),
         .init(header: "CARD", footer: "If soft break is off, to create a new line, two return keys are required. Otherwise, the sentences continue", rows: [.generalKeyboardUsage, .markdownNoteToggle, .markdownSoftBreakToggle]),
         .init(header: "ABOUT", footer: nil, rows: [.version, .welcome])
     ]
     
-    var onRowSelected: ((SettingSection.Row) -> Void)?
+    var onRowSelected: ((Row) -> Void)?
     
     private var cancellables: [AnyCancellable] = []
     
@@ -30,7 +30,7 @@ class SettingViewController: UITableViewController {
     // MARK: Static Cell
     
     let appearanceDarkCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .default, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .default)
         cell.textLabel?.text = "Dark"
         cell.tintColor = .label
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
@@ -38,7 +38,7 @@ class SettingViewController: UITableViewController {
     }()
     
     let appearanceLightCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .default, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .default)
         cell.textLabel?.text = "Light"
         cell.tintColor = .label
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
@@ -46,7 +46,7 @@ class SettingViewController: UITableViewController {
     }()
     
     let appearanceSystemCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .default, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .default)
         cell.textLabel?.text = "System"
         cell.accessoryType = .checkmark
         cell.tintColor = .label
@@ -55,7 +55,7 @@ class SettingViewController: UITableViewController {
     }()
     
     let markdownNoteToggleCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .default, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .default)
         cell.textLabel?.text = "Use Markdown in Note"
         cell.useToggle(true)
         cell.onLayoutSubviews = cell.applyRowStyle
@@ -64,7 +64,7 @@ class SettingViewController: UITableViewController {
     }()
     
     let markdownSoftBreakToggleCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .default, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .default)
         cell.textLabel?.text = "Use Soft Break"
         cell.useToggle(true)
         cell.onLayoutSubviews = cell.applyRowStyle
@@ -73,7 +73,7 @@ class SettingViewController: UITableViewController {
     }()
     
     let versionCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.textLabel?.text = "Version"
         cell.detailTextLabel?.text = Bundle.main.appVersion
         cell.onLayoutSubviews = cell.applyRowStyle
@@ -82,14 +82,14 @@ class SettingViewController: UITableViewController {
     }()
     
     let welcomeCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.textLabel?.text = "See Welcome Pages"
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
     let generalKeyboardToggleCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .default, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .default)
         cell.textLabel?.text = "Show General Keyboard Usage"
         cell.useToggle(true)
         cell.onLayoutSubviews = cell.applyRowStyle
@@ -250,13 +250,16 @@ extension SettingViewController {
 }
 
 
-struct SettingSection {
+extension SettingViewController {
     
-    let header: String?
-    
-    let footer: String?
-    
-    let rows: [Row]
+    struct Section {
+        
+        let header: String?
+        
+        let footer: String?
+        
+        let rows: [Row]
+    }
     
     enum Row {
         case appearanceDark
@@ -280,7 +283,7 @@ struct SettingViewControllerWrapper: UIViewControllerRepresentable {
     
     var preference: UserPreference
     
-    var onRowSelected: ((SettingSection.Row) -> Void)?
+    var onRowSelected: ((SettingViewController.Row) -> Void)?
     
     func makeUIViewController(context: Context) -> SettingViewController {
         let controller = SettingViewController(preference: preference)

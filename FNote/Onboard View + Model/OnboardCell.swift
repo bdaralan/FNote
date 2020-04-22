@@ -9,7 +9,7 @@
 import UIKit
 
 
-class OnboardCell: FNCollectionViewCell<OnboardPage> {
+class OnboardCell: ObjectCollectionViewCell<OnboardPage> {
     
     let titleLabel = UILabel(text: "Title")
     let imageView = UIImageView()

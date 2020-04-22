@@ -11,7 +11,7 @@ import CoreData
 import Combine
 
 
-class ManagedObjectCollectionViewCell<Object>: FNCollectionViewCell<Object> where Object: NSManagedObject {
+class ManagedObjectCollectionViewCell<Object>: ObjectCollectionViewCell<Object> where Object: NSManagedObject {
     
     /// A subscription to reload cell on received `objectWillChange`.
     private(set) var subscription: AnyCancellable?

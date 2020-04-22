@@ -58,7 +58,7 @@ class NoteCardFormController: UITableViewController {
     }()
     
     let collectionCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
@@ -72,7 +72,7 @@ class NoteCardFormController: UITableViewController {
     }()
     
     let favoriteCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.imageView?.image = createRowIcon(imageName: "star")
         cell.imageView?.contentMode = .scaleAspectFill
         cell.imageView?.tintColor = .label
@@ -84,7 +84,7 @@ class NoteCardFormController: UITableViewController {
     }()
     
     let relationshipCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.imageView?.image = createRowIcon(imageName: "rectangle.on.rectangle")
         cell.imageView?.contentMode = .scaleAspectFit
         cell.imageView?.tintColor = .label
@@ -95,7 +95,7 @@ class NoteCardFormController: UITableViewController {
     }()
     
     let tagCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.imageView?.image = createRowIcon(imageName: "tag")
         cell.imageView?.contentMode = .scaleAspectFit
         cell.imageView?.tintColor = .label
@@ -106,7 +106,7 @@ class NoteCardFormController: UITableViewController {
     }()
     
     let noteCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = StaticTableViewCell(style: .value1)
         cell.imageView?.image = createRowIcon(imageName: "doc.plaintext")
         cell.imageView?.contentMode = .scaleAspectFit
         cell.imageView?.tintColor = .label

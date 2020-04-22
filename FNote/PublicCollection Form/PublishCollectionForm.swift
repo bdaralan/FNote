@@ -8,13 +8,14 @@
 
 import SwiftUI
 import BDUIKnit
+import BDSwiftility
 
 
 struct PublishCollectionForm: View {
     
     @ObservedObject var viewModel: PublishCollectionFormModel
     
-    @State private var sheet = PresentingSheet<Sheet>()
+    @State private var sheet = BDPresentationItem<Sheet>()
     @State private var alert: Alert?
     @State private var presentAlert = false
     
@@ -37,7 +38,7 @@ struct PublishCollectionForm: View {
                 .edgesIgnoringSafeArea(.bottom)
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .sheet(item: $sheet.presenting, content: presentationSheet)
+        .sheet(item: $sheet.current, content: presentationSheet)
         .alert(isPresented: $presentAlert, content: { self.alert! })
         .onAppear(perform: setupOnAppear)
     }

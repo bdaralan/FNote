@@ -1,5 +1,5 @@
 //
-//  PublicCollectionViewModel.swift
+//  CommunityViewModel.swift
 //  FNote
 //
 //  Created by Dara Beng on 2/27/20.
@@ -9,7 +9,7 @@
 import UIKit
 
 
-class PublicCollectionViewModel: NSObject, CollectionViewCompositionalDataSource {
+class CommunityViewModel: NSObject, CollectionViewCompositionalDataSource {
     
     typealias DataSourceSection = PublicSection
     typealias DataSourceItem = PublicSectionItem
@@ -26,7 +26,7 @@ class PublicCollectionViewModel: NSObject, CollectionViewCompositionalDataSource
 }
 
 
-extension PublicCollectionViewModel {
+extension CommunityViewModel {
 
     func updateSection(with section: PublicSection) {
         if let index = sections.firstIndex(where: { $0.type == section.type }) {
@@ -41,7 +41,7 @@ extension PublicCollectionViewModel {
 
 // MARK: - Wrapper
 
-extension PublicCollectionViewModel: CollectionViewWrapperViewModel {
+extension CommunityViewModel: CollectionViewWrapperViewModel {
     
     func setupCollectionView(_ collectionView: UICollectionView) {
         setupDataSource(with: collectionView)
@@ -52,7 +52,7 @@ extension PublicCollectionViewModel: CollectionViewWrapperViewModel {
 
 // MARK: - Data Source
 
-extension PublicCollectionViewModel {
+extension CommunityViewModel {
     
     func setupDataSource(with collectionView: UICollectionView) {
         collectionView.collectionViewLayout = createCompositionalLayout()
@@ -120,7 +120,7 @@ extension PublicCollectionViewModel {
 
 // MARK: - Create Layout
 
-extension PublicCollectionViewModel {
+extension CommunityViewModel {
     
     private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { section, environment in
@@ -235,7 +235,7 @@ extension PublicCollectionViewModel {
 
 // MARK: - Delegate
 
-extension PublicCollectionViewModel: UICollectionViewDelegate {
+extension CommunityViewModel: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
@@ -252,7 +252,7 @@ extension PublicCollectionViewModel: UICollectionViewDelegate {
 
 // MARK: - Fetch Method
 
-extension PublicCollectionViewModel {
+extension CommunityViewModel {
     
     func fetchData(completedWithError: ((Error?) -> Void)?) {
         let updateSnapshot: ((Error?) -> Void) = { error in
@@ -408,10 +408,10 @@ enum PublicSectionAction: CaseIterable {
 
 // MARK: - Sample
 
-extension PublicCollectionViewModel {
+extension CommunityViewModel {
     
-    static let sample: PublicCollectionViewModel = {
-        let model = PublicCollectionViewModel()
+    static let sample: CommunityViewModel = {
+        let model = CommunityViewModel()
         model.sections = [
             .init(type: .recentCollection, title: "Recent Collections", items: [
                 .init(itemID: "01", object: PublicCollection(collectionID: "01", authorID: "", name: "Korean 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "KOR", secondaryLanguage: "ENG", tags: ["Food", "Greeting", "Travel"], cardsCount: 49)),
@@ -427,8 +427,8 @@ extension PublicCollectionViewModel {
         return model
     }()
     
-    static var placeholder: PublicCollectionViewModel {
-        let model = PublicCollectionViewModel()
+    static var placeholder: CommunityViewModel {
+        let model = CommunityViewModel()
         
         let collections = (1...9).map { number -> PublicSectionItem in
             let collectionID = "collection\(number)"

@@ -81,7 +81,7 @@ extension HomeSettingView {
         }
     }
     
-    func handleRowSelected(_ row: SettingSection.Row) {
+    func handleRowSelected(_ row: SettingViewController.Row) {
         switch row {
         case .welcome:
             sheet = .onboardView

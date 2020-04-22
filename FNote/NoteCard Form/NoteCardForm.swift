@@ -105,8 +105,12 @@ extension NoteCardForm {
     }
     
     var selectCollectionNavigationLink: some View {
-        NavigationLink(
-            destination: NoteCardFormCollectionSelectionView(viewModel: selectCollectionViewModel),
+        let destination = CollectionViewWrapper(viewModel: selectCollectionViewModel)
+            .navigationBarTitle("Collection")
+            .edgesIgnoringSafeArea(.all)
+        
+        return NavigationLink(
+            destination: destination,
             isActive: $viewModel.isSelectingCollection,
             label: EmptyView.init
         )
@@ -138,7 +142,8 @@ extension NoteCardForm {
             action: beginChooseRelationshipCollection
         )
         
-        let destinationView = NoteCardFormRelationshipSelectionView(viewModel: selectRelationshipViewModel)
+        let destinationView = CollectionViewWrapper(viewModel: selectRelationshipViewModel)
+            .edgesIgnoringSafeArea(.all)
             .navigationBarTitle(viewModel.relationshipSelectedCollection?.name ?? "???")
             .navigationBarItems(trailing: chooseCollectionNavItem)
             .sheet(isPresented: $showSelectRelationshipCollection, content: { chooseCollectionView })

@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 
-class PublicCollectionCell: FNCollectionViewCell<PublicCollection> {
+class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
     
     let titleLabel = UILabel(text: "Title")
     let descriptionTextView = UITextView()
@@ -26,7 +26,7 @@ class PublicCollectionCell: FNCollectionViewCell<PublicCollection> {
     
     @Published var voted = false
     
-    private var voteSubscription: AnyCancellable?
+    private var cancellables: [AnyCancellable] = []
     
     
     override func reload(with object: PublicCollection) {
@@ -55,7 +55,7 @@ class PublicCollectionCell: FNCollectionViewCell<PublicCollection> {
     }
     
     private func setupVoteSubscription() {
-        voteSubscription = $voted
+        $voted
             .eraseToAnyPublisher()
             .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
@@ -66,6 +66,7 @@ class PublicCollectionCell: FNCollectionViewCell<PublicCollection> {
                 self.voteButton.setImage(image, for: .normal)
                 self.voteButton.tintColor = voted ? .label : .secondaryLabel
             })
+            .store(in: &cancellables)
     }
     
     override func layoutSubviews() {

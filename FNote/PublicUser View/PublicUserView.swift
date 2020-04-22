@@ -93,7 +93,7 @@ extension PublicUserView {
         }
     }
     
-    func handleRowSelected(_ row: PublicUserViewController.PublicUserSection.Row) {
+    func handleRowSelected(_ row: PublicUserViewController.Row) {
         switch row {
         case .username: beginEditUsername()
         case .userBio: beginEditUserBio()
