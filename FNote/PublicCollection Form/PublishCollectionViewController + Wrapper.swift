@@ -16,9 +16,9 @@ class PublishCollectionViewController: UITableViewController {
     
     let viewModel: PublishCollectionFormModel
     
-    var onRowSelected: ((PublishFormSection.Row) -> Void)?
+    var onRowSelected: ((Row) -> Void)?
     
-    let sections: [PublishFormSection] = [
+    let sections: [Section] = [
         .init(header: nil, footer: nil, rows: [.authorName]),
         .init(header: "COLLECTION TO PUBLISH", footer: nil, rows: [.collection]),
         .init(header: "PUBLISH DETAILS", footer: nil, rows: [.collectionName, .collectionDescription, .collectionTag, .collectionPrimaryLanguage, .collectionSecondaryLanguage]),
@@ -243,13 +243,40 @@ extension PublishCollectionViewController {
 }
 
 
+// MARK: - Section & State Enum
+
+extension PublishCollectionViewController {
+    
+    struct Section {
+        
+        let header: String?
+        
+        let footer: String?
+        
+        let rows: [Row]
+    }
+    
+    enum Row {
+        case authorName
+        case collection
+        case collectionName
+        case collectionDescription
+        case collectionTag
+        case collectionPrimaryLanguage
+        case collectionSecondaryLanguage
+        case includeNote
+        case publishAction
+    }
+}
+
+
  // MARK: - Wrapper
 
 struct PublishCollectionViewControllerWrapper: UIViewControllerRepresentable {
     
     @ObservedObject var viewModel: PublishCollectionFormModel
     
-    var onRowSelected: ((PublishFormSection.Row) -> Void)?
+    var onRowSelected: ((PublishCollectionViewController.Row) -> Void)?
     
     func makeUIViewController(context: Context) -> PublishCollectionViewController {
         let controller = PublishCollectionViewController(viewModel: viewModel)
@@ -282,35 +309,4 @@ struct Preview: PreviewProvider {
             .colorScheme(.dark)
         }
     }
-}
-
-
-// MARK: - Model & Enum
-
-struct PublishFormSection {
-    
-    let header: String?
-    
-    let footer: String?
-    
-    let rows: [Row]
-    
-    enum Row {
-        case authorName
-        case collection
-        case collectionName
-        case collectionDescription
-        case collectionTag
-        case collectionPrimaryLanguage
-        case collectionSecondaryLanguage
-        case includeNote
-        case publishAction
-    }
-}
-
-enum PublishFormPublishState {
-    case editing
-    case submitting
-    case published
-    case rejected
 }

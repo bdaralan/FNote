@@ -32,6 +32,7 @@ class CoreDataStack: NSObject {
     private override init() {
         // use CloudKit container
         persistentContainer = NSPersistentCloudKitContainer(name: "FNote")
+        historyTracker = CoreDataStackHistoryTracker(historyTokenDataKey: "CoreDataStack.HistoryTracker")
         
         // turn on history tracking and listen to remote change notification
         let storeDescription = persistentContainer.persistentStoreDescriptions.first!
@@ -44,15 +45,14 @@ class CoreDataStack: NSObject {
             if let error = error { fatalError("could not load persistent store with error: \(error)") }
         }
         
-        historyTracker = CoreDataStackHistoryTracker(historyTokenDataKey: "CoreDataStack.HistoryTracker")
-        
         super.init()
+        
         AppCache.ubiquityIdentityToken = FileManager.default.ubiquityIdentityToken
         setupUserIdentityChangeNotification()
         
         // delete old history
         if let lastToken = historyTracker.lastToken {
-            historyTracker.deleteHistory(before: lastToken, context: mainContext)
+            historyTracker.deleteHistory(before: lastToken, afterDays: 30, in: mainContext)
         }
     }
 }

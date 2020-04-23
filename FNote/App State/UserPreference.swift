@@ -47,16 +47,16 @@ class UserPreference: ObservableObject {
     var noteCardSortOptionAscending: Bool
     
     let noteCardSortOptionKey = key("noteCardSortOption")
-    var noteCardSortOption: NoteCardSortOption {
+    var noteCardSortOption: NoteCardSortField {
         set {
             let storage = BDStorableValueSystemStorage.userDefaults.object
             storage.setValue(newValue.rawValue, forKey: noteCardSortOptionKey)
         }
         get {
             let storage = BDStorableValueSystemStorage.userDefaults.object
-            let defaultValue = NoteCardSortOption.translation
+            let defaultValue = NoteCardSortField.translation
             let rawValue = storage.value(forKey: noteCardSortOptionKey) as? Int ?? defaultValue.rawValue
-            return NoteCardSortOption(rawValue: rawValue) ?? defaultValue
+            return NoteCardSortField(rawValue: rawValue) ?? defaultValue
         }
     }
     

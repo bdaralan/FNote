@@ -20,8 +20,8 @@ class NoteCard: NSManagedObject, Identifiable, ObjectValidatable {
     @NSManaged var isFavorite: Bool
     @NSManaged var note: String
     @NSManaged var collection: NoteCardCollection?
-    @NSManaged var relationships: Set<NoteCard>
-    @NSManaged var tags: Set<Tag>
+    @NSManaged private(set) var relationships: Set<NoteCard>
+    @NSManaged private(set) var tags: Set<Tag>
     
     @NSManaged private var formalityValue: Int64
     
@@ -87,8 +87,13 @@ extension NoteCard {
     }
     
     func setRelationships(_ relationships: Set<NoteCard>) {
-        self.relationships = relationships
-        self.relationships.remove(self)
+        if relationships.contains(self) {
+            var relationships = relationships
+            relationships.remove(self)
+            self.relationships = relationships
+        } else {
+            self.relationships = relationships
+        }
     }
 }
 
@@ -114,45 +119,20 @@ extension NoteCard {
         return request
     }
     
-    /// A request to fetch favorited note cards in a collection.
-    /// - Parameter uuid: The collection UUID. The default is `nil` means fetch all favorited note cards.
-    static func requestFavoriteCards(forCollectionUUID uuid: String? = nil) -> NSFetchRequest<NoteCard> {
-        let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        let isFavorited = #keyPath(NoteCard.isFavorite)
-        let translation = #keyPath(NoteCard.translation)
-        let collectionUUID = #keyPath(NoteCard.collection.uuid)
-        
-        var predicates = [NSPredicate]()
-        
-        if let uuid = uuid, !uuid.isEmpty {
-            let matchCollection = NSPredicate(format: "\(collectionUUID) == %@", uuid)
-            predicates.append(matchCollection)
-        }
-        
-        let matchFavorited = NSPredicate(format: "\(isFavorited) == true")
-        predicates.append(matchFavorited)
-        
-        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        request.sortDescriptors = [.init(key: translation, ascending: true)]
-        return request
-    }
-    
     /// A request to fetch note cards in a collection.
     /// - Parameters:
     ///   - uuid: The collection UUID.
     ///   - predicate: A predicate to match either the `translation` or `native`.
-    static func requestNoteCards(forCollectionUUID uuid: String, sortBy: NoteCardSortOption = .translation, ascending: Bool = true) -> NSFetchRequest<NoteCard> {
-        guard !uuid.trimmed().isEmpty else { return NoteCard.requestNone() }
-        
-        let collectionUUID = #keyPath(NoteCard.collection.uuid)
-        let native = #keyPath(NoteCard.native)
-        let translation = #keyPath(NoteCard.translation)
+    static func requestNoteCards(collectionUUID: String, sortBy: NoteCardSortField = .translation, ascending: Bool = true) -> NSFetchRequest<NoteCard> {
+        let collectionUUIDField = #keyPath(NoteCard.collection.uuid)
+        let nativeField = #keyPath(NoteCard.native)
+        let translationField = #keyPath(NoteCard.translation)
         
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        request.predicate = NSPredicate(format: "\(collectionUUID) == %@", uuid)
+        request.predicate = NSPredicate(format: "\(collectionUUIDField) == %@", collectionUUID)
         
-        let sortByNative = NSSortDescriptor(key: native, ascending: ascending)
-        let sortByTranslation = NSSortDescriptor(key: translation, ascending: ascending)
+        let sortByNative = NSSortDescriptor(key: nativeField, ascending: ascending)
+        let sortByTranslation = NSSortDescriptor(key: translationField, ascending: ascending)
         
         switch sortBy {
         case .native:
@@ -171,24 +151,24 @@ extension NoteCard {
     ///   - searchText: The search text.
     ///   - scopes: The search scopes.
     /// - Returns: The fetch request. The request will fetch none if any of the parameters are empty.
-    static func requestNoteCards(forCollectionUUID uuid: String, searchText: String = "", scopes: [NoteCardSearchScope]) -> NSFetchRequest<NoteCard> {
-        guard !uuid.trimmed().isEmpty, !searchText.trimmed().isEmpty, !scopes.isEmpty else { return NoteCard.requestNone() }
+    static func requestNoteCards(collectionUUID: String, searchText: String = "", searchFields: [NoteCardSearchField]) -> NSFetchRequest<NoteCard> {
+        guard searchText.trimmed().isEmpty == false, searchFields.isEmpty == false else { return NoteCard.requestNone() }
         
         // create predicate for the search scopes
-        var scopePredicates = [NSPredicate]()
-        for scope in scopes {
-            let predicate = NSPredicate(format: "\(scope.keyPath) CONTAINS[c] %@", searchText)
-            scopePredicates.append(predicate)
+        var fieldPredicates = [NSPredicate]()
+        for field in searchFields {
+            let predicate = NSPredicate(format: "\(field.rawValue) CONTAINS[c] %@", searchText)
+            fieldPredicates.append(predicate)
         }
         
         // create predicate to match collection uuid
-        let collectionUUID = #keyPath(NoteCard.collection.uuid)
-        let matchCollection = NSPredicate(format: "\(collectionUUID) == %@", uuid)
+        let collectionUUIDField = #keyPath(NoteCard.collection.uuid)
+        let matchCollection = NSPredicate(format: "\(collectionUUIDField) == %@", collectionUUID)
         
         // combine the predicates
         // OR the scopes then AND with the match collection's uuid
-        let scopeCompoundPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: scopePredicates)
-        let allPredicates = [matchCollection, scopeCompoundPredicate]
+        let fieldCompoundPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: fieldPredicates)
+        let allPredicates = [matchCollection, fieldCompoundPredicate]
         let requestPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: allPredicates)
         
         // create the request
@@ -241,15 +221,4 @@ extension NoteCard {
             }
         }
     }
-}
-
-
-extension NoteCard {
-    
-    static let sample: NoteCard = {
-        let card = NoteCard(context: .sample)
-        card.native = "Native"
-        card.translation = "Translation"
-        return card
-    }()
 }

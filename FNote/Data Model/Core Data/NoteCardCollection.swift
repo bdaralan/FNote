@@ -58,45 +58,11 @@ extension NoteCardCollection {
         return NSFetchRequest<NoteCardCollection>(entityName: "NoteCardCollection")
     }
     
-    static func requestCollection(withUUID uuid: String) -> NSFetchRequest<NoteCardCollection> {
-        let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
-        let collectionUUID = #keyPath(NoteCardCollection.uuid)
-        request.predicate = .init(format: "\(collectionUUID) == %@", uuid)
-        request.sortDescriptors = []
-        return request
-    }
-    
     static func requestAllCollections() -> NSFetchRequest<NoteCardCollection> {
         let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
-        let collectionName = #keyPath(NoteCardCollection.name)
+        let nameField = #keyPath(NoteCardCollection.name)
         request.predicate = .init(value: true)
-        request.sortDescriptors = [.init(key: collectionName, ascending: true)]
+        request.sortDescriptors = [.init(key: nameField, ascending: true)]
         return request
     }
-}
-
-
-extension NoteCardCollection {
-    
-    /// Check if a name already exists in the context.
-    /// - Parameters:
-    ///   - name: The name to check. The name is case sensitive.
-    ///   - context: The context to check.
-    /// - Returns: `true` if the name is in the context or if failed to check.
-    static func isNameExisted(name: String, in context: NSManagedObjectContext) -> Bool {
-        let request = requestAllCollections()
-        guard let collections = try? context.fetch(request) else { return true }
-        let names = collections.map({ $0.name })
-        return names.contains(name)
-    }
-}
-
-
-extension NoteCardCollection {
-    
-    static let sample: NoteCardCollection = {
-        let collection = NoteCardCollection(context: .sample)
-        collection.name = "Sample Collection"
-        return collection
-    }()
 }

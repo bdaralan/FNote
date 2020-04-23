@@ -31,7 +31,7 @@ class PublishCollectionFormModel: ObservableObject {
     
     @Published var commitTitle = "PUBLISH"
     
-    private(set) var publishState: PublishFormPublishState = .editing
+    private(set) var publishState: PublishState = .editing
     
     let publishTagsLimit = 4
     let publishDescriptionLimit = 250
@@ -40,18 +40,18 @@ class PublishCollectionFormModel: ObservableObject {
     
     var onCancel: (() -> Void)?
         
-    var onPublishStateChanged: ((PublishFormPublishState) -> Void)?
+    var onPublishStateChanged: ((PublishState) -> Void)?
     
-    var onRowSelected: ((PublishFormSection.Row) -> Void)?
+    var onRowSelected: ((PublishCollectionViewController.Row) -> Void)?
     
     
     init(user: PublicUser) {
         self.author = user
     }
     
-    func setPublishState(to newValue: PublishFormPublishState) {
-        publishState = newValue
-        onPublishStateChanged?(newValue)
+    func setPublishState(to state: PublishState) {
+        publishState = state
+        onPublishStateChanged?(state)
     }
     
     func validateInputs() {

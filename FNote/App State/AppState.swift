@@ -41,7 +41,7 @@ class AppState: ObservableObject {
     @Published private(set) var currentCollectionID: String? = AppCache.currentCollectionUUID
     private(set) lazy var currentCollection = collections.first(where: { $0.uuid == currentCollectionID })
     
-    var noteCardSortOption: NoteCardSortOption = .translation
+    var noteCardSortOption: NoteCardSortField = .translation
     var noteCardSortOptionAscending = true
     
     @Published var showDidCopyFileAlert = false
@@ -52,7 +52,7 @@ class AppState: ObservableObject {
     
     private lazy var currentNoteCardsFetchController: NSFetchedResultsController<NoteCard> = {
         let controller = NSFetchedResultsController<NoteCard>(
-            fetchRequest: NoteCard.requestNoteCards(forCollectionUUID: currentCollectionID ?? ""),
+            fetchRequest: NoteCard.requestNoteCards(collectionUUID: currentCollectionID ?? ""),
             managedObjectContext: parentContext,
             sectionNameKeyPath: nil,
             cacheName: nil
@@ -113,7 +113,7 @@ extension AppState {
         
         if let collection = currentCollection {
             newRequest = NoteCard.requestNoteCards(
-                forCollectionUUID: collection.uuid,
+                collectionUUID: collection.uuid,
                 sortBy: noteCardSortOption,
                 ascending: noteCardSortOptionAscending
             )

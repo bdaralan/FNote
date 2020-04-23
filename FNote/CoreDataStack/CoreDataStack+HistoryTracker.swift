@@ -47,12 +47,12 @@ class CoreDataStackHistoryTracker {
         }
     }
     
-    func deleteHistory(before token: NSPersistentHistoryToken, context: NSManagedObjectContext) {
+    func deleteHistory(before token: NSPersistentHistoryToken, afterDays: Int, in context: NSManagedObjectContext) {
         let calendar = Calendar.current
         let now = Date()
         let lastDelete = calendar.dateComponents([.day], from: lastDeleteDate, to: now)
 
-        guard let day = lastDelete.day, day > 30 else { return }
+        guard let day = lastDelete.day, day > afterDays else { return }
         
         let deleteHistoryRequest = NSPersistentHistoryChangeRequest.deleteHistory(before: token)
         
@@ -71,9 +71,5 @@ class CoreDataStackHistoryTracker {
         guard let changeInfo = notification.userInfo else { return nil }
         guard let token = changeInfo["historyToken"] else { return nil }
         return token as? NSPersistentHistoryToken
-    }
-    
-    func storeID(forRemote notification: Notification) -> String {
-        notification.userInfo?["NSStoreUUID"] as? String ?? ""
     }
 }

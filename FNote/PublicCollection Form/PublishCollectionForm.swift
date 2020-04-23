@@ -52,7 +52,7 @@ extension PublishCollectionForm {
     func setupOnAppear() {
     }
     
-    func handleRowSelected(kind: PublishFormSection.Row) {
+    func handleRowSelected(kind: PublishCollectionViewController.Row) {
         viewModel.onRowSelected?(kind)
         switch kind {
         case .collection: beginSelectCollection()

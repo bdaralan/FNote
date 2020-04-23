@@ -9,7 +9,7 @@
 import Foundation
 
 
-enum NoteCardSearchScope {
+enum NoteCardSearchField: String {
     case translation
     case native
     case note
@@ -24,7 +24,7 @@ enum NoteCardSearchScope {
 }
 
 
-enum NoteCardSortOption: Int {
+enum NoteCardSortField: Int {
     case native
     case translation
     

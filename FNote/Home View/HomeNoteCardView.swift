@@ -232,7 +232,7 @@ extension HomeNoteCardView {
         
         // give the next correct ascending boolean value for the item once triggered
         // example if currently N ascending, then select a different option should still return ascending
-        let computeAscending = { (option: NoteCardSortOption) -> Bool in
+        let computeAscending = { (option: NoteCardSortField) -> Bool in
             let currentOption = self.appState.noteCardSortOption
             let currentAscending = self.appState.noteCardSortOptionAscending
             let ascending = currentOption == option ? !currentAscending : currentAscending
@@ -242,7 +242,7 @@ extension HomeNoteCardView {
         // give the correct title for the item match with app state's sort option
         // current active item has arrow attached to it
         // example if currently or select N and it shows N↓, then select T should should show T↓ (not T↑)
-        let computeItemTitle = { (option: NoteCardSortOption) -> String in
+        let computeItemTitle = { (option: NoteCardSortField) -> String in
             let currentOption = self.appState.noteCardSortOption
             let arrow = self.appState.noteCardSortOptionAscending ? "↓" : "↑"
             let attachingArrow = currentOption == option ? " \(arrow)" : ""
@@ -315,7 +315,7 @@ extension HomeNoteCardView {
         }
     }
     
-    func setNoteCardSortOption(_ option: NoteCardSortOption, ascending: Bool) {
+    func setNoteCardSortOption(_ option: NoteCardSortField, ascending: Bool) {
         let currentOption = appState.noteCardSortOption
         let currentAscending = appState.noteCardSortOptionAscending
         
@@ -388,9 +388,9 @@ extension HomeNoteCardView {
         let isNoteActive = viewModel.isSearchNoteActive
         
         let request = NoteCard.requestNoteCards(
-            forCollectionUUID: collection.uuid,
+            collectionUUID: collection.uuid,
             searchText: searchText,
-            scopes: isNoteActive ? [.native, .translation, .note] : [.native, .translation]
+            searchFields: isNoteActive ? [.native, .translation, .note] : [.native, .translation]
         )
         
         searchFetchController?.fetchRequest.predicate = request.predicate

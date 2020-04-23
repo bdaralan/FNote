@@ -39,7 +39,7 @@
 		B44E787023DE774600428D4A /* UICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44E786F23DE774600428D4A /* UICollectionView.swift */; };
 		B452519923E0138C007A85CF /* ExportImportDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B452519823E0138C007A85CF /* ExportImportDataManager.swift */; };
 		B4535C082403474900090313 /* PublicRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4535C072403474900090313 /* PublicRecord.swift */; };
-		B45A4A032368A2810079D8DE /* NoteCardSearchScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */; };
+		B45A4A032368A2810079D8DE /* NoteCardSearchField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A4A022368A2810079D8DE /* NoteCardSearchField.swift */; };
 		B46B0F592364A0CE0074B71A /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B0F582364A0CD0074B71A /* SearchTextField.swift */; };
 		B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */; };
 		B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3404232E8214008B2088 /* ModalTextView.swift */; };
@@ -101,6 +101,7 @@
 		B4BBDBF323E4F6D000A0AEA1 /* CGFloat.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BBDBF223E4F6D000A0AEA1 /* CGFloat.swift */; };
 		B4BBDBF723E5111000A0AEA1 /* SettingImportFileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BBDBF623E5111000A0AEA1 /* SettingImportFileList.swift */; };
 		B4BBDBFB23E525F100A0AEA1 /* ActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BBDBFA23E525F100A0AEA1 /* ActivityViewControllerWrapper.swift */; };
+		B4C2ADB1245247C600F9165D /* PublishState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C2ADB0245247C600F9165D /* PublishState.swift */; };
 		B4C529A623FFAF66002C9C50 /* CollectionPublisherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C529A523FFAF66002C9C50 /* CollectionPublisherTests.swift */; };
 		B4C76DFB232C0A520033DDEA /* TextFieldWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C76DFA232C0A520033DDEA /* TextFieldWrapper.swift */; };
 		B4CCDC52241AFFA6002D9FDE /* PublishCollectionForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4CCDC51241AFFA6002D9FDE /* PublishCollectionForm.swift */; };
@@ -162,7 +163,7 @@
 		B44E786F23DE774600428D4A /* UICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionView.swift; sourceTree = "<group>"; };
 		B452519823E0138C007A85CF /* ExportImportDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportDataManager.swift; sourceTree = "<group>"; };
 		B4535C072403474900090313 /* PublicRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicRecord.swift; sourceTree = "<group>"; };
-		B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchScope.swift; sourceTree = "<group>"; };
+		B45A4A022368A2810079D8DE /* NoteCardSearchField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchField.swift; sourceTree = "<group>"; };
 		B46B0F582364A0CD0074B71A /* SearchTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewWrapper.swift; sourceTree = "<group>"; };
 		B46B3404232E8214008B2088 /* ModalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextView.swift; sourceTree = "<group>"; };
@@ -227,6 +228,7 @@
 		B4BBDBF223E4F6D000A0AEA1 /* CGFloat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGFloat.swift; sourceTree = "<group>"; };
 		B4BBDBF623E5111000A0AEA1 /* SettingImportFileList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingImportFileList.swift; sourceTree = "<group>"; };
 		B4BBDBFA23E525F100A0AEA1 /* ActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
+		B4C2ADB0245247C600F9165D /* PublishState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishState.swift; sourceTree = "<group>"; };
 		B4C529A523FFAF66002C9C50 /* CollectionPublisherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionPublisherTests.swift; sourceTree = "<group>"; };
 		B4C76DFA232C0A520033DDEA /* TextFieldWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldWrapper.swift; sourceTree = "<group>"; };
 		B4CCDC51241AFFA6002D9FDE /* PublishCollectionForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishCollectionForm.swift; sourceTree = "<group>"; };
@@ -283,7 +285,7 @@
 			isa = PBXGroup;
 			children = (
 				B46B0F582364A0CD0074B71A /* SearchTextField.swift */,
-				B45A4A022368A2810079D8DE /* NoteCardSearchScope.swift */,
+				B45A4A022368A2810079D8DE /* NoteCardSearchField.swift */,
 			);
 			path = "Search View + Model";
 			sourceTree = "<group>";
@@ -582,6 +584,7 @@
 				B476FE23241C6EAB0006A196 /* InsetRowStyle.swift */,
 				B4F24A0824241A7B00E7F360 /* CommunityActionButton.swift */,
 				B46D813424273ED300FABD33 /* PublishCollectionViewController + Wrapper.swift */,
+				B4C2ADB0245247C600F9165D /* PublishState.swift */,
 			);
 			path = "PublicCollection Form";
 			sourceTree = "<group>";
@@ -752,6 +755,7 @@
 				B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */,
 				B4D240D723DBD1EE005B4066 /* NoteCardCollectionCell.swift in Sources */,
 				B4F24A0924241A7B00E7F360 /* CommunityActionButton.swift in Sources */,
+				B4C2ADB1245247C600F9165D /* PublishState.swift in Sources */,
 				B49C4C7123D65C850030D9B2 /* HomeNoteCardView.swift in Sources */,
 				B4CCDC52241AFFA6002D9FDE /* PublishCollectionForm.swift in Sources */,
 				B4A0CE9923D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift in Sources */,
@@ -826,7 +830,7 @@
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
 				B49796EA23F78CF00035DF63 /* PageControlWrapper.swift in Sources */,
 				B46D813524273ED300FABD33 /* PublishCollectionViewController + Wrapper.swift in Sources */,
-				B45A4A032368A2810079D8DE /* NoteCardSearchScope.swift in Sources */,
+				B45A4A032368A2810079D8DE /* NoteCardSearchField.swift in Sources */,
 				B448744823DEB73A005EBA45 /* TagCollectionViewModel.swift in Sources */,
 				B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */,
 				B44625FC23E3DE2D00B43526 /* UserPreference.swift in Sources */,
