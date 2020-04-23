@@ -30,14 +30,14 @@ struct PublicUser: PublicRecord, Codable {
     }
     
     init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: RecordKeys.self)
+        let container = try decoder.container(keyedBy: RecordFields.self)
         userID = try container.decode(String.self, forKey: .userID)
         username = try container.decode(String.self, forKey: .username)
         about = try container.decode(String.self, forKey: .about)
     }
     
     func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: RecordKeys.self)
+        var container = encoder.container(keyedBy: RecordFields.self)
         try container.encode(userID, forKey: .userID)
         try container.encode(username, forKey: .username)
         try container.encode(about, forKey: .about)
@@ -53,7 +53,7 @@ extension PublicUser {
         userID
     }
     
-    enum RecordKeys: CodingKey {
+    enum RecordFields: RecordField {
         case userID
         case username
         case about
@@ -61,28 +61,30 @@ extension PublicUser {
         case profileImageAsset
     }
     
-    func createCKRecord() -> CKRecord {
-        let recordID = CKRecord.ID(recordName: recordName)
-        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
-        
-        let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
-        keyedRecord[.userID] = userID
-        keyedRecord[.username] = username
-        keyedRecord[.about] = about
-        
-        return record
-    }
     
     init(record: CKRecord) {
         guard record.recordType == Self.recordType else {
             fatalError("🧨 attempt to construct \(Self.self) with unmatched record type '\(record.recordType)' 🧨")
         }
         
-        let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
+        let modifier = RecordModifier<RecordFields>(record: record)
         userID = record.recordID.recordName
         self.record = record
         
-        username = keyedRecord[.username] as? String ?? ""
-        about = keyedRecord[.about] as? String ?? ""
+        username = modifier[.username] as? String ?? ""
+        about = modifier[.about] as? String ?? ""
+    }
+    
+    
+    func createCKRecord() -> CKRecord {
+        let recordID = CKRecord.ID(recordName: recordName)
+        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
+        
+        var modifier = RecordModifier<RecordFields>(record: record)
+        modifier[.userID] = userID
+        modifier[.username] = username
+        modifier[.about] = about
+        
+        return record
     }
 }

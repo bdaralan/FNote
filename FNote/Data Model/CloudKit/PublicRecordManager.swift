@@ -40,16 +40,16 @@ class PublicRecordManager {
         cache.object(forKey: NSString(string: key))
     }
     
-    func cacheRecords(_ records: [CKRecord], usingRecordKey key: String) {
+    func cacheRecords(_ records: [CKRecord], usingRecordField field: String) {
         for record in records {
-            guard let key = record[key] as? String else { return }
+            guard let key = record[field] as? String else { return }
             cache.setObject(record, forKey: NSString(string: key))
         }
     }
     
-    func cacheRecords(_ records: [CKRecord], usingRecordKey key: CodingKey) {
+    func cacheRecords(_ records: [CKRecord], usingRecordField field: RecordField) {
         for record in records {
-            guard let key = record[key.stringValue] as? String else { return }
+            guard let key = record[field.stringValue] as? String else { return }
             cache.setObject(record, forKey: NSString(string: key))
         }
     }
@@ -88,14 +88,14 @@ class PublicRecordManager {
 
 extension PublicRecordManager {
     
-    func queryUsers(withIDs userIDs: [String], desiredKeys: [PublicUser.RecordKeys]? = nil,  completion: @escaping QueryCompletionBlock) {
-        let userID = PublicUser.RecordKeys.userID.stringValue
-        let predicate = NSPredicate(format: "\(userID) IN %@", userIDs)
+    func queryUsers(withIDs userIDs: [String], desiredFields: [PublicUser.RecordFields]? = nil,  completion: @escaping QueryCompletionBlock) {
+        let userIDField = PublicUser.RecordFields.userID.stringValue
+        let predicate = NSPredicate(format: "\(userIDField) IN %@", userIDs)
         let query = CKQuery(recordType: PublicUser.recordType, predicate: predicate)
         let operation = CKQueryOperation(query: query)
         
-        if let keys = desiredKeys {
-            operation.desiredKeys = keys.map({ $0.stringValue })
+        if let fields = desiredFields {
+            operation.desiredKeys = fields.map({ $0.stringValue })
         }
         
         performQuery(operation: operation, completion: completion)
@@ -115,10 +115,11 @@ extension PublicRecordManager {
     }
     
     func queryCards(withCollectionID collectionID: String, completion: @escaping QueryCompletionBlock) {
-        let cardCollectionID = PublicNoteCard.RecordKeys.collectionID.stringValue
-        let cardTranslation = PublicNoteCard.RecordKeys.translation.stringValue
-        let predicate = NSPredicate(format: "\(cardCollectionID) == %@", collectionID)
-        let sortByTranslation = NSSortDescriptor(key: "\(cardTranslation)", ascending: true)
+        let collectionIDField = PublicNoteCard.RecordFields.collectionID.stringValue
+        let translationField = PublicNoteCard.RecordFields.translation.stringValue
+        
+        let predicate = NSPredicate(format: "\(collectionIDField) == %@", collectionID)
+        let sortByTranslation = NSSortDescriptor(key: "\(translationField)", ascending: true)
         
         let query = CKQuery(recordType: PublicNoteCard.recordType, predicate: predicate)
         query.sortDescriptors = [sortByTranslation]
@@ -128,12 +129,13 @@ extension PublicRecordManager {
     }
     
     func queryCards(withIDs cardIDs: [String], completion: @escaping QueryCompletionBlock) {
-        let cardID = PublicNoteCard.RecordKeys.cardID.stringValue
-        let cardNative = PublicNoteCard.RecordKeys.native.stringValue
-        let cardTranslation = PublicNoteCard.RecordKeys.translation.stringValue
-        let predicate = NSPredicate(format: "\(cardID) IN %@", cardIDs)
-        let sortByNative = NSSortDescriptor(key: cardNative, ascending: true)
-        let sortByTranslation = NSSortDescriptor(key: cardTranslation, ascending: true)
+        let cardIDField = PublicNoteCard.RecordFields.cardID.stringValue
+        let nativeField = PublicNoteCard.RecordFields.native.stringValue
+        let translationField = PublicNoteCard.RecordFields.translation.stringValue
+        
+        let predicate = NSPredicate(format: "\(cardIDField) IN %@", cardIDs)
+        let sortByNative = NSSortDescriptor(key: nativeField, ascending: true)
+        let sortByTranslation = NSSortDescriptor(key: translationField, ascending: true)
         
         let query = CKQuery(recordType: PublicNoteCard.recordType, predicate: predicate)
         query.sortDescriptors = [sortByNative, sortByTranslation]
@@ -209,7 +211,7 @@ extension PublicRecordManager {
         queryUsers(withIDs: userIDs) { result in
             switch result {
             case .success(let records):
-                self.cacheRecords(records, usingRecordKey: PublicUser.RecordKeys.userID)
+                self.cacheRecords(records, usingRecordField: PublicUser.RecordFields.userID)
                 completion?(.success(records))
             case .failure(let error):
                 completion?(.failure(error))
@@ -217,7 +219,7 @@ extension PublicRecordManager {
         }
     }
     
-    func fetchPublicUserRecord(desiredKeys: [PublicUser.RecordKeys] = [], completion: @escaping (Result<CKRecord, Error>) -> Void) {
+    func fetchPublicUserRecord(desiredFields: [PublicUser.RecordFields]? = nil, completion: @escaping (Result<CKRecord, Error>) -> Void) {
         // fetch current user ID
         CKContainer.default().fetchUserRecordID { recordID, error in
             guard let recordID = recordID else {
@@ -232,9 +234,8 @@ extension PublicRecordManager {
             operation.qualityOfService = .userInitiated
             
             // set desired keys if provided
-            if desiredKeys.isEmpty == false {
-                let desiredKeys = [.userID] + desiredKeys
-                operation.desiredKeys = desiredKeys.map(\.stringValue)
+            if let fields = desiredFields {
+                operation.desiredKeys = fields.map(\.stringValue)
             }
             
             // set completion block
@@ -255,7 +256,7 @@ extension PublicRecordManager {
     /// Attempt to create a public user record if first time user.
     ///
     /// - Parameter completion: Return a newly created or an existing record, or an error if failed.
-    func createInitialPublicUserRecord(completion: @escaping (Result<CKRecord, Error>) -> Void) {
+    func createInitialPublicUserRecord(username: String = "", userBio: String = "", completion: @escaping (Result<CKRecord, Error>) -> Void) {
         CKContainer.default().fetchUserRecordID { recordID, error in
             guard let recordID = recordID else {
                 completion(.failure(error!))
@@ -274,7 +275,7 @@ extension PublicRecordManager {
                 
                 // create initial public use record here
                 if let ckError = error as? CKError, ckError.code == .unknownItem {
-                    let newUser = PublicUser(userID: publicUserID, username: "", about: "")
+                    let newUser = PublicUser(userID: publicUserID, username: username, about: userBio)
                     let newRecord = newUser.createCKRecord()
                     self.save(record: newRecord) { result in
                         completion(result)
@@ -341,7 +342,7 @@ extension PublicRecordManager {
     func setupPublicUserUpdateSubscriptions(userID: String, completion: ((Result<CKSubscription, CKError>) -> Void)?) {
         let subscriptionID = "CKSUBID.PublicUser.CU"
         let options: CKQuerySubscription.Options = [.firesOnRecordCreation, .firesOnRecordUpdate]
-        let userIDField = PublicUser.RecordKeys.userID.stringValue
+        let userIDField = PublicUser.RecordFields.userID.stringValue
         let predicate = NSPredicate(format: "\(userIDField) == %@", userID)
         
         let subscription = CKQuerySubscription(

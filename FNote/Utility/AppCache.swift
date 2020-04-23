@@ -32,8 +32,8 @@ struct AppCache {
     @BDStoredValue(in: .userDefaults, key: "kAppCache.lastKnownVersion", default: nil)
     static var lastKnownVersion: String?
     
-    @BDStoredValue(in: .userDefaults, key: "kAppCache.hasSetupCKSubscriptions", default: false)
-    static var hasSetupCKSubscriptions: Bool
+    @BDStoredValue(in: .userDefaults, key: "kAppCache.hasSetupUserUpdateCKSubscription", default: false)
+    static var hasSetupUserUpdateCKSubscription: Bool
     
     
     // MARK: Public User

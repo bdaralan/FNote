@@ -45,17 +45,54 @@ class PublicUserViewModel: ObservableObject {
     }
     
     
+    /// Save local changes and upload the the database.
     func saveChanges() {
-        let newUsername = username.trimmedUsername()
-        let newBio = userBio.trimmed()
-        
+        let username = self.username.trimmedUsername()
+        let userBio = self.userBio.trimmed()
+                
+        if user.userID.isEmpty {
+            createInitialUser(username: username, userBio: userBio)
+        } else {
+            updateUser(username: username, userBio: userBio)
+        }
+    }
+    
+    private func createInitialUser(username: String, userBio: String) {
         let recordManager = PublicRecordManager.shared
         
-        recordManager.fetchPublicUserRecord(desiredKeys: [.username, .about]) { result in
+        recordManager.createInitialPublicUserRecord(username: username, userBio: userBio) { result in
             switch result {
             case .success(let record):
-                record[PublicUser.RecordKeys.username.stringValue] = newUsername
-                record[PublicUser.RecordKeys.about.stringValue] = newBio
+                let user = PublicUser(record: record)
+                AppCache.cacheUser(user)
+                if AppCache.hasSetupUserUpdateCKSubscription == false {
+                    recordManager.setupPublicUserUpdateSubscriptions(userID: user.userID) { result in
+                        guard case .success = result else { return }
+                        AppCache.hasSetupUserUpdateCKSubscription = true
+                    }
+                }
+                
+                DispatchQueue.main.async {
+                    self.onUserUpdated?(user)
+                }
+            
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self.onUserUpdateFailed?(error)
+                }
+            }
+        }
+    }
+    
+    private func updateUser(username: String, userBio: String) {
+        let recordManager = PublicRecordManager.shared
+        
+        recordManager.fetchPublicUserRecord(desiredFields: []) { result in
+            switch result {
+            case .success(let record):
+                var modifier = RecordModifier<PublicUser.RecordFields>(record: record)
+                modifier[.username] = username
+                modifier[.about] = userBio
                 
                 recordManager.save(record: record) { result in
                     DispatchQueue.main.async { [weak self] in

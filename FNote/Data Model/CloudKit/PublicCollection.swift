@@ -48,7 +48,7 @@ extension PublicCollection: PublicRecord {
         collectionID
     }
     
-    enum RecordKeys: CodingKey {
+    enum RecordFields: RecordField {
         case collectionID
         case authorID
         case name
@@ -59,37 +59,39 @@ extension PublicCollection: PublicRecord {
         case cardsCount
     }
     
-    func createCKRecord() -> CKRecord {
-        let recordID = CKRecord.ID(recordName: recordName)
-        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
-        
-        let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
-        keyedRecord[.collectionID] = collectionID
-        keyedRecord[.authorID] = authorID
-        keyedRecord[.name] = name
-        keyedRecord[.description] = description
-        keyedRecord[.primaryLanguage] = primaryLanguage
-        keyedRecord[.secondaryLanguage] = secondaryLanguage
-        keyedRecord[.tags] = tags.joined(separator: ",")
-        keyedRecord[.cardsCount] = cardsCount
-        
-        return record
-    }
     
     init(record: CKRecord) {
         guard record.recordType == Self.recordType else {
             fatalError("🧨 attempt to construct \(Self.self) with unmatched record type '\(record.recordType)' 🧨")
         }
         
-        let keyedRecord = record.keyedRecord(keys: RecordKeys.self)
+        let modifier = RecordModifier<RecordFields>(record: record)
         collectionID = record.recordID.recordName
         
-        authorID = keyedRecord[.authorID] as? String ?? ""
-        name = keyedRecord[.name] as? String ?? ""
-        description = keyedRecord[.description] as? String ?? ""
-        primaryLanguage = keyedRecord[.primaryLanguage] as? String ?? ""
-        secondaryLanguage = keyedRecord[.secondaryLanguage] as? String ?? ""
-        tags = (keyedRecord[.tags] as? String)?.components(separatedBy: ",") ?? []
-        cardsCount = keyedRecord[.cardsCount] as? Int ?? 0
+        authorID = modifier[.authorID] as? String ?? ""
+        name = modifier[.name] as? String ?? ""
+        description = modifier[.description] as? String ?? ""
+        primaryLanguage = modifier[.primaryLanguage] as? String ?? ""
+        secondaryLanguage = modifier[.secondaryLanguage] as? String ?? ""
+        tags = (modifier[.tags] as? String)?.components(separatedBy: ",") ?? []
+        cardsCount = modifier[.cardsCount] as? Int ?? 0
+    }
+    
+    
+    func createCKRecord() -> CKRecord {
+        let recordID = CKRecord.ID(recordName: recordName)
+        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
+        
+        var modifier = RecordModifier<RecordFields>(record: record)
+        modifier[.collectionID] = collectionID
+        modifier[.authorID] = authorID
+        modifier[.name] = name
+        modifier[.description] = description
+        modifier[.primaryLanguage] = primaryLanguage
+        modifier[.secondaryLanguage] = secondaryLanguage
+        modifier[.tags] = tags.joined(separator: ",")
+        modifier[.cardsCount] = cardsCount
+        
+        return record
     }
 }

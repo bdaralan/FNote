@@ -9,27 +9,45 @@
 import CloudKit
 
 
-// MARK: - Record Protocol
+// MARK: - Public Record
 
+/// A protocol used to identify basic properties of a CKRecord.
+///
 protocol PublicRecord {
     
+    /// An enum list all CKRecord's fields.
+    associatedtype RecordFields: RecordField
+    
+    /// `CKRecord` `recordType`.
     static var recordType: CKRecord.RecordType { get }
     
+    /// `CKRecord` `recordName`.
     var recordName: String { get }
     
-    /// A CKRecord newly created from the object's values.
-    ///
-    /// - Important: Use this to create a new record to upload.
-    /// Do not use it for record modification.
-    func createCKRecord() -> CKRecord
-    
+    /// Create `PublicRecord` with `CKRecord`.
+    /// - Parameter record: a `CKRecord` that matches the type of the `PublicRecord`.
     init(record: CKRecord)
+    
+    /// A `CKRecord` newly created from the object's values.
+    ///
+    /// - Warning: Use this to create a new record to upload.
+    /// Do not use it to re-create a record for modification.
+    func createCKRecord() -> CKRecord
 }
 
 
-// MARK: - Record Helper Class
+// MARK: - Record Field
 
-class KeyedRecord<Key> where Key: CodingKey {
+/// A protocol used to identity enum as CKRecord's fields.
+///
+protocol RecordField: CodingKey {}
+
+
+// MARK: - Record Modifier
+
+/// An object used to access `CKRecord` with a type-safe enum conforming to `RecordField`.
+///
+struct RecordModifier<Field> where Field: RecordField {
     
     let record: CKRecord
     
@@ -37,53 +55,8 @@ class KeyedRecord<Key> where Key: CodingKey {
         self.record = record
     }
     
-    subscript(key: Key) -> Any? {
-        get { record[key.stringValue] }
-        set { record[key.stringValue] = newValue as? CKRecordValue }
-    }
-}
-
-
-// MARK: - CKRecord Convenience
-
-extension CKRecord {
-    
-    func keyedRecord<Key>(keys: Key.Type) -> KeyedRecord<Key> where Key: CodingKey {
-        KeyedRecord<Key>(record: self)
-    }
-    
-    func systemFields() -> Data {
-        let encoder = NSKeyedArchiver(requiringSecureCoding: true)
-        self.encodeSystemFields(with: encoder)
-        return encoder.encodedData
-    }
-    
-    convenience init?(systemFields: Data) {
-        do {
-            let unarchiver = try NSKeyedUnarchiver(forReadingFrom: systemFields)
-            self.init(coder: unarchiver)
-        } catch {
-            print("⚠️ failed to unarchive CKRecord from systemFields ⚠️")
-            return nil
-        }
-    }
-}
-
-
-// MARK: - Date Formatter
-
-extension Date {
-    
-    static private var dateFormatter: ISO8601DateFormatter {
-        let formatter = ISO8601DateFormatter()
-        return formatter
-    }
-    
-    static func databaseDate(from iso8601: String) -> Date? {
-        Self.dateFormatter.date(from: iso8601)
-    }
-    
-    var databaseDateString: String {
-        Self.dateFormatter.string(from: self)
+    subscript(field: Field) -> Any? {
+        get { record[field.stringValue] }
+        set { record[field.stringValue] = newValue as? CKRecordValue }
     }
 }

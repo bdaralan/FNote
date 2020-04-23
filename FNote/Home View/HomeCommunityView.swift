@@ -191,14 +191,23 @@ extension HomeCommunityView {
     }
     
     func updateUserTrayItem(item: BDButtonTrayItem, user: PublicUser) {
-        if user.username.isEmpty {
-            item.title = "Username Required"
-            item.systemImage = "person.crop.circle.badge.exclam"
-            item.activeColor = .red
-        } else {
+        if user.isValid {
             item.title = user.username
             item.systemImage = "person.crop.circle.badge.checkmark"
             item.activeColor = .green
+            item.disabled = false
+        
+        } else {
+            item.systemImage = "person.crop.circle.badge.exclam"
+            item.activeColor = .red
+            
+            if user.userID.isEmpty {
+                item.title = "failed to load profile"
+            } else if user.username.isEmpty {
+                item.title = "username required"
+            } else {
+                item.disabled = true
+            }
         }
     }
     

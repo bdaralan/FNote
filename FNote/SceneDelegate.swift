@@ -28,16 +28,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             case .success(let record):
                 let user = PublicUser(record: record)
                 AppCache.cacheUser(user)
-                if AppCache.hasSetupCKSubscriptions == false {
+                if AppCache.hasSetupUserUpdateCKSubscription == false {
                     recordManager.setupPublicUserUpdateSubscriptions(userID: user.userID) { result in
                         guard case .success = result else { return }
-                        AppCache.hasSetupCKSubscriptions = true
+                        AppCache.hasSetupUserUpdateCKSubscription = true
                     }
                 }
             case .failure(let error):
                 print("failed to create initial user: \(error)")
             }
-            
         }
         
         // setup app state

@@ -287,7 +287,7 @@ extension CommunityViewModel {
                 recordManager.queryUsers(withIDs: userIDs ?? []) { result in
                     switch result {
                     case .success(let userRecords):
-                        recordManager.cacheRecords(userRecords, usingRecordKey: PublicUser.RecordKeys.userID)
+                        recordManager.cacheRecords(userRecords, usingRecordField: PublicUser.RecordFields.userID)
                         updateSnapshot(error)
                     case .failure(let error):
                         updateSnapshot(error)
