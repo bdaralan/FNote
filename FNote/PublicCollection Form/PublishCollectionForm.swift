@@ -154,7 +154,8 @@ extension PublishCollectionForm {
         collectionViewModel.collections = viewModel.selectableCollections
         collectionViewModel.disabledCollectionIDs = []
         
-        let disableCollections = viewModel.selectableCollections.filter({ $0.noteCards.count < 9 })
+        let requiredCards = viewModel.publicCardsRequired
+        let disableCollections = viewModel.selectableCollections.filter({ $0.noteCards.count < requiredCards })
         for collection in disableCollections {
             collectionViewModel.disabledCollectionIDs.insert(collection.uuid)
         }

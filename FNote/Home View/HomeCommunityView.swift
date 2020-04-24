@@ -180,14 +180,10 @@ extension HomeCommunityView {
             print(item.title)
         }
         
-        let filter = BDButtonTrayItem(title: "Filter", systemImage: "slider.horizontal.3") { item in
-            print(item.title)
-        }
-        
         let cachedUser = AppCache.cachedUser()
         updateUserTrayItem(item: user, user: cachedUser)
         
-        return [user, publish, search, filter]
+        return [user, publish, search]
     }
     
     func updateUserTrayItem(item: BDButtonTrayItem, user: PublicUser) {

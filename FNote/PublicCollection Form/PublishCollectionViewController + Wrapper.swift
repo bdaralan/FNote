@@ -20,9 +20,19 @@ class PublishCollectionViewController: UITableViewController {
     
     let sections: [Section] = [
         .init(header: nil, footer: nil, rows: [.authorName]),
+        
         .init(header: "COLLECTION TO PUBLISH", footer: nil, rows: [.collection]),
-        .init(header: "PUBLISH DETAILS", footer: nil, rows: [.collectionName, .collectionDescription, .collectionTag, .collectionPrimaryLanguage, .collectionSecondaryLanguage]),
+        
+        .init(header: "PUBLISH NAME", footer: nil, rows: [.collectionName]),
+        
+        .init(header: "PUBLISH DESCRIPTION", footer: nil, rows: [.collectionDescription]),
+        
+        .init(header: "PUBLISH TAGS", footer: nil, rows: [.collectionTag]),
+        
+        .init(header: "PUBLISH LANGUAGES", footer: nil, rows: [.collectionPrimaryLanguage, .collectionSecondaryLanguage]),
+        
         .init(header: "PUBLISH OPTIONS", footer: nil, rows: [.includeNote]),
+        
         .init(header: nil, footer: nil, rows: [.publishAction])
     ]
     
@@ -38,33 +48,33 @@ class PublishCollectionViewController: UITableViewController {
         return cell
     }()
     
-    let collectionNameCell: StaticTableViewCell = {
-        let cell = StaticTableViewCell(style: .value1)
-        cell.textLabel?.text = "Collection Name"
-        cell.accessoryType = .disclosureIndicator
-        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
-        return cell
-    }()
-    
     let collectionCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1)
-        cell.textLabel?.text = "Collection"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
-    let collectionDescriptionCell: StaticTableViewCell = {
+    let collectionNameCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1)
-        cell.textLabel?.text = "Description"
         cell.accessoryType = .disclosureIndicator
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
+        return cell
+    }()
+    
+    let collectionDescriptionCell: TableViewCell<UITextView> = {
+        let cell = TableViewCell<UITextView>.init(style: .default, reuseIdentifier: nil)
+        cell.uiView.backgroundColor = .clear
+        cell.uiView.isEditable = false
+        cell.uiView.isUserInteractionEnabled = false
+        cell.uiView.font = .preferredFont(forTextStyle: .body)
+        cell.uiView.contentInset = .init(top: 16, left: 16, bottom: 16, right: 16)
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
     let tagCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1)
-        cell.textLabel?.text = "Tags"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
@@ -72,7 +82,7 @@ class PublishCollectionViewController: UITableViewController {
     
     let primaryLanguageCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1)
-        cell.textLabel?.text = "Primary Language"
+        cell.textLabel?.text = "Learning Language"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
@@ -80,7 +90,7 @@ class PublishCollectionViewController: UITableViewController {
     
     let secondaryLanguageCell: StaticTableViewCell = {
         let cell = StaticTableViewCell(style: .value1)
-        cell.textLabel?.text = "Secondary Language"
+        cell.textLabel?.text = "Translation Language"
         cell.accessoryType = .disclosureIndicator
         cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
@@ -135,7 +145,16 @@ class PublishCollectionViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        60
+        let row = sections[indexPath.section].rows[indexPath.row]
+        switch row {
+        case .collectionDescription:
+            let textView = collectionDescriptionCell.uiView
+            let inset = textView.contentInset
+            let cellHeight = max(100, min(200, textView.contentSize.height))
+            return cellHeight + inset.top + inset.bottom
+        default:
+            return 60
+        }
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -195,34 +214,31 @@ extension PublishCollectionViewController {
     
     private func handleViewModelObjectWillChange() {
         let attributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: viewModel.author.isValid ? UIColor.secondaryLabel : .red
+            .foregroundColor: viewModel.author.isValid ? UIColor.label : .red
         ]
         let attributeString = NSAttributedString(string: viewModel.uiAuthorName, attributes: attributes)
         authorNameCell.detailTextLabel?.attributedText = attributeString
         
-        collectionCell.detailTextLabel?.text = viewModel.uiCollectionName
-        collectionCell.detailTextLabel?.textColor = viewModel.publishCollection == nil ? .quaternaryLabel : .secondaryLabel
+        collectionCell.textLabel?.text = viewModel.uiCollectionName
+        collectionCell.textLabel?.textColor = viewModel.uiCollectionNameColor
+        collectionCell.detailTextLabel?.text = viewModel.uiCollectionCardsCount
         
-        collectionNameCell.detailTextLabel?.text = viewModel.uiCollectionPublishName
-        collectionNameCell.detailTextLabel?.textColor = viewModel.publishCollectionName.trimmed().isEmpty ? .quaternaryLabel : .secondaryLabel
+        collectionNameCell.textLabel?.text = viewModel.uiCollectionPublishName
+        collectionNameCell.textLabel?.textColor = viewModel.uiCollectionPublishNameColor
         
-        let descriptionColor: UIColor
-        if viewModel.publishDescription.count > viewModel.publishDescriptionLimit {
-            descriptionColor = .red
-        } else {
-            descriptionColor = viewModel.publishDescription.isEmpty ? .quaternaryLabel : .secondaryLabel
-        }
-        collectionDescriptionCell.detailTextLabel?.text = viewModel.uiCollectionDescription
-        collectionDescriptionCell.detailTextLabel?.textColor = descriptionColor
+        collectionDescriptionCell.uiView.text = viewModel.uiCollectionDescription
+        collectionDescriptionCell.uiView.textColor = viewModel.uiCollectionDescriptionColor
         
-        tagCell.detailTextLabel?.text = viewModel.uiCollectionTags
-        tagCell.detailTextLabel?.textColor = viewModel.publishTags.isEmpty ? .quaternaryLabel : .secondaryLabel
+        tagCell.textLabel?.text = viewModel.uiCollectionTags
+        tagCell.textLabel?.textColor = viewModel.uiCollectionTagsColor
         
-        primaryLanguageCell.detailTextLabel?.text = viewModel.uiCollectionPrimaryLanguage
-        primaryLanguageCell.detailTextLabel?.textColor = viewModel.publishPrimaryLanguage == nil ? .quaternaryLabel : .secondaryLabel
+        primaryLanguageCell.textLabel?.text = viewModel.uiCollectionPrimaryLanguage
+        primaryLanguageCell.textLabel?.textColor = viewModel.uiCollectionPrimaryLanguageColor
+        primaryLanguageCell.detailTextLabel?.text = "learning"
         
-        secondaryLanguageCell.detailTextLabel?.text = viewModel.uiCollectionSecondaryLanguage
-        secondaryLanguageCell.detailTextLabel?.textColor = viewModel.publishSecondaryLanguage == nil ? .quaternaryLabel : .secondaryLabel
+        secondaryLanguageCell.textLabel?.text = viewModel.uiCollectionSecondaryLanguage
+        secondaryLanguageCell.textLabel?.textColor = viewModel.uiCollectionSecondaryLanguageColor
+        secondaryLanguageCell.detailTextLabel?.text = "translation"
         
         includeNoteCell.toggle?.setOn(viewModel.includesNote, animated: true)
         

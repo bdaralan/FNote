@@ -6,7 +6,7 @@
 //  Copyright © 2020 Dara Beng. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 
 class PublishCollectionFormModel: ObservableObject {
@@ -33,8 +33,9 @@ class PublishCollectionFormModel: ObservableObject {
     
     private(set) var publishState: PublishState = .editing
     
+    let publicCardsRequired = 9
     let publishTagsLimit = 4
-    let publishDescriptionLimit = 250
+    let publishDescriptionLimit = 249
     
     var onCommit: (() -> Void)?
     
@@ -79,6 +80,10 @@ extension PublishCollectionFormModel {
         publishPrimaryLanguage != nil && publishSecondaryLanguage != nil
     }
     
+    var uiPublishCollectionNamePlaceholder: String {
+        publishCollectionName.isEmpty ? "publish name" : publishCollectionName
+    }
+    
     var uiAuthorName: String {
         author.isValid ? author.username : "required"
     }
@@ -87,33 +92,58 @@ extension PublishCollectionFormModel {
         publishCollection?.name ?? "required"
     }
     
-    var uiPublishCollectionNamePlaceholder: String {
-        publishCollectionName.isEmpty ? "publish name" : publishCollectionName
+    var uiCollectionNameColor: UIColor {
+        publishCollection == nil ? .secondaryLabel : .label
     }
     
     var uiCollectionPublishName: String {
         publishCollectionName.isEmpty ? "required" : publishCollectionName
     }
     
+    var uiCollectionPublishNameColor: UIColor {
+        publishCollectionName.isEmpty ? .secondaryLabel : .label
+    }
+    
     var uiCollectionCardsCount: String {
         let count = publishCollection?.noteCards.count ?? 0
-        let unit = count == 1 ? "CARD" : "CARDS"
-        return "\(count) \(unit)"
+        if count < publicCardsRequired {
+            return "minimum of 9 cards"
+        }
+        return "\(count) CARDS"
     }
     
     var uiCollectionDescription: String {
         publishDescription.isEmpty ? "required" : publishDescription
     }
     
+    var uiCollectionDescriptionColor: UIColor {
+        if publishDescription.isEmpty {
+            return .secondaryLabel
+        }
+        return publishDescription.count > publishDescriptionLimit ? .red : .label
+    }
+    
     var uiCollectionTags: String {
         publishTags.isEmpty ? "required" : publishTags.joined(separator: ", ")
+    }
+    
+    var uiCollectionTagsColor: UIColor {
+        publishTags.isEmpty ? .secondaryLabel : .label
     }
     
     var uiCollectionPrimaryLanguage: String {
         publishPrimaryLanguage?.localized ?? "required"
     }
     
+    var uiCollectionPrimaryLanguageColor: UIColor {
+        publishPrimaryLanguage == nil ? .secondaryLabel : .label
+    }
+    
     var uiCollectionSecondaryLanguage: String {
         publishSecondaryLanguage?.localized ?? "required"
+    }
+    
+    var uiCollectionSecondaryLanguageColor: UIColor {
+        publishSecondaryLanguage == nil ? .secondaryLabel : .label
     }
 }
