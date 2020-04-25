@@ -168,18 +168,11 @@ class SearchField: ObservableObject {
     /// An action to perform when debounce text changed.
     var onSearchTextDebounced: ((String) -> Void)?
     
-    private var cancellables: [AnyCancellable] = []
+    private var searchTextDebounce: AnyCancellable?
     
     
     init() {
-        $searchText
-            .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
-            .removeDuplicates()
-            .sink(receiveValue: { newValue in
-                self.objectWillChange.send()
-                self.onSearchTextDebounced?(newValue)
-            })
-            .store(in: &cancellables)
+        setupSearchTextDebounce()
     }
     
     
@@ -192,6 +185,18 @@ class SearchField: ObservableObject {
     func cancel() {
         let dismissKeyboard = #selector(UIResponder.resignFirstResponder)
         UIApplication.shared.sendAction(dismissKeyboard, to: nil, from: nil, for: nil)
+    }
+    
+    /// Set `searchText`'s debounce with due time. The default is `.milliseconds(500)`.
+    ///
+    /// - Parameter dueTime: The due time.
+    func setupSearchTextDebounce(dueTime: DispatchQueue.SchedulerTimeType.Stride = .milliseconds(500)) {
+        searchTextDebounce = $searchText.eraseToAnyPublisher()
+            .debounce(for: dueTime, scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .sink(receiveValue: { newValue in
+                self.onSearchTextDebounced?(newValue)
+            })
     }
 }
 

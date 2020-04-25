@@ -71,8 +71,8 @@ extension PublicUser {
         userID = record.recordID.recordName
         self.record = record
         
-        username = modifier[.username] as? String ?? ""
-        about = modifier[.about] as? String ?? ""
+        username = modifier.string(for: .username) ?? ""
+        about = modifier.string(for: .about) ?? ""
     }
     
     

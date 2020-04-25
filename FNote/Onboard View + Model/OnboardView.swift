@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import BDUIKnit
 
 
 struct OnboardView: View {
@@ -92,7 +93,7 @@ extension OnboardView {
     }
     
     var dragHandle: some View {
-        ModalDragHandle(color: .black, hideOnLandscape: true)
+        BDModalDragHandle(color: .black, hideOnVerticalCompact: true)
     }
     
     var gradientBackground: some View {

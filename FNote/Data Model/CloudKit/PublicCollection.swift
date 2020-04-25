@@ -17,6 +17,12 @@ struct PublicCollection {
     /// The author's userID.
     let authorID: String
     
+    /// The author's name.
+    ///
+    /// Possible to get outdated.
+    /// Use authorID to fetch from the database if needed.
+    let authorName: String
+    
     /// The name of the published collection.
     let name: String
     
@@ -51,6 +57,7 @@ extension PublicCollection: PublicRecord {
     enum RecordFields: RecordField {
         case collectionID
         case authorID
+        case authorName
         case name
         case description
         case primaryLanguage
@@ -68,13 +75,17 @@ extension PublicCollection: PublicRecord {
         let modifier = RecordModifier<RecordFields>(record: record)
         collectionID = record.recordID.recordName
         
-        authorID = modifier[.authorID] as? String ?? ""
-        name = modifier[.name] as? String ?? ""
-        description = modifier[.description] as? String ?? ""
-        primaryLanguage = modifier[.primaryLanguage] as? String ?? ""
-        secondaryLanguage = modifier[.secondaryLanguage] as? String ?? ""
-        tags = (modifier[.tags] as? String)?.components(separatedBy: ",") ?? []
-        cardsCount = modifier[.cardsCount] as? Int ?? 0
+        authorID = modifier.string(for: .authorID) ?? ""
+        authorName = modifier.string(for: .authorName) ?? ""
+        name = modifier.string(for: .name) ?? ""
+        description = modifier.string(for: .description) ?? ""
+        primaryLanguage = modifier.string(for: .primaryLanguage) ?? ""
+        secondaryLanguage = modifier.string(for: .secondaryLanguage) ?? ""
+        cardsCount = modifier.integer(for: .cardsCount) ?? 0
+        
+        let formatter = PublicRecordFormatter()
+        let recordTags = modifier.string(for: .tags) ?? ""
+        tags = formatter.localTags(fromDatabaseTags: recordTags)
     }
     
     
@@ -85,11 +96,12 @@ extension PublicCollection: PublicRecord {
         var modifier = RecordModifier<RecordFields>(record: record)
         modifier[.collectionID] = collectionID
         modifier[.authorID] = authorID
+        modifier[.authorName] = authorName
         modifier[.name] = name
         modifier[.description] = description
         modifier[.primaryLanguage] = primaryLanguage
         modifier[.secondaryLanguage] = secondaryLanguage
-        modifier[.tags] = tags.joined(separator: ",")
+        modifier[.tags] = PublicRecordFormatter().databaseTags(fromLocalTags: tags)
         modifier[.cardsCount] = cardsCount
         
         return record

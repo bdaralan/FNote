@@ -60,3 +60,62 @@ struct RecordModifier<Field> where Field: RecordField {
         set { record[field.stringValue] = newValue as? CKRecordValue }
     }
 }
+
+
+extension RecordModifier {
+    
+    func string(for field: Field) -> String? {
+        record[field.stringValue] as? String
+    }
+    
+    func integer(for field: Field) -> Int? {
+        record[field.stringValue] as? Int
+    }
+    
+    func bool(for field: Field, default value: Bool = false) -> Bool {
+        record[field.stringValue] as? Bool ?? value
+    }
+    
+    func stringList(for field: Field) -> [String] {
+        record[field.stringValue] as? [String] ?? []
+    }
+}
+
+
+// MARK: Public Record Formatter
+
+struct PublicRecordFormatter {
+    
+    static let databaseTagSeparator = "|"
+    
+    static let databaseTagArraySeparator = " \(databaseTagSeparator) "
+    
+    
+    /// Format the tag to a valid string for the database.
+    /// - Parameter tag: The tag to validate.
+    /// - Returns: A valid format string, `nil` if invalid.
+    func validDatabaseTag(_ tag: String) -> String? {
+        let string = tag.replacingOccurrences(of: Self.databaseTagSeparator, with: "").trimmed().lowercased()
+        return string.isEmpty ? nil : string
+    }
+    
+    func validDatabaseTags(_ tags: [String]) -> [String] {
+        tags.compactMap({ validDatabaseTag($0) })
+    }
+    
+    func databaseTags(fromLocalTags tags: [String]) -> String {
+        let validTags = validDatabaseTags(tags)
+        return validTags.joined(separator: Self.databaseTagArraySeparator)
+    }
+    
+    func localTags(fromDatabaseTags tags: String) -> [String] {
+        tags.components(separatedBy: Self.databaseTagArraySeparator)
+    }
+    
+    /// Get the correct list format.
+    /// - Parameter list: The list to save to the database.
+    /// - Returns: `nil` if the list is empty.
+    func validDatabaseList(_ list: [String]) -> [String]? {
+        return list.isEmpty ? nil : list
+    }
+}

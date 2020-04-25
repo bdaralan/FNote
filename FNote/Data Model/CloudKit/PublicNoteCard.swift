@@ -59,14 +59,17 @@ extension PublicNoteCard: PublicRecord {
         let modifier = RecordModifier<RecordFields>(record: record)
         cardID = record.recordID.recordName
         
-        collectionID = modifier[.collectionID] as? String ?? ""
-        native = modifier[.native] as? String ?? ""
-        translation = modifier[.translation] as? String ?? ""
-        favorited = modifier[.favorited] as? Bool ?? false
-        formality = modifier[.formality] as? Int ?? 0
-        note = modifier[.note] as? String ?? ""
-        tags = (modifier[.tags] as? String)?.components(separatedBy: ",") ?? []
-        relationships = modifier[.relationships] as? [String] ?? []
+        collectionID = modifier.string(for: .collectionID) ?? ""
+        native = modifier.string(for: .native) ?? ""
+        translation = modifier.string(for: .translation) ?? ""
+        favorited = modifier.bool(for: .favorited)
+        formality = modifier.integer(for: .formality) ?? 0
+        note = modifier.string(for: .note) ?? ""
+        relationships = modifier.stringList(for: .relationships)
+        
+        let formatter = PublicRecordFormatter()
+        let recordTags = modifier.string(for: .tags) ?? ""
+        tags = formatter.localTags(fromDatabaseTags: recordTags)
     }
     
     
@@ -82,8 +85,10 @@ extension PublicNoteCard: PublicRecord {
         modifier[.favorited] = favorited
         modifier[.formality] = formality
         modifier[.note] = note
-        modifier[.tags] = tags.joined(separator: ",")
-        modifier[.relationships] = relationships.isEmpty ? nil : relationships
+        
+        let formatter = PublicRecordFormatter()
+        modifier[.tags] = formatter.databaseTags(fromLocalTags: tags)
+        modifier[.relationships] = formatter.validDatabaseList(relationships)
         
         let collectionRID = CKRecord.ID(recordName: collectionID)
         let collectionRef = CKRecord.Reference(recordID: collectionRID, action: .deleteSelf)

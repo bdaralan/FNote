@@ -414,10 +414,10 @@ extension CommunityViewModel {
         let model = CommunityViewModel()
         model.sections = [
             .init(type: .recentCollection, title: "Recent Collections", items: [
-                .init(itemID: "01", object: PublicCollection(collectionID: "01", authorID: "", name: "Korean 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "KOR", secondaryLanguage: "ENG", tags: ["Food", "Greeting", "Travel"], cardsCount: 49)),
-                .init(itemID: "02", object: PublicCollection(collectionID: "02", authorID: "", name: "Japanese 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "JPN", secondaryLanguage: "ENG", tags: ["Beginner", "Pro", "Noob"], cardsCount: 92)),
-                .init(itemID: "03", object: PublicCollection(collectionID: "03", authorID: "", name: "Korean 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "KOR", secondaryLanguage: "ENG", tags: ["Food", "Greeting", "Travel"], cardsCount: 49)),
-                .init(itemID: "04", object: PublicCollection(collectionID: "04", authorID: "", name: "Japanese 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "JPN", secondaryLanguage: "ENG", tags: ["Beginner", "Pro", "Noob"], cardsCount: 92))
+                .init(itemID: "01", object: PublicCollection(collectionID: "01", authorID: "", authorName: "", name: "Korean 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "KOR", secondaryLanguage: "ENG", tags: ["Food", "Greeting", "Travel"], cardsCount: 49)),
+                .init(itemID: "02", object: PublicCollection(collectionID: "02", authorID: "", authorName: "", name: "Japanese 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "JPN", secondaryLanguage: "ENG", tags: ["Beginner", "Pro", "Noob"], cardsCount: 92)),
+                .init(itemID: "03", object: PublicCollection(collectionID: "03", authorID: "", authorName: "", name: "Korean 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "KOR", secondaryLanguage: "ENG", tags: ["Food", "Greeting", "Travel"], cardsCount: 49)),
+                .init(itemID: "04", object: PublicCollection(collectionID: "04", authorID: "", authorName: "", name: "Japanese 101", description: "Some long description text that will fill the text rectangle box.", primaryLanguage: "JPN", secondaryLanguage: "ENG", tags: ["Beginner", "Pro", "Noob"], cardsCount: 92))
             ]),
             
             .init(type: .randomCollection, title: "Random Collections", items: []),
@@ -432,7 +432,7 @@ extension CommunityViewModel {
         
         let collections = (1...9).map { number -> PublicSectionItem in
             let collectionID = "collection\(number)"
-            let collection = PublicCollection(collectionID: collectionID, authorID: "----", name: "---------", description: "----", primaryLanguage: "---", secondaryLanguage: "---", tags: [], cardsCount: 0)
+            let collection = PublicCollection(collectionID: collectionID, authorID: "----", authorName: "", name: "---------", description: "----", primaryLanguage: "---", secondaryLanguage: "---", tags: [], cardsCount: 0)
             let item = PublicSectionItem(itemID: collectionID, object: collection)
             return item
         }

@@ -177,7 +177,7 @@ extension HomeCommunityView {
         }
         
         let search = BDButtonTrayItem(title: "Search", systemImage: "magnifyingglass") { item in
-            print(item.title)
+            self.sheet.present(.search)
         }
         
         let cachedUser = AppCache.cachedUser()
@@ -240,6 +240,7 @@ extension HomeCommunityView {
     enum Sheet: BDPresentationSheetItem {
         case publishCollection
         case user
+        case search
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
@@ -250,12 +251,15 @@ extension HomeCommunityView {
         case .user:
             return PublicUserView(viewModel: publicUserViewModel!)
                 .eraseToAnyView()
+        case .search:
+            return PublicRecordSearchView()
+                .eraseToAnyView()
         }
     }
     
     func handleSheetDismissed() {
         switch sheet.previous {
-        case .publishCollection, nil: break
+        case .publishCollection, .search, nil: break
         case .user: publicUserViewModel = nil
         }
     }
@@ -343,6 +347,7 @@ extension HomeCommunityView {
         let publicCollection = PublicCollection(
             collectionID: publicCollectionID,
             authorID: formModel.author.userID,
+            authorName: formModel.author.username,
             name: formModel.publishCollectionName,
             description: formModel.publishDescription,
             primaryLanguage: primaryLanguage.code,

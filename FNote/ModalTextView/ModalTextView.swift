@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import BDUIKnit
 
 
 struct ModalTextView: View {
@@ -44,7 +45,7 @@ struct ModalTextView: View {
 extension ModalTextView {
     
     var dragHandle: some View {
-        ModalDragHandle(hideOnLandscape: true)
+        BDModalDragHandle(color: .primary, hideOnVerticalCompact: true)
             .padding(.top, 8)
     }
 }

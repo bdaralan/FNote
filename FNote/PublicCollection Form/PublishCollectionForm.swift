@@ -246,15 +246,16 @@ extension PublishCollectionForm {
         
         // add tag action
         textFieldModel.onReturnKey = {
-            let newToken = self.textFieldModel.text.trimmedComma().lowercased()
+            let formatter = PublicRecordFormatter()
+            let text = formatter.validDatabaseTag(self.textFieldModel.text)
             
-            if newToken.isEmpty {
+            guard let newTag = text, newTag.isEmpty == false else {
                 self.textFieldModel.text = ""
                 return
             }
             
             // check duplicate
-            if self.textFieldModel.tokens.contains(newToken) {
+            if self.textFieldModel.tokens.contains(newTag) {
                 self.textFieldModel.prompt = "Duplicate tag"
                 self.textFieldModel.promptColor = .red
                 return
@@ -268,7 +269,7 @@ extension PublishCollectionForm {
             }
             
             // add tag
-            self.textFieldModel.tokens.append(newToken)
+            self.textFieldModel.tokens.append(newTag)
             self.textFieldModel.text = ""
             setDefaultPrompt()
         }

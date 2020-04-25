@@ -54,6 +54,13 @@ class PublicRecordManager {
         }
     }
     
+    func cacheRecords(_ records: Set<CKRecord>, usingRecordField field: RecordField) {
+        for record in records {
+            guard let key = record[field.stringValue] as? String else { return }
+            cache.setObject(record, forKey: NSString(string: key))
+        }
+    }
+    
     func performQuery(operation: CKQueryOperation, completion: @escaping QueryCompletionBlock) {
         var records = [CKRecord]()
         

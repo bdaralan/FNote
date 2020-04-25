@@ -22,6 +22,10 @@ extension String {
         self.replacingOccurrences(of: ",", with: "").trimmed()
     }
     
+    func trimmedPipe() -> String {
+        self.replacingOccurrences(of: "|", with: "").trimmed()
+    }
+    
     func trimmedUsername() -> String {
         let allows = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
         let username = self.filter({ allows.contains($0) })
