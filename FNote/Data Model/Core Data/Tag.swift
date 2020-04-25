@@ -37,6 +37,26 @@ class Tag: NSManagedObject, Identifiable, ObjectValidatable {
 }
 
 
+// MARK: - Setter
+
+extension Tag {
+    
+    fileprivate func setName(_ string: String) {
+        name = string.trimmed()
+    }
+}
+
+
+// MARK: - Object Modifier Setter
+
+extension ObjectModifier where Object == Tag {
+    
+    func setName(_ string: String) {
+        modifiedObject.setName(string)
+    }
+}
+
+
 extension Tag {
     
     func isValid() -> Bool {

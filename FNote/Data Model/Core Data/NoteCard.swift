@@ -45,6 +45,110 @@ class NoteCard: NSManagedObject, Identifiable, ObjectValidatable {
 }
 
 
+// MARK: - Setter
+
+extension NoteCard {
+    
+    fileprivate func setNative(_ string: String) {
+        native = string.trimmed()
+    }
+    
+    fileprivate func setTranslation(_ string: String) {
+        translation = string.trimmed()
+    }
+    
+    fileprivate func setFavorite(_ bool: Bool) {
+        isFavorite = bool
+    }
+    
+    fileprivate func setFormality(_ formality: Formality) {
+        self.formalityValue = formality.rawValue
+    }
+    
+    fileprivate func setNote(_ string: String) {
+        note = string.trimmed()
+    }
+    
+    fileprivate func setCollection(_ collection: NoteCardCollection) {
+        self.collection = collection
+    }
+    
+    fileprivate func setRelationships(_ noteCards: Set<NoteCard>) {
+        if relationships.contains(self) {
+            var relationships = noteCards
+            relationships.remove(self)
+            self.relationships = relationships
+        } else {
+            self.relationships = noteCards
+        }
+    }
+    
+    fileprivate func addRelationships(_ noteCard: NoteCard) {
+        guard noteCard !== self else { return }
+        relationships.insert(noteCard)
+    }
+    
+    fileprivate func setTags(_ tags: Set<Tag>) {
+        self.tags = tags
+    }
+    
+    fileprivate func addTag(_ tag: Tag) {
+        tags.insert(tag)
+    }
+}
+
+
+// MARK: - Object Modifier Setter
+
+extension ObjectModifier where Object == NoteCard {
+    
+    func setNative(_ string: String) {
+        modifiedObject.setNative(string)
+    }
+    
+    func setTranslation(_ string: String) {
+        modifiedObject.setTranslation(string)
+    }
+    
+    func setFavorite(_ bool: Bool) {
+        modifiedObject.setFavorite(bool)
+    }
+    
+    func setFormality(_ formality: NoteCard.Formality) {
+        modifiedObject.setFormality(formality)
+    }
+    
+    func setNote(_ string: String) {
+        modifiedObject.setNote(string)
+    }
+    
+    func setCollection(_ collection: NoteCardCollection) {
+        let collection = collection.get(from: modifiedContext)
+        modifiedObject.setCollection(collection)
+    }
+    
+    func setRelationships(_ noteCards: Set<NoteCard>) {
+        let noteCards = noteCards.map({ $0.get(from: modifiedContext) })
+        modifiedObject.setRelationships(Set(noteCards))
+    }
+    
+    func addRelationships(_ noteCard: NoteCard) {
+        let noteCard = noteCard.get(from: modifiedContext)
+        modifiedObject.addRelationships(noteCard)
+    }
+    
+    func setTags(_ tags: Set<Tag>) {
+        let tags = tags.map({ $0.get(from: modifiedContext) })
+        modifiedObject.setTags(Set(tags))
+    }
+    
+    func addTag(_ tag: Tag) {
+        let tag = tag.get(from: modifiedContext)
+        modifiedObject.addTag(tag)
+    }
+}
+
+
 extension NoteCard {
     
     func isValid() -> Bool {
@@ -64,36 +168,6 @@ extension NoteCard {
         setPrimitiveValue(native.trimmed(), forKey: #keyPath(NoteCard.native))
         setPrimitiveValue(translation.trimmed(), forKey: #keyPath(NoteCard.translation))
         setPrimitiveValue(note.trimmed(), forKey: #keyPath(NoteCard.note))
-    }
-}
-
-
-extension NoteCard {
-    
-    func addRelationships(_ noteCards: Set<NoteCard>) {
-        for noteCard in noteCards where noteCard !== self {
-            relationships.insert(noteCard)
-        }
-    }
-    
-    func addTags(_ tags: Set<Tag>) {
-        for tag in tags {
-            self.tags.insert(tag)
-        }
-    }
-    
-    func setTags(_ tags: Set<Tag>) {
-        self.tags = tags
-    }
-    
-    func setRelationships(_ relationships: Set<NoteCard>) {
-        if relationships.contains(self) {
-            var relationships = relationships
-            relationships.remove(self)
-            self.relationships = relationships
-        } else {
-            self.relationships = relationships
-        }
     }
 }
 

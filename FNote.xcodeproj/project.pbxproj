@@ -74,6 +74,7 @@
 		B49865E6242C6C7800145EBB /* SettingViewController+Wrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49865E5242C6C7800145EBB /* SettingViewController+Wrapper.swift */; };
 		B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35B2326D988002D16A0 /* CoreDataStack.swift */; };
 		B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B499A35D2326D9A7002D16A0 /* AppCache.swift */; };
+		B49A14072454705200AA1BF5 /* ObjectModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49A14062454705200AA1BF5 /* ObjectModifier.swift */; };
 		B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C6923D628760030D9B2 /* HomeView.swift */; };
 		B49C4C7123D65C850030D9B2 /* HomeNoteCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C7023D65C850030D9B2 /* HomeNoteCardView.swift */; };
 		B49C4C7323D69E6C0030D9B2 /* NoteCardFormModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C7223D69E6C0030D9B2 /* NoteCardFormModel.swift */; };
@@ -197,6 +198,7 @@
 		B49865E5242C6C7800145EBB /* SettingViewController+Wrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingViewController+Wrapper.swift"; sourceTree = "<group>"; };
 		B499A35B2326D988002D16A0 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		B499A35D2326D9A7002D16A0 /* AppCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCache.swift; sourceTree = "<group>"; };
+		B49A14062454705200AA1BF5 /* ObjectModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectModifier.swift; sourceTree = "<group>"; };
 		B49C4C6923D628760030D9B2 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B49C4C7023D65C850030D9B2 /* HomeNoteCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeNoteCardView.swift; sourceTree = "<group>"; };
 		B49C4C7223D69E6C0030D9B2 /* NoteCardFormModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardFormModel.swift; sourceTree = "<group>"; };
@@ -359,6 +361,7 @@
 				B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */,
 				B4BAC5382320405B007EAF15 /* Tag.swift */,
 				B4BAC540232041FE007EAF15 /* ObjectValidatable.swift */,
+				B49A14062454705200AA1BF5 /* ObjectModifier.swift */,
 			);
 			path = "Core Data";
 			sourceTree = "<group>";
@@ -782,6 +785,7 @@
 				B499A35E2326D9A7002D16A0 /* AppCache.swift in Sources */,
 				B4BBDBF323E4F6D000A0AEA1 /* CGFloat.swift in Sources */,
 				B4113FB923D2D539004E70DC /* NoteCardCell.swift in Sources */,
+				B49A14072454705200AA1BF5 /* ObjectModifier.swift in Sources */,
 				B420059D23F64E00008F5E63 /* OnboardView.swift in Sources */,
 				B435DD4F244EBC7500D8A7C9 /* PublicUserViewModel.swift in Sources */,
 				B476FE26241DDFA00006A196 /* PublishCollectionFormModel.swift in Sources */,

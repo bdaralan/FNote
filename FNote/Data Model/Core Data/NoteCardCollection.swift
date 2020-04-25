@@ -32,6 +32,35 @@ class NoteCardCollection: NSManagedObject, Identifiable, ObjectValidatable {
 }
 
 
+// MARK: - Setter
+
+extension NoteCardCollection {
+    
+    fileprivate func setName(_ string: String) {
+        name = string.trimmed()
+    }
+    
+    fileprivate func addNoteCard(_ noteCard: NoteCard) {
+        noteCards.insert(noteCard)
+    }
+}
+
+
+// MARK: - Object Modifier Setter
+
+extension ObjectModifier where Object == NoteCardCollection {
+    
+    func setName(_ string: String) {
+        modifiedObject.setName(string)
+    }
+    
+    func addNoteCard(_ noteCard: NoteCard) {
+        let noteCard = noteCard.get(from: modifiedContext)
+        modifiedObject.addNoteCard(noteCard)
+    }
+}
+
+
 extension NoteCardCollection {
     
     func isValid() -> Bool {

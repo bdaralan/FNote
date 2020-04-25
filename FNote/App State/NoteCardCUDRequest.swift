@@ -52,7 +52,9 @@ class NoteCardCUDRequest: ObjectCUDRequest {
         object.formality = formality
         object.isFavorite = isFavorite
         object.note = note
-        object.setRelationships(relationships)
-        object.setTags(tags)
+        
+        // MARK: TODO UPDATE
+//        object.setRelationships(relationships)
+//        object.setTags(tags)
     }
 }

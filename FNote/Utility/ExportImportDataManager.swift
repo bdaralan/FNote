@@ -93,16 +93,18 @@ struct ExportImportDataManager {
                 data.setPrimitiveValues(to: noteCard)
             }
             
+            // MARK: TODO UPDATE
+            
             // set collection, relationships, and tags to note cards
-            for data in exportData.noteCards {
-                let noteCard = noteCardMap[data.uuid]!
-                let collection = collectionMap[data.collectionID]!
-                let relationships = data.relationshipIDs.compactMap({ noteCardMap[$0] })
-                let tags = data.tagIDs.compactMap({ tagMap[$0] })
-                noteCard.collection = collection
-                noteCard.setRelationships(Set(relationships))
-                noteCard.setTags(Set(tags))
-            }
+//            for data in exportData.noteCards {
+//                let noteCard = noteCardMap[data.uuid]!
+//                let collection = collectionMap[data.collectionID]!
+//                let relationships = data.relationshipIDs.compactMap({ noteCardMap[$0] })
+//                let tags = data.tagIDs.compactMap({ tagMap[$0] })
+//                noteCard.collection = collection
+//                noteCard.setRelationships(Set(relationships))
+//                noteCard.setTags(Set(tags))
+//            }
             
             if deleteCurrentData {
                 eraseCurrentData()
@@ -122,20 +124,22 @@ struct ExportImportDataManager {
                     existingTagMap[existingTag.name.lowercased()] = existingTag.get(from: importContext)
                 }
                 
-                var importingTagsToDelete = Set<Tag>()
+                let importingTagsToDelete = Set<Tag>()
+                
+                // MARK: TODO UPDATE
                 
                 // step 3 - find matching tag and add the existing into note cards
-                for importingTag in tagMap.values {
-                    let lowercasedName = importingTag.name.lowercased()
-                    if let existingTag = existingTagMap[lowercasedName] {
-                        importingTagsToDelete.insert(importingTag)
-                        for noteCard in importingTag.noteCards {
-                            if noteCard.tags.contains(importingTag) {
-                                noteCard.addTags([existingTag])
-                            }
-                        }
-                    }
-                }
+//                for importingTag in tagMap.values {
+//                    let lowercasedName = importingTag.name.lowercased()
+//                    if let existingTag = existingTagMap[lowercasedName] {
+//                        importingTagsToDelete.insert(importingTag)
+//                        for noteCard in importingTag.noteCards {
+//                            if noteCard.tags.contains(importingTag) {
+//                                noteCard.addTags([existingTag])
+//                            }
+//                        }
+//                    }
+//                }
                 
                 // step 4 - delete the matching importing tags
                 for importingTag in importingTagsToDelete {
