@@ -157,9 +157,21 @@ extension HomeTagView {
             return
         }
         
-        let request = TagCUDRequest(name: name)
-        let result = appState.createTag(with: request)
-        handleTagCUDResult(result)
+        if appState.isDuplicateTagName(name) {
+            textFieldModel.prompt = "Duplicate tag name!"
+            textFieldModel.promptColor = .red
+            return
+        }
+        
+        var tagModifier = ObjectModifier<Tag>(.create(appState.parentContext))
+        tagModifier.name = name
+        tagModifier.save()
+        
+        appState.fetchTags()
+        viewModel.tags = appState.tags
+        viewModel.updateSnapshot(animated: true)
+        textFieldModel.isFirstResponder = false
+        sheet.dismiss()
     }
 }
 
@@ -187,15 +199,27 @@ extension HomeTagView {
     func commitRenameTag(_ tag: Tag) {
         let name = textFieldModel.text.trimmed()
         
-        if name.isEmpty {
+        if name.isEmpty || name == tag.name {
             textFieldModel.isFirstResponder = false
             sheet.dismiss()
             return
         }
         
-        let request = TagCUDRequest(name: name)
-        let result = appState.updateTag(tag, with: request)
-        handleTagCUDResult(result)
+        if appState.isDuplicateTagName(name) {
+            textFieldModel.prompt = "Duplicate tag name!"
+            textFieldModel.promptColor = .red
+            return
+        }
+        
+        var tagModifier = ObjectModifier<Tag>(.update(tag))
+        tagModifier.name = name
+        tagModifier.save()
+        
+        appState.fetchTags()
+        viewModel.tags = appState.tags
+        viewModel.updateSnapshot(animated: true)
+        textFieldModel.isFirstResponder = false
+        sheet.dismiss()
     }
 }
 
@@ -212,8 +236,14 @@ extension HomeTagView {
     }
     
     func commitDeleteTag(_ tag: Tag) {
-        let result = appState.deleteObject(tag)
-        handleTagCUDResult(result)
+        let tagModifier = ObjectModifier<Tag>(.update(tag))
+        tagModifier.delete()
+        tagModifier.save()
+        
+        appState.fetchTags()
+        viewModel.tags = appState.tags
+        viewModel.updateSnapshot(animated: true)
+        sheet.dismiss()
     }
     
     func beginDeleteUnusedTags() {
@@ -224,14 +254,15 @@ extension HomeTagView {
     }
     
     func commitDeleteUnusedTags() {
-        defer { trayViewModel.expanded = false }
-        let result = appState.deleteUnusedTags()
-        guard case .deleted(let childContext) = result else { return }
-        childContext.quickSave()
-        childContext.parent?.quickSave()
-        appState.fetchTags()
-        viewModel.tags = appState.tags
-        viewModel.updateSnapshot(animated: true)
+        let parentContext = appState.parentContext
+        let deleted = appState.deleteUnusedTags(in: parentContext)
+        if deleted {
+            parentContext.quickSave()
+            appState.fetchTags()
+            viewModel.tags = appState.tags
+            viewModel.updateSnapshot(animated: true)
+        }
+        trayViewModel.expanded = false
     }
 }
 
@@ -259,44 +290,6 @@ extension HomeTagView {
         switch menu {
         case .rename: beginRenameTag(tag)
         case .delete: beginDeleteTag(tag)
-        }
-    }
-    
-    func handleTagCUDResult(_ result: ObjectCUDResult<Tag>) {
-        switch result {
-        case .created(_, let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            appState.fetchTags()
-            viewModel.tags = appState.tags
-            viewModel.updateSnapshot(animated: true)
-            textFieldModel.isFirstResponder = false
-            sheet.dismiss()
-            
-        case .updated(_, let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            appState.fetchTags()
-            viewModel.tags = appState.tags
-            viewModel.updateSnapshot(animated: true)
-            textFieldModel.isFirstResponder = false
-            sheet.dismiss()
-            
-        case .deleted(let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            appState.fetchTags()
-            viewModel.tags = appState.tags
-            viewModel.updateSnapshot(animated: true)
-            sheet.dismiss()
-            
-        case .unchanged:
-            textFieldModel.isFirstResponder = false
-            sheet.dismiss()
-            
-        case .failed: // TODO: inform user if needed
-            textFieldModel.prompt = "Duplicate tag name!"
-            textFieldModel.promptColor = .red
         }
     }
 }

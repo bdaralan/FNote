@@ -11,23 +11,16 @@ import Foundation
 import CoreData
 
 
-class NoteCardCollection: NSManagedObject, Identifiable, ObjectValidatable {
+class NoteCardCollection: NSManagedObject {
 
     @NSManaged private(set) var uuid: String
-    @NSManaged var name: String
-    @NSManaged var noteCards: Set<NoteCard>
+    @NSManaged private(set) var name: String
+    @NSManaged private(set) var noteCards: Set<NoteCard>
     
     
     override func awakeFromInsert() {
         super.awakeFromInsert()
         uuid = UUID().uuidString
-    }
-    
-    override func willSave() {
-        if !isDeleted {
-            validateData()
-        }
-        super.willSave()
     }
 }
 
@@ -50,33 +43,14 @@ extension NoteCardCollection {
 
 extension ObjectModifier where Object == NoteCardCollection {
     
-    func setName(_ string: String) {
-        modifiedObject.setName(string)
+    var name: String {
+        set { modifiedObject.setName(newValue) }
+        get { modifiedObject.name }
     }
     
     func addNoteCard(_ noteCard: NoteCard) {
         let noteCard = noteCard.get(from: modifiedContext)
         modifiedObject.addNoteCard(noteCard)
-    }
-}
-
-
-extension NoteCardCollection {
-    
-    func isValid() -> Bool {
-        hasValidInputs()
-    }
-    
-    func hasValidInputs() -> Bool {
-        !name.trimmed().isEmpty
-    }
-    
-    func hasChangedValues() -> Bool {
-        hasPersistentChangedValues
-    }
-    
-    func validateData() {
-        setPrimitiveValue(name.trimmedComma(), forKey: #keyPath(NoteCardCollection.name))
     }
 }
 

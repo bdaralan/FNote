@@ -20,8 +20,8 @@ struct HomeNoteCardCollectionView: View {
     @State private var sheet = BDPresentationItem<Sheet>()
     @State private var textFieldModel = BDModalTextFieldModel()
     
-    @State private var collectionToDelete: NoteCardCollection?
-    @State private var collectionIDToDelete: String?
+    @State private var alert: Alert?
+    @State private var presentAlert = false
     
     var onSelected: ((NoteCardCollection) -> Void)?
     var onRenamed: ((NoteCardCollection) -> Void)?
@@ -38,7 +38,7 @@ struct HomeNoteCardCollectionView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet.current, content: presentationSheet)
-        .alert(item: $collectionToDelete, content: deleteNoteCardCollectionAlert)
+        .alert(isPresented: $presentAlert, content: { self.alert! })
         .onAppear(perform: setupOnAppear)
     }
 }
@@ -138,15 +138,27 @@ extension HomeNoteCardCollectionView {
     func commitRenameNoteCardCollection(_ collection: NoteCardCollection) {
         let name = textFieldModel.text.trimmed()
         
-        guard !name.isEmpty else {
+        if name.isEmpty || name == collection.name {
             textFieldModel.isFirstResponder = false
             sheet.dismiss()
             return
         }
         
-        let request = NoteCardCollectionCUDRequest(name: name)
-        let result = appState.updateNoteCardCollection(collection, with: request)
-        handleNoteCardCollectionCUDResult(result)
+        if appState.isDuplicateCollectionName(name) {
+            textFieldModel.prompt = "Duplicate collection name!"
+            textFieldModel.promptColor = .red
+            return
+        }
+        
+        var collectionModifier = ObjectModifier<NoteCardCollection>(.update(collection))
+        collectionModifier.name = name
+        collectionModifier.save()
+        
+        appState.fetchCollections()
+        viewModel.collections = appState.collections
+        viewModel.updateSnapshot(animated: true)
+        textFieldModel.isFirstResponder = false
+        sheet.dismiss()
     }
 }
 
@@ -155,74 +167,32 @@ extension HomeNoteCardCollectionView {
 
 extension HomeNoteCardCollectionView {
     
-    func deleteNoteCardCollectionAlert(_ collection: NoteCardCollection) -> Alert {
-        let cancel = cancelDeleteNoteCardCollection
-        let delete = { self.commitDeleteNoteCardCollection(collection) }
-        return Alert.DeleteNoteCardCollection(collection, onCancel: cancel, onDelete: delete)
-    }
-    
     func beginDeleteNoteCardCollection(_ collection: NoteCardCollection) {
-        collectionToDelete = collection
-        collectionIDToDelete = collection.uuid
-    }
-    
-    func cancelDeleteNoteCardCollection() {
-        collectionToDelete = nil
-        collectionIDToDelete = nil
+        let cancel = { self.presentAlert = false }
+        let delete = { self.commitDeleteNoteCardCollection(collection) }
+        alert = Alert.DeleteNoteCardCollection(collection, onCancel: cancel, onDelete: delete)
+        presentAlert = true
     }
     
     func commitDeleteNoteCardCollection(_ collection: NoteCardCollection) {
-        let result = appState.deleteObject(collection)
-        handleNoteCardCollectionCUDResult(result)
-    }
-}
-
-
-// MARK: - CUD Result
-
-extension HomeNoteCardCollectionView {
-
-    func handleNoteCardCollectionCUDResult(_ result: ObjectCUDResult<NoteCardCollection>) {
-        switch result {
-        case .created:
-            fatalError("🧨 unexpected use case for handleNoteCardCollectionCUDResult 🧨")
-            
-        case .updated(_, let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            appState.fetchCollections()
-            viewModel.collections = appState.collections
-            viewModel.updateSnapshot(animated: true)
-            textFieldModel.isFirstResponder = false
-            sheet.dismiss()
-            
-        case .deleted(let childContext):
-            guard let collectionID = collectionIDToDelete else {
-                fatalError("🧨 attempt to delete collection without keeping a reference of its ID 🧨")
-            }
-            
-            if collectionID == appState.currentCollection?.uuid {
-                appState.setCurrentCollection(nil)
-                UISelectionFeedbackGenerator().selectionChanged()
-            }
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            appState.fetchCollections()
-            viewModel.collections = appState.collections
-            viewModel.updateSnapshot(animated: true)
-
-            collectionToDelete = nil
-            collectionIDToDelete = nil
-            onDeleted?(collectionID)
-            
-        case .unchanged:
-            textFieldModel.isFirstResponder = false
-            sheet.dismiss()
-            
-        case .failed: // TODO: inform user if needed
-            textFieldModel.prompt = "Duplicate collection name!"
-            textFieldModel.promptColor = .orange
+        let collectionID = collection.uuid // keep the ID value before it is deleted
+        
+        if collectionID == appState.currentCollection?.uuid {
+            appState.setCurrentCollection(nil)
+            UISelectionFeedbackGenerator().selectionChanged()
         }
+        
+        let collectionModifier = ObjectModifier<NoteCardCollection>(.update(collection))
+        collectionModifier.delete()
+        collectionModifier.save()
+        
+        appState.fetchCollections()
+        viewModel.collections = appState.collections
+        viewModel.updateSnapshot(animated: true)
+        
+        presentAlert = false
+        
+        onDeleted?(collectionID)
     }
 }
 

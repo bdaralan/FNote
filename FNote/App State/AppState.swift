@@ -44,9 +44,6 @@ class AppState: ObservableObject {
     var noteCardSortOption: NoteCardSortField = .translation
     var noteCardSortOptionAscending = true
     
-    @Published var showDidCopyFileAlert = false
-    var copiedFileName = ""
-    
     
     // MARK: Fetch Controller
     
@@ -141,167 +138,50 @@ extension AppState {
 }
 
 
-// MARK: - Create & Update Object
-
-extension AppState {
-    
-    func createNoteCard(with request: NoteCardCUDRequest) -> ObjectCUDResult<NoteCard> {
-        let context = parentContext.newChildContext()
-        let noteCard = NoteCard(context: context)
-        
-        request.changeContext(context)
-        request.update(noteCard)
-        
-        if noteCard.isValid() {
-            return .created(noteCard, context)
-        }
-        
-        return .failed
-    }
-    
-    func updateNoteCard(_ noteCard: NoteCard, with request: NoteCardCUDRequest) -> ObjectCUDResult<NoteCard> {
-        let context = parentContext.newChildContext()
-        let noteCardToUpdate = noteCard.get(from: context)
-        
-        request.changeContext(context)
-        request.update(noteCardToUpdate)
-            
-        if noteCardToUpdate.isValid() {
-            return .updated(noteCardToUpdate, context)
-        }
-            
-        return .failed
-    }
-    
-    func createNoteCardCollection(with request: NoteCardCollectionCUDRequest) -> ObjectCUDResult<NoteCardCollection> {
-        let context = parentContext.newChildContext()
-        let collection = NoteCardCollection(context: context)
-        
-        request.changeContext(context)
-        request.update(collection)
-        
-        if collection.isValid() {
-            let names = collections.map({ $0.name })
-            if Self.isNameUnique(collection.name, existingNames: names) {
-                return .created(collection, context)
-            }
-        }
-        
-        return .failed
-    }
-    
-    func updateNoteCardCollection(_ collection: NoteCardCollection, with request: NoteCardCollectionCUDRequest) -> ObjectCUDResult<NoteCardCollection> {
-        let context = parentContext.newChildContext()
-        let collectionToUpdate = collection.get(from: context)
-        
-        request.changeContext(context)
-        request.update(collectionToUpdate)
-        
-        if collectionToUpdate.isValid() {
-            let currentName = collection.name
-            let updatedName = collectionToUpdate.name
-            
-            if currentName.lowercased() == updatedName.lowercased() {
-                if currentName == updatedName {
-                    return .unchanged
-                } else {
-                    return .updated(collectionToUpdate, context)
-                }
-            }
-            
-            let names = collections.map({ $0.name })
-            if Self.isNameUnique(collectionToUpdate.name, existingNames: names) {
-                return .updated(collectionToUpdate, context)
-            }
-        }
-        
-        return .failed
-    }
-    
-    func createTag(with request: TagCUDRequest) -> ObjectCUDResult<Tag> {
-        let context = parentContext.newChildContext()
-        let tag = Tag(context: context)
-        
-        request.changeContext(context)
-        request.update(tag)
-        
-        if tag.isValid() {
-            let names = tags.map({ $0.name })
-            if Self.isNameUnique(tag.name, existingNames: names) {
-                return .created(tag, context)
-            }
-        }
-        
-        return .failed
-    }
-    
-    func updateTag(_ tag: Tag, with request: TagCUDRequest) -> ObjectCUDResult<Tag> {
-        let context = parentContext.newChildContext()
-        let tagToUpdate = tag.get(from: context)
-        
-        request.changeContext(context)
-        request.update(tagToUpdate)
-        
-        if tag.isValid() {
-            let currentName = tag.name
-            let updatedName = tagToUpdate.name
-            
-            if currentName.lowercased() == updatedName.lowercased() {
-                if currentName == updatedName {
-                    return .unchanged
-                } else {
-                    return .updated(tagToUpdate, context)
-                }
-            }
-            
-            let names = tags.map({ $0.name })
-            if Self.isNameUnique(updatedName, existingNames: names) {
-                return .updated(tagToUpdate, context)
-            }
-        }
-        
-        return .failed
-    }
-}
-
-
 // MARK: - Delete Object
 
 extension AppState {
-        
-    func deleteObject<T>(_ object: T) -> ObjectCUDResult<T> where T: NSManagedObject {
-        let context = parentContext.newChildContext()
-        let objectToDelete = object.get(from: context)
-        context.delete(objectToDelete)
-        return .deleted(context)
-    }
     
-    func deleteUnusedTags() -> ObjectCUDResult<Tag> {
-        let tagsToDelete = tags.filter({ $0.noteCards.isEmpty })
+    func deleteUnusedTags(in context: NSManagedObjectContext) -> Bool {
+        var deleted = false
         
-        if tagsToDelete.isEmpty {
-            let result = ObjectCUDResult<Tag>.unchanged
-            return result
+        let predicate = NSPredicate(value: true)
+        let request = Tag.fetchRequest() as NSFetchRequest<Tag>
+        request.predicate = predicate
+        request.sortDescriptors = []
+        
+        let results = (try? context.fetch(request)) ?? []
+        
+        for tag in results where tag.noteCards.isEmpty {
+            deleted = true
+            context.delete(tag)
         }
         
-        let context = parentContext.newChildContext()
-        for tag in tagsToDelete {
-            let tagInContext = tag.get(from: context)
-            context.delete(tagInContext)
-        }
-        
-        let result = ObjectCUDResult<Tag>.deleted(context)
-        return result
+        return deleted
     }
 }
 
 
 extension AppState {
     
-    static func isNameUnique(_ name: String, existingNames: [String]) -> Bool {
-        let names = existingNames.map({ $0.lowercased() })
-        let name = name.trimmed().lowercased()
-        return !names.contains(name)
+    func isDuplicateTagName(_ name: String) -> Bool {
+        let nameField = #keyPath(Tag.name)
+        let predicate = NSPredicate(format: "\(nameField) =[c] %@", name)
+        let request = Tag.fetchRequest() as NSFetchRequest<Tag>
+        request.predicate = predicate
+        request.sortDescriptors = []
+        let results = (try? parentContext.fetch(request)) ?? []
+        return results.isEmpty == false
+    }
+    
+    func isDuplicateCollectionName(_ name: String) -> Bool {
+        let nameField = #keyPath(NoteCardCollection.name)
+        let predicate = NSPredicate(format: "\(nameField) =[c] %@", name)
+        let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
+        request.predicate = predicate
+        request.sortDescriptors = []
+        let results = (try? parentContext.fetch(request)) ?? []
+        return results.isEmpty == false
     }
 }
 

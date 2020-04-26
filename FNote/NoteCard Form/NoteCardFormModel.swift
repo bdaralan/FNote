@@ -126,20 +126,6 @@ extension NoteCardFormModel {
 
 extension NoteCardFormModel {
     
-    func createNoteCardCUDRequest() -> NoteCardCUDRequest? {
-        guard let collection = selectedCollection else { return nil }
-        return NoteCardCUDRequest(
-            collection: collection,
-            native: native,
-            translation: translation,
-            formality: selectedFormality,
-            isFavorite: isFavorite,
-            note: note,
-            relationships: selectedRelationships,
-            tags: selectedTags
-        )
-    }
-    
     func update(with noteCard: NoteCard) {
         selectedCollection = noteCard.collection!
         

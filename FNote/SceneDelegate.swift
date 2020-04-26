@@ -76,20 +76,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let sourceURL = URLContexts.first?.url else { return }
-        let supportedTypes = FNSupportFileType.allCases.map({ $0.rawValue })
         
-        guard supportedTypes.contains(sourceURL.pathExtension) else { return }
-        let copied = ExportImportDataManager.copyFileToDocumentFolder(fileURL: sourceURL)
-        if copied {
-            DispatchQueue.main.async {
-                let file = sourceURL.lastPathComponent
-                let fileExtension = sourceURL.pathExtension
-                let fileName = file.replacingOccurrences(of: ".\(fileExtension)", with: "")
-                self.appState.copiedFileName = fileName
-                self.appState.showDidCopyFileAlert = true
-            }
-        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

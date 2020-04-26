@@ -12,14 +12,14 @@ import CoreData
 import SwiftUI
 
 
-class NoteCard: NSManagedObject, Identifiable, ObjectValidatable {
+class NoteCard: NSManagedObject {
     
     @NSManaged private(set) var uuid: String
-    @NSManaged var native: String
-    @NSManaged var translation: String
-    @NSManaged var isFavorite: Bool
-    @NSManaged var note: String
-    @NSManaged var collection: NoteCardCollection?
+    @NSManaged private(set) var native: String
+    @NSManaged private(set) var translation: String
+    @NSManaged private(set) var isFavorite: Bool
+    @NSManaged private(set) var note: String
+    @NSManaged private(set) var collection: NoteCardCollection?
     @NSManaged private(set) var relationships: Set<NoteCard>
     @NSManaged private(set) var tags: Set<Tag>
     
@@ -34,13 +34,6 @@ class NoteCard: NSManagedObject, Identifiable, ObjectValidatable {
     override func awakeFromInsert() {
         super.awakeFromInsert()
         uuid = UUID().uuidString
-    }
-    
-    override func willSave() {
-        if !isDeleted {
-            validateData()
-        }
-        super.willSave()
     }
 }
 
@@ -102,24 +95,29 @@ extension NoteCard {
 
 extension ObjectModifier where Object == NoteCard {
     
-    func setNative(_ string: String) {
-        modifiedObject.setNative(string)
+    var native: String {
+        set { modifiedObject.setNative(newValue) }
+        get { modifiedObject.native }
     }
     
-    func setTranslation(_ string: String) {
-        modifiedObject.setTranslation(string)
+    var translation: String {
+        set { modifiedObject.setNative(newValue) }
+        get { modifiedObject.translation }
     }
     
-    func setFavorite(_ bool: Bool) {
-        modifiedObject.setFavorite(bool)
+    var isFavorite: Bool {
+        set { modifiedObject.setFavorite(newValue) }
+        get { modifiedObject.isFavorite }
     }
     
-    func setFormality(_ formality: NoteCard.Formality) {
-        modifiedObject.setFormality(formality)
+    var formality: NoteCard.Formality {
+        set { modifiedObject.setFormality(newValue) }
+        get { modifiedObject.formality }
     }
     
-    func setNote(_ string: String) {
-        modifiedObject.setNote(string)
+    var note: String {
+        set { modifiedObject.setNote(newValue) }
+        get { modifiedObject.note }
     }
     
     func setCollection(_ collection: NoteCardCollection) {
@@ -145,29 +143,6 @@ extension ObjectModifier where Object == NoteCard {
     func addTag(_ tag: Tag) {
         let tag = tag.get(from: modifiedContext)
         modifiedObject.addTag(tag)
-    }
-}
-
-
-extension NoteCard {
-    
-    func isValid() -> Bool {
-        hasValidInputs() && collection != nil
-    }
-    
-    func hasValidInputs() -> Bool {
-        !native.trimmed().isEmpty && !translation.trimmed().isEmpty
-    }
-    
-    func hasChangedValues() -> Bool {
-        hasPersistentChangedValues
-    }
-    
-    func validateData() {
-        setPrimitiveValue(formality.rawValue, forKey: #keyPath(NoteCard.formalityValue))
-        setPrimitiveValue(native.trimmed(), forKey: #keyPath(NoteCard.native))
-        setPrimitiveValue(translation.trimmed(), forKey: #keyPath(NoteCard.translation))
-        setPrimitiveValue(note.trimmed(), forKey: #keyPath(NoteCard.note))
     }
 }
 

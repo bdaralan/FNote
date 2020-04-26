@@ -52,7 +52,6 @@ struct HomeView: View {
         }
         .onAppear(perform: setupOnAppear)
         .sheet(item: $sheet.current, onDismiss: handleSheetDismissed, content: presentationSheet)
-        .alert(isPresented: $appState.showDidCopyFileAlert, content: { .DidCopyFileAlert(fileName: appState.copiedFileName) })
         .disabled(!appState.iCloudActive)
         .onReceive([currentTab].publisher.last(), perform: handleOnReceiveCurrentTab)
         .onReceive(storeRemoteChange.receive(on: DispatchQueue.main), perform: handleStoreRemoteChangeNotification)

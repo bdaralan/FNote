@@ -292,27 +292,23 @@ extension HomeNoteCardView {
             return
         }
         
-        let request = NoteCardCollectionCUDRequest(name: name)
-        let result = appState.createNoteCardCollection(with: request)
-        
-        switch result {
-        case .deleted, .updated, .unchanged:
-            fatalError("🧨 unexpected use case for commitCreateNoteCardCollection 🧨")
-        
-        case .created(let collection, let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            let collection = collection.get(from: appState.parentContext)
-            appState.fetchCollections()
-            appState.setCurrentCollection(collection)
-            textFieldModel.isFirstResponder = false
-            trayViewModel.expanded = false
-            sheet.dismiss()
-        
-        case .failed:
+        if appState.isDuplicateCollectionName(name) {
             textFieldModel.prompt = "Duplicate collection name!"
-            textFieldModel.promptColor = .orange
+            textFieldModel.promptColor = .red
+            return
         }
+        
+        let parentContext = appState.parentContext
+        var collectionModifier = ObjectModifier<NoteCardCollection>(.create(parentContext))
+        collectionModifier.name = name
+        collectionModifier.save()
+        
+        let newCollection = collectionModifier.modifiedObject.get(from: parentContext)
+        appState.fetchCollections()
+        appState.setCurrentCollection(newCollection)
+        textFieldModel.isFirstResponder = false
+        trayViewModel.expanded = false
+        sheet.dismiss()
     }
     
     func setNoteCardSortOption(_ option: NoteCardSortField, ascending: Bool) {
@@ -463,9 +459,23 @@ extension HomeNoteCardView {
     
     func commitCreateNoteCard() {
         guard let formModel = noteCardFormModel else { return }
-        guard let createRequest = formModel.createNoteCardCUDRequest() else { return }
-        let result = appState.createNoteCard(with: createRequest)
-        handleNoteCardCUDResult(result)
+        guard let collection = formModel.selectedCollection else { return }
+        
+        var cardModifier = ObjectModifier<NoteCard>(.create(appState.parentContext))
+        cardModifier.setCollection(collection)
+        cardModifier.native = formModel.native
+        cardModifier.translation = formModel.translation
+        cardModifier.formality = formModel.selectedFormality
+        cardModifier.isFavorite = formModel.isFavorite
+        cardModifier.note = formModel.note
+        cardModifier.setRelationships(formModel.selectedRelationships)
+        cardModifier.setTags(formModel.selectedTags)
+        cardModifier.save()
+        
+        appState.fetchCurrentNoteCards()
+        viewModel.noteCards = appState.currentNoteCards
+        viewModel.updateSnapshot(animated: true)
+        sheet.dismiss()
     }
     
     func cancelCreateNoteCard() {
@@ -526,9 +536,26 @@ extension HomeNoteCardView {
     
     func commitEditNoteCard(_ noteCard: NoteCard) {
         guard let formModel = noteCardFormModel else { return }
-        guard let request = formModel.createNoteCardCUDRequest() else { return }
-        let result = appState.updateNoteCard(noteCard, with: request)
-        handleNoteCardCUDResult(result)
+        guard let collection = formModel.selectedCollection else { return }
+        
+        var cardModifier = ObjectModifier<NoteCard>(.update(noteCard))
+        cardModifier.setCollection(collection)
+        cardModifier.native = formModel.native
+        cardModifier.translation = formModel.translation
+        cardModifier.formality = formModel.selectedFormality
+        cardModifier.isFavorite = formModel.isFavorite
+        cardModifier.note = formModel.note
+        cardModifier.setRelationships(formModel.selectedRelationships)
+        cardModifier.setTags(formModel.selectedTags)
+        cardModifier.save()
+        
+        if collection.uuid != currentCollection?.uuid {
+            appState.fetchCurrentNoteCards()
+            viewModel.noteCards = appState.currentNoteCards
+            viewModel.updateSnapshot(animated: true)
+        }
+        
+        sheet.dismiss()
     }
 }
 
@@ -545,8 +572,14 @@ extension HomeNoteCardView {
     }
     
     func commitDeleteNoteCard(_ noteCard: NoteCard) {
-        let result = appState.deleteObject(noteCard)
-        handleNoteCardCUDResult(result)
+        let cardModifier = ObjectModifier<NoteCard>(.update(noteCard))
+        cardModifier.delete()
+        cardModifier.save()
+        
+        appState.fetchCurrentNoteCards()
+        viewModel.noteCards = appState.currentNoteCards
+        viewModel.updateSnapshot(animated: true)
+        alert = nil
     }
 }
 
@@ -593,8 +626,9 @@ extension HomeNoteCardView {
             sheet.present(.noteCardTag)
         
         case .favorite:
-            noteCard.isFavorite.toggle()
-            noteCard.managedObjectContext?.quickSave()
+            var cardModifier = ObjectModifier<NoteCard>(.update(noteCard))
+            cardModifier.isFavorite = !noteCard.isFavorite
+            cardModifier.save()
         
         case .note:
             textViewModel = .init()
@@ -656,64 +690,27 @@ extension HomeNoteCardView {
     }
     
     func handleNoteCardFormCreateTag(name: String, formModel: NoteCardFormModel) -> Tag? {
-        let request = TagCUDRequest(name: name)
-        let result = appState.createTag(with: request)
-        
-        switch result {
-        case .created(let tag, let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            appState.fetchTags()
-            let newTag = tag.get(from: appState.parentContext)
-            formModel.selectableTags.insert(newTag, at: 0)
-            formModel.selectedTags.insert(newTag)
-            return newTag
-        
-        case .failed: // TODO: inform user if needed
+        if appState.isDuplicateTagName(name) {
             return nil
-        
-        case .updated, .deleted, .unchanged:
-            fatalError("🧨 attempt to \(result) in handleNoteCardFormCreateTag method 🧨")
         }
+        
+        let parentContext = appState.parentContext
+        var tagModifier = ObjectModifier<Tag>(.create(parentContext))
+        tagModifier.name = name
+        tagModifier.save()
+        
+        appState.fetchTags()
+        
+        let newTag = tagModifier.modifiedObject.get(from: parentContext)
+        formModel.selectableTags.insert(newTag, at: 0)
+        formModel.selectedTags.insert(newTag)
+        
+        return newTag
     }
     
     func handleRelationshipCollectionSelected(_ collection: NoteCardCollection, formModel: NoteCardFormModel) {
         formModel.selectableRelationships = collection.noteCards.sorted(by: { $0.translation < $1.translation })
         formModel.relationshipSelectedCollection = collection
-    }
-    
-    func handleNoteCardCUDResult(_ result: ObjectCUDResult<NoteCard>) {
-        switch result {
-        case .created(_, let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            appState.fetchCurrentNoteCards()
-            viewModel.noteCards = appState.currentNoteCards
-            viewModel.updateSnapshot(animated: true)
-            sheet.dismiss()
-            
-        case .updated(let noteCard, let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            if noteCard.collection?.uuid != currentCollection?.uuid {
-                appState.fetchCurrentNoteCards()
-                viewModel.noteCards = appState.currentNoteCards
-                viewModel.updateSnapshot(animated: true)
-            }
-            sheet.dismiss()
-            
-        case .deleted(let childContext):
-            childContext.quickSave()
-            childContext.parent?.quickSave()
-            appState.fetchCurrentNoteCards()
-            viewModel.noteCards = appState.currentNoteCards
-            viewModel.updateSnapshot(animated: true)
-            alert = nil
-            
-        case .failed, .unchanged: // TODO: show alert if needed
-            sheet.dismiss()
-            alert = nil
-        }
     }
 }
 

@@ -11,28 +11,15 @@ import Foundation
 import CoreData
 
 
-class Tag: NSManagedObject, Identifiable, ObjectValidatable {
+class Tag: NSManagedObject {
     
     @NSManaged private(set) var uuid: String
-    @NSManaged var name: String
-    @NSManaged var noteCards: Set<NoteCard>
-    
-    
-    convenience init(uuid: String, context: NSManagedObjectContext) {
-        self.init(context: context)
-        self.uuid = uuid
-    }
+    @NSManaged private(set) var name: String
+    @NSManaged private(set) var noteCards: Set<NoteCard>
     
     override func awakeFromInsert() {
         super.awakeFromInsert()
         uuid = UUID().uuidString
-    }
-    
-    override func willSave() {
-        if !isDeleted {
-            validateData()
-        }
-        super.willSave()
     }
 }
 
@@ -51,29 +38,9 @@ extension Tag {
 
 extension ObjectModifier where Object == Tag {
     
-    func setName(_ string: String) {
-        modifiedObject.setName(string)
-    }
-}
-
-
-extension Tag {
-    
-    func isValid() -> Bool {
-        hasValidInputs()
-    }
-    
-    func hasValidInputs() -> Bool {
-        !name.trimmed().isEmpty
-    }
-    
-    func hasChangedValues() -> Bool {
-        hasPersistentChangedValues
-    }
-    
-    func validateData() {
-        let name = self.name.trimmedComma().lowercased()
-        setPrimitiveValue(name, forKey: #keyPath(Tag.name))
+    var name: String {
+        set { modifiedObject.setName(newValue) }
+        get { modifiedObject.name }
     }
 }
 
