@@ -162,7 +162,7 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
             secondDivider.heightAnchor.constraint(equalToConstant: 5),
             
             tagLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            tagLabel.trailingAnchor.constraint(equalTo: voteButton.leadingAnchor, constant: 8),
+            tagLabel.trailingAnchor.constraint(equalTo: voteButton.leadingAnchor, constant: -8),
             tagLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12),
 
             voteButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
@@ -185,6 +185,7 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
         tagLabel.setContentHuggingPriority(.required, for: .vertical)
         
         voteButton.setContentHuggingPriority(.required, for: .horizontal)
+        voteButton.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 }
 
