@@ -299,7 +299,7 @@ extension HomeNoteCardView {
         }
         
         let parentContext = appState.parentContext
-        var collectionModifier = ObjectModifier<NoteCardCollection>(.create(parentContext))
+        var collectionModifier = ObjectModifier<NoteCardCollection>(.create(in: parentContext))
         collectionModifier.name = name
         collectionModifier.save()
         
@@ -461,7 +461,7 @@ extension HomeNoteCardView {
         guard let formModel = noteCardFormModel else { return }
         guard let collection = formModel.selectedCollection else { return }
         
-        var cardModifier = ObjectModifier<NoteCard>(.create(appState.parentContext))
+        var cardModifier = ObjectModifier<NoteCard>(.create(in: appState.parentContext))
         cardModifier.setCollection(collection)
         cardModifier.native = formModel.native
         cardModifier.translation = formModel.translation
@@ -695,7 +695,7 @@ extension HomeNoteCardView {
         }
         
         let parentContext = appState.parentContext
-        var tagModifier = ObjectModifier<Tag>(.create(parentContext))
+        var tagModifier = ObjectModifier<Tag>(.create(in: parentContext))
         tagModifier.name = name
         tagModifier.save()
         

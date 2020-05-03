@@ -270,13 +270,14 @@ extension NoteCardFormController {
         formalityCell.uiView.addTarget(self, action: #selector(handleSegmentControlChanged), for: .valueChanged)
         favoriteCell.toggle!.addTarget(self, action: #selector(handleToggleChanged), for: .valueChanged)
         
-        let objectWillChange = viewModel
+        viewModel
             .objectWillChange
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] in
                 self?.handleViewModelObjectWillChange()
             })
-        viewModelSubscribers.append(objectWillChange)
+            .store(in: &viewModelSubscribers)
+        
         viewModel.objectWillChange.send()
     }
     

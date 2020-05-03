@@ -163,7 +163,7 @@ extension HomeTagView {
             return
         }
         
-        var tagModifier = ObjectModifier<Tag>(.create(appState.parentContext))
+        var tagModifier = ObjectModifier<Tag>(.create(in: appState.parentContext))
         tagModifier.name = name
         tagModifier.save()
         

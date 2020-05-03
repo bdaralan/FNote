@@ -101,7 +101,7 @@ extension ObjectModifier where Object == NoteCard {
     }
     
     var translation: String {
-        set { modifiedObject.setNative(newValue) }
+        set { modifiedObject.setTranslation(newValue) }
         get { modifiedObject.translation }
     }
     

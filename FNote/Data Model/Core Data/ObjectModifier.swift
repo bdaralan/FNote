@@ -88,7 +88,7 @@ struct ObjectModifier<Object> where Object: NSManagedObject {
     
     enum Mode {
         /// A create mode that will save the new object to the given context on saved.
-        case create(NSManagedObjectContext)
+        case create(in: NSManagedObjectContext)
         
         /// An update mode that will save the changes to the give object's context on saved.
         case update(Object)
