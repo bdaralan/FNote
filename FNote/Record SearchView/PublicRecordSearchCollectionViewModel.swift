@@ -51,7 +51,7 @@ class PublicRecordSearchCollectionViewModel: NSObject, ObservableObject, Collect
         })
     }
     
-    func updateSnapshot(animated: Bool, completion: (() -> Void)?) {
+    func updateSnapshot(animated: Bool, completion: (() -> Void)? = nil) {
         var snapshot = Snapshot()
         snapshot.appendSections([0])
         

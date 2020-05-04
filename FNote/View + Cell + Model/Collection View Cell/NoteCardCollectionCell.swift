@@ -21,12 +21,8 @@ class NoteCardCollectionCell: ManagedObjectCollectionViewCell<NoteCardCollection
     
     override func reload(with object: NoteCardCollection) {
         super.reload(with: object)
-        
         nameLabel.text = object.name
-        
-        let count = object.noteCards.count
-        let unit = count == 1 ? "CARD" : "CARDS"
-        cardCountLabel.text = "\(count) \(unit)"
+        cardCountLabel.text = String(quantity: object.noteCards.count, singular: "CARD", plural: "CARDS")
     }
     
     func setIconImage(systemName: String?) {

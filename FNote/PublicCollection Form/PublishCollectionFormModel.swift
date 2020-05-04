@@ -107,9 +107,9 @@ extension PublishCollectionFormModel {
     var uiCollectionCardsCount: String {
         let count = publishCollection?.noteCards.count ?? 0
         if count < publicCardsRequired {
-            return "minimum of 9 cards"
+            return "minimum of \(publicCardsRequired) cards"
         }
-        return "\(count) CARDS"
+        return String(quantity: count, singular: "CARD", plural: "CARDS")
     }
     
     var uiCollectionDescription: String {

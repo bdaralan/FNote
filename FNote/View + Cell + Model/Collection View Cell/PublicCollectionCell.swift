@@ -35,8 +35,7 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
         languageLabel.text = "\(object.primaryLanguage) - \(object.secondaryLanguage)"
         setAuthor(name: "----")
         
-        let countUnit = object.cardsCount == 1 ? "CARD" : "CARDS"
-        countLabel.text = "\(object.cardsCount) \(countUnit)"
+        countLabel.text = String(quantity: object.cardsCount, singular: "CARD", plural: "CARDS")
         
         descriptionTextView.text = object.description
         

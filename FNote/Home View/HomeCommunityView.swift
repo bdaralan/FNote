@@ -158,11 +158,13 @@ extension HomeCommunityView {
     func createTrayMainItem() -> BDButtonTrayItem {
         BDButtonTrayItem(title: "", systemImage: "arrow.2.circlepath") { item in
             guard self.isFetchingData == false else { return }
-            self.trayViewModel.mainItem.disabled = true
             self.isFetchingData = true
+            item.disabled = true
+            item.animated = true
             self.viewModel.fetchData { error in
                 self.isFetchingData = false
-                self.trayViewModel.mainItem.disabled = false
+                item.disabled = false
+                item.animated = false
             }
         }
     }
@@ -192,10 +194,12 @@ extension HomeCommunityView {
             item.systemImage = "person.crop.circle.badge.checkmark"
             item.activeColor = .green
             item.disabled = false
+            item.animated = false
         
         } else {
             item.systemImage = "person.crop.circle.badge.exclam"
             item.activeColor = .red
+            item.animated = true
             
             if user.userID.isEmpty {
                 item.title = "failed to load profile"
@@ -248,11 +252,13 @@ extension HomeCommunityView {
         case .publishCollection:
             return PublishCollectionForm(viewModel: self.publishFormModel!)
                 .eraseToAnyView()
+        
         case .user:
             return PublicUserView(viewModel: publicUserViewModel!)
                 .eraseToAnyView()
+        
         case .search:
-            return PublicRecordSearchView()
+            return PublicRecordSearchView(onCancel: { self.sheet.dismiss() })
                 .eraseToAnyView()
         }
     }
@@ -336,7 +342,7 @@ extension HomeCommunityView {
                 native: noteCard.native,
                 translation: noteCard.translation,
                 favorited: noteCard.isFavorite,
-                formality: Int(noteCard.formality.rawValue),
+                formality: noteCard.formality,
                 note: publicNote,
                 tags: publicTags,
                 relationships: publicRelationshipIDs

@@ -9,7 +9,7 @@
 import CloudKit
 
 
-struct PublicCollection {
+struct PublicCollection: PublicRecord {
     
     /// The CKRecord ID.
     let collectionID: String
@@ -29,14 +29,13 @@ struct PublicCollection {
     /// A short description describing the collection.
     let description: String
     
-    /// The native language used in the collection
+    /// The native language code (ISO 639) in the collection.
     let primaryLanguage: String
     
-    /// The translation language used in the collection
+    /// The translation language code (ISO 639) used in the collection.
     let secondaryLanguage: String
     
     /// The tags describing the collection.
-    /// - Note: A comma separated values
     let tags: [String]
     
     /// The number of cards.
@@ -46,7 +45,7 @@ struct PublicCollection {
 
 // MARK: - Database Record
 
-extension PublicCollection: PublicRecord {
+extension PublicCollection {
     
     static let recordType = "PublicCollection"
     
@@ -105,5 +104,19 @@ extension PublicCollection: PublicRecord {
         modifier[.cardsCount] = cardsCount
         
         return record
+    }
+}
+
+
+extension PublicCollection {
+    
+    static func placeholder(collectionID: String = UUID().uuidString) -> PublicCollection {
+        PublicCollection(
+            collectionID: collectionID,
+            authorID: "----", authorName: "----",
+            name: "---------", description: "----",
+            primaryLanguage: "---", secondaryLanguage: "---",
+            tags: [], cardsCount: 0
+        )
     }
 }

@@ -121,7 +121,7 @@ extension PublicRecordManager {
         performQuery(operation: operation, completion: completion)
     }
     
-    func queryCards(withCollectionID collectionID: String, completion: @escaping QueryCompletionBlock) {
+    func queryCards(withCollectionID collectionID: String, desiredFields: [PublicNoteCard.RecordFields]? = nil, completion: @escaping QueryCompletionBlock) {
         let collectionIDField = PublicNoteCard.RecordFields.collectionID.stringValue
         let translationField = PublicNoteCard.RecordFields.translation.stringValue
         
@@ -132,6 +132,11 @@ extension PublicRecordManager {
         query.sortDescriptors = [sortByTranslation]
         
         let operation = CKQueryOperation(query: query)
+        
+        if let desiredFields = desiredFields {
+            operation.desiredKeys = desiredFields.map(\.stringValue)
+        }
+        
         performQuery(operation: operation, completion: completion)
     }
     

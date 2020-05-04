@@ -79,9 +79,7 @@ class NoteCardFormModel: ObservableObject {
     
     var selectedCollectionNoteCardCount: String {
         guard let collection = selectedCollection else { return "" }
-        let count = collection.noteCards.count
-        let card = count == 1 ? "CARD" : "CARDS"
-        return "\(count) \(card)"
+        return String(quantity: collection.noteCards.count, singular: "CARD", plural: "CARDS")
     }
     
     // MARK: Constructor
@@ -105,9 +103,7 @@ extension NoteCardFormModel {
     
     var uiCollectionCardsCount: String {
         guard let collection = selectedCollection else { return "" }
-        let count = collection.noteCards.count
-        let card = count == 1 ? "CARD" : "CARDS"
-        return "\(count) \(card)"
+        return String(quantity: collection.noteCards.count, singular: "CARD", plural: "CARDS")
     }
     
     var uiTagsCount: String {

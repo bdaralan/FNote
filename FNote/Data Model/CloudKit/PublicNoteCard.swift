@@ -9,7 +9,7 @@
 import CloudKit
 
 
-struct PublicNoteCard {
+struct PublicNoteCard: PublicRecord, Hashable {
     
     /// The CKRecord ID of the card's collection.
     let collectionID: String
@@ -20,7 +20,7 @@ struct PublicNoteCard {
     var native: String
     var translation: String
     var favorited: Bool
-    var formality: Int
+    var formality: NoteCard.Formality
     var note: String
     var tags: [String]
     
@@ -29,7 +29,7 @@ struct PublicNoteCard {
 }
 
 
-extension PublicNoteCard: PublicRecord {
+extension PublicNoteCard {
     
     static let recordType = "PublicNoteCard"
     
@@ -63,7 +63,7 @@ extension PublicNoteCard: PublicRecord {
         native = modifier.string(for: .native) ?? ""
         translation = modifier.string(for: .translation) ?? ""
         favorited = modifier.bool(for: .favorited)
-        formality = modifier.integer(for: .formality) ?? 0
+        formality = NoteCard.Formality(rawValue: modifier.integer64(for: .formality) ?? 0)!
         note = modifier.string(for: .note) ?? ""
         relationships = modifier.stringList(for: .relationships)
         
@@ -83,7 +83,7 @@ extension PublicNoteCard: PublicRecord {
         modifier[.native] = native
         modifier[.translation] = translation
         modifier[.favorited] = favorited
-        modifier[.formality] = formality
+        modifier[.formality] = formality.rawValue
         modifier[.note] = note
         
         let formatter = PublicRecordFormatter()
@@ -95,5 +95,17 @@ extension PublicNoteCard: PublicRecord {
         modifier[.collectionRef] = collectionRef
         
         return record
+    }
+}
+
+
+extension PublicNoteCard {
+    
+    static func placeholder(collectionID: String = UUID().uuidString, cardID: String = UUID().uuidString) -> PublicNoteCard {
+        PublicNoteCard(
+            collectionID: collectionID, cardID: cardID,
+            native: "----", translation: "----", favorited: false, formality: .unspecified, note: "",
+            tags: [], relationships: []
+        )
     }
 }

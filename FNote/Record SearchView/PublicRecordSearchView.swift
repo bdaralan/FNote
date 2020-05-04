@@ -20,6 +20,8 @@ enum PublicCollectionQueryOption {
 
 struct PublicRecordSearchView: View {
     
+    var onCancel: (() -> Void)?
+    
     @State private var searchField = SearchField()
     
     @State private var isSearchFieldFirstResponder = true
@@ -32,41 +34,46 @@ struct PublicRecordSearchView: View {
     
     @State private var searchOption: PublicCollectionQueryOption = .matchCollectionNameOrTag
     
-    /// A publisher to notify that a search has started.
-    ///
-    /// The view observers this publisher and calls `handleFetchingPublisher(_:)`.
-    ///
-    /// Send an operation to indicate fetching in process or `nil` to indicate canceled.
-    @State private var fetchingPublisher = PassthroughSubject<CKQueryOperation?, Never>()
-    
     /// The fetch operation in progress.
     ///
     /// The view updates this value by observing `fetchingPublisher`.
-    @State private var fetchingOperation: CKQueryOperation?
+    @State private var currentFetchOperation: CKQueryOperation?
+    
+    @State private var collectionToShowDetail: PublicCollection?
+    @State private var showCollectionDetail = false
     
     
     var body: some View {
         VStack(spacing: 0) {
-            BDTextFieldWrapper(
-                isActive: $isSearchFieldFirstResponder,
-                text: $searchField.searchText,
-                placeholder: searchField.placeholder,
-                returnKeyType: .search,
-                onCommit: handleSearchReturnKey,
-                configure: configureSearchTextField
-            )
-                .frame(height: 60)
-                .padding(.horizontal, 16)
-                .overlay(BDModalDragHandle(hideOnVerticalCompact: true).padding(.top, 8), alignment: .top)
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .imageScale(.large)
+                    .foregroundColor(Color(.placeholderText))
+                
+                BDTextFieldWrapper(
+                    isActive: $isSearchFieldFirstResponder,
+                    text: $searchField.searchText,
+                    placeholder: searchField.placeholder,
+                    returnKeyType: .search,
+                    onCommit: handleSearchReturnKey,
+                    configure: configureSearchTextField
+                )
+                    .frame(height: 60)
+                
+                onCancel.map { cancel in
+                    Button("Cancel", action: cancel)
+                }
+            }
+            .padding(.horizontal, 16)
             
             Divider()
             
             CollectionViewWrapper(viewModel: collectionViewModel, collectionView: collectionView)
                 .edgesIgnoringSafeArea(.all)
         }
-        .overlay(BDButtonTrayView(viewModel: trayViewModel).padding(16), alignment: .bottomTrailing)
         .onAppear(perform: setupOnAppear)
-        .onReceive(fetchingPublisher.receive(on: DispatchQueue.main), perform: handleFetchingPublisher)
+        .overlay(BDButtonTrayView(viewModel: trayViewModel).padding(16), alignment: .bottomTrailing)
+        .sheet(isPresented: $showCollectionDetail, content: collectionDetailView)
     }
 }
 
@@ -86,29 +93,18 @@ extension PublicRecordSearchView {
         collectionViewModel.updateSnapshot(animated: false, completion: nil)
         
         collectionViewModel.onCollectionSelected = { collection in
-            print(collection)
+            self.presentCollectionDetailView(for: collection)
         }
     }
     
     func setupTrayViewModel() {
         trayViewModel.setDefaultColors()
-        
-        trayViewModel.items = createTrayItems()
-        setTrayFocusedItem(trayViewModel.items[1]) // it must work
-        
         trayViewModel.shouldDisableMainItemWhenExpanded = false
         
         trayViewModel.mainItem = .init(title: "", systemImage: "magnifyingglass") { item in
-            if self.isSearchFieldFirstResponder {
-                let currentSearchText = self.searchField.searchText
-                self.beginSearch(searchText: currentSearchText)
-            } else {
-                self.isSearchFieldFirstResponder = true
-            }
+            self.isSearchFieldFirstResponder = true
         }
-    }
-    
-    func createTrayItems() -> [BDButtonTrayItem] {
+        
         let searchByUser = BDButtonTrayItem(title: "Match username", systemImage: "person.circle") { item in
             self.searchOption = .matchUsername
             self.setTrayFocusedItem(item)
@@ -119,7 +115,9 @@ extension PublicRecordSearchView {
             self.setTrayFocusedItem(item)
         }
         
-        return [searchByUser, searchByAny]
+        trayViewModel.items = [searchByUser, searchByAny]
+        trayViewModel.mainItem.inactiveColor = .appAccent
+        setTrayFocusedItem(searchByAny)
     }
     
     func setTrayFocusedItem(_ focused: BDButtonTrayItem) {
@@ -129,8 +127,16 @@ extension PublicRecordSearchView {
         beginSearch(searchText: searchField.searchText)
     }
     
+    func setTrayState(isSearching: Bool) {
+        trayViewModel.mainItem.disabled = isSearching
+        trayViewModel.mainItem.animated = isSearching
+        trayViewModel.mainItem.title = isSearching ? "Searching..." : ""
+    }
+    
     func setupSearchField() {
-        searchField.placeholder = "Search collection by name, tag, or language..."
+        searchField.searchText = ""
+        searchField.placeholder = "Search collection by name, tag, username..."
+        searchField.setupSearchTextDebounce(dueTime: .seconds(0.5))
         
         searchField.onSearchTextDebounced = { searchText in
             self.beginSearch(searchText: searchText)
@@ -139,8 +145,35 @@ extension PublicRecordSearchView {
     
     func configureSearchTextField(_ textField: UITextField) {
         textField.font = .preferredFont(forTextStyle: .body)
-        textField.autocapitalizationType = .none
+        textField.autocapitalizationType = .none // TODO: remove this on release
         textField.clearButtonMode = .always
+    }
+}
+
+
+// MARK: - Detail View
+
+extension PublicRecordSearchView {
+    
+    func collectionDetailView() -> some View {
+        guard let collection = collectionToShowDetail else {
+            fatalError("🧨 attempted to present collection detail without assign a collection 🧨")
+        }
+        
+        return PublicCollectionDetailView(
+            collection: collection,
+            onDismiss: dismissCollectionDetailView
+        )
+    }
+    
+    func presentCollectionDetailView(for collection: PublicCollection) {
+        collectionToShowDetail = collection
+        showCollectionDetail = true
+    }
+    
+    func dismissCollectionDetailView() {
+        collectionToShowDetail = nil
+        showCollectionDetail = false
     }
 }
 
@@ -154,61 +187,51 @@ extension PublicRecordSearchView {
         isSearchFieldFirstResponder = false
     }
     
-    func handleFetchingPublisher(operation: CKQueryOperation?) {
-        // cancel the current operation if any
-        if let currentOperation = fetchingOperation {
-            currentOperation.cancel()
-        }
-        
-        fetchingOperation = operation
-        trayViewModel.mainItem.disabled = operation != nil
-    }
-    
     func beginSearch(searchText: String) {
         let searchText = searchText.trimmed()
         
+        currentFetchOperation?.cancel()
+        setTrayState(isSearching: true)
+        
         if searchText.isEmpty {
-            fetchingPublisher.send(nil)
             collectionViewModel.collections = []
-            collectionViewModel.updateSnapshot(animated: true, completion: nil)
+            collectionViewModel.updateSnapshot(animated: false)
+            setTrayState(isSearching: false)
             return
         }
         
-        // if searching in progress, ignore
-        guard fetchingOperation == nil else { return }
-        
-        let operation = fetchPublicCollection(searchText: searchText) { result in
-            switch result {
-            case .success(let records):
-                let collections = records.compactMap { record -> PublicCollection? in
-                    let collection = PublicCollection(record: record)
-                    if self.searchOption == .matchUsername {
-                        if collection.authorName.range(of: searchText, options: .caseInsensitive) != nil {
-                            return collection
-                        } else {
-                            return nil
-                        }
-                    } else {
-                        return collection
-                    }
+        currentFetchOperation = fetchPublicCollection(searchText: searchText) { results in
+            var closelyMatchedCollections: [PublicCollection] = []
+            
+            var matchedCollections = results.compactMap { record -> PublicCollection? in
+                let collection = PublicCollection(record: record)
+                
+                let matchingField: String
+                switch self.searchOption {
+                case .matchUsername: matchingField = collection.authorName
+                case .matchCollectionNameOrTag: matchingField = collection.name
                 }
                 
-                DispatchQueue.main.async {
-                    self.collectionViewModel.collections = collections
-                    self.collectionViewModel.updateSnapshot(animated: true, completion: nil)
-                    self.fetchingPublisher.send(nil)
+                if matchingField.range(of: searchText, options: .caseInsensitive) != nil {
+                    closelyMatchedCollections.append(collection)
+                    return nil
                 }
-                print("found: \(records.count) filtered: \(collections.count)")
                 
-            case .failure(let error):
-                print("search error: \(error)")
-                DispatchQueue.main.async {
-                    self.fetchingPublisher.send(nil)
-                }
+                return collection
+            }
+            
+            closelyMatchedCollections.sort(by: { $0.name < $1.name })
+            matchedCollections.sort(by: { $0.name < $1.name })
+            
+            let collections = closelyMatchedCollections + matchedCollections
+            
+            DispatchQueue.main.async {
+                print("found: \(results.count) filtered: \(collections.count) searchText: \(searchText)")
+                self.collectionViewModel.collections = collections
+                self.collectionViewModel.updateSnapshot(animated: true, completion: nil)
+                self.setTrayState(isSearching: false)
             }
         }
-        
-        fetchingPublisher.send(operation)
     }
 }
 
@@ -217,45 +240,64 @@ extension PublicRecordSearchView {
 
 extension PublicRecordSearchView {
     
-    func fetchPublicCollection(searchText: String, completion: @escaping (Result<[CKRecord], CKError>) -> Void) -> CKQueryOperation {
+    func fetchPublicCollection(searchText: String, completion: @escaping ([CKRecord]) -> Void) -> CKQueryOperation {
+        // CloudKit query documentation
         // https://developer.apple.com/documentation/cloudkit/ckquery#1965781
         
         let database = CKContainer.default().publicCloudDatabase
         
-        let predicate = NSPredicate(format: "self contains %@", searchText)
-        let query = CKQuery(recordType: PublicCollection.recordType, predicate: predicate)
-        let operation = CKQueryOperation(query: query)
+        var matchedRecords = [String: CKRecord]() // [recordName: CKRecord]
         
-        var matchedRecords = [CKRecord]()
+        let recordType = PublicCollection.recordType
+        let authorNameField = PublicCollection.RecordFields.authorName.stringValue
+        let collectionNameField = PublicCollection.RecordFields.name.stringValue
         
-        operation.recordFetchedBlock = { record in
-            matchedRecords.append(record)
-        }
+        let tokenPredicate = NSPredicate(format: "SELF CONTAINS %@", searchText)
+        let tokenQuery = CKQuery(recordType: recordType, predicate: tokenPredicate)
+        let tokenOP = CKQueryOperation(query: tokenQuery)
         
-        operation.queryCompletionBlock = { cursor, error in
-            if let error = error {
-                completion(.failure(error as! CKError))
+        let authorNamePredicate = NSPredicate(format: "\(authorNameField) BEGINSWITH %@", searchText)
+        let authorNameQuery = CKQuery(recordType: recordType, predicate: authorNamePredicate)
+        let authorNameOP = CKQueryOperation(query: authorNameQuery)
+        
+        let collectionNamePredicate = NSPredicate(format: "\(collectionNameField) BEGINSWITH %@", searchText)
+        let collectionNameQuery = CKQuery(recordType: recordType, predicate: collectionNamePredicate)
+        let collectionNameOP = CKQueryOperation(query: collectionNameQuery)
+        
+        let queryOperations = [tokenOP, authorNameOP, collectionNameOP]
+        
+        let completionOP = CKQueryOperation()
+        completionOP.qualityOfService = .userInitiated
+        
+        completionOP.completionBlock = {
+            if completionOP.isCancelled {
+                queryOperations.forEach({ $0.cancel() })
             } else {
-                completion(.success(matchedRecords))
+                let records = matchedRecords.values.map({ $0 })
+                completion(records)
             }
         }
         
-        operation.qualityOfService = .userInitiated
+        for operation in queryOperations {
+            completionOP.addDependency(operation)
+            operation.qualityOfService = completionOP.qualityOfService
+            operation.recordFetchedBlock = {
+                matchedRecords[$0.recordID.recordName] = $0
+            }
+        }
         
-        database.add(operation)
+        database.add(tokenOP)
+        database.add(authorNameOP)
+        database.add(collectionNameOP)
+        database.add(completionOP)
         
-        return operation
+        return completionOP
     }
 }
 
 
 struct PublishRecordSearchView_Previews: PreviewProvider {
     static var previews: some View {
-        Color.clear.sheet(isPresented: .constant(true)) {
-            PublicRecordSearchView()
-        }
+        PublicRecordSearchView(onCancel: {})
     }
 }
-
-
-

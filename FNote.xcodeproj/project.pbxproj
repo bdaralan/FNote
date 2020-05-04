@@ -77,6 +77,8 @@
 		B4A0CE9623D4AB57003A4D83 /* NoteCardCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A0CE9523D4AB57003A4D83 /* NoteCardCollectionViewModel.swift */; };
 		B4A0CE9923D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A0CE9823D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift */; };
 		B4AFD4522360B1B3004BAA9B /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AFD4512360B1B3004BAA9B /* CloudKit.framework */; };
+		B4B07063245E8210009E05F7 /* PublicCollectionDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B07062245E8210009E05F7 /* PublicCollectionDetailViewModel.swift */; };
+		B4B07065245E86D0009E05F7 /* PublicCollectionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B07064245E86D0009E05F7 /* PublicCollectionDetailView.swift */; };
 		B4B3C39F24257E600041515E /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B3C39E24257E600041515E /* Language.swift */; };
 		B4B3C3A124257EBC0041515E /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B3C3A024257EBC0041515E /* OverlayView.swift */; };
 		B4B4550F243FCEBD00FC3283 /* BDUIKnit in Frameworks */ = {isa = PBXBuildFile; productRef = B4B4550E243FCEBD00FC3283 /* BDUIKnit */; };
@@ -195,6 +197,8 @@
 		B4A0CE9823D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCompositionalDataSource.swift; sourceTree = "<group>"; };
 		B4AFD44F2360B1A8004BAA9B /* FNote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FNote.entitlements; sourceTree = "<group>"; };
 		B4AFD4512360B1B3004BAA9B /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		B4B07062245E8210009E05F7 /* PublicCollectionDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicCollectionDetailViewModel.swift; sourceTree = "<group>"; };
+		B4B07064245E86D0009E05F7 /* PublicCollectionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicCollectionDetailView.swift; sourceTree = "<group>"; };
 		B4B3C39E24257E600041515E /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
 		B4B3C3A024257EBC0041515E /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
 		B4BAC52323203F83007EAF15 /* ManagedObjectContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedObjectContext.swift; sourceTree = "<group>"; };
@@ -550,6 +554,8 @@
 			children = (
 				B4C2ADB324526D3000F9165D /* PublicRecordSearchView.swift */,
 				B47F128C24539C280013B883 /* PublicRecordSearchCollectionViewModel.swift */,
+				B4B07064245E86D0009E05F7 /* PublicCollectionDetailView.swift */,
+				B4B07062245E8210009E05F7 /* PublicCollectionDetailViewModel.swift */,
 			);
 			path = "Record SearchView";
 			sourceTree = "<group>";
@@ -752,6 +758,7 @@
 				B448744A23DEC1B9005EBA45 /* CollectionHeaderLabel.swift in Sources */,
 				B49C4C7823D6B0AC0030D9B2 /* HomeNoteCardCollectionView.swift in Sources */,
 				B4DC48C923E7D4CA00104847 /* NoteCardForm.swift in Sources */,
+				B4B07063245E8210009E05F7 /* PublicCollectionDetailViewModel.swift in Sources */,
 				B40ECAD424131C7400267DC7 /* PublicRecordManager.swift in Sources */,
 				B40056F323D6C82900997216 /* ModalTextViewModel.swift in Sources */,
 				B49865E6242C6C7800145EBB /* SettingViewController+Wrapper.swift in Sources */,
@@ -811,6 +818,7 @@
 				B4113FBC23D2D7D9004E70DC /* ObjectCollectionViewCell.swift in Sources */,
 				B4828F2F240855E500389EB1 /* PublicCollectionCell.swift in Sources */,
 				B477530924497D9300F1A9CF /* BDUIKnit+Extension.swift in Sources */,
+				B4B07065245E86D0009E05F7 /* PublicCollectionDetailView.swift in Sources */,
 				B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */,
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
 				B49796EA23F78CF00035DF63 /* PageControlWrapper.swift in Sources */,

@@ -38,11 +38,16 @@ extension String {
 }
 
 
-extension Array where Element == String {
+extension String {
     
-    func filterRecordTags() -> [String] {
-        var tags = self
-        tags.removeAll(where: { $0.trimmedComma().isEmpty })
-        return tags
+    /// Create string with the given quantity and single or plural unit.
+    /// - Parameters:
+    ///   - quantity: The quantity number.
+    ///   - singular: The unit in singular form.
+    ///   - plural: The unit in plural form.
+    ///   - separator: The separator between the quantity and unit. The default is whitespace.
+    init(quantity: Int, singular: String, plural: String, separator: String = " ") {
+        let unit = quantity == 1 ? singular : plural
+        self.init("\(quantity)\(separator)\(unit)")
     }
 }

@@ -70,9 +70,8 @@ class NoteCardCell: ManagedObjectCollectionViewCell<NoteCard> {
     func reload(with item: PublicNoteCard) {
         translationLabel.text = item.translation
         nativeLabel.text = item.native
-        
-        let formality = NoteCard.Formality(rawValue: Int64(item.formality)) ?? .unspecified
-        setDividerColor(formality.uiColor)
+    
+        setDividerColor(item.formality.uiColor)
     }
     
     func setCellStyle(_ style: Style) {

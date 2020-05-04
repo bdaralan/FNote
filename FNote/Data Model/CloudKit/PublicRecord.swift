@@ -72,6 +72,10 @@ extension RecordModifier {
         record[field.stringValue] as? Int
     }
     
+    func integer64(for field: Field) -> Int64? {
+        record[field.stringValue] as? Int64
+    }
+    
     func bool(for field: Field, default value: Bool = false) -> Bool {
         record[field.stringValue] as? Bool ?? value
     }
