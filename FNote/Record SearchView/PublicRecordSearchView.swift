@@ -191,7 +191,13 @@ extension PublicRecordSearchView {
         let searchText = searchText.trimmed()
         
         currentFetchOperation?.cancel()
-        setTrayState(isSearching: true)
+        
+        // show searching animation if still fetching after a short while
+        // do this because user does not need to see searching animation if the search is super quick
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            guard self.currentFetchOperation?.isFinished == false else { return }
+            self.setTrayState(isSearching: true)
+        }
         
         if searchText.isEmpty {
             collectionViewModel.collections = []

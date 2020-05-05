@@ -75,6 +75,7 @@ extension PublicCollectionDetailView {
     }
     
     func setupTrayViewModel() {
+        trayViewModel.setDefaultColors()
         trayViewModel.locked = true
         trayViewModel.shouldDisableMainItemWhenExpanded = false
         
