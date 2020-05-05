@@ -108,7 +108,7 @@
 		B4DD491F238A5ED300D183CF /* WelcomeGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */; };
 		B4E601C32450B92A00A63280 /* TextFieldInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E601C22450B92A00A63280 /* TextFieldInputView.swift */; };
 		B4E8811823FF8DB100F475CE /* PublicCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E8811723FF8DB100F475CE /* PublicCollection.swift */; };
-		B4E8811A23FF8E0600F475CE /* PublicNoteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E8811923FF8E0600F475CE /* PublicNoteCard.swift */; };
+		B4E8811A23FF8E0600F475CE /* PublicCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E8811923FF8E0600F475CE /* PublicCard.swift */; };
 		B4E8811E23FF8E5E00F475CE /* PublicCollectionUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E8811D23FF8E5E00F475CE /* PublicCollectionUploader.swift */; };
 		B4EC398123DB7AD90011569C /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EC398023DB7AD90011569C /* Alert.swift */; };
 		B4EC398423DB88460011569C /* CollectionViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EC398323DB88460011569C /* CollectionViewWrapper.swift */; };
@@ -231,7 +231,7 @@
 		B4DD491E238A5ED300D183CF /* WelcomeGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeGuideView.swift; sourceTree = "<group>"; };
 		B4E601C22450B92A00A63280 /* TextFieldInputView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldInputView.swift; sourceTree = "<group>"; };
 		B4E8811723FF8DB100F475CE /* PublicCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicCollection.swift; sourceTree = "<group>"; };
-		B4E8811923FF8E0600F475CE /* PublicNoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicNoteCard.swift; sourceTree = "<group>"; };
+		B4E8811923FF8E0600F475CE /* PublicCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicCard.swift; sourceTree = "<group>"; };
 		B4E8811D23FF8E5E00F475CE /* PublicCollectionUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicCollectionUploader.swift; sourceTree = "<group>"; };
 		B4EC398023DB7AD90011569C /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		B4EC398323DB88460011569C /* CollectionViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewWrapper.swift; sourceTree = "<group>"; };
@@ -600,7 +600,7 @@
 				B40ECAD324131C7400267DC7 /* PublicRecordManager.swift */,
 				B42BC61C2410B159000F2BA7 /* PublicUser.swift */,
 				B4E8811723FF8DB100F475CE /* PublicCollection.swift */,
-				B4E8811923FF8E0600F475CE /* PublicNoteCard.swift */,
+				B4E8811923FF8E0600F475CE /* PublicCard.swift */,
 				B496F233244CDAC20039FF6A /* PublicRecordToken.swift */,
 				B4E8811D23FF8E5E00F475CE /* PublicCollectionUploader.swift */,
 			);
@@ -788,7 +788,7 @@
 				B4828F352409BDF100389EB1 /* HomeCommunityView.swift in Sources */,
 				B4DD491F238A5ED300D183CF /* WelcomeGuideView.swift in Sources */,
 				650D14E92332B96100B6E2BF /* View.swift in Sources */,
-				B4E8811A23FF8E0600F475CE /* PublicNoteCard.swift in Sources */,
+				B4E8811A23FF8E0600F475CE /* PublicCard.swift in Sources */,
 				B4B3C3A124257EBC0041515E /* OverlayView.swift in Sources */,
 				B448744623DEB578005EBA45 /* TagCell.swift in Sources */,
 				B4A0CE9623D4AB57003A4D83 /* NoteCardCollectionViewModel.swift in Sources */,

@@ -67,7 +67,7 @@ class NoteCardCell: ManagedObjectCollectionViewCell<NoteCard> {
         tagButton.tintColor = object.tags.isEmpty ? .quaternaryLabel : .secondaryLabel
     }
     
-    func reload(with item: PublicNoteCard) {
+    func reload(with item: PublicCard) {
         translationLabel.text = item.translation
         nativeLabel.text = item.native
     

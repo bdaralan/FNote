@@ -14,7 +14,7 @@ class PublicCollectionUploader {
     let database = CKContainer.default().publicCloudDatabase
     
     
-    func upload(collection: PublicCollection, with cards: [PublicNoteCard], completion: @escaping (Result<(CKRecord, [CKRecord]), Error>) -> Void) {
+    func upload(collection: PublicCollection, with cards: [PublicCard], completion: @escaping (Result<(CKRecord, [CKRecord]), Error>) -> Void) {
         // create CKRecord to upload
         let collectionRecord = collection.createCKRecord()
         let cardRecords = cards.map({ $0.createCKRecord() })

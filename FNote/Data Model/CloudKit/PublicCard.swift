@@ -1,5 +1,5 @@
 //
-//  PublicNoteCard.swift
+//  PublicCard.swift
 //  FNote
 //
 //  Created by Dara Beng on 2/20/20.
@@ -9,7 +9,7 @@
 import CloudKit
 
 
-struct PublicNoteCard: PublicRecord, Hashable {
+struct PublicCard: PublicRecord, Hashable {
     
     /// The CKRecord ID of the card's collection.
     let collectionID: String
@@ -29,9 +29,9 @@ struct PublicNoteCard: PublicRecord, Hashable {
 }
 
 
-extension PublicNoteCard {
+extension PublicCard {
     
-    static let recordType = "PublicNoteCard"
+    static let recordType = "PublicCard"
     
     var recordName: String {
         cardID
@@ -99,10 +99,10 @@ extension PublicNoteCard {
 }
 
 
-extension PublicNoteCard {
+extension PublicCard {
     
-    static func placeholder(collectionID: String = UUID().uuidString, cardID: String = UUID().uuidString) -> PublicNoteCard {
-        PublicNoteCard(
+    static func placeholder(collectionID: String = UUID().uuidString, cardID: String = UUID().uuidString) -> PublicCard {
+        PublicCard(
             collectionID: collectionID, cardID: cardID,
             native: "----", translation: "----", favorited: false, formality: .unspecified, note: "",
             tags: [], relationships: []

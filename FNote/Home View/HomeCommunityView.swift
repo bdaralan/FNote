@@ -70,6 +70,7 @@ extension HomeCommunityView {
     
     func setupViewModel() {
         viewModel.lastSectionContentInsets.bottom = 140
+        
         viewModel.fetchData { error in
             guard let error = error else { return }
             print("failed to fetch data with error: \(error)")
@@ -78,7 +79,7 @@ extension HomeCommunityView {
         viewModel.onItemSelected = { item, section in
             switch section {
             case .recentCard:
-                let card = item.object as! PublicNoteCard
+                let card = item.object as! PublicCard
                 self.handleRecentCardSelected(card)
             case .recentCollection:
                 let collection = item.object as! PublicCollection
@@ -112,7 +113,7 @@ extension HomeCommunityView {
         publishFormModel?.author = user
     }
     
-    func handleRecentCardSelected(_ card: PublicNoteCard) {
+    func handleRecentCardSelected(_ card: PublicCard) {
         guard card.relationships.isEmpty == false else {
             print("card \(card.native) has no relationships")
             return
@@ -120,7 +121,7 @@ extension HomeCommunityView {
         PublicRecordManager.shared.queryCards(withIDs: card.relationships) { result in
             switch result {
             case .success(let records):
-                let cards = records.map({ PublicNoteCard(record: $0) })
+                let cards = records.map({ PublicCard(record: $0) })
                 cards.forEach({ print($0) })
             case .failure(let error):
                 print("⚠️ failed to fetch relationship card with error: \(error) ⚠️")
@@ -329,14 +330,14 @@ extension HomeCommunityView {
         let publicCollectionID = UUID().uuidString
         
         // unwrapping the map is safe here
-        let publicCards = collection.noteCards.map { noteCard -> PublicNoteCard in
+        let publicCards = collection.noteCards.map { noteCard -> PublicCard in
             let localID = noteCard.uuid
             let publicID = cardIDMap[localID]!
             let publicRelationshipIDs = noteCard.relationships.map({ cardIDMap[$0.uuid]! })
             let publicTags = noteCard.tags.map(\.name).sorted()
             let publicNote = formModel.includesNote ? noteCard.note : ""
             
-            let publicCard = PublicNoteCard(
+            let publicCard = PublicCard(
                 collectionID: publicCollectionID,
                 cardID: publicID,
                 native: noteCard.native,

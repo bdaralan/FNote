@@ -84,7 +84,7 @@ extension CommunityViewModel {
                 
             case .recentCard:
                 let cell = collectionView.dequeueCell(NoteCardCell.self, for: indexPath)
-                let publishCard = item.object as! PublicNoteCard
+                let publishCard = item.object as! PublicCard
                 cell.reload(with: publishCard)
                 cell.setCellStyle(.short)
                 return cell
@@ -306,7 +306,7 @@ extension CommunityViewModel {
             switch result {
             case .success(let records):
                 let collections = records.map({ PublicCollection(record: $0) })
-                let collectionItems = collections.map({ PublicSectionItem(itemID: $0.recordName, object: $0) })
+                let collectionItems = collections.map({ PublicSectionItem(itemID: $0.collectionID, object: $0) })
                 let section = PublicSection(type: .recentCollection, title: "Recent Collections", items: collectionItems)
                 self.updateSection(with: section)
                 completedWithError?(nil)
@@ -322,12 +322,12 @@ extension CommunityViewModel {
         PublicRecordManager.shared.queryRecentCards { result in
             switch result {
             case .success(let records):
-                let cards = records.map({ PublicNoteCard(record: $0) })
-                let cardItems = cards.map({ PublicSectionItem(itemID: $0.recordName, object: $0) })
+                let cards = records.map({ PublicCard(record: $0) })
+                let cardItems = cards.map({ PublicSectionItem(itemID: $0.cardID, object: $0) })
                 let section = PublicSection(type: .recentCard, title: "Recent Cards", items: cardItems)
                 self.updateSection(with: section)
                 completedWithError?(nil)
-            
+
             case .failure(let error):
                 completedWithError?(error)
                 print(error)
@@ -423,7 +423,7 @@ extension CommunityViewModel {
         let cards = (1...9).map { number -> PublicSectionItem in
             let collectionID = "collection\(number)"
             let cardID = "card\(number)"
-            let card = PublicNoteCard.placeholder(collectionID: collectionID, cardID: cardID)
+            let card = PublicCard.placeholder(collectionID: collectionID, cardID: cardID)
             let item = PublicSectionItem(itemID: cardID, object: card)
             return item
         }

@@ -64,7 +64,7 @@ extension PublicCollectionDetailView {
         
         // setup places cards
         let cards = (1...collection.cardsCount).map { _ in
-            PublicNoteCard.placeholder(collectionID: collection.collectionID)
+            PublicCard.placeholder(collectionID: collection.collectionID)
         }
         
         viewModel.cards = cards
@@ -105,13 +105,13 @@ extension PublicCollectionDetailView {
         
         let recordManager = PublicRecordManager.shared
         let collectionID = collection.collectionID
-        let desiredFields = [PublicNoteCard.RecordFields.cardID, .native, .translation, .formality]
+        let desiredFields = [PublicCard.RecordFields.cardID, .native, .translation, .formality]
         
         recordManager.queryCards(withCollectionID: collectionID, desiredFields: desiredFields) { result in
             switch result {
                 
             case .success(let records):
-                let cards = records.map({ PublicNoteCard(record: $0) })
+                let cards = records.map({ PublicCard(record: $0) })
                 self.viewModel.cards = cards
                 DispatchQueue.main.async {
                     self.viewModel.updateSnapshot(animated: true)

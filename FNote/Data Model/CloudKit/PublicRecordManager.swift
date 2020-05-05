@@ -121,14 +121,14 @@ extension PublicRecordManager {
         performQuery(operation: operation, completion: completion)
     }
     
-    func queryCards(withCollectionID collectionID: String, desiredFields: [PublicNoteCard.RecordFields]? = nil, completion: @escaping QueryCompletionBlock) {
-        let collectionIDField = PublicNoteCard.RecordFields.collectionID.stringValue
-        let translationField = PublicNoteCard.RecordFields.translation.stringValue
+    func queryCards(withCollectionID collectionID: String, desiredFields: [PublicCard.RecordFields]? = nil, completion: @escaping QueryCompletionBlock) {
+        let collectionIDField = PublicCard.RecordFields.collectionID.stringValue
+        let translationField = PublicCard.RecordFields.translation.stringValue
         
         let predicate = NSPredicate(format: "\(collectionIDField) == %@", collectionID)
         let sortByTranslation = NSSortDescriptor(key: "\(translationField)", ascending: true)
         
-        let query = CKQuery(recordType: PublicNoteCard.recordType, predicate: predicate)
+        let query = CKQuery(recordType: PublicCard.recordType, predicate: predicate)
         query.sortDescriptors = [sortByTranslation]
         
         let operation = CKQueryOperation(query: query)
@@ -141,15 +141,15 @@ extension PublicRecordManager {
     }
     
     func queryCards(withIDs cardIDs: [String], completion: @escaping QueryCompletionBlock) {
-        let cardIDField = PublicNoteCard.RecordFields.cardID.stringValue
-        let nativeField = PublicNoteCard.RecordFields.native.stringValue
-        let translationField = PublicNoteCard.RecordFields.translation.stringValue
+        let cardIDField = PublicCard.RecordFields.cardID.stringValue
+        let nativeField = PublicCard.RecordFields.native.stringValue
+        let translationField = PublicCard.RecordFields.translation.stringValue
         
         let predicate = NSPredicate(format: "\(cardIDField) IN %@", cardIDs)
         let sortByNative = NSSortDescriptor(key: nativeField, ascending: true)
         let sortByTranslation = NSSortDescriptor(key: translationField, ascending: true)
         
-        let query = CKQuery(recordType: PublicNoteCard.recordType, predicate: predicate)
+        let query = CKQuery(recordType: PublicCard.recordType, predicate: predicate)
         query.sortDescriptors = [sortByNative, sortByTranslation]
         
         let operation = CKQueryOperation(query: query)
@@ -160,7 +160,7 @@ extension PublicRecordManager {
         let creationDate = #keyPath(CKRecord.creationDate)
         let predicate = NSPredicate(value: true)
         let sortByRecentCreate = NSSortDescriptor(key: creationDate, ascending: false)
-        let query = CKQuery(recordType: PublicNoteCard.recordType, predicate: predicate)
+        let query = CKQuery(recordType: PublicCard.recordType, predicate: predicate)
         query.sortDescriptors = [sortByRecentCreate]
         
         let operation = CKQueryOperation(query: query)
@@ -175,7 +175,7 @@ extension PublicRecordManager {
 
 extension PublicRecordManager {
     
-    func upload(collection: PublicCollection, with cards: [PublicNoteCard], completion: @escaping (Result<(CKRecord, [CKRecord]), Error>) -> Void) {
+    func upload(collection: PublicCollection, with cards: [PublicCard], completion: @escaping (Result<(CKRecord, [CKRecord]), Error>) -> Void) {
         // create CKRecord to upload
         let collectionRecord = collection.createCKRecord()
         let cardRecords = cards.map({ $0.createCKRecord() })

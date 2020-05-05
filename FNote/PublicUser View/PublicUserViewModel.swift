@@ -92,6 +92,7 @@ class PublicUserViewModel: ObservableObject {
             case .success(let record):
                 var modifier = RecordModifier<PublicUser.RecordFields>(record: record)
                 modifier[.username] = username
+                modifier[.lowercasedUsername] = username.lowercased()
                 modifier[.about] = userBio
                 
                 recordManager.save(record: record) { result in

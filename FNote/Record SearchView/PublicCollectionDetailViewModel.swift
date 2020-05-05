@@ -12,11 +12,11 @@ import UIKit
 class PublicCollectionDetailViewModel: CollectionViewCompositionalDataSource, CollectionViewWrapperViewModel {
     
     typealias DataSourceSection = Int
-    typealias DataSourceItem = PublicNoteCard
+    typealias DataSourceItem = PublicCard
     
     var dataSource: DiffableDataSource!
     
-    var cards: [PublicNoteCard] = []
+    var cards: [PublicCard] = []
     
     let cellStyle: NoteCardCell.Style = .short
     

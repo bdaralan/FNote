@@ -59,6 +59,8 @@ extension PublicUser {
         case about
         case profileThumbnailAsset
         case profileImageAsset
+        
+        case lowercasedUsername
     }
     
     
@@ -84,6 +86,7 @@ extension PublicUser {
         modifier[.userID] = userID
         modifier[.username] = username
         modifier[.about] = about
+        modifier[.lowercasedUsername] = username.lowercased()
         
         return record
     }

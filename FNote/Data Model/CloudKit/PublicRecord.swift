@@ -86,7 +86,7 @@ extension RecordModifier {
 }
 
 
-// MARK: Public Record Formatter
+// MARK: Record Formatter
 
 struct PublicRecordFormatter {
     
