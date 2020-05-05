@@ -22,7 +22,7 @@ struct PublicCollectionDetailView: View {
     
     private let viewModel = PublicCollectionDetailViewModel()
     
-    private let trayViewModel = BDButtonTrayViewModel()
+    @State private var trayViewModel = BDButtonTrayViewModel()
     
     @State private var showDescription = false
     
