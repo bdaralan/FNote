@@ -83,6 +83,10 @@ extension RecordModifier {
     func stringList(for field: Field) -> [String] {
         record[field.stringValue] as? [String] ?? []
     }
+    
+    func asset(for field: Field) -> CKAsset? {
+        record[field.stringValue] as? CKAsset
+    }
 }
 
 

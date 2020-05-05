@@ -40,6 +40,8 @@ struct PublicCollection: PublicRecord {
     
     /// The number of cards.
     let cardsCount: Int
+    
+    var localVoted = false
 }
 
 

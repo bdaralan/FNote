@@ -30,34 +30,34 @@ class PublicRecordManager {
     
     let publicDatabase = CKContainer.default().publicCloudDatabase
     
-    private(set) var cache: NSCache<NSString, CKRecord> = {
+    private(set) var recordCache: NSCache<NSString, CKRecord> = {
         let cache = NSCache<NSString, CKRecord>()
         cache.countLimit = 200
         return cache
     }()
     
     func cachedRecord(forKey key: String) -> CKRecord? {
-        cache.object(forKey: NSString(string: key))
+        recordCache.object(forKey: NSString(string: key))
     }
     
     func cacheRecords(_ records: [CKRecord], usingRecordField field: String) {
         for record in records {
             guard let key = record[field] as? String else { return }
-            cache.setObject(record, forKey: NSString(string: key))
+            recordCache.setObject(record, forKey: NSString(string: key))
         }
     }
     
     func cacheRecords(_ records: [CKRecord], usingRecordField field: RecordField) {
         for record in records {
             guard let key = record[field.stringValue] as? String else { return }
-            cache.setObject(record, forKey: NSString(string: key))
+            recordCache.setObject(record, forKey: NSString(string: key))
         }
     }
     
     func cacheRecords(_ records: Set<CKRecord>, usingRecordField field: RecordField) {
         for record in records {
             guard let key = record[field.stringValue] as? String else { return }
-            cache.setObject(record, forKey: NSString(string: key))
+            recordCache.setObject(record, forKey: NSString(string: key))
         }
     }
     
@@ -306,29 +306,47 @@ extension PublicRecordManager {
 
 extension PublicRecordManager {
     
-    func sendLikeToken(senderID: String, receiverID: String, token: PublicRecordToken.TokenType, completion: ((Result<CKRecord, Error>) -> Void)?) {
+    func deleteRecordToken(tokenID: String, completion: @escaping (Result<CKRecord.ID, CKError>) -> Void) {
+        let recordID = CKRecord.ID(recordName: tokenID)
+        publicDatabase.delete(withRecordID: recordID) { recordID, error in
+            if let recordID = recordID {
+                completion(.success(recordID))
+            }
+            completion(.failure(error as! CKError))
+        }
+    }
+    
+    func sendLike(
+        senderID: String,
+        receiverID: String,
+        token: PublicRecordToken.TokenType,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
         // check if it exist
         
-        let tokenID = PublicRecordToken.createTokenID(for: token, senderID: senderID, receiverID: receiverID)
+        let tokenID = PublicRecordToken.createTokenID(senderID: senderID, receiverID: receiverID, token: token)
         let tokenRID = CKRecord.ID(recordName: tokenID)
         
         publicDatabase.fetch(withRecordID: tokenRID) { record, error in
             if let record = record { // delete action
                 self.publicDatabase.delete(withRecordID: tokenRID) { recordID, error in
                     print("📝 delete token with ID:    \(record.recordID.recordName) 📝")
+                    completion(.success(false))
                 }
                 return
             }
             
             if let error = error as? CKError, error.code == .unknownItem { // create action
-                let likeToken = PublicRecordToken(tokenID: tokenID, senderID: senderID, receiverID: receiverID, tokenType: token)
+                let likeToken = PublicRecordToken(senderID: senderID, receiverID: receiverID, token: token)
                 let tokenRecord = likeToken.createCKRecord()
                 self.publicDatabase.save(tokenRecord) { record, error in
                     // handle completion
                     if let record = record {
                         print("📝 save like token with ID: \(record.recordID.recordName) 📝")
+                        completion(.success(true))
                     } else {
                         print("save failed with error: \(error!)")
+                        completion(.failure(error as! CKError))
                     }
                 }
                 return

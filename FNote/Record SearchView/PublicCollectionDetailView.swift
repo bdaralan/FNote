@@ -24,15 +24,28 @@ struct PublicCollectionDetailView: View {
     
     private let trayViewModel = BDButtonTrayViewModel()
     
+    @State private var showDescription = false
+    
     @State private var fetchFailed = false
     
     
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                PublicCollectionDetailHeaderView(collection: collection)
+                PublicCollectionDetailHeaderView(
+                    collection: collection,
+                    onDescriptionSelected: { self.$showDescription.animation(.easeInOut).wrappedValue.toggle() })
                     .padding(.vertical, 12)
                     .padding(.horizontal, 16)
+                
+                if showDescription {
+                    Text(collection.description)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.callout)
+                        .multilineTextAlignment(.leading)
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 12)
+                }
                 
                 Divider()
                 
@@ -63,7 +76,7 @@ extension PublicCollectionDetailView {
         viewModel.contentInsets.bottom = base + spacing + items
         
         // setup places cards
-        let cards = (1...collection.cardsCount).map { _ in
+        let cards = (0..<collection.cardsCount).map { _ in
             PublicCard.placeholder(collectionID: collection.collectionID)
         }
         
@@ -142,6 +155,9 @@ struct PublicCollectionDetailHeaderView: View {
     
     var collection: PublicCollection
     
+    var onDescriptionSelected: () -> Void = {}
+    
+    
     var body: some View {
         VStack(spacing: 4) {
             HStack(alignment: .lastTextBaseline, spacing: 0) {
@@ -157,6 +173,36 @@ struct PublicCollectionDetailHeaderView: View {
                 Text(String(quantity: collection.cardsCount, singular: "CARD", plural: "CARDS"))
             }
             .font(.footnote)
+            
+            HStack {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(collection.tags, id: \.self) { tag in
+                            Text(tag)
+                                .frame(minWidth: 30)
+                                .font(.footnote)
+                                .padding(.vertical, 2)
+                                .padding(.horizontal, 8)
+                                .foregroundColor(.primary)
+                                .background(Color(.secondarySystemBackground))
+                                .cornerRadius(20)
+                        }
+                    }
+                }
+                
+                Divider().frame(maxHeight: 16)
+                
+                Button(action: onDescriptionSelected) {
+                    Text("description")
+                        .font(.footnote)
+                        .padding(.vertical, 2)
+                        .padding(.horizontal, 8)
+                        .foregroundColor(.appAccent)
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(20)
+                }
+            }
+            .padding(.top, 4)
         }
     }
 }

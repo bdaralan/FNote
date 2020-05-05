@@ -23,6 +23,8 @@ class CommunityViewModel: NSObject, CollectionViewCompositionalDataSource {
     var lastSectionContentInsets = NSDirectionalEdgeInsets(top: 12, leading: 16, bottom: 32, trailing: 16)
     
     var onItemSelected: ((PublicSectionItem, PublicSectionType) -> Void)?
+    
+    var onVoteTriggered: ((PublicCollectionCell) -> Void)?
 }
 
 
@@ -79,6 +81,7 @@ extension CommunityViewModel {
                 let cell = collectionView.dequeueCell(PublicCollectionCell.self, for: indexPath)
                 let collection = item.object as! PublicCollection
                 cell.reload(with: collection)
+                cell.onVoteTriggered = self.onVoteTriggered
                 self.setCollectionCellAuthorName(cell, userID: collection.authorID)
                 return cell
                 

@@ -30,16 +30,25 @@ struct PublicRecordToken: PublicRecord {
     let tokenData: Data?
     
     
-    init(tokenID: String, senderID: String, receiverID: String, tokenType: TokenType, tokenInfo: Data? = nil) {
-        self.tokenID = Self.createTokenID(for: tokenType, senderID: senderID, receiverID: receiverID)
+    init(senderID: String, receiverID: String, token: TokenType, tokenInfo: Data? = nil) {
+        self.tokenID = Self.createTokenID(senderID: senderID, receiverID: receiverID, token: token)
         self.senderID = senderID
         self.receiverID = receiverID
-        self.tokenType = tokenType
+        self.tokenType = token
         self.tokenData = tokenInfo
     }
     
+    
+    func report() -> Report? {
+        guard tokenType == .report else { return nil }
+        guard let data = tokenData else { return nil }
+        guard let report = try? JSONDecoder().decode(Report.self, from: data) else { return nil }
+        return report
+    }
+    
+    
     /// Create a UUID by from MD5 hashed sender + receiver + token
-    static func createTokenID(for token: TokenType, senderID: String, receiverID: String) -> String {
+    static func createTokenID(senderID: String, receiverID: String, token: TokenType) -> String {
         let combinedString = "\(senderID)\(receiverID)\(token.rawValue)".data(using: .utf8)!
         let hashedString = Insecure.MD5.hash(data: combinedString)
         var tokenID = hashedString.compactMap { String(format: "%02x", $0) }.joined()
@@ -62,15 +71,16 @@ extension PublicRecordToken {
     }
     
     enum RecordFields: RecordField {
-        case tokenID
-        case senderID
-        case receiverID
-        case tokenType
-        case tokenData
-        case receiverRef
+        case tokenID        // the hash of senderID + receiverID
+        case senderID       // the user who send this token
+        case receiverID     // the record the token belong to
+        case tokenType      // the token type
+        case tokenDataAsset // the token's info json
+        case receiverRef    // the reference of the record being report
     }
     
     enum TokenType: Int {
+        case unknown = 0
         case like
         case report
     }
@@ -84,10 +94,17 @@ extension PublicRecordToken {
         let modifier = RecordModifier<RecordFields>(record: record)
         tokenID = record.recordID.recordName
         
-        senderID = modifier[.senderID] as! String
-        receiverID = modifier[.receiverID] as! String
-        tokenType = TokenType(rawValue: modifier[.tokenType] as! Int)!
-        tokenData = modifier[.tokenData] as? Data
+        senderID = modifier.string(for: .senderID)!
+        receiverID = modifier.string(for: .receiverID)!
+        tokenType = TokenType(rawValue: modifier.integer(for: .tokenType) ?? 0)!
+        
+        // TODO: check if CKAsset.fileURL is always local or remote
+        let tokenDataAsset = modifier.asset(for: .tokenDataAsset)
+        if let url = tokenDataAsset?.fileURL, let data = try? Data(contentsOf: url) {
+            tokenData = data
+        } else {
+            tokenData = nil
+        }
     }
     
     
@@ -100,15 +117,35 @@ extension PublicRecordToken {
         modifier[.senderID] = senderID
         modifier[.receiverID] = receiverID
         modifier[.tokenType] = tokenType.rawValue
-        modifier[.tokenData] = tokenData
         
         let receiverRID = CKRecord.ID(recordName: receiverID)
         let receiverRef = CKRecord.Reference(recordID: receiverRID, action: .deleteSelf)
         modifier[.receiverRef] = receiverRef
+        
+        // set token data if any
+        guard let tokenData = tokenData else { return record }
+        let tempDirectory = FileManager.default.temporaryDirectory
+        let tempUrl = tempDirectory.appendingPathComponent("\(tokenID).json")
+        
+        do {
+            try tokenData.write(to: tempUrl)
+            let tokenDataAsset = CKAsset(fileURL: tempUrl)
+            modifier[.tokenDataAsset] = tokenDataAsset
+        } catch {
+            print("⚠️ unable to set token data asset to record \(Self.recordType) \(tokenID) ⚠️")
+        }
         
         return record
     }
 }
 
 
+// MARK: - Token Data Object
 
+extension PublicRecordToken {
+    
+    struct Report: Codable {
+        
+        let reason: String
+    }
+}

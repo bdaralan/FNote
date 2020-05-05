@@ -66,15 +66,15 @@ extension HomeCommunityView {
     func setupOnAppear() {
         setupViewModel()
         setupTrayViewModel()
-    }
-    
-    func setupViewModel() {
-        viewModel.lastSectionContentInsets.bottom = 140
         
         viewModel.fetchData { error in
             guard let error = error else { return }
             print("failed to fetch data with error: \(error)")
         }
+    }
+    
+    func setupViewModel() {
+        viewModel.lastSectionContentInsets.bottom = 140
         
         viewModel.onItemSelected = { item, section in
             switch section {
@@ -86,6 +86,10 @@ extension HomeCommunityView {
                 self.handleRecentCollectionSelected(collection)
             case .randomCollection, .action: break
             }
+        }
+        
+        viewModel.onVoteTriggered = { collectionCell in
+            self.handleVoteTriggered(for: collectionCell)
         }
     }
     
@@ -130,11 +134,42 @@ extension HomeCommunityView {
     }
     
     func handleRecentCollectionSelected(_ collection: PublicCollection) {
-        let senderID = collection.authorID
-        let receiverID = collection.collectionID
-        let recordManager = PublicRecordManager.shared
-        recordManager.sendLikeToken(senderID: senderID, receiverID: receiverID, token: .like) { result in
+        // check placeholder collection
+        guard UUID(uuidString: collection.collectionID) != nil else { return }
+        sheet.present(.collectionDetail(collection))
+    }
+    
+    func handleVoteTriggered(for cell: PublicCollectionCell) {
+        let user = AppCache.cachedUser()
+        guard user.isValid else { return }
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        guard let cellItem = viewModel.dataSource.itemIdentifier(for: indexPath) else { return }
+        
+        // unwrapped instead of guard because it must give a collection
+        // otherwise, the app is not setup correctly
+        var collection = cellItem.object as! PublicCollection
+        
+        guard UUID(uuidString: collection.collectionID) != nil else { return }
+        
+        // update UI immediately, but will update again after getting the result
+        cell.setVoted(!collection.localVoted)
+        
+        PublicRecordManager.shared.sendLike(senderID: user.userID, receiverID: collection.collectionID, token: .like) { result in
+            guard case .success(let liked) = result else { return }
+            collection.localVoted = liked
             
+            let updatedItem = PublicSectionItem(itemID: collection.collectionID, object: collection)
+            for section in self.viewModel.sections.indices {
+                for (index, item) in self.viewModel.sections[section].items.enumerated() {
+                    if item.itemID == collection.collectionID {
+                        self.viewModel.sections[section].items[index] = updatedItem
+                        DispatchQueue.main.async {
+                            self.viewModel.updateSnapshot(animated: false, completion: nil)
+                        }
+                        return
+                    }
+                }
+            }
         }
     }
 }
@@ -152,6 +187,7 @@ extension HomeCommunityView {
     
     func setupTrayViewModel() {
         trayViewModel.setDefaultColors()
+        trayViewModel.shouldDisableMainItemWhenExpanded = false
         trayViewModel.mainItem = createTrayMainItem()
         trayViewModel.items = createTrayItems()
     }
@@ -162,7 +198,9 @@ extension HomeCommunityView {
             self.isFetchingData = true
             item.disabled = true
             item.animated = true
+            
             self.viewModel.fetchData { error in
+                // TODO: inform error if needed
                 self.isFetchingData = false
                 item.disabled = false
                 item.animated = false
@@ -243,9 +281,11 @@ extension HomeCommunityView {
 extension HomeCommunityView {
     
     enum Sheet: BDPresentationSheetItem {
+        var id: String { "\(self)" }
         case publishCollection
         case user
         case search
+        case collectionDetail(PublicCollection)
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
@@ -261,12 +301,21 @@ extension HomeCommunityView {
         case .search:
             return PublicRecordSearchView(onCancel: { self.sheet.dismiss() })
                 .eraseToAnyView()
+            
+        case .collectionDetail(let collection):
+            return PublicCollectionDetailView(
+                collection: collection,
+                onAddCardsToCollection: nil,
+                onAddToCollection: nil,
+                onDismiss: { self.sheet.dismiss() }
+            )
+                .eraseToAnyView()
         }
     }
     
     func handleSheetDismissed() {
         switch sheet.previous {
-        case .publishCollection, .search, nil: break
+        case .publishCollection, .search, .collectionDetail, nil: break
         case .user: publicUserViewModel = nil
         }
     }

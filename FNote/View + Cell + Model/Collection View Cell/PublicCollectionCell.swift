@@ -24,7 +24,7 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
     
     let voteButton = UIButton(type: .system)
     
-    @Published var voted = false
+    var onVoteTriggered: ((PublicCollectionCell) -> Void)?
     
     private var cancellables: [AnyCancellable] = []
     
@@ -46,26 +46,19 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
         tagAttrString.setAttributes([.font : languageLabel.font as Any], range: tagRange)
         tagLabel.attributedText = tagAttrString
         
-        setupVoteSubscription()
+        setVoted(object.localVoted)
     }
     
     func setAuthor(name: String) {
         authorLabel.text = "by \(name)"
     }
     
-    private func setupVoteSubscription() {
-        $voted
-            .eraseToAnyPublisher()
-            .subscribe(on: DispatchQueue.main)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { voted in
-                let symbol = UIImage.SymbolConfiguration(textStyle: .body)
-                let imageName = voted ? "hand.thumbsup.fill" : "hand.thumbsup"
-                let image = UIImage(systemName: imageName, withConfiguration: symbol)
-                self.voteButton.setImage(image, for: .normal)
-                self.voteButton.tintColor = voted ? .label : .secondaryLabel
-            })
-            .store(in: &cancellables)
+    func setVoted(_ voted: Bool) {
+        let symbol = UIImage.SymbolConfiguration(textStyle: .body)
+        let imageName = voted ? "hand.thumbsup.fill" : "hand.thumbsup"
+        let image = UIImage(systemName: imageName, withConfiguration: symbol)
+        voteButton.setImage(image, for: .normal)
+        voteButton.tintColor = voted ? .label : .secondaryLabel
     }
     
     override func layoutSubviews() {
@@ -115,7 +108,7 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
     }
     
     @objc private func handleVoteButtonTapped() {
-        voted.toggle()
+        onVoteTriggered?(self)
     }
     
     override func setupConstraints() {
