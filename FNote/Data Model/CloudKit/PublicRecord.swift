@@ -64,6 +64,20 @@ struct RecordModifier<Field> where Field: RecordField {
 
 extension RecordModifier {
     
+    // MARK: Setter
+    
+    /// Set a cascade delete rule for the record.
+    /// - Parameters:
+    ///   - referenceID: The record that will trigger the deletion when it is deleted.
+    ///   - field: The field to store the reference record.
+    func setCascadeDelete(referenceID: String, field: Field) {
+        let recordID = CKRecord.ID(recordName: referenceID)
+        let recordRef = CKRecord.Reference(recordID: recordID, action: .deleteSelf)
+        record[field.stringValue] = recordRef
+    }
+    
+    // MARK: Getter
+    
     func string(for field: Field) -> String? {
         record[field.stringValue] as? String
     }
@@ -78,6 +92,10 @@ extension RecordModifier {
     
     func bool(for field: Field, default value: Bool = false) -> Bool {
         record[field.stringValue] as? Bool ?? value
+    }
+    
+    func data(for field: Field) -> Data? {
+        record[field.stringValue] as? Data
     }
     
     func stringList(for field: Field) -> [String] {

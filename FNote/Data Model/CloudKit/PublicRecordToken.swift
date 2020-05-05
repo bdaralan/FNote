@@ -10,6 +10,12 @@ import CloudKit
 import CryptoKit
 
 
+/// A token of a record.
+///
+/// This object must be as small as possible for performance reason.
+///
+/// Generally, it should contain only an integer token type and a small encoded object.
+///
 struct PublicRecordToken: PublicRecord {
     
     private(set) var record: CKRecord?
@@ -27,7 +33,7 @@ struct PublicRecordToken: PublicRecord {
     let tokenType: TokenType
     
     /// The encoded token's info.
-    let tokenData: Data?
+    let tokenInfo: Data?
     
     
     init(senderID: String, receiverID: String, token: TokenType, tokenInfo: Data? = nil) {
@@ -35,13 +41,13 @@ struct PublicRecordToken: PublicRecord {
         self.senderID = senderID
         self.receiverID = receiverID
         self.tokenType = token
-        self.tokenData = tokenInfo
+        self.tokenInfo = tokenInfo
     }
     
     
     func report() -> Report? {
         guard tokenType == .report else { return nil }
-        guard let data = tokenData else { return nil }
+        guard let data = tokenInfo else { return nil }
         guard let report = try? JSONDecoder().decode(Report.self, from: data) else { return nil }
         return report
     }
@@ -52,7 +58,7 @@ struct PublicRecordToken: PublicRecord {
         let combinedString = "\(senderID)\(receiverID)\(token.rawValue)".data(using: .utf8)!
         let hashedString = Insecure.MD5.hash(data: combinedString)
         var tokenID = hashedString.compactMap { String(format: "%02x", $0) }.joined()
-        for hyphenIndex in [8, 13, 18, 23] {
+        for hyphenIndex in [8, 13, 18, 23] { // the indexes to hyphenate
             let startIndex = tokenID.startIndex
             let insertIndex = tokenID.index(startIndex, offsetBy: hyphenIndex)
             tokenID.insert("-", at: insertIndex)
@@ -75,12 +81,12 @@ extension PublicRecordToken {
         case senderID       // the user who send this token
         case receiverID     // the record the token belong to
         case tokenType      // the token type
-        case tokenDataAsset // the token's info json
+        case tokenInfo      // the token's info json
         case receiverRef    // the reference of the record being report
     }
     
     enum TokenType: Int {
-        case unknown = 0
+        case unspecified = 0
         case like
         case report
     }
@@ -97,14 +103,7 @@ extension PublicRecordToken {
         senderID = modifier.string(for: .senderID)!
         receiverID = modifier.string(for: .receiverID)!
         tokenType = TokenType(rawValue: modifier.integer(for: .tokenType) ?? 0)!
-        
-        // TODO: check if CKAsset.fileURL is always local or remote
-        let tokenDataAsset = modifier.asset(for: .tokenDataAsset)
-        if let url = tokenDataAsset?.fileURL, let data = try? Data(contentsOf: url) {
-            tokenData = data
-        } else {
-            tokenData = nil
-        }
+        tokenInfo = modifier.data(for: .tokenInfo)
     }
     
     
@@ -117,23 +116,9 @@ extension PublicRecordToken {
         modifier[.senderID] = senderID
         modifier[.receiverID] = receiverID
         modifier[.tokenType] = tokenType.rawValue
+        modifier[.tokenInfo] = tokenInfo
         
-        let receiverRID = CKRecord.ID(recordName: receiverID)
-        let receiverRef = CKRecord.Reference(recordID: receiverRID, action: .deleteSelf)
-        modifier[.receiverRef] = receiverRef
-        
-        // set token data if any
-        guard let tokenData = tokenData else { return record }
-        let tempDirectory = FileManager.default.temporaryDirectory
-        let tempUrl = tempDirectory.appendingPathComponent("\(tokenID).json")
-        
-        do {
-            try tokenData.write(to: tempUrl)
-            let tokenDataAsset = CKAsset(fileURL: tempUrl)
-            modifier[.tokenDataAsset] = tokenDataAsset
-        } catch {
-            print("⚠️ unable to set token data asset to record \(Self.recordType) \(tokenID) ⚠️")
-        }
+        modifier.setCascadeDelete(referenceID: receiverID, field: .receiverRef)
         
         return record
     }

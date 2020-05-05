@@ -90,9 +90,7 @@ extension PublicCard {
         modifier[.tags] = formatter.databaseTags(fromLocalTags: tags)
         modifier[.relationships] = formatter.validDatabaseList(relationships)
         
-        let collectionRID = CKRecord.ID(recordName: collectionID)
-        let collectionRef = CKRecord.Reference(recordID: collectionRID, action: .deleteSelf)
-        modifier[.collectionRef] = collectionRef
+        modifier.setCascadeDelete(referenceID: collectionID, field: .collectionRef)
         
         return record
     }
