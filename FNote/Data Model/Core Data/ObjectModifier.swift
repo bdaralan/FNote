@@ -27,14 +27,14 @@ struct ObjectModifier<Object> where Object: NSManagedObject {
     
     /// A value indicates whether to use separate contexts.
     ///
-    /// - When `true`, `context` is the parent context of `modifiedContext`.
-    /// - When `false`, `context` and `modifiedContext` is the same.
+    /// - When `true`, `originalContext` is the parent context of `modifiedContext`.
+    /// - When `false`, `originalContext` and `modifiedContext` is the same.
     let useSeparateContext: Bool
     
     /// The context that the save will apply to.
     ///
     /// See `Mode` for more info.
-    let context: NSManagedObjectContext
+    let originalContext: NSManagedObjectContext
     
     /// The child context of the object's context.
     ///
@@ -62,21 +62,21 @@ struct ObjectModifier<Object> where Object: NSManagedObject {
         
         switch mode {
         case .create(let context):
-            self.context = context
+            originalContext = context
             
         case .update(let object):
             guard let context = object.managedObjectContext else {
                 fatalError("🧨 creating ObjectModifier<\(Object.self)> with nil context 🧨")
             }
-            self.context = context
+            originalContext = context
         }
         
         if useSeparateContext {
             modifiedContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-            modifiedContext.parent = context
+            modifiedContext.parent = originalContext
             modifiedContext.automaticallyMergesChangesFromParent = true
         } else {
-            modifiedContext = context
+            modifiedContext = originalContext
         }
         
         switch mode {
@@ -95,7 +95,7 @@ struct ObjectModifier<Object> where Object: NSManagedObject {
     
     func save() {
         modifiedContext.quickSave()
-        context.quickSave()
+        originalContext.quickSave()
     }
     
     func delete() {
