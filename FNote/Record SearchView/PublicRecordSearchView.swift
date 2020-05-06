@@ -101,16 +101,16 @@ extension PublicRecordSearchView {
         trayViewModel.setDefaultColors()
         trayViewModel.shouldDisableMainItemWhenExpanded = false
         
-        trayViewModel.mainItem = .init(title: "", systemImage: "magnifyingglass") { item in
+        trayViewModel.mainItem = .init(title: "", systemImage: SFSymbol.search) { item in
             self.isSearchFieldFirstResponder = true
         }
         
-        let searchByUser = BDButtonTrayItem(title: "Match username", systemImage: "person.circle") { item in
+        let searchByUser = BDButtonTrayItem(title: "Match username", systemImage: SFSymbol.matchByUsername) { item in
             self.searchOption = .matchUsername
             self.setTrayFocusedItem(item)
         }
         
-        let searchByAny = BDButtonTrayItem(title: "Match name or tag", systemImage: "doc.text.magnifyingglass") { item in
+        let searchByAny = BDButtonTrayItem(title: "Match name or tag", systemImage: SFSymbol.matchByAny) { item in
             self.searchOption = .matchCollectionNameOrTag
             self.setTrayFocusedItem(item)
         }

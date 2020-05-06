@@ -92,23 +92,18 @@ extension PublicCollectionDetailView {
         trayViewModel.locked = true
         trayViewModel.shouldDisableMainItemWhenExpanded = false
         
-        trayViewModel.mainItem = .init(title: "", systemImage: "xmark.circle") { item in
+        trayViewModel.mainItem = .init(title: "", systemImage: SFSymbol.dismiss) { item in
             self.onDismiss?()
         }
         
-        let addToCollections = BDButtonTrayItem(title: "Add To Collections", systemImage: "rectangle.stack") { item in
+        let addToCollections = BDButtonTrayItem(title: "Add To Collections", systemImage: SFSymbol.addCollection) { item in
             self.onAddToCollection?(self.collection)
         }
         
-        let addCardsToCollection = BDButtonTrayItem(title: "Add Cards To Collection", systemImage: "rectangle.on.rectangle.angled") { item in
-            self.onAddCardsToCollection?(self.collection)
-        }
-        
-        trayViewModel.items = [addCardsToCollection, addToCollections]
+        trayViewModel.items = [addToCollections]
     }
     
     func setTrayMainItemState(isLoading: Bool) {
-        trayViewModel.locked = isLoading
         trayViewModel.mainItem.animated = isLoading
         trayViewModel.expanded = !isLoading
         trayViewModel.mainItem.title = isLoading ? "Loading Cards..." : ""

@@ -199,7 +199,7 @@ extension HomeNoteCardView {
     }
     
     func createTrayMainItem() -> BDButtonTrayItem {
-        BDButtonTrayItem(title: "", systemImage: "plus") { item in
+        BDButtonTrayItem(title: "", systemImage: SFSymbol.add) { item in
             if self.currentCollection == nil {
                 self.presentCannotCreateNoteCardAlert()
             } else {
@@ -210,16 +210,16 @@ extension HomeNoteCardView {
     
     func createTrayItems() -> [BDButtonTrayItem] {
         // show all collections
-        let collections = BDButtonTrayItem(title: "Collections", systemImage: "rectangle.stack") { item in
+        let collections = BDButtonTrayItem(title: "Collections", systemImage: SFSymbol.collection) { item in
             self.sheet.present(.noteCardCollection)
         }
         
         // create new collection
-        let createCollection = BDButtonTrayItem(title: "New Collection", systemImage: "rectangle.stack.badge.plus") { item in
+        let createCollection = BDButtonTrayItem(title: "New Collection", systemImage: SFSymbol.addCollection) { item in
             self.beginCreateNoteCardCollection()
         }
         
-        let sortCards = BDButtonTrayItem(title: "Sort", systemImage: "arrow.up.arrow.down.circle") { item in
+        let sortCards = BDButtonTrayItem(title: "Sort", systemImage: SFSymbol.sort) { item in
             self.trayViewModel.subitems = self.createNoteCardSortOptionTrayItems()
         }
         
@@ -250,13 +250,13 @@ extension HomeNoteCardView {
             return title
         }
         
-        nativeItem = BDButtonTrayItem(title: computeItemTitle(.native), systemImage: "n.circle") { item in
+        nativeItem = BDButtonTrayItem(title: computeItemTitle(.native), systemImage: SFSymbol.sortByNative) { item in
             self.setNoteCardSortOption(.native, ascending: computeAscending(.native))
             item.title = computeItemTitle(.native)
             translationItem.title = computeItemTitle(.translation)
         }
         
-        translationItem = BDButtonTrayItem(title: computeItemTitle(.translation), systemImage: "t.circle") { item in
+        translationItem = BDButtonTrayItem(title: computeItemTitle(.translation), systemImage: SFSymbol.sortByTranslation) { item in
             self.setNoteCardSortOption(.translation, ascending: computeAscending(.translation))
             item.title = computeItemTitle(.translation)
             nativeItem.title = computeItemTitle(.native)

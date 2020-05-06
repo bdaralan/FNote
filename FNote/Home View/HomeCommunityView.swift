@@ -193,7 +193,7 @@ extension HomeCommunityView {
     }
     
     func createTrayMainItem() -> BDButtonTrayItem {
-        BDButtonTrayItem(title: "", systemImage: "arrow.2.circlepath") { item in
+        BDButtonTrayItem(title: "", systemImage: SFSymbol.refresh) { item in
             guard self.isFetchingData == false else { return }
             self.isFetchingData = true
             item.disabled = true
@@ -213,11 +213,11 @@ extension HomeCommunityView {
             self.presentPublicUserProfile(sender: item)
         }
         
-        let publish = BDButtonTrayItem(title: "Publish Collection", systemImage: "rectangle.stack.badge.person.crop") { item in
+        let publish = BDButtonTrayItem(title: "Publish Collection", systemImage: SFSymbol.publishCollection) { item in
             self.beginPublishCollection()
         }
         
-        let search = BDButtonTrayItem(title: "Search", systemImage: "magnifyingglass") { item in
+        let search = BDButtonTrayItem(title: "Search", systemImage: SFSymbol.search) { item in
             self.sheet.present(.search)
         }
         
@@ -230,13 +230,13 @@ extension HomeCommunityView {
     func updateUserTrayItem(item: BDButtonTrayItem, user: PublicUser) {
         if user.isValid {
             item.title = user.username
-            item.systemImage = "person.crop.circle.badge.checkmark"
+            item.systemImage = SFSymbol.validUser
             item.activeColor = .green
             item.disabled = false
             item.animated = false
         
         } else {
-            item.systemImage = "person.crop.circle.badge.exclam"
+            item.systemImage = SFSymbol.invalidUser
             item.activeColor = .red
             item.animated = true
             
@@ -305,7 +305,6 @@ extension HomeCommunityView {
         case .collectionDetail(let collection):
             return PublicCollectionDetailView(
                 collection: collection,
-                onAddCardsToCollection: nil,
                 onAddToCollection: nil,
                 onDismiss: { self.sheet.dismiss() }
             )

@@ -40,6 +40,7 @@
 		B4535C082403474900090313 /* PublicRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4535C072403474900090313 /* PublicRecord.swift */; };
 		B45A4A032368A2810079D8DE /* NoteCardSearchField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A4A022368A2810079D8DE /* NoteCardSearchField.swift */; };
 		B46723CF24627576003EECD1 /* ObjectGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46723CE24627576003EECD1 /* ObjectGenerator.swift */; };
+		B46723D1246361E2003EECD1 /* SFSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46723D0246361E2003EECD1 /* SFSymbol.swift */; };
 		B46B0F592364A0CE0074B71A /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B0F582364A0CD0074B71A /* SearchTextField.swift */; };
 		B46B3403232E80A7008B2088 /* ModalTextViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */; };
 		B46B3405232E8214008B2088 /* ModalTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B3404232E8214008B2088 /* ModalTextView.swift */; };
@@ -161,6 +162,7 @@
 		B4535C072403474900090313 /* PublicRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicRecord.swift; sourceTree = "<group>"; };
 		B45A4A022368A2810079D8DE /* NoteCardSearchField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchField.swift; sourceTree = "<group>"; };
 		B46723CE24627576003EECD1 /* ObjectGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectGenerator.swift; sourceTree = "<group>"; };
+		B46723D0246361E2003EECD1 /* SFSymbol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbol.swift; sourceTree = "<group>"; };
 		B46B0F582364A0CD0074B71A /* SearchTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		B46B3402232E80A7008B2088 /* ModalTextViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextViewWrapper.swift; sourceTree = "<group>"; };
 		B46B3404232E8214008B2088 /* ModalTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTextView.swift; sourceTree = "<group>"; };
@@ -288,6 +290,7 @@
 			children = (
 				B4B3C39E24257E600041515E /* Language.swift */,
 				B499A35D2326D9A7002D16A0 /* AppCache.swift */,
+				B46723D0246361E2003EECD1 /* SFSymbol.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -793,6 +796,7 @@
 				650D14E92332B96100B6E2BF /* View.swift in Sources */,
 				B4E8811A23FF8E0600F475CE /* PublicCard.swift in Sources */,
 				B4B3C3A124257EBC0041515E /* OverlayView.swift in Sources */,
+				B46723D1246361E2003EECD1 /* SFSymbol.swift in Sources */,
 				B448744623DEB578005EBA45 /* TagCell.swift in Sources */,
 				B4A0CE9623D4AB57003A4D83 /* NoteCardCollectionViewModel.swift in Sources */,
 				B4B3C39F24257E600041515E /* Language.swift in Sources */,
