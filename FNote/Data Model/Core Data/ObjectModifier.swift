@@ -25,6 +25,12 @@ struct ObjectModifier<Object> where Object: NSManagedObject {
     /// The mode of the modifier.
     var mode: Mode
     
+    /// A value indicates whether to use separate contexts.
+    ///
+    /// - When `true`, `context` is the parent context of `modifiedContext`.
+    /// - When `false`, `context` and `modifiedContext` is the same.
+    let useSeparateContext: Bool
+    
     /// The context that the save will apply to.
     ///
     /// See `Mode` for more info.
@@ -46,28 +52,41 @@ struct ObjectModifier<Object> where Object: NSManagedObject {
     
     // MARK: Constructor
     
-    init(_ mode: Mode) {
+    /// Construct with mode.
+    /// - Parameters:
+    ///   - mode: The mode to use.
+    ///   - useSeparateContext: The default is `true`. See the property's documentation for more details.
+    init(_ mode: Mode, useSeparateContext: Bool = true) {
         self.mode = mode
+        self.useSeparateContext = useSeparateContext
         
         switch mode {
         case .create(let context):
             self.context = context
-            modifiedContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-            modifiedContext.parent = context
-            modifiedContext.automaticallyMergesChangesFromParent = true
-            modifiedObject = Object(context: modifiedContext)
-            originalObject = nil
             
         case .update(let object):
             guard let context = object.managedObjectContext else {
                 fatalError("🧨 creating ObjectModifier<\(Object.self)> with nil context 🧨")
             }
             self.context = context
+        }
+        
+        if useSeparateContext {
             modifiedContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
             modifiedContext.parent = context
             modifiedContext.automaticallyMergesChangesFromParent = true
-            modifiedObject = object.get(from: modifiedContext)
+        } else {
+            modifiedContext = context
+        }
+        
+        switch mode {
+        case .create:
+            originalObject = nil
+            modifiedObject = Object(context: modifiedContext)
+            
+        case .update(let object):
             originalObject = object
+            modifiedObject = object.get(from: modifiedContext)
         }
     }
     
