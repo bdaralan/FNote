@@ -13,7 +13,7 @@ class PublicRecordManager {
     
     // MARK: Typealias
     
-    typealias QueryCompletionBlock = (Result<[CKRecord], Error>) -> Void
+    typealias QueryCompletionBlock = (Result<[CKRecord], CKError>) -> Void
     
     
     // MARK: Singleton
@@ -70,7 +70,7 @@ class PublicRecordManager {
         
         operation.queryCompletionBlock = { cursor, error in
             if let error = error {
-                completion(.failure(error))
+                completion(.failure(error as! CKError))
                 return
             }
             completion(.success(records))
@@ -165,7 +165,7 @@ extension PublicRecordManager {
 
 extension PublicRecordManager {
     
-    func upload(collection: PublicCollection, with cards: [PublicCard], completion: @escaping (Result<(CKRecord, [CKRecord]), Error>) -> Void) {
+    func upload(collection: PublicCollection, with cards: [PublicCard], completion: @escaping (Result<(CKRecord, [CKRecord]), CKError>) -> Void) {
         // create CKRecord to upload
         let collectionRecord = collection.createCKRecord()
         let cardRecords = cards.map({ $0.createCKRecord() })
@@ -177,7 +177,7 @@ extension PublicRecordManager {
         saveCollectionOP.modifyRecordsCompletionBlock = { savedRecords, _, error in
             if let error = error {
                 print("📝 handle CK error: \(error) 📝")
-                completion(.failure(error))
+                completion(.failure(error as! CKError))
             }
         }
         
@@ -188,7 +188,7 @@ extension PublicRecordManager {
         saveCardsOP.modifyRecordsCompletionBlock = { savedRecords, _, error in
             if let error = error {
                 print("📝 handle CK error: \(error) 📝")
-                completion(.failure(error))
+                completion(.failure(error as! CKError))
                 return
             }
             
@@ -221,11 +221,11 @@ extension PublicRecordManager {
         }
     }
     
-    func fetchPublicUserRecord(desiredFields: [PublicUser.RecordFields]? = nil, completion: @escaping (Result<CKRecord, Error>) -> Void) {
+    func fetchPublicUserRecord(desiredFields: [PublicUser.RecordFields]? = nil, completion: @escaping (Result<CKRecord, CKError>) -> Void) {
         // fetch current user ID
         CKContainer.default().fetchUserRecordID { recordID, error in
             guard let recordID = recordID else {
-                completion(.failure(error!))
+                completion(.failure(error as! CKError))
                 return
             }
             
@@ -242,12 +242,11 @@ extension PublicRecordManager {
             
             // set completion block
             operation.fetchRecordsCompletionBlock = { recordMap, error in
-                guard let record = recordMap?[publicRecordID] else {
-                    completion(.failure(error!))
-                    return
+                if let record = recordMap?[publicRecordID] {
+                    completion(.success(record))
+                } else {
+                    completion(.failure(error as! CKError))
                 }
-                
-                completion(.success(record))
             }
             
             // begin the operation
@@ -256,7 +255,7 @@ extension PublicRecordManager {
     }
     
     /// Save user record and update public collections author name.
-    /// 
+    ///
     /// - Parameters:
     ///   - record: The user record to save.
     ///   - completion: The completion with result of a user record or an error.
@@ -279,8 +278,7 @@ extension PublicRecordManager {
         
         queryOP.queryCompletionBlock = { cursor, error in
             guard error == nil else {
-                let error = error as! CKError
-                completion(.failure(error))
+                completion(.failure(error as! CKError))
                 return
             }
             
@@ -290,8 +288,7 @@ extension PublicRecordManager {
             
             saveOP.modifyRecordsCompletionBlock = { savedRecords, _, error in
                 guard savedRecords?.isEmpty == false else {
-                    let error = error as! CKError
-                    completion(.failure(error))
+                    completion(.failure(error as! CKError))
                     return
                 }
                 completion(.success(record))
@@ -309,8 +306,7 @@ extension PublicRecordManager {
     func createInitialPublicUserRecord(username: String = "", userBio: String = "", completion: @escaping (Result<CKRecord, CKError>) -> Void) {
         CKContainer.default().fetchUserRecordID { recordID, error in
             guard let recordID = recordID else {
-                let error = error as! CKError
-                completion(.failure(error))
+                completion(.failure(error as! CKError))
                 return
             }
             
@@ -332,15 +328,13 @@ extension PublicRecordManager {
                         if let record = record {
                             completion(.success(record))
                         } else {
-                            let error = error as! CKError
-                            completion(.failure(error))
+                            completion(.failure(error as! CKError))
                         }
                     }
                     return
                 }
                 
-                let error = error as! CKError
-                completion(.failure(error))
+                completion(.failure(error as! CKError))
             }
         }
     }
@@ -365,7 +359,7 @@ extension PublicRecordManager {
         senderID: String,
         receiverID: String,
         token: PublicRecordToken.TokenType,
-        completion: @escaping (Result<Bool, Error>) -> Void
+        completion: @escaping (Result<Bool, CKError>) -> Void
     ) {
         // check if it exist
         
