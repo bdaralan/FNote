@@ -199,7 +199,7 @@ extension PublicCollectionDetailView {
     }
     
     func confirmSaveCollection(context: ManagedObjectChildContext) {
-        let add = BDButtonTrayItem(title: "Ready To Add", systemImage: SFSymbol.checkmark) { item in
+        let add = BDButtonTrayItem(title: "Ready To Add", systemImage: SFSymbol.addCollection) { item in
             context.quickSave()
             context.parent?.quickSave()
             

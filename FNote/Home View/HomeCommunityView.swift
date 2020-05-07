@@ -223,24 +223,25 @@ extension HomeCommunityView {
         let refresh = BDButtonTrayItem(title: "Refresh", systemImage: SFSymbol.refresh) { item in
             guard self.isFetchingData == false else { return }
             self.isFetchingData = true
-            
-            item.title = "Refreshing..."
-            item.systemImage = SFSymbol.loading
-            item.animation = .rotation()
-            
+            self.setTrayItemRefreshState(item: item, refreshing: true)
             self.viewModel.fetchData { error in
                 // TODO: inform error if needed
                 self.isFetchingData = false
-                item.title = "Refresh"
-                item.systemImage = SFSymbol.refresh
-                item.animation = nil
+                self.setTrayItemRefreshState(item: item, refreshing: false)
             }
         }
         
-        let cachedUser = AppCache.cachedUser()
-        updateUserTrayItem(item: user, user: cachedUser)
+        updateUserTrayItem(item: user, user: AppCache.cachedUser())
         
         return [user, publish, refresh]
+    }
+    
+    func setTrayItemRefreshState(item: BDButtonTrayItem, refreshing: Bool) {
+        item.title = refreshing ? "Refreshing..." : "Refresh"
+        item.systemImage = refreshing ? SFSymbol.loading : SFSymbol.refresh
+        item.animation = refreshing ? .rotation() : nil
+        item.disabled = refreshing ? true : false
+        item.inactiveColor = refreshing ? .appAccent : nil
     }
     
     func updateUserTrayItem(item: BDButtonTrayItem, user: PublicUser) {
