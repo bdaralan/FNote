@@ -187,8 +187,12 @@ extension HomeCommunityView {
     func setupTrayViewModel() {
         trayViewModel.setDefaultColors()
         trayViewModel.shouldDisableMainItemWhenExpanded = false
-        trayViewModel.mainItem = createTrayMainItem()
+        
         trayViewModel.items = createTrayItems()
+        
+        trayViewModel.mainItem = .init(title: "", systemImage: SFSymbol.search) { item in
+            self.sheet.present(.search)
+        }
     }
     
     func createTrayMainItem() -> BDButtonTrayItem {
@@ -216,14 +220,27 @@ extension HomeCommunityView {
             self.beginPublishCollection()
         }
         
-        let search = BDButtonTrayItem(title: "Search", systemImage: SFSymbol.search) { item in
-            self.sheet.present(.search)
+        let refresh = BDButtonTrayItem(title: "Refresh", systemImage: SFSymbol.refresh) { item in
+            guard self.isFetchingData == false else { return }
+            self.isFetchingData = true
+            
+            item.title = "Refreshing..."
+            item.systemImage = SFSymbol.loading
+            item.animation = .rotation()
+            
+            self.viewModel.fetchData { error in
+                // TODO: inform error if needed
+                self.isFetchingData = false
+                item.title = "Refresh"
+                item.systemImage = SFSymbol.refresh
+                item.animation = nil
+            }
         }
         
         let cachedUser = AppCache.cachedUser()
         updateUserTrayItem(item: user, user: cachedUser)
         
-        return [user, publish, search]
+        return [user, publish, refresh]
     }
     
     func updateUserTrayItem(item: BDButtonTrayItem, user: PublicUser) {

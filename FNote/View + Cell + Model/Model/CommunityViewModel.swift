@@ -201,7 +201,7 @@ extension CommunityViewModel {
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
         
         let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
+        section.orthogonalScrollingBehavior = .continuous
         section.interGroupSpacing = 16
         section.contentInsets = .init(top: 12, leading: 16, bottom: 0, trailing: 16)
         section.boundarySupplementaryItems = [createSectionHeaderSupplementaryItem(height: 40)]
@@ -219,7 +219,7 @@ extension CommunityViewModel {
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
         
         let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
+        section.orthogonalScrollingBehavior = .groupPaging
         section.interGroupSpacing = 16
         section.contentInsets = lastSectionContentInsets
         section.boundarySupplementaryItems = [createSectionHeaderSupplementaryItem(height: 40)]

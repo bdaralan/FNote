@@ -95,10 +95,11 @@ class PublicUserViewModel: ObservableObject {
                 modifier[.lowercasedUsername] = username.lowercased()
                 modifier[.about] = userBio
                 
-                recordManager.save(record: record) { result in
+                recordManager.saveUserRecord(record) { result in
                     DispatchQueue.main.async { [weak self] in
                         switch result {
                         case .success(let record):
+                            print(modifier.record === record)
                             let updatedUser = PublicUser(record: record)
                             self?.onUserUpdated?(updatedUser)
                         

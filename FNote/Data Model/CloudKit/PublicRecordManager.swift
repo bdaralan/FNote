@@ -78,16 +78,6 @@ class PublicRecordManager {
         
         publicDatabase.add(operation)
     }
-    
-    func save(record: CKRecord, completion: ((Result<CKRecord, Error>) -> Void)?) {
-        publicDatabase.save(record) { record, error in
-            if let record = record {
-                completion?(.success(record))
-            } else {
-                completion?(.failure(error!))
-            }
-        }
-    }
 }
 
 
@@ -265,13 +255,62 @@ extension PublicRecordManager {
         }
     }
     
+    /// Save user record and update public collections author name.
+    /// 
+    /// - Parameters:
+    ///   - record: The user record to save.
+    ///   - completion: The completion with result of a user record or an error.
+    func saveUserRecord(_ record: CKRecord, completion: @escaping (Result<CKRecord, CKError>) -> Void) {
+        let user = PublicUser(record: record)
+        var collectionRecords = [CKRecord]()
+        
+        let authorIDField = PublicCollection.RecordFields.authorID.stringValue
+        let predicate = NSPredicate(format: "\(authorIDField) == %@", user.userID)
+        let query = CKQuery(recordType: PublicCollection.recordType, predicate: predicate)
+        let queryOP = CKQueryOperation(query: query)
+        queryOP.qualityOfService = .userInitiated
+        queryOP.desiredKeys = []
+        
+        queryOP.recordFetchedBlock = { record in
+            var modifier = RecordModifier<PublicCollection.RecordFields>(record: record)
+            modifier[.authorName] = user.username
+            collectionRecords.append(record)
+        }
+        
+        queryOP.queryCompletionBlock = { cursor, error in
+            guard error == nil else {
+                let error = error as! CKError
+                completion(.failure(error))
+                return
+            }
+            
+            let recordsToSave = [record] + collectionRecords
+            let saveOP = CKModifyRecordsOperation(recordsToSave: recordsToSave)
+            saveOP.qualityOfService = .userInitiated
+            
+            saveOP.modifyRecordsCompletionBlock = { savedRecords, _, error in
+                guard savedRecords?.isEmpty == false else {
+                    let error = error as! CKError
+                    completion(.failure(error))
+                    return
+                }
+                completion(.success(record))
+            }
+            
+            self.publicDatabase.add(saveOP)
+        }
+        
+        publicDatabase.add(queryOP)
+    }
+    
     /// Attempt to create a public user record if first time user.
     ///
     /// - Parameter completion: Return a newly created or an existing record, or an error if failed.
-    func createInitialPublicUserRecord(username: String = "", userBio: String = "", completion: @escaping (Result<CKRecord, Error>) -> Void) {
+    func createInitialPublicUserRecord(username: String = "", userBio: String = "", completion: @escaping (Result<CKRecord, CKError>) -> Void) {
         CKContainer.default().fetchUserRecordID { recordID, error in
             guard let recordID = recordID else {
-                completion(.failure(error!))
+                let error = error as! CKError
+                completion(.failure(error))
                 return
             }
             
@@ -285,17 +324,23 @@ extension PublicRecordManager {
                     return
                 }
                 
-                // create initial public use record here
+                // create initial public user record here
                 if let ckError = error as? CKError, ckError.code == .unknownItem {
                     let newUser = PublicUser(userID: publicUserID, username: username, about: userBio)
                     let newRecord = newUser.createCKRecord()
-                    self.save(record: newRecord) { result in
-                        completion(result)
+                    self.publicDatabase.save(newRecord) { record, error in
+                        if let record = record {
+                            completion(.success(record))
+                        } else {
+                            let error = error as! CKError
+                            completion(.failure(error))
+                        }
                     }
                     return
                 }
                 
-                completion(.failure(error!))
+                let error = error as! CKError
+                completion(.failure(error))
             }
         }
     }
