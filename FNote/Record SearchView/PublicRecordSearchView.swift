@@ -133,7 +133,7 @@ extension PublicRecordSearchView {
     
     func setTrayState(isSearching: Bool) {
         trayViewModel.mainItem.disabled = isSearching
-        trayViewModel.mainItem.animated = isSearching
+        trayViewModel.mainItem.animation = isSearching ? .pulse() : nil
         trayViewModel.mainItem.title = isSearching ? "Searching..." : ""
     }
     

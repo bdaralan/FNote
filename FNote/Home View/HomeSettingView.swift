@@ -8,7 +8,6 @@
 
 import SwiftUI
 import BDUIKnit
-import BDSwiftility
 
 
 struct HomeSettingView: View {

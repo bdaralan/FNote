@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import BDSwiftility
+import BDUIKnit
 
 
 struct NoteCardForm: View {
@@ -71,8 +71,7 @@ extension NoteCardForm {
 
 extension NoteCardForm {
     
-    enum Sheet: Identifiable {
-        var id: Self { self }
+    enum Sheet: BDPresentationSheetItem {
         case note
     }
     

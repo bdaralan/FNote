@@ -13,7 +13,7 @@ enum SFSymbol {
     static let collection = "rectangle.stack"
     static let addCollection = "rectangle.stack.badge.plus"
     static let publishCollection = "rectangle.stack.badge.person.crop"
-    static let loading = "rays"
+    static let loading = "slowmo"
     
     static let add = "plus"
     static let trash = "trash"

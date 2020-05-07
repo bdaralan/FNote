@@ -30,7 +30,7 @@ struct PublicCollectionDetailView: View {
     
     @State private var showDescription = false
     
-    @State private var isPreparingToSave = false
+    @State private var isPreparingToSave = false // flag to prevent multiple triggers
     
     @State private var alert: Alert?
     @State private var presentAlert = false
@@ -105,29 +105,28 @@ extension PublicCollectionDetailView {
             self.onDismiss?()
         }
         
-        let addToCollections = BDButtonTrayItem(title: "Add To Collections", systemImage: SFSymbol.addCollection) { item in
+        setAddToCollectionTrayItem()
+    }
+    
+    func setAddToCollectionTrayItem() {
+        let add = BDButtonTrayItem(title: "Add To Collections", systemImage: SFSymbol.addCollection) { item in
             self.beginSaveCollection()
         }
-        
-        trayViewModel.items = [addToCollections]
+        trayViewModel.items = [add]
+        trayViewModel.expanded = true
     }
     
-    func setTrayMainItemState(isLoading: Bool) {
-        trayViewModel.mainItem.animated = isLoading
-        trayViewModel.expanded = !isLoading
-        trayViewModel.mainItem.title = isLoading ? "Loading Cards..." : ""
-    }
-    
-    func setSavingStateTrayItems() {
-        let preparing = BDButtonTrayItem(title: "Preparing...", systemImage: SFSymbol.loading, action: { _ in })
-        preparing.inactiveColor = .appAccent
-        preparing.animated = true
-        preparing.disabled = true
-        trayViewModel.items = [preparing]
+    func setLoadingTrayItem(title: String) {
+        let fetching = BDButtonTrayItem(title: title, systemImage: SFSymbol.loading, action: { _ in })
+        fetching.animation = .rotation()
+        fetching.disabled = true
+        fetching.inactiveColor = .appAccent
+        trayViewModel.items = [fetching]
+        trayViewModel.expanded = true
     }
     
     func fetchCards() {
-        setTrayMainItemState(isLoading: true)
+        setLoadingTrayItem(title: "Loading Cards...")
         
         let recordManager = PublicRecordManager.shared
         let collectionID = collection.collectionID
@@ -141,12 +140,13 @@ extension PublicCollectionDetailView {
                 self.viewModel.cards = cards
                 DispatchQueue.main.async {
                     self.viewModel.updateSnapshot(animated: true)
-                    self.setTrayMainItemState(isLoading: false)
+                    self.setAddToCollectionTrayItem()
                 }
                 
             case .failure:
                 DispatchQueue.main.async {
-                    self.setTrayMainItemState(isLoading: false)
+                    self.trayViewModel.items = []
+                    self.trayViewModel.expanded = false
                     self.alert = self.fetchCardsFailedAlert
                     self.presentAlert = true
                 }
@@ -164,12 +164,13 @@ extension PublicCollectionDetailView {
         guard isPreparingToSave == false else { return }
         
         isPreparingToSave = true
-        setSavingStateTrayItems()
+        setLoadingTrayItem(title: "Preparing...")
         
         let recordManager = PublicRecordManager.shared
         recordManager.queryCards(withCollectionID: collection.collectionID) { result in
             guard case let .success(records) = result else {
                 DispatchQueue.main.async {
+                    self.setAddToCollectionTrayItem()
                     self.isPreparingToSave = false
                     self.alert = self.prepareCardsFailedAlert
                     self.presentAlert = true
@@ -205,10 +206,10 @@ extension PublicCollectionDetailView {
             item.title = "Added"
             item.inactiveColor = .green
             item.disabled = true
-            item.animated = false
+            item.animation = nil
         }
         
-        add.animated = true
+        add.animation = .pulse()
         
         trayViewModel.items = [add]
     }

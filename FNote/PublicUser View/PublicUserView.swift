@@ -8,7 +8,6 @@
 
 import SwiftUI
 import BDUIKnit
-import BDSwiftility
 
 
 struct PublicUserView: View {

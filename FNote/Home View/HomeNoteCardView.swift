@@ -9,7 +9,6 @@
 import SwiftUI
 import CoreData
 import BDUIKnit
-import BDSwiftility
 
 
 struct HomeNoteCardView: View {

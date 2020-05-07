@@ -8,7 +8,6 @@
 
 import SwiftUI
 import BDUIKnit
-import BDSwiftility
 
 
 struct HomeCommunityView: View {
@@ -197,13 +196,13 @@ extension HomeCommunityView {
             guard self.isFetchingData == false else { return }
             self.isFetchingData = true
             item.disabled = true
-            item.animated = true
+            item.animation = .rotation()
             
             self.viewModel.fetchData { error in
                 // TODO: inform error if needed
                 self.isFetchingData = false
                 item.disabled = false
-                item.animated = false
+                item.animation = nil
             }
         }
     }
@@ -233,12 +232,12 @@ extension HomeCommunityView {
             item.systemImage = SFSymbol.validUser
             item.activeColor = .green
             item.disabled = false
-            item.animated = false
+            item.animation = nil
         
         } else {
             item.systemImage = SFSymbol.invalidUser
             item.activeColor = .red
-            item.animated = true
+            item.animation = .pulse()
             
             if user.userID.isEmpty {
                 item.title = "failed to load profile"
@@ -281,7 +280,6 @@ extension HomeCommunityView {
 extension HomeCommunityView {
     
     enum Sheet: BDPresentationSheetItem {
-        var id: String { "\(self)" }
         case publishCollection
         case user
         case search
