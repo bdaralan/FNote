@@ -299,12 +299,16 @@ extension HomeCommunityView {
                 .eraseToAnyView()
         
         case .search:
-            return PublicRecordSearchView(onCancel: { self.sheet.dismiss() })
+            return PublicRecordSearchView(
+                context: appState.parentContext,
+                onCancel: { self.sheet.dismiss() }
+            )
                 .eraseToAnyView()
             
         case .collectionDetail(let collection):
             return PublicCollectionDetailView(
                 collection: collection,
+                context: appState.parentContext,
                 onAddToCollection: nil,
                 onDismiss: { self.sheet.dismiss() }
             )

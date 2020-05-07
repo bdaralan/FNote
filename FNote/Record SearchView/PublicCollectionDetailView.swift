@@ -8,11 +8,15 @@
 
 import SwiftUI
 import BDUIKnit
+import CoreData
 
 
 struct PublicCollectionDetailView: View {
     
     var collection: PublicCollection
+    
+    /// A context used to save public records to user's collections.
+    var context: NSManagedObjectContext
     
     var onAddCardsToCollection: ((PublicCollection) -> Void)?
     
@@ -26,7 +30,10 @@ struct PublicCollectionDetailView: View {
     
     @State private var showDescription = false
     
-    @State private var fetchFailed = false
+    @State private var isPreparingToSave = false
+    
+    @State private var alert: Alert?
+    @State private var presentAlert = false
     
     
     var body: some View {
@@ -56,10 +63,12 @@ struct PublicCollectionDetailView: View {
             Color.clear.overlay(BDButtonTrayView(viewModel: trayViewModel).padding(16), alignment: .bottomTrailing)
         }
         .onAppear(perform: setupOnAppear)
-        .alert(isPresented: $fetchFailed, content: fetchFailedAlert)
+        .alert(isPresented: $presentAlert, content: { self.alert! })
     }
 }
 
+
+// MARK: - Setup
 
 extension PublicCollectionDetailView {
     
@@ -70,10 +79,10 @@ extension PublicCollectionDetailView {
     }
     
     func setupViewModel() {
-        let base = CGFloat(140)
-        let spacing = CGFloat(40 * trayViewModel.items.count)
-        let items = CGFloat(30 * trayViewModel.items.count)
-        viewModel.contentInsets.bottom = base + spacing + items
+        let trayMaxItems = 1
+        let spacing = CGFloat(40 * trayMaxItems)
+        let items = CGFloat(30 * trayMaxItems)
+        viewModel.contentInsets.bottom = 140 + spacing + items
         
         // setup places cards
         let cards = (0..<collection.cardsCount).map { _ in
@@ -97,7 +106,7 @@ extension PublicCollectionDetailView {
         }
         
         let addToCollections = BDButtonTrayItem(title: "Add To Collections", systemImage: SFSymbol.addCollection) { item in
-            self.onAddToCollection?(self.collection)
+            self.beginSaveCollection()
         }
         
         trayViewModel.items = [addToCollections]
@@ -107,6 +116,14 @@ extension PublicCollectionDetailView {
         trayViewModel.mainItem.animated = isLoading
         trayViewModel.expanded = !isLoading
         trayViewModel.mainItem.title = isLoading ? "Loading Cards..." : ""
+    }
+    
+    func setSavingStateTrayItems() {
+        let preparing = BDButtonTrayItem(title: "Preparing...", systemImage: SFSymbol.loading, action: { _ in })
+        preparing.inactiveColor = .appAccent
+        preparing.animated = true
+        preparing.disabled = true
+        trayViewModel.items = [preparing]
     }
     
     func fetchCards() {
@@ -129,18 +146,92 @@ extension PublicCollectionDetailView {
                 
             case .failure:
                 DispatchQueue.main.async {
-                    self.fetchFailed = true
                     self.setTrayMainItemState(isLoading: false)
+                    self.alert = self.fetchCardsFailedAlert
+                    self.presentAlert = true
                 }
             }
         }
     }
+}
+
+
+// MARK: - Save Collection
+
+extension PublicCollectionDetailView {
     
-    func fetchFailedAlert() -> Alert {
+    func beginSaveCollection() {
+        guard isPreparingToSave == false else { return }
+        
+        isPreparingToSave = true
+        setSavingStateTrayItems()
+        
+        let recordManager = PublicRecordManager.shared
+        recordManager.queryCards(withCollectionID: collection.collectionID) { result in
+            guard case let .success(records) = result else {
+                DispatchQueue.main.async {
+                    self.isPreparingToSave = false
+                    self.alert = self.prepareCardsFailedAlert
+                    self.presentAlert = true
+                }
+                return
+            }
+            
+            let saveContext = self.context.newChildContext()
+            let generator = ObjectGenerator(context: saveContext)
+            
+            let publicCards = records.map({ PublicCard(record: $0) })
+            let noteCards = generator.generateNoteCards(from: publicCards)
+            
+            var modifier = ObjectModifier<NoteCardCollection>(.create(in: saveContext), useSeparateContext: false)
+            modifier.name = "\(self.collection.name) by \(self.collection.authorName)"
+            
+            for noteCard in noteCards {
+                modifier.addNoteCard(noteCard)
+            }
+            
+            DispatchQueue.main.async {
+                self.isPreparingToSave = false
+                self.confirmSaveCollection(context: saveContext)
+            }
+        }
+    }
+    
+    func confirmSaveCollection(context: ManagedObjectChildContext) {
+        let add = BDButtonTrayItem(title: "Ready To Add", systemImage: SFSymbol.checkmark) { item in
+            context.quickSave()
+            context.parent?.quickSave()
+            
+            item.title = "Added"
+            item.inactiveColor = .green
+            item.disabled = true
+            item.animated = false
+        }
+        
+        add.animated = true
+        
+        trayViewModel.items = [add]
+    }
+}
+
+
+// MARK: - Alert
+
+extension PublicCollectionDetailView {
+    
+    var fetchCardsFailedAlert: Alert {
         let title = "Loading Failed"
         let message = "Unable to fetch \(collection.name)'s cards."
         let retry = Alert.Button.default(Text("Retry"), action: fetchCards)
         let dismiss = Alert.Button.default(Text("Dismiss"), action: onDismiss ?? {})
+        return Alert(title: Text(title), message: Text(message), primaryButton: dismiss, secondaryButton: retry)
+    }
+    
+    var prepareCardsFailedAlert: Alert {
+        let title = "Preparing Failed"
+        let message = "Unable to prepare \(collection.name)'s cards."
+        let retry = Alert.Button.default(Text("Retry"), action: beginSaveCollection)
+        let dismiss = Alert.Button.default(Text("Cancel"), action: setupTrayViewModel)
         return Alert(title: Text(title), message: Text(message), primaryButton: dismiss, secondaryButton: retry)
     }
 }
@@ -210,6 +301,6 @@ struct PublicCollectionDetailView_Previews: PreviewProvider {
         primaryLanguage: "Korean", secondaryLanguage: "English", tags: [], cardsCount: 9
     )
     static var previews: some View {
-        PublicCollectionDetailView(collection: collection)
+        PublicCollectionDetailView(collection: collection, context: .sample)
     }
 }

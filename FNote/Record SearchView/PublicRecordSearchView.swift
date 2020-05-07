@@ -10,6 +10,7 @@ import SwiftUI
 import BDUIKnit
 import CloudKit
 import Combine
+import CoreData
 
 
 enum PublicCollectionQueryOption {
@@ -19,6 +20,9 @@ enum PublicCollectionQueryOption {
 
 
 struct PublicRecordSearchView: View {
+    
+    /// A context used to save public records to user's collections.
+    var context: NSManagedObjectContext
     
     var onCancel: (() -> Void)?
     
@@ -162,6 +166,7 @@ extension PublicRecordSearchView {
         
         return PublicCollectionDetailView(
             collection: collection,
+            context: context,
             onDismiss: dismissCollectionDetailView
         )
     }
@@ -304,6 +309,6 @@ extension PublicRecordSearchView {
 
 struct PublishRecordSearchView_Previews: PreviewProvider {
     static var previews: some View {
-        PublicRecordSearchView(onCancel: {})
+        PublicRecordSearchView(context: .sample, onCancel: {})
     }
 }
