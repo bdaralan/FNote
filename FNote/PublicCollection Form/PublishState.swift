@@ -10,8 +10,8 @@ import Foundation
 
 
 enum PublishState {
-    case editing
-    case submitting
+    case preparing
+    case publishing
     case published
-    case rejected
+    case failed
 }

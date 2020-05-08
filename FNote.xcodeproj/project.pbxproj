@@ -111,7 +111,6 @@
 		B4E601C32450B92A00A63280 /* TextFieldInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E601C22450B92A00A63280 /* TextFieldInputView.swift */; };
 		B4E8811823FF8DB100F475CE /* PublicCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E8811723FF8DB100F475CE /* PublicCollection.swift */; };
 		B4E8811A23FF8E0600F475CE /* PublicCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E8811923FF8E0600F475CE /* PublicCard.swift */; };
-		B4E8811E23FF8E5E00F475CE /* PublicCollectionUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E8811D23FF8E5E00F475CE /* PublicCollectionUploader.swift */; };
 		B4EC398123DB7AD90011569C /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EC398023DB7AD90011569C /* Alert.swift */; };
 		B4EC398423DB88460011569C /* CollectionViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EC398323DB88460011569C /* CollectionViewWrapper.swift */; };
 		B4F24A0924241A7B00E7F360 /* CommunityActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F24A0824241A7B00E7F360 /* CommunityActionButton.swift */; };
@@ -236,7 +235,6 @@
 		B4E601C22450B92A00A63280 /* TextFieldInputView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldInputView.swift; sourceTree = "<group>"; };
 		B4E8811723FF8DB100F475CE /* PublicCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicCollection.swift; sourceTree = "<group>"; };
 		B4E8811923FF8E0600F475CE /* PublicCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicCard.swift; sourceTree = "<group>"; };
-		B4E8811D23FF8E5E00F475CE /* PublicCollectionUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicCollectionUploader.swift; sourceTree = "<group>"; };
 		B4EC398023DB7AD90011569C /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		B4EC398323DB88460011569C /* CollectionViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewWrapper.swift; sourceTree = "<group>"; };
 		B4F24A0824241A7B00E7F360 /* CommunityActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityActionButton.swift; sourceTree = "<group>"; };
@@ -608,7 +606,6 @@
 				B4E8811723FF8DB100F475CE /* PublicCollection.swift */,
 				B4E8811923FF8E0600F475CE /* PublicCard.swift */,
 				B496F233244CDAC20039FF6A /* PublicRecordToken.swift */,
-				B4E8811D23FF8E5E00F475CE /* PublicCollectionUploader.swift */,
 			);
 			path = CloudKit;
 			sourceTree = "<group>";
@@ -808,7 +805,6 @@
 				B476FE22241C6A3B0006A196 /* ScrollViewSection.swift in Sources */,
 				B4BAC54523206B28007EAF15 /* String.swift in Sources */,
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,
-				B4E8811E23FF8E5E00F475CE /* PublicCollectionUploader.swift in Sources */,
 				B42A6FC4244FF1A300103019 /* Down+Extension.swift in Sources */,
 				B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */,
 				B476FE24241C6EAB0006A196 /* InsetRowStyle.swift in Sources */,

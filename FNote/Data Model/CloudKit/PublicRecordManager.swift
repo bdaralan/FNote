@@ -78,6 +78,17 @@ class PublicRecordManager {
         
         publicDatabase.add(operation)
     }
+    
+    private func deleteRecord(withID recordID: CKRecord.ID, completion: ((CKError?) -> Void)?) {
+        publicDatabase.delete(withRecordID: recordID) { recordID, error in
+            if let error = error {
+                let error = error as! CKError
+                completion?(error)
+            } else {
+                completion?(nil)
+            }
+        }
+    }
 }
 
 
@@ -99,9 +110,9 @@ extension PublicRecordManager {
     }
     
     func queryRecentCollections(completion: @escaping QueryCompletionBlock) {
-        let modificationDate = #keyPath(CKRecord.modificationDate)
+        let createDate = #keyPath(CKRecord.creationDate)
         let predicate = NSPredicate(value: true)
-        let sortByRecentModified = NSSortDescriptor(key: modificationDate, ascending: false)
+        let sortByRecentModified = NSSortDescriptor(key: createDate, ascending: false)
         let query = CKQuery(recordType: PublicCollection.recordType, predicate: predicate)
         query.sortDescriptors = [sortByRecentModified]
         
@@ -165,41 +176,34 @@ extension PublicRecordManager {
 
 extension PublicRecordManager {
     
-    func upload(collection: PublicCollection, with cards: [PublicCard], completion: @escaping (Result<(CKRecord, [CKRecord]), CKError>) -> Void) {
+    func upload(collection: PublicCollection, with cards: [PublicCard], completion: @escaping (Result<([CKRecord]), CKError>) -> Void) {
         // create CKRecord to upload
         let collectionRecord = collection.createCKRecord()
         let cardRecords = cards.map({ $0.createCKRecord() })
         
-        // create save operations
-        let saveCollectionOP = CKModifyRecordsOperation(recordsToSave: [collectionRecord])
-        saveCollectionOP.savePolicy = .allKeys
+        var hasCollectionRecordSaved = false
         
-        saveCollectionOP.modifyRecordsCompletionBlock = { savedRecords, _, error in
-            if let error = error {
-                print("📝 handle CK error: \(error) 📝")
-                completion(.failure(error as! CKError))
-            }
+        let saveOP = CKModifyRecordsOperation(recordsToSave: [collectionRecord] + cardRecords)
+        saveOP.qualityOfService = .userInitiated
+        
+        saveOP.perRecordCompletionBlock = { record, error in
+            guard record.recordID == collectionRecord.recordID else { return }
+            hasCollectionRecordSaved = true
         }
         
-        let saveCardsOP = CKModifyRecordsOperation(recordsToSave: cardRecords)
-        saveCardsOP.savePolicy = .allKeys
-        saveCardsOP.addDependency(saveCollectionOP)
-        
-        saveCardsOP.modifyRecordsCompletionBlock = { savedRecords, _, error in
-            if let error = error {
-                print("📝 handle CK error: \(error) 📝")
-                completion(.failure(error as! CKError))
-                return
-            }
-            
+        saveOP.modifyRecordsCompletionBlock = { savedRecords, _, error in
             if let savedRecords = savedRecords {
-                print("published collection \(collection.name) with \(savedRecords.count) cards")
-                completion(.success((collectionRecord, savedRecords)))
+                completion(.success(savedRecords))
+            } else {
+                if hasCollectionRecordSaved {
+                    self.deleteRecord(withID: collectionRecord.recordID, completion: nil)
+                }
+                completion(.failure(error as! CKError))
+                
             }
         }
         
-        publicDatabase.add(saveCollectionOP)
-        publicDatabase.add(saveCardsOP)
+        publicDatabase.add(saveOP)
     }
 }
 

@@ -360,11 +360,11 @@ extension HomeCommunityView {
         
         formModel.onPublishStateChanged = { state in
             switch state {
-            case .editing:
+            case .preparing:
                 formModel.commitTitle = "PUBLISH"
-            case .submitting:
+            case .publishing:
                 formModel.commitTitle = "PUBLISHING"
-            case .rejected:
+            case .failed:
                 formModel.commitTitle = "FAILED"
             case .published:
                 self.trayViewModel.expanded = false
@@ -381,46 +381,25 @@ extension HomeCommunityView {
         publishFormModel?.validateInputs()
         
         guard let formModel = publishFormModel, formModel.hasValidInputs else { return }
+        guard formModel.publishState == .preparing else { return }
+        formModel.publishState = .publishing
+        
         guard let collection = formModel.publishCollection else { return }
         guard let primaryLanguage = formModel.publishPrimaryLanguage else { return }
         guard let secondaryLanguage = formModel.publishSecondaryLanguage else { return }
         
-        // create ID map for public card and use it to set relationships
-        // map value is [localID: publicID]
-        var cardIDMap = [String: String]()
-        for noteCard in collection.noteCards {
-            let localID = noteCard.uuid
-            let publicID = UUID().uuidString
-            cardIDMap[localID] = publicID
-        }
+        let collectionID = UUID().uuidString
+        let noteCards = collection.noteCards
+        let includeNote = formModel.includesNote
         
-        // create a new public collection ID
-        let publicCollectionID = UUID().uuidString
-        
-        // unwrapping the map is safe here
-        let publicCards = collection.noteCards.map { noteCard -> PublicCard in
-            let localID = noteCard.uuid
-            let publicID = cardIDMap[localID]!
-            let publicRelationshipIDs = noteCard.relationships.map({ cardIDMap[$0.uuid]! })
-            let publicTags = noteCard.tags.map(\.name).sorted()
-            let publicNote = formModel.includesNote ? noteCard.note : ""
-            
-            let publicCard = PublicCard(
-                collectionID: publicCollectionID,
-                cardID: publicID,
-                native: noteCard.native,
-                translation: noteCard.translation,
-                favorited: noteCard.isFavorite,
-                formality: noteCard.formality,
-                note: publicNote,
-                tags: publicTags,
-                relationships: publicRelationshipIDs
-            )
-            return publicCard
-        }
+        let publicCards = ObjectGenerator.generatePublicCards(
+            from: noteCards,
+            collectionID: collectionID,
+            includeNote: includeNote
+        )
         
         let publicCollection = PublicCollection(
-            collectionID: publicCollectionID,
+            collectionID: collectionID,
             authorID: formModel.author.userID,
             authorName: formModel.author.username,
             name: formModel.publishCollectionName,
@@ -431,17 +410,14 @@ extension HomeCommunityView {
             cardsCount: publicCards.count
         )
         
-        formModel.setPublishState(to: .submitting)
-        
         let recordManager = PublicRecordManager.shared
         recordManager.upload(collection: publicCollection, with: publicCards) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success:
-                    formModel.setPublishState(to: .published)
-                case .failure(let error):
-                    print(error)
-                    formModel.setPublishState(to: .rejected)
+                    formModel.publishState = .published
+                case .failure:
+                    formModel.publishState = .failed
                 }
             }
         }

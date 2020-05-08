@@ -82,7 +82,6 @@ extension CommunityViewModel {
                 let collection = item.object as! PublicCollection
                 cell.reload(with: collection)
                 cell.onVoteTriggered = self.onVoteTriggered
-                self.setCollectionCellAuthorName(cell, userID: collection.authorID)
                 return cell
                 
             case .recentCard:
@@ -100,14 +99,6 @@ extension CommunityViewModel {
             header.setLabelPosition(.bottom)
             return header
         }
-    }
-    
-    /// Grab author's name from record manager's cached record and set the value.
-    func setCollectionCellAuthorName(_ cell: PublicCollectionCell, userID: String) {
-        guard !userID.isEmpty else { return }
-        guard let record = PublicRecordManager.shared.cachedRecord(forKey: userID) else { return }
-        let user = PublicUser(record: record)
-        cell.setAuthor(name: user.username)
     }
     
     func updateSnapshot(animated: Bool, completion: (() -> Void)?) {
@@ -279,23 +270,6 @@ extension CommunityViewModel {
                 }
                 
                 updateSnapshot(error)
-                
-                let recordManager = PublicRecordManager.shared
-                let collectionSection = self.sections.first(where: { $0.type == .recentCollection })
-                let userIDs = collectionSection?.items.compactMap { item -> String? in
-                    let collection = item.object as? PublicCollection
-                    return collection?.authorID
-                }
-                
-                recordManager.queryUsers(withIDs: userIDs ?? []) { result in
-                    switch result {
-                    case .success(let userRecords):
-                        recordManager.cacheRecords(userRecords, usingRecordField: PublicUser.RecordFields.userID)
-                        updateSnapshot(error)
-                    case .failure(let error):
-                        updateSnapshot(error)
-                    }
-                }
             }
         }
     }

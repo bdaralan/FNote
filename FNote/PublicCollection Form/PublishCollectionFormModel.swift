@@ -31,7 +31,9 @@ class PublishCollectionFormModel: ObservableObject {
     
     @Published var commitTitle = "PUBLISH"
     
-    private(set) var publishState: PublishState = .editing
+    var publishState: PublishState = .preparing {
+        didSet { onPublishStateChanged?(publishState) }
+    }
     
     let publicCardsRequired = 9
     let publishTagsLimit = 4
@@ -48,11 +50,6 @@ class PublishCollectionFormModel: ObservableObject {
     
     init(user: PublicUser) {
         self.author = user
-    }
-    
-    func setPublishState(to state: PublishState) {
-        publishState = state
-        onPublishStateChanged?(state)
     }
     
     func validateInputs() {

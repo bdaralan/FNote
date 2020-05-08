@@ -18,7 +18,12 @@ class ObjectGenerator {
     init(context: NSManagedObjectContext) {
         self.context = context
     }
-    
+}
+
+
+// MARK: - Record to Object
+
+extension ObjectGenerator {
     
     /// Generator `NoteCard` objects from the given `PublicCard`.
     ///
@@ -102,5 +107,47 @@ class ObjectGenerator {
         }
         
         return result
+    }
+}
+
+
+// MARK: - Object to Record
+
+extension ObjectGenerator {
+    
+    static func generatePublicCards(from noteCards: Set<NoteCard>, collectionID: String, includeNote: Bool) -> [PublicCard] {
+        // create ID map for public card and use it to set relationships
+        // map value is [localID: publicID]
+        var cardIDMap = [String: String]()
+        for noteCard in noteCards {
+            let localID = noteCard.uuid
+            let publicID = UUID().uuidString
+            cardIDMap[localID] = publicID
+        }
+        
+        // unwrapping the map is safe here
+        let publicCards = noteCards.map { noteCard -> PublicCard in
+            let localID = noteCard.uuid
+            let publicID = cardIDMap[localID]!
+            let publicRelationshipIDs = noteCard.relationships.map({ cardIDMap[$0.uuid]! })
+            let publicTags = noteCard.tags.map(\.name).sorted()
+            let publicNote = includeNote ? noteCard.note : ""
+            
+            let publicCard = PublicCard(
+                collectionID: collectionID,
+                cardID: publicID,
+                native: noteCard.native,
+                translation: noteCard.translation,
+                favorited: noteCard.isFavorite,
+                formality: noteCard.formality,
+                note: publicNote,
+                tags: publicTags,
+                relationships: publicRelationshipIDs
+            )
+            
+            return publicCard
+        }
+        
+        return publicCards
     }
 }
