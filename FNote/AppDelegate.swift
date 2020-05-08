@@ -52,9 +52,6 @@ extension AppDelegate {
             case .success(let record):
                 let user = PublicUser(record: record)
                 AppCache.cacheUser(user)
-                
-                let recordChangeNotification = PublicRecordManager.nPublicUserDidUpdate
-                NotificationCenter.default.post(name: recordChangeNotification, object: user)
             
             case .failure(let error):
                 print("⚠️ unable to update PublicUser remote notification with error: \(error) ⚠️")

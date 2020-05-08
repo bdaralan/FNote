@@ -2,21 +2,12 @@
   "object": {
     "pins": [
       {
-        "package": "BDSwiftility",
-        "repositoryURL": "https://github.com/iDara09/BDSwiftility.git",
-        "state": {
-          "branch": null,
-          "revision": "48b1d8c16974ba9d0af29246ed843e7d0e6b8c06",
-          "version": "1.0.5"
-        }
-      },
-      {
         "package": "BDUIKnit",
         "repositoryURL": "https://github.com/iDara09/BDUIKnit.git",
         "state": {
           "branch": null,
-          "revision": "b7288acc2571d39f30f72fb5325880de173b708a",
-          "version": "1.1.14"
+          "revision": "cbcd89dba046777f8765628048cd800b94d10710",
+          "version": "1.1.15"
         }
       },
       {

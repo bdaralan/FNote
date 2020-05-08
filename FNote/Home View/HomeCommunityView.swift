@@ -38,7 +38,7 @@ struct HomeCommunityView: View {
     
     let userTrayItemID = "publicUserTrayItemID"
     
-    let userDidUpdate = NotificationCenter.default.publisher(for: PublicRecordManager.nPublicUserDidUpdate)
+    let cachedUserDidUpdate = NotificationCenter.default.publisher(for: AppCache.nEncodedPublicUserDidChange)
     
     
     var body: some View {
@@ -55,7 +55,7 @@ struct HomeCommunityView: View {
         .sheet(item: $sheet.current, onDismiss: handleSheetDismissed, content: presentationSheet)
         .onReceive(horizontalSizeClasses.publisher, perform: handleSizeClassChanged)
         .onReceive(sizeCategories.publisher, perform: handleSizeCategoryChanged)
-        .onReceive(userDidUpdate.receive(on: DispatchQueue.main), perform: handlePublicUserDidUpdate)
+        .onReceive(cachedUserDidUpdate.receive(on: DispatchQueue.main), perform: handlePublicUserDidUpdate)
     }
 }
 
@@ -109,8 +109,8 @@ extension HomeCommunityView {
     }
     
     func handlePublicUserDidUpdate(notification: Notification) {
-        guard let user = notification.object as? PublicUser else { return }
         guard let userTrayItem = trayViewModel.items.first(where: { $0.id == userTrayItemID }) else { return }
+        let user = AppCache.cachedUser()
         updateUserTrayItem(item: userTrayItem, user: user)
         publicUserViewModel?.update(with: user)
         publishFormModel?.author = user

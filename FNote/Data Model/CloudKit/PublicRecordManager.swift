@@ -21,11 +21,6 @@ class PublicRecordManager {
     static let shared = PublicRecordManager()
     
     
-    // MARK: Notification
-    
-    static let nPublicUserDidUpdate = Notification.Name("PublicRecordManager.nPublicUserDidUpdate")
-    
-    
     // MARK: Property
     
     let publicDatabase = CKContainer.default().publicCloudDatabase

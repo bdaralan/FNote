@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import BDSwiftility
+import BDUIKnit
 
 
 /// An object that provide access to application's values stored in `UserDefaults`.
@@ -20,25 +20,27 @@ struct AppCache {
     
     // MARK: Setup
     
-    @BDStoredValue(in: .userDefaults, key: "kAppCache.ubiquityIdentityToken", default: nil)
+    @BDPersist(in: .userDefaults, key: "kAppCache.ubiquityIdentityToken", default: nil)
     static var ubiquityIdentityToken: UbiquityIdentityToken?
     
-    @BDStoredValue(in: .userDefaults, key: "kAppCache.currentCollectionUUID", default: nil)
+    @BDPersist(in: .userDefaults, key: "kAppCache.currentCollectionUUID", default: nil)
     static var currentCollectionUUID: String?
     
-    @BDStoredValue(in: .userDefaults, key: "kAppCache.shouldShowOnboard", default: true)
+    @BDPersist(in: .userDefaults, key: "kAppCache.shouldShowOnboard", default: true)
     static var shouldShowOnboard: Bool
     
-    @BDStoredValue(in: .userDefaults, key: "kAppCache.lastKnownVersion", default: nil)
+    @BDPersist(in: .userDefaults, key: "kAppCache.lastKnownVersion", default: nil)
     static var lastKnownVersion: String?
     
-    @BDStoredValue(in: .userDefaults, key: "kAppCache.hasSetupUserUpdateCKSubscription", default: false)
+    @BDPersist(in: .userDefaults, key: "kAppCache.hasSetupUserUpdateCKSubscription", default: false)
     static var hasSetupUserUpdateCKSubscription: Bool
     
     
     // MARK: Public User
     
-    @BDStoredValue(in: .userDefaults, key: "kAppCache.publicUser", default: Data())
+    static let nEncodedPublicUserDidChange = Notification.Name(rawValue: "kAppCache.nEncodedPublicUserDidChange")
+    
+    @BDPersist(in: .userDefaults, key: "kAppCache.encodedPublicUser", default: Data(), post: nEncodedPublicUserDidChange)
     static private var encodedPublicUser: Data
 }
 
