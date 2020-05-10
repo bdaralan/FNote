@@ -10,6 +10,8 @@ import Foundation
 
 
 enum SFSymbol {
+    static let card = "rectangle.on.rectangle.angled"
+    
     static let collection = "rectangle.stack"
     static let addCollection = "rectangle.stack.badge.plus"
     static let publishCollection = "rectangle.stack.badge.person.crop"
@@ -31,4 +33,7 @@ enum SFSymbol {
     
     static let dismiss = "xmark.circle"
     static let checkmark = "checkmark.circle"
+    
+    static let option = "circle"
+    static let selectedOption = "largecircle.fill.circle"
 }

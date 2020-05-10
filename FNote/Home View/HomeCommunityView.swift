@@ -238,8 +238,8 @@ extension HomeCommunityView {
     
     func setTrayItemRefreshState(item: BDButtonTrayItem, refreshing: Bool) {
         item.title = refreshing ? "Refreshing..." : "Refresh"
-        item.systemImage = refreshing ? SFSymbol.loading : SFSymbol.refresh
-        item.animation = refreshing ? .rotation() : nil
+//        item.systemImage = refreshing ? SFSymbol.loading : SFSymbol.refresh
+        item.animation = refreshing ? .rotation(duration: 0.7) : nil
         item.disabled = refreshing ? true : false
         item.inactiveColor = refreshing ? .appAccent : nil
     }

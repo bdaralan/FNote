@@ -30,9 +30,6 @@ struct HomeNoteCardView: View {
     @State private var alert: Alert?
     @State private var presentAlert = false
     
-    @State private var searchFetchController: NSFetchedResultsController<NoteCard>?
-    @State private var currentSearchText = ""
-    
     var currentCollection: NoteCardCollection? {
         appState.currentCollection
     }
@@ -66,7 +63,6 @@ struct HomeNoteCardView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(item: $sheet.current, content: presentationSheet)
         .alert(isPresented: $presentAlert, content: { self.alert! })
-        .onReceive(appState.currentNoteCardsWillChange, perform: handleOnReceiveCurrentNotesCardWillChange)
         .onAppear(perform: setupOnAppear)
     }
 }
@@ -102,11 +98,6 @@ extension HomeNoteCardView {
         
         viewModel.onNoteCardQuickButtonTapped = handleNoteCardQuickButtonTapped
         viewModel.onContextMenuSelected = handleContextMenuSelected
-        
-        viewModel.onSearchTextDebounced = handleSearchTextDebounced
-        viewModel.onSearchCancel = handleSearchCancel
-        viewModel.onSearchNoteActiveChanged = handleSearchNoteActiveChanged
-        
         viewModel.setupCollectionView(collectionView)
     }
 }
@@ -117,12 +108,20 @@ extension HomeNoteCardView {
 extension HomeNoteCardView {
     
     enum Sheet: BDPresentationSheetItem {
+        case searchNoteCard
         case noteCardCollection
         case modalTextField
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
+            
+        case .searchNoteCard:
+            return NoteCardSearchView(
+                appState: appState,
+                onCancel: { self.sheet.dismiss() }
+            )
+                .eraseToAnyView()
             
         case .noteCardCollection:
             return HomeNoteCardCollectionView(
@@ -149,7 +148,6 @@ extension HomeNoteCardView {
     var buttonTrayView: some View {
         BDButtonTrayView(viewModel: trayViewModel)
             .padding(16)
-            .disabled(searchFetchController != nil)
     }
     
     func setupButtonTrayViewModel() {
@@ -197,7 +195,11 @@ extension HomeNoteCardView {
             self.trayViewModel.subitems = self.createNoteCardSortOptionTrayItems()
         }
         
-        return [createCollection, collections, sortCards]
+        let searchCards = BDButtonTrayItem(title: "Search", systemImage: SFSymbol.search) { item in
+            self.sheet.present(.searchNoteCard)
+        }
+        
+        return [createCollection, collections, sortCards, searchCards]
     }
     
     func createNoteCardSortOptionTrayItems() -> [BDButtonTrayItem] {
@@ -323,67 +325,6 @@ extension HomeNoteCardView {
         let dismiss = Alert.Button.default(Text("Dismiss"), action: { self.alert  = nil })
         alert = Alert(title: title, message: message, dismissButton: dismiss)
         presentAlert = true
-    }
-}
-
-
-// MARK: - Search
-
-extension HomeNoteCardView {
-    
-    func handleSearchTextDebounced(_ searchText: String) {
-        currentSearchText = searchText
-        
-        if trayViewModel.expanded {
-            trayViewModel.expanded = false
-            trayViewModel.subitems = []
-        }
-        
-        guard !searchText.trimmed().isEmpty, let collection = currentCollection else {
-            viewModel.noteCards = appState.currentNoteCards
-            viewModel.updateSnapshot(animated: true)
-            searchFetchController = nil
-            return
-        }
-        
-        if searchFetchController == nil {
-            searchFetchController = .init(
-                fetchRequest: NoteCard.requestNone(),
-                managedObjectContext: appState.parentContext,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-        }
-        
-        let isNoteActive = viewModel.isSearchNoteActive
-        
-        let request = NoteCard.requestNoteCards(
-            collectionUUID: collection.uuid,
-            searchText: searchText,
-            searchFields: isNoteActive ? [.native, .translation, .note] : [.native, .translation]
-        )
-        
-        searchFetchController?.fetchRequest.predicate = request.predicate
-        searchFetchController?.fetchRequest.sortDescriptors = request.sortDescriptors
-        try? searchFetchController?.performFetch()
-        
-        viewModel.noteCards = searchFetchController?.fetchedObjects ?? []
-        viewModel.updateSnapshot(animated: true)
-    }
-    
-    func handleSearchCancel() {
-        viewModel.noteCards = appState.currentNoteCards
-        viewModel.updateSnapshot(animated: true)
-        searchFetchController = nil
-    }
-    
-    func handleSearchNoteActiveChanged(_ isActive: Bool) {
-        handleSearchTextDebounced(currentSearchText)
-    }
-    
-    func handleOnReceiveCurrentNotesCardWillChange(_ value: Void) {
-        guard searchFetchController != nil else { return }
-        handleSearchTextDebounced(currentSearchText)
     }
 }
 

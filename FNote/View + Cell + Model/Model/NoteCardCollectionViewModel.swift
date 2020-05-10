@@ -45,7 +45,7 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     var contextMenus: [NoteCardCell.ContextMenu] = []
     
     private var sections: [Section] {
-        onSearchTextDebounced == nil ? [.card] : [.search, .card]
+        onSearchTextDebounced != nil ? [.search, .card] : [.card]
     }
     
     
@@ -58,9 +58,7 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     
     // MARK: Search
     var onSearchTextDebounced: ((String) -> Void)?
-    var onSearchTextChanged: ((String) -> Void)?
     var onSearchCancel: (() -> Void)?
-    var onSearchNoteActiveChanged: ((Bool) -> Void)?
     
     
     // MARK: Reference
@@ -71,19 +69,12 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     /// A flag to reload cell quick buttons images if size category ever changed.
     private var sizeCategoryChanged = false
     
-    /// Check if the search is active.
-    ///
-    /// - Note: The search is considered inactive if the search text is empty.
-    private(set) var isSearchActive = false
-    
-    var searchFieldHeader: SearchFieldCollectionHeader? {
+    private var searchFieldHeader: SearchFieldCollectionHeader? {
+        let headerIndexPath = IndexPath(item: 0, section: 0)
         let headerKind = UICollectionView.elementKindSectionHeader
-        let header = collectionView?.visibleSupplementaryViews(ofKind: headerKind).first
-        return header as? SearchFieldCollectionHeader
-    }
-    
-    var isSearchNoteActive: Bool {
-        searchFieldHeader?.isNoteActive ?? false
+        let supplementaryView = collectionView?.supplementaryView(forElementKind: headerKind, at: headerIndexPath)
+        let header = supplementaryView as? SearchFieldCollectionHeader
+        return header
     }
     
     
@@ -107,18 +98,11 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
         collectionView.scrollToItem(at: firstIndexPath, at: .bottom, animated: animated)
     }
     
-    /// The method does not trigger `onSearchCancel` block.
     func cancelSearch() {
-        let headerIndexPath = IndexPath(item: 0, section: 0)
-        let headerKind = UICollectionView.elementKindSectionHeader
-        let supplementaryView = collectionView?.supplementaryView(forElementKind: headerKind, at: headerIndexPath)
-        
-        guard let header = supplementaryView as? SearchFieldCollectionHeader else { return }
-        guard !header.searchText.isEmpty else { return }
-        header.searchText = ""
-        header.searchField.resignFirstResponder()
-        header.showCancel(false, animated: true)
-        header.setDebounceSearchText("")
+        guard let searchField = searchFieldHeader else { return }
+        searchField.searchText = ""
+        searchField.searchField.resignFirstResponder()
+        searchField.showCancel(false, animated: true)
     }
     
     private func setupNoteCardCell(_ cell: NoteCardCell, for noteCard: NoteCard) {
@@ -133,31 +117,15 @@ class NoteCardCollectionViewModel: NSObject, CollectionViewCompositionalDataSour
     }
     
     private func setupSearchHeader(_ header: SearchFieldCollectionHeader) {
-        header.searchField.placeholder = "Search by native, translation, or note"
-        
-        header.onSearchTextChanged = { [weak self] searchText in
-            guard let self = self else { return }
-            self.isSearchActive = !searchText.trimmed().isEmpty
-            self.onSearchTextChanged?(searchText)
-        }
+        header.searchField.placeholder = "Search by native or translation"
         
         header.onSearchTextDebounced = { [weak self] searchText in
-            guard let self = self else { return }
-            self.onSearchTextDebounced?(searchText)
+            self?.onSearchTextDebounced?(searchText)
         }
         
         header.onCancel = { [weak self] in
-            guard let self = self else { return }
-            self.onSearchCancel?()
-            self.isSearchActive = false
-            header.searchText = ""
-            header.searchField.resignFirstResponder()
-            header.showCancel(false, animated: true)
-        }
-        
-        header.onNoteActive = { [weak self] isActive in
-            guard let self = self else { return }
-            self.onSearchNoteActiveChanged?(isActive)
+            self?.cancelSearch()
+            self?.onSearchCancel?()
         }
     }
     

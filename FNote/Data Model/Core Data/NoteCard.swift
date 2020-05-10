@@ -196,35 +196,37 @@ extension NoteCard {
     /// A request used with search feature to fetch note cards in a collection.
     ///
     /// - Parameters:
-    ///   - uuid: The collection UUID.
+    ///   - collectionUUID: The collection UUID. Pass `nil` to search all note cards.
     ///   - searchText: The search text.
-    ///   - scopes: The search scopes.
+    ///   - searchFields: The search scopes.
+    ///   - sortBy: The sort field in ascending order.
     /// - Returns: The fetch request. The request will fetch none if any of the parameters are empty.
-    static func requestNoteCards(collectionUUID: String, searchText: String = "", searchFields: [NoteCardSearchField]) -> NSFetchRequest<NoteCard> {
-        guard searchText.trimmed().isEmpty == false, searchFields.isEmpty == false else { return NoteCard.requestNone() }
-        
-        // create predicate for the search scopes
-        var fieldPredicates = [NSPredicate]()
-        for field in searchFields {
-            let predicate = NSPredicate(format: "\(field.rawValue) CONTAINS[c] %@", searchText)
-            fieldPredicates.append(predicate)
+    static func requestNoteCards(collectionUUID: String?, searchText: String = "", searchFields: [NoteCardSearchField], sortBy: NoteCardSearchField) -> NSFetchRequest<NoteCard> {
+        if searchText.isEmpty || searchFields.isEmpty {
+            return NoteCard.requestNone()
         }
-        
-        // create predicate to match collection uuid
-        let collectionUUIDField = #keyPath(NoteCard.collection.uuid)
-        let matchCollection = NSPredicate(format: "\(collectionUUIDField) == %@", collectionUUID)
-        
-        // combine the predicates
-        // OR the scopes then AND with the match collection's uuid
-        let fieldCompoundPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: fieldPredicates)
-        let allPredicates = [matchCollection, fieldCompoundPredicate]
-        let requestPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: allPredicates)
         
         // create the request
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        let sortKey = #keyPath(NoteCard.translation)
-        request.predicate = requestPredicate
-        request.sortDescriptors = [.init(key: sortKey, ascending: true)]
+        request.sortDescriptors = [.init(key: sortBy.rawValue, ascending: true)]
+    
+        // create predicate for the search scopes
+        let fieldPredicates = searchFields.map { field -> NSPredicate in
+            let predicate = NSPredicate(format: "\(field.rawValue) CONTAINS[c] %@", searchText)
+            return predicate
+        }
+        
+        let orFieldsPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: fieldPredicates)
+        
+        // create predicate to match collection uuid
+        if let collectionUUID = collectionUUID {
+            let collectionUUIDField = #keyPath(NoteCard.collection.uuid)
+            let matchCollection = NSPredicate(format: "\(collectionUUIDField) == %@", collectionUUID)
+            let predicates = [matchCollection, orFieldsPredicate]
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        } else {
+            request.predicate = orFieldsPredicate
+        }
         
         return request
     }

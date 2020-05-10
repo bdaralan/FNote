@@ -53,7 +53,6 @@ struct HomeView: View {
         .onAppear(perform: setupOnAppear)
         .sheet(item: $sheet.current, onDismiss: handleSheetDismissed, content: presentationSheet)
         .disabled(!appState.iCloudActive)
-        .onReceive([currentTab].publisher.last(), perform: handleOnReceiveCurrentTab)
         .onReceive(storeRemoteChange.receive(on: DispatchQueue.main), perform: handleStoreRemoteChangeNotification)
     }
 }
@@ -65,10 +64,6 @@ extension HomeView {
     
     func setupOnAppear() {
         showOnboardIfNeeded()
-    }
-    
-    func handleOnReceiveCurrentTab(_ tab: Tab) {
-        cardCollectionViewModel.cancelSearch()
     }
     
     func showOnboardIfNeeded() {
@@ -151,13 +146,7 @@ extension HomeView {
             tagCollectionViewModel.updateSnapshot(animated: true)
             
         case .card:
-            if appState.currentCollection == nil {
-                cardCollectionViewModel.updateSnapshot(animated: true)
-            } else {
-                if !cardCollectionViewModel.isSearchActive {
-                    cardCollectionViewModel.updateSnapshot(animated: true)
-                }
-            }
+            cardCollectionViewModel.updateSnapshot(animated: true)
         }
     }
 }

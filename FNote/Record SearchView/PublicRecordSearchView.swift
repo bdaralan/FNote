@@ -27,16 +27,14 @@ struct PublicRecordSearchView: View {
     var onCancel: (() -> Void)?
     
     @State private var searchField = SearchField()
-    
     @State private var isSearchFieldFirstResponder = true
-    
-    @State private var collectionViewModel = PublicRecordSearchCollectionViewModel()
+    @State private var searchFieldPlaceholder = ""
+    @State private var searchOption: PublicCollectionQueryOption = .matchCollectionNameOrTag
     
     @State private var trayViewModel = BDButtonTrayViewModel()
     
+    @State private var collectionViewModel = PublicRecordSearchCollectionViewModel()
     @State private var collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
-    
-    @State private var searchOption: PublicCollectionQueryOption = .matchCollectionNameOrTag
     
     /// The fetch operation in progress.
     ///
@@ -57,7 +55,7 @@ struct PublicRecordSearchView: View {
                 BDTextFieldWrapper(
                     isActive: $isSearchFieldFirstResponder,
                     text: $searchField.searchText,
-                    placeholder: searchField.placeholder,
+                    placeholder: searchFieldPlaceholder,
                     returnKeyType: .search,
                     onCommit: handleSearchReturnKey,
                     configure: configureSearchTextField
@@ -109,12 +107,12 @@ extension PublicRecordSearchView {
             self.isSearchFieldFirstResponder = true
         }
         
-        let searchByUser = BDButtonTrayItem(title: "Match username", systemImage: SFSymbol.matchByUsername) { item in
+        let searchByUser = BDButtonTrayItem(title: "Match username", systemImage: "") { item in
             self.searchOption = .matchUsername
             self.setTrayFocusedItem(item)
         }
         
-        let searchByAny = BDButtonTrayItem(title: "Match name or tag", systemImage: SFSymbol.matchByAny) { item in
+        let searchByAny = BDButtonTrayItem(title: "Match name, tag, etc...", systemImage: "") { item in
             self.searchOption = .matchCollectionNameOrTag
             self.setTrayFocusedItem(item)
         }
@@ -126,8 +124,10 @@ extension PublicRecordSearchView {
     
     func setTrayFocusedItem(_ focused: BDButtonTrayItem) {
         for item in trayViewModel.items {
+            item.systemImage = item === focused ? SFSymbol.selectedOption : SFSymbol.option
             item.activeColor = item === focused ? .appAccent : .buttonTrayItemUnfocused
         }
+        searchFieldPlaceholder = focused.title
         beginSearch(searchText: searchField.searchText)
     }
     
@@ -139,7 +139,6 @@ extension PublicRecordSearchView {
     
     func setupSearchField() {
         searchField.searchText = ""
-        searchField.placeholder = "Search collection by name, tag, username..."
         searchField.setupSearchTextDebounce(dueTime: .seconds(0.5))
         
         searchField.onSearchTextDebounced = { searchText in

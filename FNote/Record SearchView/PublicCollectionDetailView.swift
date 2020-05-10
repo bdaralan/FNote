@@ -164,7 +164,7 @@ extension PublicCollectionDetailView {
         guard isPreparingToSave == false else { return }
         
         isPreparingToSave = true
-        setLoadingTrayItem(title: "Preparing...")
+        setLoadingTrayItem(title: "Preparing Cards...")
         
         let recordManager = PublicRecordManager.shared
         recordManager.queryCards(withCollectionID: collection.collectionID) { result in

@@ -61,6 +61,7 @@
 		B48AC69923D9445A0033DF6F /* NoteCardFormTagSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48AC69823D9445A0033DF6F /* NoteCardFormTagSelectionView.swift */; };
 		B48C1A752466D472008523E6 /* NoteCardDetailPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48C1A742466D472008523E6 /* NoteCardDetailPresenter.swift */; };
 		B48C1A772467876B008523E6 /* NoteCardDetailPresenterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48C1A762467876B008523E6 /* NoteCardDetailPresenterModel.swift */; };
+		B48C1A7A24679210008523E6 /* NoteCardSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48C1A7924679210008523E6 /* NoteCardSearchView.swift */; };
 		B4928E8C239054FF0060AD45 /* Down in Frameworks */ = {isa = PBXBuildFile; productRef = B4928E8B239054FF0060AD45 /* Down */; };
 		B496909F2363A6B000417716 /* CoreDataStack+HistoryTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */; };
 		B496F234244CDAC20039FF6A /* PublicRecordToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = B496F233244CDAC20039FF6A /* PublicRecordToken.swift */; };
@@ -184,6 +185,7 @@
 		B48AC69823D9445A0033DF6F /* NoteCardFormTagSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardFormTagSelectionView.swift; sourceTree = "<group>"; };
 		B48C1A742466D472008523E6 /* NoteCardDetailPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardDetailPresenter.swift; sourceTree = "<group>"; };
 		B48C1A762467876B008523E6 /* NoteCardDetailPresenterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardDetailPresenterModel.swift; sourceTree = "<group>"; };
+		B48C1A7924679210008523E6 /* NoteCardSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchView.swift; sourceTree = "<group>"; };
 		B496909E2363A6B000417716 /* CoreDataStack+HistoryTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataStack+HistoryTracker.swift"; sourceTree = "<group>"; };
 		B496F233244CDAC20039FF6A /* PublicRecordToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicRecordToken.swift; sourceTree = "<group>"; };
 		B496F255244E03910039FF6A /* PublicUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicUserView.swift; sourceTree = "<group>"; };
@@ -415,6 +417,7 @@
 				B49C4C7223D69E6C0030D9B2 /* NoteCardFormModel.swift */,
 				B48AC69823D9445A0033DF6F /* NoteCardFormTagSelectionView.swift */,
 				B430FC0824284F7300E31264 /* NoteCardFormController.swift */,
+				B48C1A7924679210008523E6 /* NoteCardSearchView.swift */,
 			);
 			path = "NoteCardForm + Presenter";
 			sourceTree = "<group>";
@@ -819,6 +822,7 @@
 				B4BAC53C2320405B007EAF15 /* NoteCardCollection.swift in Sources */,
 				B4E601C32450B92A00A63280 /* TextFieldInputView.swift in Sources */,
 				B4EC398423DB88460011569C /* CollectionViewWrapper.swift in Sources */,
+				B48C1A7A24679210008523E6 /* NoteCardSearchView.swift in Sources */,
 				B46723CF24627576003EECD1 /* ObjectGenerator.swift in Sources */,
 				B4535C082403474900090313 /* PublicRecord.swift in Sources */,
 				B44E786C23DCAA7700428D4A /* SearchFieldCollectionHeader.swift in Sources */,
