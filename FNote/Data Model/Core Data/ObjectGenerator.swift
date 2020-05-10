@@ -129,9 +129,13 @@ extension ObjectGenerator {
         let publicCards = noteCards.map { noteCard -> PublicCard in
             let localID = noteCard.uuid
             let publicID = cardIDMap[localID]!
-            let publicRelationshipIDs = noteCard.relationships.map({ cardIDMap[$0.uuid]! })
             let publicTags = noteCard.tags.map(\.name).sorted()
             let publicNote = includeNote ? noteCard.note : ""
+            
+            let publicRelationshipIDs = noteCard.relationships.compactMap { relationship -> String? in
+                guard noteCard.collection === relationship.collection else { return nil }
+                return cardIDMap[relationship.uuid]!
+            }
             
             let publicCard = PublicCard(
                 collectionID: collectionID,
