@@ -37,7 +37,6 @@
 		B44E786C23DCAA7700428D4A /* SearchFieldCollectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44E786B23DCAA7700428D4A /* SearchFieldCollectionHeader.swift */; };
 		B44E787023DE774600428D4A /* UICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44E786F23DE774600428D4A /* UICollectionView.swift */; };
 		B4535C082403474900090313 /* PublicRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4535C072403474900090313 /* PublicRecord.swift */; };
-		B45A4A032368A2810079D8DE /* NoteCardSearchField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B45A4A022368A2810079D8DE /* NoteCardSearchField.swift */; };
 		B46723CF24627576003EECD1 /* ObjectGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46723CE24627576003EECD1 /* ObjectGenerator.swift */; };
 		B46723D1246361E2003EECD1 /* SFSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46723D0246361E2003EECD1 /* SFSymbol.swift */; };
 		B46B0F592364A0CE0074B71A /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46B0F582364A0CD0074B71A /* SearchTextField.swift */; };
@@ -161,7 +160,6 @@
 		B44E786B23DCAA7700428D4A /* SearchFieldCollectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFieldCollectionHeader.swift; sourceTree = "<group>"; };
 		B44E786F23DE774600428D4A /* UICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionView.swift; sourceTree = "<group>"; };
 		B4535C072403474900090313 /* PublicRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicRecord.swift; sourceTree = "<group>"; };
-		B45A4A022368A2810079D8DE /* NoteCardSearchField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardSearchField.swift; sourceTree = "<group>"; };
 		B46723CE24627576003EECD1 /* ObjectGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectGenerator.swift; sourceTree = "<group>"; };
 		B46723D0246361E2003EECD1 /* SFSymbol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbol.swift; sourceTree = "<group>"; };
 		B46B0F582364A0CD0074B71A /* SearchTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
@@ -282,7 +280,6 @@
 			isa = PBXGroup;
 			children = (
 				B46B0F582364A0CD0074B71A /* SearchTextField.swift */,
-				B45A4A022368A2810079D8DE /* NoteCardSearchField.swift */,
 			);
 			path = "Search View + Model";
 			sourceTree = "<group>";
@@ -835,7 +832,6 @@
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
 				B49796EA23F78CF00035DF63 /* PageControlWrapper.swift in Sources */,
 				B46D813524273ED300FABD33 /* PublishCollectionViewController + Wrapper.swift in Sources */,
-				B45A4A032368A2810079D8DE /* NoteCardSearchField.swift in Sources */,
 				B448744823DEB73A005EBA45 /* TagCollectionViewModel.swift in Sources */,
 				B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */,
 				B44625FC23E3DE2D00B43526 /* UserPreference.swift in Sources */,

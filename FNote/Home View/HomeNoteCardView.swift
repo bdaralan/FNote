@@ -25,10 +25,13 @@ struct HomeNoteCardView: View {
 
     @State private var trayViewModel = BDButtonTrayViewModel()
     @State private var textFieldModel = BDModalTextFieldModel()
-    @State private var cardDetailModel: NoteCardDetailPresenterModel!
+    @State private var cardPresenterModel: NoteCardDetailPresenterModel!
     
     @State private var alert: Alert?
     @State private var presentAlert = false
+    
+    @State private var nativeSortTrayItem: BDButtonTrayItem!
+    @State private var translationSortTrayItem: BDButtonTrayItem!
     
     var currentCollection: NoteCardCollection? {
         appState.currentCollection
@@ -55,7 +58,7 @@ struct HomeNoteCardView: View {
                 
                 Color.clear.overlay(buttonTrayView, alignment: .bottomTrailing)
                 
-                cardDetailModel.map { viewModel in
+                cardPresenterModel.map { viewModel in
                     NoteCardDetailPresenter(viewModel: viewModel)
                 }
             }
@@ -73,22 +76,25 @@ struct HomeNoteCardView: View {
 extension HomeNoteCardView {
     
     func setupOnAppear() {
+        setupCardPresenterModel()
         setupViewModel()
         setupButtonTrayViewModel()
     }
     
+    func setupCardPresenterModel() {
+        cardPresenterModel = .init(appState: appState)
+        cardPresenterModel.renderMarkdown = userPreference.useMarkdown
+        cardPresenterModel.renderSoftBreak = userPreference.useMarkdownSoftBreak
+    }
+    
     func setupViewModel() {
-        cardDetailModel = .init(appState: appState)
-        cardDetailModel.renderMarkdown = userPreference.useMarkdown
-        cardDetailModel.renderSoftBreak = userPreference.useMarkdownSoftBreak
-        
         viewModel.sectionContentInsets.bottom = 140
         
         viewModel.noteCards = appState.currentNoteCards
         viewModel.contextMenus = [.copyNative, .delete]
         
         viewModel.onNoteCardSelected = { noteCard in
-            self.cardDetailModel.sheet = .edit(noteCard: noteCard) {
+            self.cardPresenterModel.sheet = .edit(noteCard: noteCard) {
                 guard noteCard.collection?.uuid != self.currentCollection?.uuid else { return }
                 self.appState.fetchCurrentNoteCards()
                 self.viewModel.noteCards = self.appState.currentNoteCards
@@ -172,7 +178,7 @@ extension HomeNoteCardView {
                 return
             }
             
-            self.cardDetailModel.sheet = .createNoteCard(for: collection) {
+            self.cardPresenterModel.sheet = .create(noteCardIn: collection) {
                 self.appState.fetchCurrentNoteCards()
                 self.viewModel.noteCards = self.appState.currentNoteCards
                 self.viewModel.updateSnapshot(animated: true)
@@ -203,42 +209,63 @@ extension HomeNoteCardView {
     }
     
     func createNoteCardSortOptionTrayItems() -> [BDButtonTrayItem] {
-        var nativeItem: BDButtonTrayItem!
-        var translationItem: BDButtonTrayItem!
-        
-        // give the next correct ascending boolean value for the item once triggered
-        // example if currently N ascending, then select a different option should still return ascending
-        let computeAscending = { (option: NoteCardSortField) -> Bool in
+        let getAscendingFor = { (option: NoteCard.SearchField) -> Bool in
             let currentOption = self.appState.noteCardSortOption
             let currentAscending = self.appState.noteCardSortOptionAscending
-            let ascending = currentOption == option ? !currentAscending : currentAscending
-            return ascending
+            return currentOption == option ? !currentAscending : currentAscending
         }
         
-        // give the correct title for the item match with app state's sort option
-        // current active item has arrow attached to it
-        // example if currently or select N and it shows N↓, then select T should should show T↓ (not T↑)
-        let computeItemTitle = { (option: NoteCardSortField) -> String in
-            let currentOption = self.appState.noteCardSortOption
-            let arrow = self.appState.noteCardSortOptionAscending ? "↓" : "↑"
-            let attachingArrow = currentOption == option ? " \(arrow)" : ""
-            let title = "\(option.trayItemTitle)\(attachingArrow)"
-            return title
+        let nativeItem = BDButtonTrayItem(title: "", systemImage: SFSymbol.option) { item in
+            self.setNoteCardSortOption(.native, ascending: getAscendingFor(.native))
         }
         
-        nativeItem = BDButtonTrayItem(title: computeItemTitle(.native), systemImage: SFSymbol.sortByNative) { item in
-            self.setNoteCardSortOption(.native, ascending: computeAscending(.native))
-            item.title = computeItemTitle(.native)
-            translationItem.title = computeItemTitle(.translation)
+        let translationItem = BDButtonTrayItem(title: "", systemImage: SFSymbol.option) { item in
+            self.setNoteCardSortOption(.translation, ascending: getAscendingFor(.translation))
         }
         
-        translationItem = BDButtonTrayItem(title: computeItemTitle(.translation), systemImage: SFSymbol.sortByTranslation) { item in
-            self.setNoteCardSortOption(.translation, ascending: computeAscending(.translation))
-            item.title = computeItemTitle(.translation)
-            nativeItem.title = computeItemTitle(.native)
-        }
+        nativeSortTrayItem = nativeItem
+        translationSortTrayItem = translationItem
+        setNoteCardSortOption(appState.noteCardSortOption, ascending: appState.noteCardSortOptionAscending)
         
         return [nativeItem, translationItem]
+    }
+    
+    func setNoteCardSortOption(_ option: NoteCard.SearchField, ascending: Bool) {
+        nativeSortTrayItem.title = "By Native"
+        translationSortTrayItem.title = "By Translation"
+        
+        let arrow = ascending ? "↓" : "↑"
+        switch option {
+        case .native:
+            nativeSortTrayItem.title.append(" \(arrow)")
+            nativeSortTrayItem.activeColor = .accentColor
+            nativeSortTrayItem.systemImage = SFSymbol.selectedOption
+            translationSortTrayItem.systemImage = SFSymbol.option
+            translationSortTrayItem.activeColor = .buttonTrayItemUnfocused
+            
+        case .translation:
+            translationSortTrayItem.title.append(" \(arrow)")
+            translationSortTrayItem.activeColor = .accentColor
+            translationSortTrayItem.systemImage = SFSymbol.selectedOption
+            nativeSortTrayItem.systemImage = SFSymbol.option
+            nativeSortTrayItem.activeColor = .buttonTrayItemUnfocused
+        }
+        
+        // reload if changed
+        guard appState.noteCardSortOption != option || appState.noteCardSortOptionAscending != ascending else { return }
+        userPreference.noteCardSortOption = option
+        userPreference.noteCardSortOptionAscending = ascending
+        
+        appState.noteCardSortOption = option
+        appState.noteCardSortOptionAscending = ascending
+        appState.fetchCurrentNoteCards()
+        
+        viewModel.noteCards = appState.currentNoteCards
+        viewModel.updateSnapshot(animated: true)
+    }
+    
+    func updateTraySortItemsState(sortField: NoteCard.SearchField, ascending: Bool, native: BDButtonTrayItem, translation: BDButtonTrayItem) {
+        
     }
     
     func beginCreateNoteCardCollection() {
@@ -287,22 +314,6 @@ extension HomeNoteCardView {
         sheet.dismiss()
     }
     
-    func setNoteCardSortOption(_ option: NoteCardSortField, ascending: Bool) {
-        let currentOption = appState.noteCardSortOption
-        let currentAscending = appState.noteCardSortOptionAscending
-        
-        guard currentOption != option || currentAscending != ascending else { return }
-        userPreference.noteCardSortOption = option
-        userPreference.noteCardSortOptionAscending = ascending
-        
-        appState.noteCardSortOption = option
-        appState.noteCardSortOptionAscending = ascending
-        appState.fetchCurrentNoteCards()
-        
-        viewModel.noteCards = appState.currentNoteCards
-        viewModel.updateSnapshot(animated: true)
-    }
-    
     func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
         viewModel.scrollToTop(animated: false)
         
@@ -336,13 +347,13 @@ extension HomeNoteCardView {
     func handleNoteCardQuickButtonTapped(_ button: NoteCardCell.QuickButtonType, noteCard: NoteCard) {
         switch button {
         case .relationship:
-            cardDetailModel.sheet = .relationship(noteCard)
+            cardPresenterModel.sheet = .relationship(noteCard)
         case .tag:
-            cardDetailModel.sheet = .tag(noteCard)
+            cardPresenterModel.sheet = .tag(noteCard)
         case .note:
-            cardDetailModel.sheet = .note(noteCard)
+            cardPresenterModel.sheet = .note(noteCard)
         case .favorite:
-            cardDetailModel.setFavorite(!noteCard.isFavorite, for: noteCard)
+            cardPresenterModel.setFavorite(!noteCard.isFavorite, for: noteCard)
         }
     }
 }

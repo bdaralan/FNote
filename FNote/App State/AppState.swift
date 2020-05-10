@@ -41,7 +41,7 @@ class AppState: ObservableObject {
     @Published private(set) var currentCollectionID: String? = AppCache.currentCollectionUUID
     private(set) lazy var currentCollection = collections.first(where: { $0.uuid == currentCollectionID })
     
-    var noteCardSortOption: NoteCardSortField = .translation
+    var noteCardSortOption: NoteCard.SearchField = .translation
     var noteCardSortOptionAscending = true
     
     

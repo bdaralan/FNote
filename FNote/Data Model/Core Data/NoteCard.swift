@@ -172,7 +172,7 @@ extension NoteCard {
     /// - Parameters:
     ///   - uuid: The collection UUID.
     ///   - predicate: A predicate to match either the `translation` or `native`.
-    static func requestNoteCards(collectionUUID: String, sortBy: NoteCardSortField = .translation, ascending: Bool = true) -> NSFetchRequest<NoteCard> {
+    static func requestNoteCards(collectionUUID: String, sortBy: NoteCard.SearchField = .translation, ascending: Bool = true) -> NSFetchRequest<NoteCard> {
         let collectionUUIDField = #keyPath(NoteCard.collection.uuid)
         let nativeField = #keyPath(NoteCard.native)
         let translationField = #keyPath(NoteCard.translation)
@@ -201,14 +201,14 @@ extension NoteCard {
     ///   - searchFields: The search scopes.
     ///   - sortBy: The sort field in ascending order.
     /// - Returns: The fetch request. The request will fetch none if any of the parameters are empty.
-    static func requestNoteCards(collectionUUID: String?, searchText: String = "", searchFields: [NoteCardSearchField], sortBy: NoteCardSearchField) -> NSFetchRequest<NoteCard> {
+    static func requestNoteCards(collectionUUID: String?, searchText: String = "", searchFields: [NoteCard.SearchField], sortField: NoteCard.SearchField) -> NSFetchRequest<NoteCard> {
         if searchText.isEmpty || searchFields.isEmpty {
             return NoteCard.requestNone()
         }
         
         // create the request
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        request.sortDescriptors = [.init(key: sortBy.rawValue, ascending: true)]
+        request.sortDescriptors = [.init(key: sortField.rawValue, ascending: true)]
     
         // create predicate for the search scopes
         let fieldPredicates = searchFields.map { field -> NSPredicate in
@@ -233,7 +233,14 @@ extension NoteCard {
 }
 
 
+// MARK: - Enum
+
 extension NoteCard {
+    
+    enum SearchField: String {
+        case native
+        case translation
+    }
     
     enum Formality: Int64, CaseIterable {
         case unspecified

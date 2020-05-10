@@ -46,15 +46,15 @@ class UserPreference: ObservableObject {
     var noteCardSortOptionAscending: Bool
     
     let noteCardSortOptionKey = key("noteCardSortOption")
-    var noteCardSortOption: NoteCardSortField {
+    var noteCardSortOption: NoteCard.SearchField {
         set {
             UserDefaults.standard.set(newValue.rawValue, forKey: noteCardSortOptionKey)
         }
         get {
             let defaults = UserDefaults.standard
-            let defaultValue = NoteCardSortField.translation
-            let rawValue = defaults.object(forKey: noteCardSortOptionKey) as? Int ?? defaultValue.rawValue
-            return NoteCardSortField(rawValue: rawValue) ?? defaultValue
+            let defaultValue = NoteCard.SearchField.translation.rawValue
+            let rawValue = defaults.object(forKey: noteCardSortOptionKey) as? String ?? defaultValue
+            return NoteCard.SearchField(rawValue: rawValue)!
         }
     }
     

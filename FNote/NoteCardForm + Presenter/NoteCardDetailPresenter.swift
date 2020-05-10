@@ -24,6 +24,8 @@ struct NoteCardDetailPresenter: View {
     
     @State private var tagViewModel: TagCollectionViewModel?
     
+    @State private var collectionViewModel: NoteCardCollectionCollectionViewModel?
+    
     
     var body: some View {
         Color.clear
@@ -42,33 +44,28 @@ extension NoteCardDetailPresenter {
         case tag(NoteCard)
         case note(NoteCard)
         case edit(noteCard: NoteCard, completion: () -> Void)
-        case createNoteCard(for: NoteCardCollection, completion: () -> Void)
+        case create(noteCardIn: NoteCardCollection, completion: () -> Void)
+        case allCollections(title: String, selectedID: String?, onSelected: ((NoteCardCollection) -> Void)?)
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
             
         case .relationship:
-            let done = { self.sheet.dismiss() }
-            let label = { Text("Done").bold() }
-            let doneNavItem = Button(action: done, label: label)
             return NavigationView {
                 CollectionViewWrapper(viewModel: relationshipViewModel!)
                     .edgesIgnoringSafeArea(.all)
                     .navigationBarTitle("Links", displayMode: .inline)
-                    .navigationBarItems(trailing: doneNavItem)
+                    .navigationBarItems(trailing: dismissSheetNavItem())
             }
             .navigationViewStyle(StackNavigationViewStyle())
             .eraseToAnyView()
             
         case .tag:
-            let done = { self.sheet.dismiss() }
-            let label = { Text("Done").bold() }
-            let doneNavItem = Button(action: done, label: label)
             return NavigationView {
                 NoteCardFormTagSelectionView(viewModel: tagViewModel!)
                     .navigationBarTitle("Tags", displayMode: .inline)
-                    .navigationBarItems(trailing: doneNavItem)
+                    .navigationBarItems(trailing: dismissSheetNavItem())
             }
             .navigationViewStyle(StackNavigationViewStyle())
             .eraseToAnyView()
@@ -77,10 +74,24 @@ extension NoteCardDetailPresenter {
             return ModalTextView(viewModel: $noteTextViewModel)
                 .eraseToAnyView()
             
-        case .edit, .createNoteCard:
+        case .edit, .create:
             return NoteCardForm(viewModel: noteCardFormModel!)
                 .eraseToAnyView()
+            
+        case .allCollections(let title, _, _):
+            return NavigationView {
+                CollectionViewWrapper(viewModel: collectionViewModel!)
+                    .navigationBarTitle(Text(title), displayMode: .inline)
+                    .navigationBarItems(trailing: dismissSheetNavItem())
+            }
+            .eraseToAnyView()
         }
+    }
+    
+    func dismissSheetNavItem() -> some View {
+        let action = { self.sheet.dismiss() }
+        let label = { Text("Done").bold() }
+        return Button(action: action, label: label)
     }
     
     func presentSheet(_ sheet: Sheet?) {
@@ -131,10 +142,13 @@ extension NoteCardDetailPresenter {
             }
             
         case let .edit(noteCard, completion):
-            setupEditNoteCard(noteCard: noteCard, completion: completion)
+            setupNoteCardEditFormModel(noteCard: noteCard, completion: completion)
             
-        case let .createNoteCard(collection, completion):
-            setupCreateNoteCard(collection: collection, completion: completion)
+        case let .create(inCollection, completion):
+            setupNoteCardCreateFormModel(collection: inCollection, completion: completion)
+            
+        case let .allCollections(_, selectedID, onSelected):
+            setupAllCollectionViewModel(selectedID: selectedID, onSelected: onSelected)
         }
         
         self.sheet.present(sheet)
@@ -148,11 +162,33 @@ extension NoteCardDetailPresenter {
 }
 
 
+// MARK: - All Collection
+
+extension NoteCardDetailPresenter {
+    
+    func setupAllCollectionViewModel(selectedID: String?, onSelected: ((NoteCardCollection) -> Void)?) {
+        let model = NoteCardCollectionCollectionViewModel()
+        collectionViewModel = model
+        
+        model.collections = viewModel.appState.collections
+        
+        model.onCollectionSelected = { collection in
+            model.borderedCollectionIDs = [collection.uuid]
+            model.reloadVisibleCells()
+            onSelected?(collection)
+        }
+        
+        if let collectionID = selectedID {
+            model.borderedCollectionIDs = [collectionID]
+        }
+    }
+}
+
 // MARK: - Create Note Card
 
 extension NoteCardDetailPresenter {
     
-    func setupCreateNoteCard(collection: NoteCardCollection, completion: @escaping () -> Void) {
+    func setupNoteCardCreateFormModel(collection: NoteCardCollection, completion: @escaping () -> Void) {
         let formModel = NoteCardFormModel(collection: collection, noteCard: nil)
         noteCardFormModel = formModel
         
@@ -197,7 +233,7 @@ extension NoteCardDetailPresenter {
 
 extension NoteCardDetailPresenter {
     
-    func setupEditNoteCard(noteCard: NoteCard, completion: @escaping () -> Void) {
+    func setupNoteCardEditFormModel(noteCard: NoteCard, completion: @escaping () -> Void) {
         guard let collection = noteCard.collection else {
             fatalError("🧨 attempt to edit note card without collection 🧨")
         }

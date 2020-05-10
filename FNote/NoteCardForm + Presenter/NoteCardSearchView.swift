@@ -18,13 +18,15 @@ struct NoteCardSearchView: View {
     @State private var searchField = SearchField()
     @State private var searchFieldPlaceholder = ""
     @State private var isSearchFieldFirstResponder = true
+    @State private var currentSearchCollection: NoteCardCollection?
     @State private var fetchController: NSFetchedResultsController<NoteCard>?
     
     @State private var trayViewModel = BDButtonTrayViewModel()
     
-    @State private var currentSearchCollectionID: String?
     @State private var cardViewModel = NoteCardCollectionViewModel()
     @State private var collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
+    
+    @State private var presenterModel: NoteCardDetailPresenterModel!
     
     var onCancel: (() -> Void)?
     
@@ -54,8 +56,13 @@ struct NoteCardSearchView: View {
             
             Divider()
             
-            CollectionViewWrapper(viewModel: cardViewModel, collectionView: collectionView)
-                .edgesIgnoringSafeArea(.all)
+            ZStack {
+                CollectionViewWrapper(viewModel: cardViewModel, collectionView: collectionView)
+                    .edgesIgnoringSafeArea(.all)
+                presenterModel.map { model in
+                    NoteCardDetailPresenter(viewModel: model)
+                }
+            }
         }
         .onAppear(perform: setupOnAppear)
         .overlay(BDButtonTrayView(viewModel: trayViewModel).padding(16), alignment: .bottomTrailing)
@@ -68,6 +75,7 @@ struct NoteCardSearchView: View {
 extension NoteCardSearchView {
     
     func setupOnAppear() {
+        presenterModel = .init(appState: appState)
         setupSearchField()
         setupCardViewModel()
         setupTrayViewModel()
@@ -104,12 +112,12 @@ extension NoteCardSearchView {
     }
     
     func createTrayItems() -> [BDButtonTrayItem] {
-        var searchCurrent: BDButtonTrayItem!
+        var searchIn: BDButtonTrayItem!
         var searchAll: BDButtonTrayItem!
         
         let redoSearchAndCollapseTray = {
             // set a tiny delay to let user sees the item's state changed before the tray is collapsed
-            self.updateSearchState(searchCurrent: searchCurrent, searchAll: searchAll)
+            self.updateSearchState(searchIn: searchIn, searchAll: searchAll)
             self.beginSearch(searchText: self.searchField.searchText)
             self.cardViewModel.scrollToTop(animated: true)
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) {
@@ -117,56 +125,62 @@ extension NoteCardSearchView {
             }
         }
         
-        searchCurrent = BDButtonTrayItem(title: "Search current collection", systemImage: "") { item in
-            self.currentSearchCollectionID = self.appState.currentCollectionID
+        searchIn = BDButtonTrayItem(title: "", systemImage: "") { item in
+            let selectedID = self.currentSearchCollection?.uuid
+            self.presenterModel.sheet = .allCollections(title: "Search In", selectedID: selectedID) { collection in
+                self.currentSearchCollection = collection
+                self.presenterModel.sheet = nil
+                redoSearchAndCollapseTray()
+            }
+        }
+        
+        searchAll = BDButtonTrayItem(title: "Search in all collections", systemImage: "") { item in
+            self.currentSearchCollection = nil
             redoSearchAndCollapseTray()
         }
         
-        searchAll = BDButtonTrayItem(title: "Search all collections", systemImage: "") { item in
-            self.currentSearchCollectionID = nil
-            redoSearchAndCollapseTray()
-        }
+        updateSearchState(searchIn: searchIn, searchAll: searchAll)
         
-        updateSearchState(searchCurrent: searchCurrent, searchAll: searchAll)
-        
-        return [searchCurrent, searchAll]
+        return [searchIn, searchAll]
     }
     
-    func updateSearchState(searchCurrent: BDButtonTrayItem, searchAll: BDButtonTrayItem) {
+    func updateSearchState(searchIn: BDButtonTrayItem, searchAll: BDButtonTrayItem) {
         let selectedImage = SFSymbol.selectedOption
         let unselectedImage = SFSymbol.option
         let selectedColor = Color.appAccent
         let unselectedColor = Color.buttonTrayItemUnfocused
         
-        if currentSearchCollectionID == nil { // search all
-            searchAll.systemImage = selectedImage
-            searchAll.activeColor = selectedColor
-            searchCurrent.systemImage = unselectedImage
-            searchCurrent.activeColor = unselectedColor
-            searchFieldPlaceholder = searchAll.title
-        } else { // search current
-            searchCurrent.systemImage = selectedImage
-            searchCurrent.activeColor = selectedColor
+        if let collection = currentSearchCollection { // search selected collection
+            searchIn.title = "Search in \(collection.name)"
+            searchIn.systemImage = selectedImage
+            searchIn.activeColor = selectedColor
             searchAll.systemImage = unselectedImage
             searchAll.activeColor = unselectedColor
-            searchFieldPlaceholder = searchCurrent.title
+            searchFieldPlaceholder = searchIn.title
+        } else { // search all
+            searchAll.systemImage = selectedImage
+            searchAll.activeColor = selectedColor
+            searchIn.title = "Search in"
+            searchIn.systemImage = unselectedImage
+            searchIn.activeColor = unselectedColor
+            searchFieldPlaceholder = searchAll.title
         }
     }
     
     func beginSearch(searchText: String) {
         if searchText.trimmed().isEmpty {
             fetchController = nil
-            let noteCards = currentSearchCollectionID == nil ? [] : appState.currentNoteCards
+            let noteCards = currentSearchCollection == nil ? [] : appState.currentNoteCards
             cardViewModel.noteCards = noteCards
             cardViewModel.updateSnapshot(animated: true)
             return
         }
         
         let request = NoteCard.requestNoteCards(
-            collectionUUID: currentSearchCollectionID,
+            collectionUUID: currentSearchCollection?.uuid,
             searchText: searchText,
             searchFields: [.native, .translation],
-            sortBy: .translation
+            sortField: .translation
         )
         
         if fetchController == nil {
