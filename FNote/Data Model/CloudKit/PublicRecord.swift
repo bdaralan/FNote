@@ -135,7 +135,8 @@ struct PublicRecordFormatter {
     }
     
     func localTags(fromDatabaseTags tags: String) -> [String] {
-        tags.components(separatedBy: Self.databaseTagArraySeparator)
+        if tags.isEmpty { return [] }
+        return tags.components(separatedBy: Self.databaseTagArraySeparator)
     }
     
     /// Get the correct list format.

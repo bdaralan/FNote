@@ -121,6 +121,7 @@ extension HomeTagView {
         let removeUnusedTags = BDButtonTrayItem(title: "Delete Unused Tags", systemImage: SFSymbol.trash) { item in
             self.beginDeleteUnusedTags()
         }
+        removeUnusedTags.activeColor = .red
         return [removeUnusedTags]
     }
 }
