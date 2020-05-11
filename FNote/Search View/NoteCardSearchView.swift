@@ -203,7 +203,6 @@ extension NoteCardSearchView {
 }
     
 
-
 struct NoteCardSearchView_Previews: PreviewProvider {
     static let appState = AppState(parentContext: .sample)
     static var previews: some View {

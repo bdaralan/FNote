@@ -15,19 +15,14 @@ import Combine
 /// The object provides actions to perform when text changed or debounced.
 class SearchField: ObservableObject {
     
-    @Published var searchText = "" {
-        didSet { onSearchTextChanged?(searchText) }
-    }
+    @Published var searchText = ""
     
     @Published var placeholder = "Search"
     
-    /// An action to perform when text changed.
-    var onSearchTextChanged: ((String) -> Void)?
-    
-    /// An action to perform when debounce text changed.
+    /// An action to perform when the `searchText` debounced.
     var onSearchTextDebounced: ((String) -> Void)?
     
-    private var searchTextDebounce: AnyCancellable?
+    private var searchTextDebounce: AnyCancellable!
     
     
     init() {
@@ -35,7 +30,7 @@ class SearchField: ObservableObject {
     }
     
     
-    /// Set `searchText`'s debounce with due time. The default is `.milliseconds(500)`.
+    /// Set `searchText`'s debounce time.
     ///
     /// - Parameter dueTime: The debounced time.
     func setupSearchTextDebounce(dueTime: DispatchQueue.SchedulerTimeType.Stride = .milliseconds(500)) {
