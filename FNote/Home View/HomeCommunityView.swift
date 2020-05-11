@@ -404,8 +404,8 @@ extension HomeCommunityView {
             authorName: formModel.author.username,
             name: formModel.publishCollectionName,
             description: formModel.publishDescription,
-            primaryLanguage: primaryLanguage.code,
-            secondaryLanguage: secondaryLanguage.code,
+            primaryLanguageCode: primaryLanguage.code,
+            secondaryLanguageCode: secondaryLanguage.code,
             tags: formModel.publishTags,
             cardsCount: publicCards.count
         )

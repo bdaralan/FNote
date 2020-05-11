@@ -97,6 +97,8 @@ extension PublicRecordToken {
             fatalError("🧨 attempt to construct \(Self.self) with unmatched record type '\(record.recordType)' 🧨")
         }
         
+        self.record = record
+        
         let modifier = RecordModifier<RecordFields>(record: record)
         tokenID = record.recordID.recordName
         

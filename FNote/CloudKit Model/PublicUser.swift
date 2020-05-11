@@ -69,9 +69,10 @@ extension PublicUser {
             fatalError("🧨 attempt to construct \(Self.self) with unmatched record type '\(record.recordType)' 🧨")
         }
         
+        self.record = record
+        
         let modifier = RecordModifier<RecordFields>(record: record)
         userID = record.recordID.recordName
-        self.record = record
         
         username = modifier.string(for: .username) ?? ""
         about = modifier.string(for: .about) ?? ""

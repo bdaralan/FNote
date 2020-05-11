@@ -11,6 +11,8 @@ import CloudKit
 
 struct PublicCollection: PublicRecord {
     
+    private(set) var record: CKRecord? = nil
+    
     /// The CKRecord ID.
     let collectionID: String
     
@@ -30,10 +32,10 @@ struct PublicCollection: PublicRecord {
     let description: String
     
     /// The native language code (ISO 639) in the collection.
-    let primaryLanguage: String
+    let primaryLanguageCode: String
     
     /// The translation language code (ISO 639) used in the collection.
-    let secondaryLanguage: String
+    let secondaryLanguageCode: String
     
     /// The tags describing the collection.
     let tags: [String]
@@ -42,6 +44,15 @@ struct PublicCollection: PublicRecord {
     let cardsCount: Int
     
     var localVoted = false
+    
+    
+    var primaryLanguage: Language {
+        Language(code: primaryLanguageCode)
+    }
+    
+    var secondaryLanguage: Language {
+        Language(code: secondaryLanguageCode)
+    }
 }
 
 
@@ -61,8 +72,8 @@ extension PublicCollection {
         case authorName
         case name
         case description
-        case primaryLanguage
-        case secondaryLanguage
+        case primaryLanguageCode
+        case secondaryLanguageCode
         case tags
         case cardsCount
     }
@@ -73,6 +84,8 @@ extension PublicCollection {
             fatalError("🧨 attempt to construct \(Self.self) with unmatched record type '\(record.recordType)' 🧨")
         }
         
+        self.record = record
+        
         let modifier = RecordModifier<RecordFields>(record: record)
         collectionID = record.recordID.recordName
         
@@ -80,8 +93,8 @@ extension PublicCollection {
         authorName = modifier.string(for: .authorName) ?? ""
         name = modifier.string(for: .name) ?? ""
         description = modifier.string(for: .description) ?? ""
-        primaryLanguage = modifier.string(for: .primaryLanguage) ?? ""
-        secondaryLanguage = modifier.string(for: .secondaryLanguage) ?? ""
+        primaryLanguageCode = modifier.string(for: .primaryLanguageCode) ?? ""
+        secondaryLanguageCode = modifier.string(for: .secondaryLanguageCode) ?? ""
         cardsCount = modifier.integer(for: .cardsCount) ?? 0
         
         let formatter = PublicRecordFormatter()
@@ -100,8 +113,8 @@ extension PublicCollection {
         modifier[.authorName] = authorName
         modifier[.name] = name
         modifier[.description] = description
-        modifier[.primaryLanguage] = primaryLanguage
-        modifier[.secondaryLanguage] = secondaryLanguage
+        modifier[.primaryLanguageCode] = primaryLanguageCode
+        modifier[.secondaryLanguageCode] = secondaryLanguageCode
         modifier[.tags] = PublicRecordFormatter().databaseTags(fromLocalTags: tags)
         modifier[.cardsCount] = cardsCount
         
@@ -117,7 +130,7 @@ extension PublicCollection {
             collectionID: collectionID,
             authorID: "----", authorName: "----",
             name: "---------", description: "----",
-            primaryLanguage: "---", secondaryLanguage: "---",
+            primaryLanguageCode: "---", secondaryLanguageCode: "---",
             tags: [], cardsCount: 0
         )
     }

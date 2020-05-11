@@ -15,9 +15,10 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
     let titleLabel = UILabel(text: "Title")
     let descriptionTextView = UITextView()
     let languageLabel = UILabel(text: "ENG - ENG")
-    let countLabel = UILabel(text: "0 CARDS")
+    let cardCountLabel = UILabel(text: "0 CARDS")
     let tagLabel = UILabel(text: "Tags: One, Two, Three")
     let authorLabel = UILabel(text: "by Author")
+    let createDateLabel = UILabel(text: "???")
     
     let firstDivider = DividerLine()
     let secondDivider = DividerLine()
@@ -32,12 +33,19 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
     override func reload(with object: PublicCollection) {
         super.reload(with: object)
         titleLabel.text = object.name
-        languageLabel.text = "\(object.primaryLanguage) - \(object.secondaryLanguage)"
+        
+        languageLabel.text = "\(object.primaryLanguage.localized) - \(object.secondaryLanguage.localized)"
+        
+        cardCountLabel.text = String(quantity: object.cardsCount, singular: "CARD", plural: "CARDS")
         
         let author = object.authorName.isEmpty ? "----" : object.authorName
         setAuthor(name: author)
         
-        countLabel.text = String(quantity: object.cardsCount, singular: "CARD", plural: "CARDS")
+        if let createDate = object.record?.creationDate {
+            createDateLabel.text = Self.dateFormatter.string(from: createDate)
+        } else {
+            createDateLabel.text = "???"
+        }
         
         descriptionTextView.text = object.description
         
@@ -79,22 +87,23 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
         titleLabel.adjustsFontForContentSizeCategory = true
         
         let footnoteFont = UIFont.preferredFont(forTextStyle: .footnote)
-        var languageFD = footnoteFont.fontDescriptor
-        languageFD = languageFD.withSymbolicTraits(.traitBold) ?? languageFD
-        languageLabel.font = UIFont(descriptor: languageFD, size: languageFD.pointSize)
+        languageLabel.font = footnoteFont
+        languageLabel.textColor = .label
         languageLabel.adjustsFontForContentSizeCategory = true
+        
+        cardCountLabel.font = footnoteFont
+        cardCountLabel.textColor = .secondaryLabel
+        cardCountLabel.adjustsFontForContentSizeCategory = true
         
         authorLabel.font = footnoteFont
         authorLabel.textColor = .secondaryLabel
         authorLabel.adjustsFontForContentSizeCategory = true
         
-        countLabel.font = footnoteFont
-        countLabel.textColor = .secondaryLabel
-        countLabel.adjustsFontForContentSizeCategory = true
+        createDateLabel.font = footnoteFont
+        createDateLabel.textColor = .secondaryLabel
         
         descriptionTextView.font = footnoteFont
-        descriptionTextView.isEditable = false
-        descriptionTextView.isSelectable = false
+        descriptionTextView.isUserInteractionEnabled = false
         descriptionTextView.backgroundColor = .clear
         descriptionTextView.adjustsFontForContentSizeCategory = true
         
@@ -117,7 +126,7 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
         super.setupConstraints()
         
         contentView.addSubviews(
-            titleLabel, languageLabel, authorLabel, countLabel,
+            titleLabel, languageLabel, cardCountLabel, authorLabel, createDateLabel,
             firstDivider,
             descriptionTextView,
             secondDivider, tagLabel,
@@ -126,19 +135,23 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
         )
         
         NSLayoutConstraint.activateConstraints(
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: languageLabel.leadingAnchor, constant: -8),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            languageLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            languageLabel.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
+            languageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+            languageLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            languageLabel.trailingAnchor.constraint(equalTo: cardCountLabel.leadingAnchor, constant: -8),
             
-            authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+            cardCountLabel.centerYAnchor.constraint(equalTo: languageLabel.centerYAnchor),
+            cardCountLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            
+            authorLabel.topAnchor.constraint(equalTo: languageLabel.bottomAnchor, constant: 4),
             authorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            authorLabel.trailingAnchor.constraint(equalTo: countLabel.leadingAnchor, constant: -8),
+            authorLabel.trailingAnchor.constraint(equalTo: cardCountLabel.leadingAnchor, constant: -8),
             
-            countLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            countLabel.centerYAnchor.constraint(equalTo: authorLabel.centerYAnchor),
+            createDateLabel.centerYAnchor.constraint(equalTo: authorLabel.centerYAnchor),
+            createDateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             firstDivider.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             firstDivider.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
@@ -163,20 +176,13 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
             voteButton.centerYAnchor.constraint(equalTo: tagLabel.centerYAnchor)
         )
         
-        titleLabel.setContentHuggingPriority(.required, for: .vertical)
+//        titleLabel.setContentHuggingPriority(.required, for: .vertical)
         
-        authorLabel.setContentHuggingPriority(.required, for: .vertical)
+        cardCountLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        cardCountLabel.setContentHuggingPriority(.required, for: .horizontal)
         
-        descriptionTextView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        
-        languageLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        languageLabel.setContentHuggingPriority(.required, for: .horizontal)
-        languageLabel.setContentHuggingPriority(.required, for: .vertical)
-        
-        countLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        countLabel.setContentHuggingPriority(.required, for: .horizontal)
-        
-        tagLabel.setContentHuggingPriority(.required, for: .vertical)
+        createDateLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        createDateLabel.setContentHuggingPriority(.required, for: .horizontal)
         
         voteButton.setContentHuggingPriority(.required, for: .horizontal)
         voteButton.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -184,4 +190,41 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
 }
 
 
+// MARK: - Date Formatter
 
+extension PublicCollectionCell {
+    
+    static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        formatter.doesRelativeDateFormatting = true
+        formatter.timeStyle = .none
+        formatter.dateStyle = .medium
+        return formatter
+    }()
+}
+
+
+// MARK: - Preview
+
+//import SwiftUI
+//
+//struct PreviewWrapper: UIViewRepresentable {
+//
+//    typealias UIViewType = PublicCollectionCell
+//
+//    func makeUIView(context: Context) -> UIViewType {
+//        let uiView = UIViewType()
+//        return uiView
+//    }
+//
+//    func updateUIView(_ uiView: UIViewType, context: Context) {
+//        uiView.reload(with: PublicCollectionDetailViewHeader_Previews.collection)
+//    }
+//}
+//
+//struct PreviewWrapper_Previews: PreviewProvider {
+//    static var previews: some View {
+//        PreviewWrapper()
+//    }
+//}

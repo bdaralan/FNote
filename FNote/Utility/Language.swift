@@ -15,28 +15,36 @@ struct Language: Equatable {
     let code: String
     
     /// Language localized string of the `code`.
-    let localized: String
-    
-    
-    private init(code: String, localized: String) {
-        self.code = code
-        self.localized = localized
+    var localized: String {
+        Locale.current.localizedString(forLanguageCode: code) ?? "???"
     }
+    
+    
+    // MARK: Constructor
+    
+    init(code: String) {
+        self.code = code
+    }
+    
+    
+    // MARK: Equatable
     
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.code == rhs.code
     }
+}
+
+
+// MARK: - System
+
+extension Language {
     
     /// Load all available language from system's available language ISO codes.
     static let availableISO639s: [Language] = {
         Locale.isoLanguageCodes.compactMap { code -> Language? in
-            guard let localized = Locale.current.localizedString(forLanguageCode: code) else { return nil }
-            return Language(code: code, localized: localized)
+            guard Locale.current.localizedString(forLanguageCode: code) != nil else { return nil }
+            return Language(code: code)
         }
         .sorted(by: { $0.localized < $1.localized })
-    }()
-    
-    static let availableLocalizedISO639s: [String] = {
-        availableISO639s.map(\.localized)
     }()
 }

@@ -39,20 +39,9 @@ struct PublicCollectionDetailView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                PublicCollectionDetailHeaderView(
-                    collection: collection,
-                    onDescriptionSelected: { self.$showDescription.animation(.easeInOut).wrappedValue.toggle() })
+                PublicCollectionDetailViewHeader(collection: collection)
                     .padding(.vertical, 12)
                     .padding(.horizontal, 16)
-                
-                if showDescription {
-                    Text(collection.description)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.callout)
-                        .multilineTextAlignment(.leading)
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 12)
-                }
                 
                 Divider()
                 
@@ -238,69 +227,8 @@ extension PublicCollectionDetailView {
 }
 
 
-struct PublicCollectionDetailHeaderView: View {
-    
-    var collection: PublicCollection
-    
-    var onDescriptionSelected: () -> Void = {}
-    
-    
-    var body: some View {
-        VStack(spacing: 4) {
-            HStack(alignment: .lastTextBaseline, spacing: 0) {
-                Text(collection.name).bold()
-                Spacer()
-                Text("\(collection.primaryLanguage) - \(collection.secondaryLanguage)").font(.footnote)
-            }
-            
-            HStack(alignment: .lastTextBaseline, spacing: 0) {
-                Text("by ").foregroundColor(.secondary)
-                Text(collection.authorName)
-                Spacer()
-                Text(String(quantity: collection.cardsCount, singular: "CARD", plural: "CARDS"))
-            }
-            .font(.footnote)
-            
-            HStack {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(collection.tags, id: \.self) { tag in
-                            Text(tag)
-                                .frame(minWidth: 30)
-                                .font(.footnote)
-                                .padding(.vertical, 2)
-                                .padding(.horizontal, 8)
-                                .foregroundColor(.primary)
-                                .background(Color(.secondarySystemBackground))
-                                .cornerRadius(20)
-                        }
-                    }
-                }
-                
-                Divider().frame(maxHeight: 16)
-                
-                Button(action: onDescriptionSelected) {
-                    Text("description")
-                        .font(.footnote)
-                        .padding(.vertical, 2)
-                        .padding(.horizontal, 8)
-                        .foregroundColor(.appAccent)
-                        .background(Color(.secondarySystemBackground))
-                        .cornerRadius(20)
-                }
-            }
-            .padding(.top, 4)
-        }
-    }
-}
-
-
 struct PublicCollectionDetailView_Previews: PreviewProvider {
-    static let collection = PublicCollection(
-        collectionID: "collectionID", authorID: "authorID",
-        authorName: "author name", name: "Collection Name", description: "",
-        primaryLanguage: "Korean", secondaryLanguage: "English", tags: [], cardsCount: 9
-    )
+    static let collection = PublicCollectionDetailViewHeader_Previews.collection
     static var previews: some View {
         PublicCollectionDetailView(collection: collection, context: .sample)
     }

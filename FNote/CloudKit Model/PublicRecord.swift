@@ -21,6 +21,9 @@ protocol PublicRecord {
     /// `CKRecord` `recordType`.
     static var recordType: CKRecord.RecordType { get }
     
+    /// The current `CKRecord` that create this object.
+    var record: CKRecord? { get }
+    
     /// `CKRecord` `recordName`.
     var recordName: String { get }
     

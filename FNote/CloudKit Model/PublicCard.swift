@@ -11,6 +11,8 @@ import CloudKit
 
 struct PublicCard: PublicRecord, Hashable {
     
+    private(set) var record: CKRecord? = nil
+    
     /// The CKRecord ID of the card's collection.
     let collectionID: String
     
@@ -55,6 +57,8 @@ extension PublicCard {
         guard record.recordType == Self.recordType else {
             fatalError("🧨 attempt to construct \(Self.self) with unmatched record type '\(record.recordType)' 🧨")
         }
+        
+        self.record = record
         
         let modifier = RecordModifier<RecordFields>(record: record)
         cardID = record.recordID.recordName
