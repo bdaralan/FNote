@@ -39,7 +39,7 @@ struct PublicCollectionDetailView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                PublicCollectionDetailViewHeader(collection: collection)
+                PublicCollectionDetailHeaderView(collection: collection)
                     .padding(.vertical, 12)
                     .padding(.horizontal, 16)
                 
@@ -228,7 +228,7 @@ extension PublicCollectionDetailView {
 
 
 struct PublicCollectionDetailView_Previews: PreviewProvider {
-    static let collection = PublicCollectionDetailViewHeader_Previews.collection
+    static let collection = PublicCollectionDetailHeaderView_Previews.collection
     static var previews: some View {
         PublicCollectionDetailView(collection: collection, context: .sample)
     }

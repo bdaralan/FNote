@@ -90,7 +90,7 @@ struct PublicCollectionDetailHeaderView: View {
 }
 
 
-struct PublicCollectionDetailViewHeader_Previews: PreviewProvider {
+struct PublicCollectionDetailHeaderView_Previews: PreviewProvider {
     static let collection = PublicCollection(
         collectionID: "collectionID", authorID: "authorID",
         authorName: "author", name: "Collection Name", description: "description",
