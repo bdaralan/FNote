@@ -167,20 +167,20 @@ extension PublicCollectionDetailView {
                 return
             }
             
-            let saveContext = self.context.newChildContext()
-            let generator = ObjectGenerator(context: saveContext)
-            
-            let publicCards = records.map({ PublicCard(record: $0) })
-            let noteCards = generator.generateNoteCards(from: publicCards)
-            
-            var modifier = ObjectModifier<NoteCardCollection>(.create(in: saveContext), useSeparateContext: false)
-            modifier.name = "\(self.collection.name) by \(self.collection.authorName)"
-            
-            for noteCard in noteCards {
-                modifier.addNoteCard(noteCard)
-            }
-            
             DispatchQueue.main.async {
+                let saveContext = self.context.newChildContext()
+                let generator = ObjectGenerator(context: saveContext)
+                
+                let publicCards = records.map({ PublicCard(record: $0) })
+                let noteCards = generator.generateNoteCards(from: publicCards)
+                
+                var modifier = ObjectModifier<NoteCardCollection>(.create(in: saveContext), useSeparateContext: false)
+                modifier.name = "\(self.collection.name) by \(self.collection.authorName)"
+                
+                for noteCard in noteCards {
+                    modifier.addNoteCard(noteCard)
+                }
+                
                 self.isPreparingToSave = false
                 self.confirmSaveCollection(context: saveContext)
             }
@@ -189,13 +189,14 @@ extension PublicCollectionDetailView {
     
     func confirmSaveCollection(context: ManagedObjectChildContext) {
         let add = BDButtonTrayItem(title: "Ready To Add", systemImage: SFSymbol.addCollection) { item in
-            context.quickSave()
-            context.parent?.quickSave()
-            
-            item.title = "Added"
-            item.inactiveColor = .green
+            guard item.disabled == false else { return }
             item.disabled = true
             item.animation = nil
+            item.inactiveColor = .green
+            item.title = "Added"
+            
+            context.quickSave()
+            context.parent?.quickSave()
         }
         
         add.animation = .pulse()

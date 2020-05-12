@@ -12,13 +12,13 @@ import Combine
 
 class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
     
-    let titleLabel = UILabel(text: "Title")
+    let titleLabel = UILabel()
     let descriptionTextView = UITextView()
-    let languageLabel = UILabel(text: "ENG - ENG")
-    let cardCountLabel = UILabel(text: "0 CARDS")
-    let tagLabel = UILabel(text: "Tags: One, Two, Three")
-    let authorLabel = UILabel(text: "by Author")
-    let createDateLabel = UILabel(text: "???")
+    let languageLabel = UILabel()
+    let cardCountLabel = UILabel()
+    let tagLabel = UILabel()
+    let authorLabel = UILabel()
+    let createDateLabel = UILabel()
     
     let firstDivider = DividerLine()
     let secondDivider = DividerLine()
@@ -26,8 +26,6 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
     let voteButton = UIButton(type: .system)
     
     var onVoteTriggered: ((PublicCollectionCell) -> Void)?
-    
-    private var cancellables: [AnyCancellable] = []
     
     
     override func reload(with object: PublicCollection) {
@@ -39,7 +37,7 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
         cardCountLabel.text = String(quantity: object.cardsCount, singular: "CARD", plural: "CARDS")
         
         let author = object.authorName.isEmpty ? "----" : object.authorName
-        setAuthor(name: author)
+        authorLabel.text = "by \(author)"
         
         if let createDate = object.record?.creationDate {
             createDateLabel.text = Self.dateFormatter.string(from: createDate)
@@ -59,11 +57,7 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
         setVoted(object.localVoted)
     }
     
-    func setAuthor(name: String) {
-        authorLabel.text = "by \(name)"
-    }
-    
-    func setVoted(_ voted: Bool) {
+    private func setVoted(_ voted: Bool) {
         let symbol = UIImage.SymbolConfiguration(textStyle: .body)
         let imageName = voted ? "hand.thumbsup.fill" : "hand.thumbsup"
         let image = UIImage(systemName: imageName, withConfiguration: symbol)
@@ -71,11 +65,26 @@ class PublicCollectionCell: ObjectCollectionViewCell<PublicCollection> {
         voteButton.tintColor = voted ? .label : .secondaryLabel
     }
     
+    func placeholder() {
+        titleLabel.text = "----"
+        descriptionTextView.text = "----"
+        languageLabel.text = "----"
+        cardCountLabel.text = "----"
+        tagLabel.text = "----"
+        authorLabel.text = "----"
+        createDateLabel.text = "----"
+        setVoted(false)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        onVoteTriggered = nil
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         applyCardStyle()
     }
-    
     
     override func setupCell() {
         super.setupCell()

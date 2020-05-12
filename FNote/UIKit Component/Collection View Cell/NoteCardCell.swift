@@ -55,7 +55,7 @@ class NoteCardCell: ManagedObjectCollectionViewCell<NoteCard> {
         nativeLabel.text = object.native
         
         setDividerColor(object.formality.uiColor)
-        setFavoriteButtonImage()
+        setFavoriteButtonImage(favorited: object.isFavorite)
         
         noteButton.isUserInteractionEnabled = !object.note.isEmpty
         noteButton.tintColor = object.note.isEmpty ? .quaternaryLabel : .secondaryLabel
@@ -72,6 +72,17 @@ class NoteCardCell: ManagedObjectCollectionViewCell<NoteCard> {
         nativeLabel.text = item.native
     
         setDividerColor(item.formality.uiColor)
+    }
+    
+    func placeholder() {
+        nativeLabel.text = "----"
+        translationLabel.text = "----"
+        setDividerColor(NoteCard.Formality.unspecified.uiColor)
+        
+        for button in quickButtons {
+            button.isUserInteractionEnabled = false
+            button.tintColor = .quaternaryLabel
+        }
     }
     
     func setCellStyle(_ style: Style) {
@@ -117,12 +128,11 @@ class NoteCardCell: ManagedObjectCollectionViewCell<NoteCard> {
         relationshipButton.setImage(QuickButtonType.relationship.image, for: .normal)
         tagButton.setImage(QuickButtonType.tag.image, for: .normal)
         noteButton.setImage(QuickButtonType.note.image, for: .normal)
-        setFavoriteButtonImage()
+        setFavoriteButtonImage(favorited: object?.isFavorite == true)
     }
     
-    func setFavoriteButtonImage() {
-        let isFavorite = object?.isFavorite == true
-        let image = isFavorite ? QuickButtonType.favoriteImage : QuickButtonType.favorite.image
+    func setFavoriteButtonImage(favorited: Bool) {
+        let image = favorited ? QuickButtonType.favoriteImage : QuickButtonType.favorite.image
         favoriteButton.setImage(image, for: .normal)
     }
     

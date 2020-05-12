@@ -17,7 +17,7 @@ struct HomeCommunityView: View {
     
     @EnvironmentObject private var appState: AppState
     
-    var viewModel: CommunityViewModel
+    @State private var viewModel = CommunityViewModel()
     
     @State private var trayViewModel = BDButtonTrayViewModel()
     
@@ -65,30 +65,37 @@ extension HomeCommunityView {
     func setupOnAppear() {
         setupViewModel()
         setupTrayViewModel()
-        
-        viewModel.fetchData { error in
-            guard let error = error else { return }
-            print("failed to fetch data with error: \(error)")
-        }
+        fetchData(initiated: nil, completion: nil)
     }
     
     func setupViewModel() {
-        viewModel.lastSectionContentInsets.bottom = 140
+        viewModel.contentInsets.bottom = 140
         
-        viewModel.onItemSelected = { item, section in
-            switch section {
-            case .recentCard:
-                let card = item.object as! PublicCard
-                self.handleRecentCardSelected(card)
-            case .recentCollection:
-                let collection = item.object as! PublicCollection
-                self.handleRecentCollectionSelected(collection)
-            case .randomCollection, .action: break
-            }
+        viewModel.onCollectionSelected = { collection, section in
+            self.sheet.present(.collectionDetail(collection))
         }
         
-        viewModel.onVoteTriggered = { collectionCell in
-            self.handleVoteTriggered(for: collectionCell)
+        viewModel.onCardSelected = { card, section in
+            print("📝 \(card) 📝")
+        }
+        
+        viewModel.onVoteTriggered = { cell in
+            print("📝 vote \(cell.object as Any) 📝")
+        }
+    }
+    
+    func fetchData(initiated: (() -> Void)?, completion: ((Error?) -> Void)?) {
+        guard isFetchingData == false else { return }
+        isFetchingData = true
+        
+        initiated?()
+        
+        viewModel.fetchData { error in
+            DispatchQueue.main.async { // TODO: inform error if needed
+                self.viewModel.updateSnapshot(animated: false, completion: nil)
+                self.isFetchingData = false
+                completion?(error)
+            }
         }
     }
     
@@ -115,62 +122,6 @@ extension HomeCommunityView {
         publicUserViewModel?.update(with: user)
         publishFormModel?.author = user
     }
-    
-    func handleRecentCardSelected(_ card: PublicCard) {
-        guard card.relationships.isEmpty == false else {
-            print("card \(card.native) has no relationships")
-            return
-        }
-        PublicRecordManager.shared.queryCards(withIDs: card.relationships) { result in
-            switch result {
-            case .success(let records):
-                let cards = records.map({ PublicCard(record: $0) })
-                cards.forEach({ print($0) })
-            case .failure(let error):
-                print("⚠️ failed to fetch relationship card with error: \(error) ⚠️")
-            }
-        }
-    }
-    
-    func handleRecentCollectionSelected(_ collection: PublicCollection) {
-        // check placeholder collection
-        guard UUID(uuidString: collection.collectionID) != nil else { return }
-        sheet.present(.collectionDetail(collection))
-    }
-    
-    func handleVoteTriggered(for cell: PublicCollectionCell) {
-        let user = AppCache.cachedUser()
-        guard user.isValid else { return }
-        guard let indexPath = collectionView.indexPath(for: cell) else { return }
-        guard let cellItem = viewModel.dataSource.itemIdentifier(for: indexPath) else { return }
-        
-        // unwrapped instead of guard because it must give a collection
-        // otherwise, the app is not setup correctly
-        var collection = cellItem.object as! PublicCollection
-        
-        guard UUID(uuidString: collection.collectionID) != nil else { return }
-        
-        // update UI immediately, but will update again after getting the result
-        cell.setVoted(!collection.localVoted)
-        
-        PublicRecordManager.shared.sendLike(senderID: user.userID, receiverID: collection.collectionID, token: .like) { result in
-            guard case .success(let liked) = result else { return }
-            collection.localVoted = liked
-            
-            let updatedItem = PublicSectionItem(itemID: collection.collectionID, object: collection)
-            for section in self.viewModel.sections.indices {
-                for (index, item) in self.viewModel.sections[section].items.enumerated() {
-                    if item.itemID == collection.collectionID {
-                        self.viewModel.sections[section].items[index] = updatedItem
-                        DispatchQueue.main.async {
-                            self.viewModel.updateSnapshot(animated: false, completion: nil)
-                        }
-                        return
-                    }
-                }
-            }
-        }
-    }
 }
 
 
@@ -195,22 +146,6 @@ extension HomeCommunityView {
         }
     }
     
-    func createTrayMainItem() -> BDButtonTrayItem {
-        BDButtonTrayItem(title: "", systemImage: SFSymbol.refresh) { item in
-            guard self.isFetchingData == false else { return }
-            self.isFetchingData = true
-            item.disabled = true
-            item.animation = .rotation()
-            
-            self.viewModel.fetchData { error in
-                // TODO: inform error if needed
-                self.isFetchingData = false
-                item.disabled = false
-                item.animation = nil
-            }
-        }
-    }
-    
     func createTrayItems() -> [BDButtonTrayItem] {
         let user = BDButtonTrayItem(id: userTrayItemID, title: "", systemImage: "") { item in
             self.presentPublicUserProfile(sender: item)
@@ -221,14 +156,11 @@ extension HomeCommunityView {
         }
         
         let refresh = BDButtonTrayItem(title: "Refresh", systemImage: SFSymbol.refresh) { item in
-            guard self.isFetchingData == false else { return }
-            self.isFetchingData = true
-            self.setTrayItemRefreshState(item: item, refreshing: true)
-            self.viewModel.fetchData { error in
-                // TODO: inform error if needed
-                self.isFetchingData = false
+            self.fetchData(initiated: {
+                self.setTrayItemRefreshState(item: item, refreshing: true)
+            }, completion: { error in
                 self.setTrayItemRefreshState(item: item, refreshing: false)
-            }
+            })
         }
         
         updateUserTrayItem(item: user, user: AppCache.cachedUser())
@@ -238,7 +170,6 @@ extension HomeCommunityView {
     
     func setTrayItemRefreshState(item: BDButtonTrayItem, refreshing: Bool) {
         item.title = refreshing ? "Refreshing..." : "Refresh"
-//        item.systemImage = refreshing ? SFSymbol.loading : SFSymbol.refresh
         item.animation = refreshing ? .rotation(duration: 0.7) : nil
         item.disabled = refreshing ? true : false
         item.inactiveColor = refreshing ? .appAccent : nil
@@ -428,7 +359,7 @@ extension HomeCommunityView {
 struct HomeCommunityView_Previews: PreviewProvider {
     static var viewModel = CommunityViewModel()
     static var previews: some View {
-        HomeCommunityView(viewModel: viewModel)
+        HomeCommunityView()
             .environment(\.horizontalSizeClass, .regular)
     }
 }

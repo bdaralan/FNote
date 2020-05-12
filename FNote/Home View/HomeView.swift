@@ -19,7 +19,6 @@ struct HomeView: View {
     
     @State private var sheet = BDPresentationItem<Sheet>()
     
-    @State private var publicCollectionViewModel = CommunityViewModel.placeholder
     @State private var cardCollectionViewModel = NoteCardCollectionViewModel()
     @State private var tagCollectionViewModel = TagCollectionViewModel()
     
@@ -40,7 +39,7 @@ struct HomeView: View {
                 .tabItem(Tab.tag.tabItem)
                 .tag(Tab.tag)
             
-            HomeCommunityView(viewModel: publicCollectionViewModel)
+            HomeCommunityView()
                 .tabItem(Tab.community.tabItem)
                 .tag(Tab.community)
             

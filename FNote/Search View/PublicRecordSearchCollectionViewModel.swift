@@ -43,10 +43,6 @@ class PublicRecordSearchCollectionViewModel: NSObject, ObservableObject, Collect
             let collection = item.object as! PublicCollection
             let cell = collectionView.dequeueCell(PublicCollectionCell.self, for: indexPath)
             cell.reload(with: collection)
-            if let userRecord = PublicRecordManager.shared.cachedRecord(forKey: collection.authorID) {
-                let username = userRecord[PublicUser.RecordFields.username.stringValue] as? String ?? ""
-                cell.setAuthor(name: username)
-            }
             return cell
         })
     }

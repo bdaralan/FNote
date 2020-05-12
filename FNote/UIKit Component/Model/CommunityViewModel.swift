@@ -16,28 +16,23 @@ class CommunityViewModel: NSObject, CollectionViewCompositionalDataSource {
     
     var dataSource: DiffableDataSource!
     
-    var sections: [PublicSection] = []
+    let sections: [DataSourceSection] = [.recentCollections, .recentCards]
+    
+    var recentCollectionItems: [DataSourceItem] = []
+    
+    var recentCardItems: [DataSourceItem] = []
     
     var isHorizontallyCompact = true
     
-    var lastSectionContentInsets = NSDirectionalEdgeInsets(top: 12, leading: 16, bottom: 32, trailing: 16)
+    var contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 16, bottom: 32, trailing: 16)
     
-    var onItemSelected: ((PublicSectionItem, PublicSectionType) -> Void)?
+    var onCollectionSelected: ((PublicCollection, DataSourceSection) -> Void)?
+    
+    var onCardSelected: ((PublicCard, DataSourceSection) -> Void)?
     
     var onVoteTriggered: ((PublicCollectionCell) -> Void)?
-}
-
-
-extension CommunityViewModel {
-
-    func updateSection(with section: PublicSection) {
-        if let index = sections.firstIndex(where: { $0.type == section.type }) {
-            sections[index] = section
-        } else {
-            sections.append(section)
-        }
-        sections.sort(by: { $0.type.displayOrder < $1.type.displayOrder })
-    }
+    
+    private var layoutPlaceholder = false
 }
 
 
@@ -61,7 +56,6 @@ extension CommunityViewModel {
         collectionView.alwaysBounceVertical = true
         collectionView.showsVerticalScrollIndicator = false
         collectionView.delegate = self
-        collectionView.registerCell(ActionCollectionViewCell.self)
         collectionView.registerCell(PublicCollectionCell.self)
         collectionView.registerCell(NoteCardCell.self)
         collectionView.registerHeader(CollectionHeaderLabel.self)
@@ -69,22 +63,21 @@ extension CommunityViewModel {
         isHorizontallyCompact = collectionView.traitCollection.horizontalSizeClass == .compact
         
         dataSource = .init(collectionView: collectionView) { collectionView, indexPath, item in
-            let sectionType = self.sections[indexPath.section].type
-            switch sectionType {
-            case .action:
-                let cell = collectionView.dequeueCell(ActionCollectionViewCell.self, for: indexPath)
-                let action = item.object as! PublicSectionAction
-                cell.setAction(title: action.title, description: action.description)
-                return cell
-                
-            case .randomCollection, .recentCollection:
+            let section = self.sections[indexPath.section]
+            
+            if self.layoutPlaceholder { // placeholder cell
+                return self.placeholderCell(for: section, at: indexPath, collectionView: collectionView)
+            }
+            
+            switch section {
+            case .recentCollections:
                 let cell = collectionView.dequeueCell(PublicCollectionCell.self, for: indexPath)
                 let collection = item.object as! PublicCollection
                 cell.reload(with: collection)
                 cell.onVoteTriggered = self.onVoteTriggered
                 return cell
                 
-            case .recentCard:
+            case .recentCards:
                 let cell = collectionView.dequeueCell(NoteCardCell.self, for: indexPath)
                 let publishCard = item.object as! PublicCard
                 cell.reload(with: publishCard)
@@ -95,7 +88,10 @@ extension CommunityViewModel {
         
         dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
             let header = collectionView.dequeueHeader(CollectionHeaderLabel.self, for: indexPath)
-            header.label.text = self.sections[indexPath.section].title.uppercased()
+            switch self.sections[indexPath.section] {
+            case .recentCollections: header.label.text = "RECENT COLLECTIONS"
+            case .recentCards: header.label.text = "RECENT CARDS"
+            }
             header.setLabelPosition(.bottom)
             return header
         }
@@ -105,8 +101,15 @@ extension CommunityViewModel {
         var snapshot = Snapshot()
         snapshot.appendSections(sections)
         for section in sections {
-            snapshot.appendItems(section.items, toSection: section)
+            switch section {
+            case .recentCollections:
+                snapshot.appendItems(recentCollectionItems, toSection: section)
+            case .recentCards:
+                snapshot.appendItems(recentCardItems, toSection: section)
+            }
         }
+        
+        layoutPlaceholder = false
         dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
     }
 }
@@ -118,19 +121,23 @@ extension CommunityViewModel {
     
     private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { section, environment in
-            let sectionType = self.sections[section].type
             let layoutSection: NSCollectionLayoutSection
+            let section = self.sections[section]
+            let insets = self.contentInsets
             
-            switch sectionType {
-            case .action: layoutSection = self.createActionLayoutSection()
-            case .randomCollection: layoutSection = self.createRandomCollectionLayoutSection()
-            case .recentCollection: layoutSection = self.createRecentCollectionLayoutSection()
-            case .recentCard: layoutSection = self.createRecentCardLayoutSection()
+            switch section {
+            case .recentCollections: layoutSection = self.createRecentCollectionLayoutSection()
+            case .recentCards: layoutSection = self.createRecentCardLayoutSection()
             }
             
             // set last section content insets
-            if section == self.sections.count - 1 {
-                layoutSection.contentInsets.bottom = 140
+            if section == self.sections.last {
+                layoutSection.contentInsets = insets
+            } else {
+                layoutSection.contentInsets.top = insets.top
+                layoutSection.contentInsets.bottom = 0
+                layoutSection.contentInsets.leading = insets.leading
+                layoutSection.contentInsets.trailing = insets.trailing
             }
             
             return layoutSection
@@ -144,28 +151,6 @@ extension CommunityViewModel {
         return layout
     }
     
-    private func createActionLayoutSection() -> NSCollectionLayoutSection {
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(60))
-        let group = NSCollectionLayoutGroup.custom(layoutSize: groupSize) { layoutEnvironment in
-            let collectionWidth = layoutEnvironment.container.contentSize.width
-            let itemHeight = CGFloat(60)
-
-            let publishItemFrame = CGRect(x: 0, y: 0, width: collectionWidth * 0.8, height: itemHeight)
-            let publishItem = NSCollectionLayoutGroupCustomItem(frame: publishItemFrame)
-
-            let refreshItemFrame = CGRect(x: publishItemFrame.width + 16, y: 0, width: 120, height: itemHeight)
-            let refreshItem = NSCollectionLayoutGroupCustomItem(frame: refreshItemFrame)
-
-            return [publishItem, refreshItem]
-        }
-        
-        let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .continuous
-        section.contentInsets = .init(top: 12, leading: 16, bottom: 0, trailing: 120 + 16)
-        
-        return section
-    }
-    
     private func createRandomCollectionLayoutSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
@@ -177,7 +162,6 @@ extension CommunityViewModel {
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .groupPaging
         section.interGroupSpacing = 16
-        section.contentInsets = .init(top: 12, leading: 16, bottom: 0, trailing: 16)
         section.boundarySupplementaryItems = [createSectionHeaderSupplementaryItem(height: 40)]
         
         return section
@@ -194,7 +178,6 @@ extension CommunityViewModel {
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous
         section.interGroupSpacing = 16
-        section.contentInsets = .init(top: 12, leading: 16, bottom: 0, trailing: 16)
         section.boundarySupplementaryItems = [createSectionHeaderSupplementaryItem(height: 40)]
         
         return section
@@ -212,7 +195,6 @@ extension CommunityViewModel {
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .groupPaging
         section.interGroupSpacing = 16
-        section.contentInsets = lastSectionContentInsets
         section.boundarySupplementaryItems = [createSectionHeaderSupplementaryItem(height: 40)]
         
         return section
@@ -233,12 +215,14 @@ extension CommunityViewModel: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
-        let sectionType = sections[indexPath.section].type
-        switch sectionType {
-        case .action:
-            onItemSelected?(item, sectionType)
-        case .randomCollection, .recentCollection, .recentCard:
-            onItemSelected?(item, sectionType)
+        let section = sections[indexPath.section]
+        switch section {
+        case .recentCollections:
+            guard let collection = item.object as? PublicCollection else { return }
+            onCollectionSelected?(collection, section)
+        case .recentCards:
+            guard let card = item.object as? PublicCard else { return }
+            onCardSelected?(card, section)
         }
     }
 }
@@ -249,27 +233,19 @@ extension CommunityViewModel: UICollectionViewDelegate {
 extension CommunityViewModel {
     
     func fetchData(completedWithError: ((Error?) -> Void)?) {
-        let updateSnapshot: ((Error?) -> Void) = { error in
-            DispatchQueue.main.async {
-                self.updateSnapshot(animated: false) {
-                    completedWithError?(error)
-                }
-            }
-        }
-        
         fetchRecentCollections { error in
             guard error == nil else {
-                updateSnapshot(error)
+                completedWithError?(error)
                 return
             }
             
             self.fetchRecentNoteCards { error in
                 guard error == nil else {
-                    updateSnapshot(error)
+                    completedWithError?(error)
                     return
                 }
                 
-                updateSnapshot(error)
+                completedWithError?(nil)
             }
         }
     }
@@ -281,14 +257,15 @@ extension CommunityViewModel {
         let recordManager = PublicRecordManager.shared
         recordManager.queryRecentCollections { result in
             switch result {
-            case .success(let records):
-                let collections = records.map({ PublicCollection(record: $0) })
-                let collectionItems = collections.map({ PublicSectionItem(itemID: $0.collectionID, object: $0) })
-                let section = PublicSection(type: .recentCollection, title: "Recent Collections", items: collectionItems)
-                self.updateSection(with: section)
+            case let .success(records):
+                let items = records.map { record -> DataSourceItem in
+                    let collection = PublicCollection(record: record)
+                    return DataSourceItem(itemID: collection.collectionID, object: collection)
+                }
+                self.recentCollectionItems = items
                 completedWithError?(nil)
             
-            case .failure(let error):
+            case let .failure(error):
                 completedWithError?(error)
                 print(error)
             }
@@ -298,14 +275,15 @@ extension CommunityViewModel {
     func fetchRecentNoteCards(completedWithError: ((Error?) -> Void)?) {
         PublicRecordManager.shared.queryRecentCards { result in
             switch result {
-            case .success(let records):
-                let cards = records.map({ PublicCard(record: $0) })
-                let cardItems = cards.map({ PublicSectionItem(itemID: $0.cardID, object: $0) })
-                let section = PublicSection(type: .recentCard, title: "Recent Cards", items: cardItems)
-                self.updateSection(with: section)
+            case let .success(records):
+                let items = records.map { record -> DataSourceItem in
+                    let card = PublicCard(record: record)
+                    return DataSourceItem(itemID: card.cardID, object: card)
+                }
+                self.recentCardItems = items
                 completedWithError?(nil)
 
-            case .failure(let error):
+            case let .failure(error):
                 completedWithError?(error)
                 print(error)
             }
@@ -316,13 +294,9 @@ extension CommunityViewModel {
 
 // MARK: - Section
 
-struct PublicSection: Hashable {
-    
-    let type: PublicSectionType
-    
-    let title: String
-    
-    var items: [PublicSectionItem]
+enum PublicSection {
+    case recentCollections
+    case recentCards
 }
 
 
@@ -330,8 +304,10 @@ struct PublicSection: Hashable {
 
 struct PublicSectionItem: Hashable {
     
+    /// The item ID.
     let itemID: String
     
+    /// The item's object.
     let object: Any?
     
     static func == (lhs: PublicSectionItem, rhs: PublicSectionItem) -> Bool {
@@ -344,72 +320,32 @@ struct PublicSectionItem: Hashable {
 }
 
 
-// MARK: - Section Type
-
-enum PublicSectionType {
-    case action
-    case recentCollection
-    case randomCollection
-    case recentCard
-    
-    var displayOrder: Int {
-        switch self {
-        case .action: return 0
-        case .recentCollection: return 1
-        case .randomCollection: return 2
-        case .recentCard: return 3
-        }
-    }
-}
-
-
-enum PublicSectionAction: CaseIterable {
-    case publishCollection
-    case refreshData
-    
-    var title: String {
-        switch self {
-        case .publishCollection: return "PUBLISH COLLECTION"
-        case .refreshData: return "REFRESH"
-        }
-    }
-    
-    var description: String? {
-        switch self {
-        case .publishCollection: return "share a copy of your collection with the world"
-        default: return nil
-        }
-    }
-}
-
-
-// MARK: - Sample
+// MARK: - Placeholder
 
 extension CommunityViewModel {
     
-    static var placeholder: CommunityViewModel {
-        let model = CommunityViewModel()
+    func setPlaceholderItems() {
+        layoutPlaceholder = true
         
-        let collections = (1...9).map { number -> PublicSectionItem in
-            let collectionID = "collection\(number)"
-            let collection = PublicCollection.placeholder(collectionID: collectionID)
-            let item = PublicSectionItem(itemID: collectionID, object: collection)
-            return item
+        recentCollectionItems = (1...9).map { _ in
+            DataSourceItem(itemID: UUID().uuidString, object: nil)
         }
         
-        let cards = (1...9).map { number -> PublicSectionItem in
-            let collectionID = "collection\(number)"
-            let cardID = "card\(number)"
-            let card = PublicCard.placeholder(collectionID: collectionID, cardID: cardID)
-            let item = PublicSectionItem(itemID: cardID, object: card)
-            return item
+        recentCardItems = (1...9).map { _ in
+            DataSourceItem(itemID: UUID().uuidString, object: nil)
         }
-        
-        model.sections = [
-            .init(type: .recentCollection, title: "Recent Collections", items: collections),
-            .init(type: .recentCard, title: "Recent Cards", items: cards)
-        ]
-        
-        return model
+    }
+    
+    func placeholderCell(for section: DataSourceSection, at indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+        switch section {
+        case .recentCollections:
+            let cell = collectionView.dequeueCell(PublicCollectionCell.self, for: indexPath)
+            cell.placeholder()
+            return cell
+        case .recentCards:
+            let cell = collectionView.dequeueCell(NoteCardCell.self, for: indexPath)
+            cell.placeholder()
+            return cell
+        }
     }
 }
