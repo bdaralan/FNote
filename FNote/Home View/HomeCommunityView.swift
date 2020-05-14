@@ -141,21 +141,21 @@ extension HomeCommunityView {
         
         trayViewModel.items = createTrayItems()
         
-        trayViewModel.mainItem = .init(title: "", systemImage: SFSymbol.search) { item in
+        trayViewModel.mainItem = .init(title: "", image: .system(SFSymbol.search)) { item in
             self.sheet.present(.search)
         }
     }
     
     func createTrayItems() -> [BDButtonTrayItem] {
-        let user = BDButtonTrayItem(id: userTrayItemID, title: "", systemImage: "") { item in
+        let user = BDButtonTrayItem(id: userTrayItemID, title: "", image: .system("")) { item in
             self.presentPublicUserProfile(sender: item)
         }
         
-        let publish = BDButtonTrayItem(title: "Publish Collection", systemImage: SFSymbol.publishCollection) { item in
+        let publish = BDButtonTrayItem(title: "Publish Collection", image: .system(SFSymbol.publishCollection)) { item in
             self.beginPublishCollection()
         }
         
-        let refresh = BDButtonTrayItem(title: "Refresh", systemImage: SFSymbol.refresh) { item in
+        let refresh = BDButtonTrayItem(title: "Refresh", image: .system(SFSymbol.refresh)) { item in
             self.fetchData(initiated: {
                 self.setTrayItemRefreshState(item: item, refreshing: true)
             }, completion: { error in
@@ -178,13 +178,13 @@ extension HomeCommunityView {
     func updateUserTrayItem(item: BDButtonTrayItem, user: PublicUser) {
         if user.isValid {
             item.title = user.username
-            item.systemImage = SFSymbol.validUser
+            item.image = .system(SFSymbol.validUser)
             item.activeColor = .green
             item.disabled = false
             item.animation = nil
         
         } else {
-            item.systemImage = SFSymbol.invalidUser
+            item.image = .system(SFSymbol.invalidUser)
             item.activeColor = .red
             item.animation = .pulse()
             

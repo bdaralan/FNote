@@ -112,13 +112,13 @@ extension HomeTagView {
     }
     
     func createTrayMainItem() -> BDButtonTrayItem {
-        BDButtonTrayItem(title: "", systemImage: SFSymbol.add) { item in
+        BDButtonTrayItem(title: "", image: .system(SFSymbol.add)) { item in
             self.beginCreateTag()
         }
     }
     
     func createTrayItems() -> [BDButtonTrayItem] {
-        let removeUnusedTags = BDButtonTrayItem(title: "Delete Unused Tags", systemImage: SFSymbol.trash) { item in
+        let removeUnusedTags = BDButtonTrayItem(title: "Delete Unused Tags", image: .system(SFSymbol.trash)) { item in
             self.beginDeleteUnusedTags()
         }
         removeUnusedTags.activeColor = .red

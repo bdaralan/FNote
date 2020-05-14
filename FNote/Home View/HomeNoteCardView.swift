@@ -172,7 +172,7 @@ extension HomeNoteCardView {
     }
     
     func createTrayMainItem() -> BDButtonTrayItem {
-        BDButtonTrayItem(title: "", systemImage: SFSymbol.add) { item in
+        BDButtonTrayItem(title: "", image: .system(SFSymbol.add)) { item in
             guard let collection = self.currentCollection else {
                 self.presentCannotCreateNoteCardAlert()
                 return
@@ -188,20 +188,20 @@ extension HomeNoteCardView {
     
     func createTrayItems() -> [BDButtonTrayItem] {
         // show all collections
-        let collections = BDButtonTrayItem(title: "Collections", systemImage: SFSymbol.collection) { item in
+        let collections = BDButtonTrayItem(title: "Collections", image: .system(SFSymbol.collection)) { item in
             self.sheet.present(.noteCardCollection)
         }
         
         // create new collection
-        let createCollection = BDButtonTrayItem(title: "New Collection", systemImage: SFSymbol.addCollection) { item in
+        let createCollection = BDButtonTrayItem(title: "New Collection", image: .system(SFSymbol.addCollection)) { item in
             self.beginCreateNoteCardCollection()
         }
         
-        let sortCards = BDButtonTrayItem(title: "Sort", systemImage: SFSymbol.sort) { item in
+        let sortCards = BDButtonTrayItem(title: "Sort", image: .system(SFSymbol.sort)) { item in
             self.trayViewModel.subitems = self.createNoteCardSortOptionTrayItems()
         }
         
-        let searchCards = BDButtonTrayItem(title: "Search", systemImage: SFSymbol.search) { item in
+        let searchCards = BDButtonTrayItem(title: "Search", image: .system(SFSymbol.search)) { item in
             self.sheet.present(.searchNoteCard)
         }
         
@@ -215,11 +215,11 @@ extension HomeNoteCardView {
             return currentOption == option ? !currentAscending : currentAscending
         }
         
-        let nativeItem = BDButtonTrayItem(title: "", systemImage: SFSymbol.option) { item in
+        let nativeItem = BDButtonTrayItem(title: "", image: .system(SFSymbol.option)) { item in
             self.setNoteCardSortOption(.native, ascending: getAscendingFor(.native))
         }
         
-        let translationItem = BDButtonTrayItem(title: "", systemImage: SFSymbol.option) { item in
+        let translationItem = BDButtonTrayItem(title: "", image: .system(SFSymbol.option)) { item in
             self.setNoteCardSortOption(.translation, ascending: getAscendingFor(.translation))
         }
         
@@ -239,15 +239,15 @@ extension HomeNoteCardView {
         case .native:
             nativeSortTrayItem.title.append(" \(arrow)")
             nativeSortTrayItem.activeColor = .accentColor
-            nativeSortTrayItem.systemImage = SFSymbol.selectedOption
-            translationSortTrayItem.systemImage = SFSymbol.option
+            nativeSortTrayItem.image = .system(SFSymbol.selectedOption)
+            translationSortTrayItem.image = .system(SFSymbol.option)
             translationSortTrayItem.activeColor = .buttonTrayItemUnfocused
             
         case .translation:
             translationSortTrayItem.title.append(" \(arrow)")
             translationSortTrayItem.activeColor = .accentColor
-            translationSortTrayItem.systemImage = SFSymbol.selectedOption
-            nativeSortTrayItem.systemImage = SFSymbol.option
+            translationSortTrayItem.image = .system(SFSymbol.selectedOption)
+            nativeSortTrayItem.image = .system(SFSymbol.option)
             nativeSortTrayItem.activeColor = .buttonTrayItemUnfocused
         }
         

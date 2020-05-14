@@ -106,7 +106,7 @@ extension NoteCardSearchView {
         trayViewModel.shouldDisableMainItemWhenExpanded = false
         trayViewModel.setDefaultColors()
         trayViewModel.items = createTrayItems()
-        trayViewModel.mainItem = .init(title: "", systemImage: SFSymbol.search) { item in
+        trayViewModel.mainItem = .init(title: "", image: .system(SFSymbol.search)) { item in
             self.isSearchFieldFirstResponder = true
         }
     }
@@ -125,7 +125,7 @@ extension NoteCardSearchView {
             }
         }
         
-        searchIn = BDButtonTrayItem(title: "", systemImage: "") { item in
+        searchIn = BDButtonTrayItem(title: "", image: .system("")) { item in
             let selectedID = self.currentSearchCollection?.uuid
             self.presenterModel.sheet = .allCollections(title: "Search In", selectedID: selectedID) { collection in
                 self.currentSearchCollection = collection
@@ -134,7 +134,7 @@ extension NoteCardSearchView {
             }
         }
         
-        searchAll = BDButtonTrayItem(title: "Search in all collections", systemImage: "") { item in
+        searchAll = BDButtonTrayItem(title: "Search in all collections", image: .system("")) { item in
             self.currentSearchCollection = nil
             redoSearchAndCollapseTray()
         }
@@ -152,16 +152,16 @@ extension NoteCardSearchView {
         
         if let collection = currentSearchCollection { // search selected collection
             searchIn.title = "Search in \(collection.name)"
-            searchIn.systemImage = selectedImage
+            searchIn.image = .system(selectedImage)
             searchIn.activeColor = selectedColor
-            searchAll.systemImage = unselectedImage
+            searchAll.image = .system(unselectedImage)
             searchAll.activeColor = unselectedColor
             searchFieldPlaceholder = searchIn.title
         } else { // search all
-            searchAll.systemImage = selectedImage
+            searchAll.image = .system(selectedImage)
             searchAll.activeColor = selectedColor
             searchIn.title = "Search in"
-            searchIn.systemImage = unselectedImage
+            searchIn.image = .system(unselectedImage)
             searchIn.activeColor = unselectedColor
             searchFieldPlaceholder = searchAll.title
         }

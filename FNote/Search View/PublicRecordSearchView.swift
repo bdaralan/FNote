@@ -103,16 +103,16 @@ extension PublicRecordSearchView {
         trayViewModel.setDefaultColors()
         trayViewModel.shouldDisableMainItemWhenExpanded = false
         
-        trayViewModel.mainItem = .init(title: "", systemImage: SFSymbol.search) { item in
+        trayViewModel.mainItem = .init(title: "", image: .system(SFSymbol.search)) { item in
             self.isSearchFieldFirstResponder = true
         }
         
-        let searchByUser = BDButtonTrayItem(title: "Match username", systemImage: "") { item in
+        let searchByUser = BDButtonTrayItem(title: "Match username", image: .system("")) { item in
             self.searchOption = .matchUsername
             self.setTrayFocusedItem(item)
         }
         
-        let searchByAny = BDButtonTrayItem(title: "Match name, tag, etc...", systemImage: "") { item in
+        let searchByAny = BDButtonTrayItem(title: "Match name, tag, etc...", image: .system("")) { item in
             self.searchOption = .matchCollectionNameOrTag
             self.setTrayFocusedItem(item)
         }
@@ -124,7 +124,7 @@ extension PublicRecordSearchView {
     
     func setTrayFocusedItem(_ focused: BDButtonTrayItem) {
         for item in trayViewModel.items {
-            item.systemImage = item === focused ? SFSymbol.selectedOption : SFSymbol.option
+            item.image = .system(item === focused ? SFSymbol.selectedOption : SFSymbol.option)
             item.activeColor = item === focused ? .appAccent : .buttonTrayItemUnfocused
         }
         searchFieldPlaceholder = focused.title

@@ -90,7 +90,7 @@ extension PublicCollectionDetailView {
         trayViewModel.locked = true
         trayViewModel.shouldDisableMainItemWhenExpanded = false
         
-        trayViewModel.mainItem = .init(title: "", systemImage: SFSymbol.dismiss) { item in
+        trayViewModel.mainItem = .init(title: "", image: .system(SFSymbol.dismiss)) { item in
             self.onDismiss?()
         }
         
@@ -98,7 +98,7 @@ extension PublicCollectionDetailView {
     }
     
     func setAddToCollectionTrayItem() {
-        let add = BDButtonTrayItem(title: "Add To Collections", systemImage: SFSymbol.addCollection) { item in
+        let add = BDButtonTrayItem(title: "Add To Collections", image: .system(SFSymbol.addCollection)) { item in
             self.beginSaveCollection()
         }
         trayViewModel.items = [add]
@@ -106,7 +106,7 @@ extension PublicCollectionDetailView {
     }
     
     func setLoadingTrayItem(title: String) {
-        let fetching = BDButtonTrayItem(title: title, systemImage: SFSymbol.loading, action: { _ in })
+        let fetching = BDButtonTrayItem(title: title, image: .system(SFSymbol.loading), action: { _ in })
         fetching.animation = .rotation()
         fetching.disabled = true
         fetching.inactiveColor = .appAccent
@@ -188,7 +188,7 @@ extension PublicCollectionDetailView {
     }
     
     func confirmSaveCollection(context: ManagedObjectChildContext) {
-        let add = BDButtonTrayItem(title: "Ready To Add", systemImage: SFSymbol.addCollection) { item in
+        let add = BDButtonTrayItem(title: "Ready To Add", image: .system(SFSymbol.addCollection)) { item in
             guard item.disabled == false else { return }
             item.disabled = true
             item.animation = nil
