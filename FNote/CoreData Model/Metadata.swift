@@ -12,6 +12,9 @@ import CoreData
 
 
 class Metadata: NSManagedObject {
+    
+    static let previousVersion = 1
+    static let currentVersion = 2
 
     @NSManaged private(set) var creationDate: Date
     @NSManaged private(set) var version: Int64
@@ -25,7 +28,7 @@ class Metadata: NSManagedObject {
     override func awakeFromInsert() {
         super.awakeFromInsert()
         creationDate = .init()
-        version = 2
+        version = Int64(Self.currentVersion)
     }
 }
 

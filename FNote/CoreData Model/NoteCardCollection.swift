@@ -67,8 +67,16 @@ extension NoteCardCollection {
     static func requestAllCollections() -> NSFetchRequest<NoteCardCollection> {
         let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
         let nameField = #keyPath(NoteCardCollection.name)
-        request.predicate = .init(value: true)
+        let versionField = #keyPath(NoteCardCollection.metadata.version)
+        request.predicate = .init(format: "\(versionField) > \(Metadata.previousVersion)")
         request.sortDescriptors = [.init(key: nameField, ascending: true)]
+        return request
+    }
+    
+    static func requestV1NoteCardCollections() -> NSFetchRequest<NoteCardCollection> {
+        let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
+        let metadataField = #keyPath(NoteCardCollection.metadata)
+        request.predicate = .init(format: "\(metadataField) == nil")
         return request
     }
 }

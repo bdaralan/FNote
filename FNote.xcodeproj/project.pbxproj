@@ -208,7 +208,7 @@
 		B4A0CE9523D4AB57003A4D83 /* NoteCardCollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionViewModel.swift; sourceTree = "<group>"; };
 		B4A0CE9823D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCompositionalDataSource.swift; sourceTree = "<group>"; };
 		B4AB8FCE246E11AF00743480 /* FNoteV2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FNoteV2.xcdatamodel; sourceTree = "<group>"; };
-		B4AB8FCF246E13E900743480 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = SOURCE_ROOT; };
+		B4AB8FCF246E13E900743480 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Metadata.swift; path = "FNote/CoreData Model/Metadata.swift"; sourceTree = SOURCE_ROOT; };
 		B4AB8FD1246E13E900743480 /* NoteCardLinker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardLinker.swift; sourceTree = SOURCE_ROOT; };
 		B4AB8FD7246E168800743480 /* ObjectMigrationPolicyV1V2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectMigrationPolicyV1V2.swift; sourceTree = "<group>"; };
 		B4AB8FD9246E1E5800743480 /* MigrationPolicyV1V2.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = MigrationPolicyV1V2.xcmappingmodel; sourceTree = "<group>"; };
@@ -348,8 +348,8 @@
 			isa = PBXGroup;
 			children = (
 				B4AB8FCF246E13E900743480 /* Metadata.swift */,
-				B4AB8FD1246E13E900743480 /* NoteCardLinker.swift */,
 				B4BAC5342320405B007EAF15 /* NoteCard.swift */,
+				B4AB8FD1246E13E900743480 /* NoteCardLinker.swift */,
 				B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */,
 				B4BAC5382320405B007EAF15 /* Tag.swift */,
 				B49A14062454705200AA1BF5 /* ObjectModifier.swift */,

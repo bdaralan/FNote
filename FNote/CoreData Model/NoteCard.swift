@@ -170,7 +170,8 @@ extension NoteCard {
     
     static func requestAllNoteCards() -> NSFetchRequest<NoteCard> {
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        request.predicate = .init(value: true)
+        let versionField = #keyPath(NoteCard.metadata.version)
+        request.predicate = .init(format: "\(versionField) > \(Metadata.previousVersion)")
         request.sortDescriptors = []
         return request
     }
@@ -183,9 +184,11 @@ extension NoteCard {
         let collectionUUIDField = #keyPath(NoteCard.collection.uuid)
         let nativeField = #keyPath(NoteCard.native)
         let translationField = #keyPath(NoteCard.translation)
+        let versionField = #keyPath(NoteCard.metadata.version)
         
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        request.predicate = NSPredicate(format: "\(collectionUUIDField) == %@", collectionUUID)
+        let query = "\(collectionUUIDField) == %@ AND \(versionField) > \(Metadata.previousVersion)"
+        request.predicate = NSPredicate(format: query, collectionUUID)
         
         let sortByNative = NSSortDescriptor(key: nativeField, ascending: ascending)
         let sortByTranslation = NSSortDescriptor(key: translationField, ascending: ascending)
@@ -219,7 +222,9 @@ extension NoteCard {
     
         // create predicate for the search scopes
         let fieldPredicates = searchFields.map { field -> NSPredicate in
-            let predicate = NSPredicate(format: "\(field.rawValue) CONTAINS[c] %@", searchText)
+            let versionField = #keyPath(NoteCard.metadata.version)
+            let query = "\(field.rawValue) CONTAINS[c] %@ AND \(versionField) > \(Metadata.previousVersion)"
+            let predicate = NSPredicate(format: query, searchText)
             return predicate
         }
         
@@ -235,6 +240,13 @@ extension NoteCard {
             request.predicate = orFieldsPredicate
         }
         
+        return request
+    }
+    
+    static func requestV1NoteCards() -> NSFetchRequest<NoteCard> {
+        let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
+        let metadataField = #keyPath(NoteCard.metadata)
+        request.predicate = .init(format: "\(metadataField) == nil")
         return request
     }
 }
