@@ -117,49 +117,64 @@ extension ObjectGenerator {
     
     /// - Parameter collection: The version 1 collection.
     static func importV1Collections(_ collections: [NoteCardCollection], using context: NSManagedObjectContext) {
-        var allCollections = [NoteCardCollection]()
-        var allNoteCards = [NoteCard]()
-        var allTags = [String: Tag]() // [name: object]
+        var collectionMap = [NoteCardCollection: NoteCardCollection]() // [old: new]
+        var cardMap = [NoteCard: NoteCard]() // [old: new]
+        var tagMap = [Tag: Tag]() // [old: new]
         
-        // CREATE Object
+        let allV2Tags = try! context.fetch(Tag.requestAllTags())
+        
+        // CREATE Objects without assigning values
         for collection in collections {
-            let collection = collection.get(from: context)
-            allCollections.append(collection)
+            let newCollection = NoteCardCollection(context: context)
+            collectionMap[collection] = newCollection
             
             for noteCard in collection.noteCards {
-                allNoteCards.append(noteCard)
+                let newNoteCard = NoteCard(context: context)
+                cardMap[noteCard] = newNoteCard
                 
                 for tag in noteCard.tags {
-                    allTags[tag.name] = tag
+                    guard tagMap[tag] == nil else { continue }
+                    if let v2Tag = allV2Tags.first(where: { $0.name.lowercased() == tag.name.lowercased() }) {
+                        tagMap[tag] = v2Tag
+                    } else {
+                        let newTag = Tag(context: context)
+                        tagMap[tag] = newTag
+                    }
                 }
             }
         }
         
-        // CREATE Relationship
-        for collection in allCollections {
+        // Assign Objects' values and relationship
+        for collection in collections {
             // create new collection
-            let newCollection = NoteCardCollection(context: context)
+            let newCollection = collectionMap[collection]!
             var collectionModifier = ObjectModifier<NoteCardCollection>(.update(newCollection), useSeparateContext: false)
             collectionModifier.name = "[imported] \(collection.name)"
             
             // create new note cards for collection
             for noteCard in collection.noteCards {
-                let oldRelationships = noteCard.value(forKey: "relationships") as? Set<NoteCard> ?? []
-                let newNoteCard = NoteCard(context: context)
+                let newNoteCard = cardMap[noteCard]!
+                collectionModifier.addNoteCard(newNoteCard)
+                
                 var cardModifier = ObjectModifier<NoteCard>(.update(newNoteCard), useSeparateContext: false)
                 cardModifier.native = noteCard.native
                 cardModifier.translation = noteCard.translation
                 cardModifier.favorited = noteCard.isFavorite
                 cardModifier.note = noteCard.note
                 cardModifier.formality = noteCard.formality
-                cardModifier.setRelationships(oldRelationships)
                 
-                collectionModifier.addNoteCard(newNoteCard)
+                let oldRelationships = noteCard.value(forKey: "relationships") as? Set<NoteCard> ?? []
+                for relationship in oldRelationships {
+                    let relationship = cardMap[relationship]!
+                    cardModifier.addRelationship(relationship)
+                }
                 
                 // create new tags for note card
                 for tag in noteCard.tags {
-                    let tag = allTags[tag.name]! // must be here
-                    cardModifier.addTag(tag)
+                    let newTag = tagMap[tag]!
+                    var tagModifier = ObjectModifier<Tag>(.update(newTag), useSeparateContext: false)
+                    tagModifier.name = tag.name
+                    cardModifier.addTag(newTag)
                 }
             }
         }
