@@ -178,7 +178,16 @@ extension NoteCardDetailPresenter {
         
         model.onImport = { completion in
             // TODO: import v1 data
-            onImported()
+            let importContext = self.viewModel.appState.parentContext.newChildContext()
+            ObjectGenerator.importV1Collections(collections, using: importContext)
+
+            for collection in collections {
+                let collection = collection.get(from: importContext)
+                importContext.delete(collection)
+            }
+            
+            importContext.quickSave()
+            completion(true)
         }
         
         let collectionModel = model.collectionViewModel

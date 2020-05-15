@@ -116,8 +116,53 @@ extension ObjectGenerator {
 extension ObjectGenerator {
     
     /// - Parameter collection: The version 1 collection.
-    func importV1Collections(_ collections: [NoteCardCollection]) {
+    static func importV1Collections(_ collections: [NoteCardCollection], using context: NSManagedObjectContext) {
+        var allCollections = [NoteCardCollection]()
+        var allNoteCards = [NoteCard]()
+        var allTags = [String: Tag]() // [name: object]
         
+        // CREATE Object
+        for collection in collections {
+            let collection = collection.get(from: context)
+            allCollections.append(collection)
+            
+            for noteCard in collection.noteCards {
+                allNoteCards.append(noteCard)
+                
+                for tag in noteCard.tags {
+                    allTags[tag.name] = tag
+                }
+            }
+        }
+        
+        // CREATE Relationship
+        for collection in allCollections {
+            // create new collection
+            let newCollection = NoteCardCollection(context: context)
+            var collectionModifier = ObjectModifier<NoteCardCollection>(.update(newCollection), useSeparateContext: false)
+            collectionModifier.name = "[imported] \(collection.name)"
+            
+            // create new note cards for collection
+            for noteCard in collection.noteCards {
+                let oldRelationships = noteCard.value(forKey: "relationships") as? Set<NoteCard> ?? []
+                let newNoteCard = NoteCard(context: context)
+                var cardModifier = ObjectModifier<NoteCard>(.update(newNoteCard), useSeparateContext: false)
+                cardModifier.native = noteCard.native
+                cardModifier.translation = noteCard.translation
+                cardModifier.favorited = noteCard.isFavorite
+                cardModifier.note = noteCard.note
+                cardModifier.formality = noteCard.formality
+                cardModifier.setRelationships(oldRelationships)
+                
+                collectionModifier.addNoteCard(newNoteCard)
+                
+                // create new tags for note card
+                for tag in noteCard.tags {
+                    let tag = allTags[tag.name]! // must be here
+                    cardModifier.addTag(tag)
+                }
+            }
+        }
     }
 }
 
