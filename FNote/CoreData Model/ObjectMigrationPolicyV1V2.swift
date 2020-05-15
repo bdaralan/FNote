@@ -40,11 +40,6 @@ class ObjectMigrationPolicyV1V2: NSEntityMigrationPolicy {
             fatalError("🧨 attempted to migrate unknown entity '\(dInstance.entity.name!)' 🧨")
         }
     }
-    
-    override func end(_ mapping: NSEntityMapping, manager: NSMigrationManager) throws {
-        try super.end(mapping, manager: manager)
-        print("📝 END MIGRATION 📝")
-    }
 }
 
 

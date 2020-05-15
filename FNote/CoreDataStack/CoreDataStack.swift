@@ -41,7 +41,7 @@ class CoreDataStack: NSObject {
         storeDescription.setOption(enabled, forKey: "NSPersistentStoreRemoteChangeNotificationOptionKey")
         
         // set migration options
-        storeDescription.shouldAddStoreAsynchronously = true
+        storeDescription.shouldAddStoreAsynchronously = false
         storeDescription.shouldInferMappingModelAutomatically = false
         
         // load container
