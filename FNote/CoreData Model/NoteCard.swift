@@ -14,6 +14,8 @@ import SwiftUI
 
 class NoteCard: NSManagedObject {
     
+    @NSManaged private(set) var metadata: Metadata
+    
     @NSManaged private(set) var uuid: String
     @NSManaged private(set) var native: String
     @NSManaged private(set) var translation: String
@@ -25,6 +27,9 @@ class NoteCard: NSManagedObject {
     
     @NSManaged private var formalityValue: Int64
     
+    @NSManaged private(set) var linker: NoteCardLinker
+    @NSManaged private(set) var linkerTargets: Set<NoteCardLinker>
+    
     var formality: Formality {
         set { formalityValue = newValue.rawValue }
         get { Formality(rawValue: formalityValue) ?? .unspecified }
@@ -34,6 +39,8 @@ class NoteCard: NSManagedObject {
     override func awakeFromInsert() {
         super.awakeFromInsert()
         uuid = UUID().uuidString
+        metadata = .init(context: managedObjectContext!)
+        linker = .init(context: managedObjectContext!)
     }
 }
 

@@ -13,6 +13,8 @@ import CoreData
 
 class NoteCardCollection: NSManagedObject {
 
+    @NSManaged private(set) var metadata: Metadata
+    
     @NSManaged private(set) var uuid: String
     @NSManaged private(set) var name: String
     @NSManaged private(set) var noteCards: Set<NoteCard>
@@ -21,6 +23,7 @@ class NoteCardCollection: NSManagedObject {
     override func awakeFromInsert() {
         super.awakeFromInsert()
         uuid = UUID().uuidString
+        metadata = .init(context: managedObjectContext!)
     }
 }
 

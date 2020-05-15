@@ -40,6 +40,10 @@ class CoreDataStack: NSObject {
         storeDescription.setOption(enabled, forKey: "NSPersistentHistoryTrackingKey")
         storeDescription.setOption(enabled, forKey: "NSPersistentStoreRemoteChangeNotificationOptionKey")
         
+        // set migration options
+        storeDescription.shouldAddStoreAsynchronously = true
+        storeDescription.shouldInferMappingModelAutomatically = false
+        
         // load container
         persistentContainer.loadPersistentStores { storeDescription, error in
             if let error = error { fatalError("could not load persistent store with error: \(error)") }

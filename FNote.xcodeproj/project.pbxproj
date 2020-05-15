@@ -80,6 +80,10 @@
 		B49C4C7823D6B0AC0030D9B2 /* HomeNoteCardCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C4C7723D6B0AC0030D9B2 /* HomeNoteCardCollectionView.swift */; };
 		B4A0CE9623D4AB57003A4D83 /* NoteCardCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A0CE9523D4AB57003A4D83 /* NoteCardCollectionViewModel.swift */; };
 		B4A0CE9923D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A0CE9823D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift */; };
+		B4AB8FD3246E13E900743480 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AB8FCF246E13E900743480 /* Metadata.swift */; };
+		B4AB8FD5246E13E900743480 /* NoteCardLinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AB8FD1246E13E900743480 /* NoteCardLinker.swift */; };
+		B4AB8FD8246E168800743480 /* ObjectMigrationPolicyV1V2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AB8FD7246E168800743480 /* ObjectMigrationPolicyV1V2.swift */; };
+		B4AB8FDA246E1E5800743480 /* MigrationPolicyV1V2.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = B4AB8FD9246E1E5800743480 /* MigrationPolicyV1V2.xcmappingmodel */; };
 		B4AFD4522360B1B3004BAA9B /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AFD4512360B1B3004BAA9B /* CloudKit.framework */; };
 		B4B07063245E8210009E05F7 /* PublicCollectionDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B07062245E8210009E05F7 /* PublicCollectionDetailViewModel.swift */; };
 		B4B07065245E86D0009E05F7 /* PublicCollectionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B07064245E86D0009E05F7 /* PublicCollectionDetailView.swift */; };
@@ -203,6 +207,11 @@
 		B49C4C7723D6B0AC0030D9B2 /* HomeNoteCardCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeNoteCardCollectionView.swift; sourceTree = "<group>"; };
 		B4A0CE9523D4AB57003A4D83 /* NoteCardCollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardCollectionViewModel.swift; sourceTree = "<group>"; };
 		B4A0CE9823D4B53D003A4D83 /* CollectionViewCompositionalDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCompositionalDataSource.swift; sourceTree = "<group>"; };
+		B4AB8FCE246E11AF00743480 /* FNoteV2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FNoteV2.xcdatamodel; sourceTree = "<group>"; };
+		B4AB8FCF246E13E900743480 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = SOURCE_ROOT; };
+		B4AB8FD1246E13E900743480 /* NoteCardLinker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardLinker.swift; sourceTree = SOURCE_ROOT; };
+		B4AB8FD7246E168800743480 /* ObjectMigrationPolicyV1V2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectMigrationPolicyV1V2.swift; sourceTree = "<group>"; };
+		B4AB8FD9246E1E5800743480 /* MigrationPolicyV1V2.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = MigrationPolicyV1V2.xcmappingmodel; sourceTree = "<group>"; };
 		B4AFD44F2360B1A8004BAA9B /* FNote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FNote.entitlements; sourceTree = "<group>"; };
 		B4AFD4512360B1B3004BAA9B /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B4B07062245E8210009E05F7 /* PublicCollectionDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicCollectionDetailViewModel.swift; sourceTree = "<group>"; };
@@ -338,11 +347,14 @@
 		B4493C9424130EB000C72E34 /* CoreData Model */ = {
 			isa = PBXGroup;
 			children = (
+				B4AB8FCF246E13E900743480 /* Metadata.swift */,
+				B4AB8FD1246E13E900743480 /* NoteCardLinker.swift */,
 				B4BAC5342320405B007EAF15 /* NoteCard.swift */,
 				B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */,
 				B4BAC5382320405B007EAF15 /* Tag.swift */,
 				B49A14062454705200AA1BF5 /* ObjectModifier.swift */,
 				B46723CE24627576003EECD1 /* ObjectGenerator.swift */,
+				B4AB8FD7246E168800743480 /* ObjectMigrationPolicyV1V2.swift */,
 			);
 			path = "CoreData Model";
 			sourceTree = "<group>";
@@ -413,6 +425,7 @@
 				B4BB117223145DC400A380AA /* SceneDelegate.swift */,
 				B4BB117E23145DC600A380AA /* LaunchScreen.storyboard */,
 				B4BB117423145DC400A380AA /* FNote.xcdatamodeld */,
+				B4AB8FD9246E1E5800743480 /* MigrationPolicyV1V2.xcmappingmodel */,
 			);
 			path = "App Launch";
 			sourceTree = "<group>";
@@ -754,6 +767,7 @@
 				B40ECAD424131C7400267DC7 /* PublicRecordManager.swift in Sources */,
 				B40056F323D6C82900997216 /* ModalTextViewModel.swift in Sources */,
 				B49865E6242C6C7800145EBB /* SettingViewController+Wrapper.swift in Sources */,
+				B4AB8FD8246E168800743480 /* ObjectMigrationPolicyV1V2.swift in Sources */,
 				B40056F023D6C26500997216 /* HomeTagView.swift in Sources */,
 				B43B715623FB3CFA002C8A1A /* OnboardViewController.swift in Sources */,
 				B4BB117623145DC400A380AA /* FNote.xcdatamodeld in Sources */,
@@ -794,11 +808,13 @@
 				B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */,
 				B476FE22241C6A3B0006A196 /* ScrollViewSection.swift in Sources */,
 				B4BAC54523206B28007EAF15 /* String.swift in Sources */,
+				B4AB8FD5246E13E900743480 /* NoteCardLinker.swift in Sources */,
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,
 				B42A6FC4244FF1A300103019 /* Down+Extension.swift in Sources */,
 				B48C1A772467876B008523E6 /* NoteCardDetailPresenterModel.swift in Sources */,
 				B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */,
 				B476FE24241C6EAB0006A196 /* InsetRowStyle.swift in Sources */,
+				B4AB8FDA246E1E5800743480 /* MigrationPolicyV1V2.xcmappingmodel in Sources */,
 				B4BBDBDB23E4CD8000A0AEA1 /* ManagedObjectCollectionViewCell.swift in Sources */,
 				B4EC398123DB7AD90011569C /* Alert.swift in Sources */,
 				B48C1A752466D472008523E6 /* NoteCardDetailPresenter.swift in Sources */,
@@ -815,6 +831,7 @@
 				B4113FBC23D2D7D9004E70DC /* ObjectCollectionViewCell.swift in Sources */,
 				B4828F2F240855E500389EB1 /* PublicCollectionCell.swift in Sources */,
 				B477530924497D9300F1A9CF /* BDUIKnit+Extension.swift in Sources */,
+				B4AB8FD3246E13E900743480 /* Metadata.swift in Sources */,
 				B4B07065245E86D0009E05F7 /* PublicCollectionDetailView.swift in Sources */,
 				B46B3407232E8634008B2088 /* InputViewResponder.swift in Sources */,
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
@@ -1130,6 +1147,7 @@
 		B4BB117423145DC400A380AA /* FNote.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				B4AB8FCE246E11AF00743480 /* FNoteV2.xcdatamodel */,
 				B4BB117523145DC400A380AA /* FNote.xcdatamodel */,
 			);
 			currentVersion = B4BB117523145DC400A380AA /* FNote.xcdatamodel */;

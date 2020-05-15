@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E287" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+    <entity name="Metadata" representedClassName=".Metadata" syncable="YES">
+        <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="version" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="card" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NoteCard" inverseName="metadata" inverseEntity="NoteCard"/>
+        <relationship name="collection" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NoteCardCollection" inverseName="metadata" inverseEntity="NoteCardCollection"/>
+        <relationship name="linker" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NoteCardLinker" inverseName="metadata" inverseEntity="NoteCardLinker"/>
+        <relationship name="tag" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tag" inverseName="metadata" inverseEntity="Tag"/>
+    </entity>
+    <entity name="NoteCard" representedClassName=".NoteCard" syncable="YES">
+        <attribute name="formalityValue" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isFavorite" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="native" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="note" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="translation" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="uuid" optional="YES" attributeType="String"/>
+        <relationship name="collection" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NoteCardCollection" inverseName="noteCards" inverseEntity="NoteCardCollection"/>
+        <relationship name="linker" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="NoteCardLinker" inverseName="source" inverseEntity="NoteCardLinker"/>
+        <relationship name="linkerTargets" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="NoteCardLinker" inverseName="targets" inverseEntity="NoteCardLinker"/>
+        <relationship name="metadata" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Metadata" inverseName="card" inverseEntity="Metadata"/>
+        <relationship name="relationships" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NoteCard" inverseName="relationships" inverseEntity="NoteCard"/>
+        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tag" inverseName="noteCards" inverseEntity="Tag"/>
+    </entity>
+    <entity name="NoteCardCollection" representedClassName=".NoteCardCollection" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="uuid" optional="YES" attributeType="String"/>
+        <relationship name="metadata" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Metadata" inverseName="collection" inverseEntity="Metadata"/>
+        <relationship name="noteCards" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="NoteCard" inverseName="collection" inverseEntity="NoteCard"/>
+    </entity>
+    <entity name="NoteCardLinker" representedClassName=".NoteCardLinker" syncable="YES">
+        <relationship name="metadata" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Metadata" inverseName="linker" inverseEntity="Metadata"/>
+        <relationship name="source" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NoteCard" inverseName="linker" inverseEntity="NoteCard"/>
+        <relationship name="targets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NoteCard" inverseName="linkerTargets" inverseEntity="NoteCard"/>
+    </entity>
+    <entity name="Tag" representedClassName=".Tag" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="uuid" optional="YES" attributeType="String"/>
+        <relationship name="metadata" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Metadata" inverseName="tag" inverseEntity="Metadata"/>
+        <relationship name="noteCards" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NoteCard" inverseName="tags" inverseEntity="NoteCard"/>
+    </entity>
+    <elements>
+        <element name="NoteCard" positionX="-63" positionY="-18" width="128" height="223"/>
+        <element name="NoteCardCollection" positionX="-54" positionY="27" width="128" height="103"/>
+        <element name="Tag" positionX="-36" positionY="36" width="128" height="103"/>
+        <element name="Metadata" positionX="-45" positionY="63" width="128" height="133"/>
+        <element name="NoteCardLinker" positionX="-36" positionY="72" width="128" height="88"/>
+    </elements>
+</model>
