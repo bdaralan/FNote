@@ -52,7 +52,7 @@ extension ObjectGenerator {
             modifier.native = card.native
             modifier.translation = card.translation
             modifier.formality = card.formality
-            modifier.isFavorite = card.favorited
+            modifier.favorited = card.favorited
             modifier.note = card.note
             
             card.tags.forEach { tagName in
@@ -62,7 +62,7 @@ extension ObjectGenerator {
             
             card.relationships.forEach { relationshipID in
                 let noteCard = cardMap[relationshipID]!
-                modifier.addRelationships(noteCard)
+                modifier.addRelationship(noteCard)
             }
         }
         
@@ -132,7 +132,7 @@ extension ObjectGenerator {
             let publicTags = noteCard.tags.map(\.name).sorted()
             let publicNote = includeNote ? noteCard.note : ""
             
-            let publicRelationshipIDs = noteCard.relationships.compactMap { relationship -> String? in
+            let publicRelationshipIDs = noteCard.linker.targets.compactMap { relationship -> String? in
                 guard noteCard.collection === relationship.collection else { return nil }
                 return cardIDMap[relationship.uuid]!
             }

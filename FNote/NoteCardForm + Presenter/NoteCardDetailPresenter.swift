@@ -126,7 +126,7 @@ extension NoteCardDetailPresenter {
         
         case let .tag(noteCard):
             let model = TagCollectionViewModel()
-            model.tags = noteCard.tags.sortedByName()
+            model.tags = noteCard.tags.sorted(by: { $0.name < $1.name })
             tagViewModel = model
         
         case let .note(noteCard):
@@ -214,7 +214,7 @@ extension NoteCardDetailPresenter {
             modifier.native = formModel.native
             modifier.translation = formModel.translation
             modifier.formality = formModel.selectedFormality
-            modifier.isFavorite = formModel.isFavorite
+            modifier.favorited = formModel.favorited
             modifier.note = formModel.note
             modifier.setCollection(collection)
             modifier.setRelationships(formModel.selectedRelationships)
@@ -265,7 +265,7 @@ extension NoteCardDetailPresenter {
             modifier.native = formModel.native
             modifier.translation = formModel.translation
             modifier.formality = formModel.selectedFormality
-            modifier.isFavorite = formModel.isFavorite
+            modifier.favorited = formModel.favorited
             modifier.note = formModel.note
             modifier.setCollection(collection)
             modifier.setRelationships(formModel.selectedRelationships)
@@ -380,7 +380,7 @@ extension NoteCardDetailPresenter {
     }
     
     func prepareNoteCardRelationships(for model: NoteCardCollectionViewModel, with noteCard: NoteCard) {
-        let relationships = noteCard.relationships.sorted(by: { $0.translation < $1.translation })
+        let relationships = noteCard.linker.targets.sorted(by: { $0.translation < $1.translation })
         model.noteCards = [noteCard] + relationships
         model.borderedNoteCardIDs = [noteCard.uuid]
         model.ignoreSelectionNoteCardIDs = [noteCard.uuid]

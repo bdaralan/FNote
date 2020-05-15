@@ -14,21 +14,24 @@ import SwiftUI
 
 class NoteCard: NSManagedObject {
     
-    @NSManaged private(set) var metadata: Metadata
+    @NSManaged fileprivate(set) var metadata: Metadata
     
-    @NSManaged private(set) var uuid: String
-    @NSManaged private(set) var native: String
-    @NSManaged private(set) var translation: String
-    @NSManaged private(set) var isFavorite: Bool
-    @NSManaged private(set) var note: String
-    @NSManaged private(set) var collection: NoteCardCollection?
-    @NSManaged private(set) var relationships: Set<NoteCard>
-    @NSManaged private(set) var tags: Set<Tag>
+    @NSManaged fileprivate(set) var uuid: String
+    @NSManaged fileprivate(set) var native: String
+    @NSManaged fileprivate(set) var translation: String
+    @NSManaged fileprivate(set) var formalityValue: Int64
+    @NSManaged fileprivate(set) var isFavorite: Bool
+    @NSManaged fileprivate(set) var note: String
     
-    @NSManaged private var formalityValue: Int64
+    @NSManaged fileprivate(set) var collection: NoteCardCollection?
     
-    @NSManaged private(set) var linker: NoteCardLinker
-    @NSManaged private(set) var linkerTargets: Set<NoteCardLinker>
+    @NSManaged fileprivate(set) var tags: Set<Tag>
+    
+    @NSManaged fileprivate(set) var linker: NoteCardLinker
+    @NSManaged fileprivate(set) var linkerTargets: Set<NoteCardLinker>
+    
+    @available(*, deprecated, message: "use link.targets instead.")
+    @NSManaged private var relationships: Set<NoteCard>
     
     var formality: Formality {
         set { formalityValue = newValue.rawValue }
@@ -41,115 +44,6 @@ class NoteCard: NSManagedObject {
         uuid = UUID().uuidString
         metadata = .init(context: managedObjectContext!)
         linker = .init(context: managedObjectContext!)
-    }
-}
-
-
-// MARK: - Setter
-
-extension NoteCard {
-    
-    fileprivate func setNative(_ string: String) {
-        native = string.trimmed()
-    }
-    
-    fileprivate func setTranslation(_ string: String) {
-        translation = string.trimmed()
-    }
-    
-    fileprivate func setFavorite(_ bool: Bool) {
-        isFavorite = bool
-    }
-    
-    fileprivate func setFormality(_ formality: Formality) {
-        self.formalityValue = formality.rawValue
-    }
-    
-    fileprivate func setNote(_ string: String) {
-        note = string.trimmed()
-    }
-    
-    fileprivate func setCollection(_ collection: NoteCardCollection) {
-        self.collection = collection
-    }
-    
-    fileprivate func setRelationships(_ noteCards: Set<NoteCard>) {
-        if relationships.contains(self) {
-            var relationships = noteCards
-            relationships.remove(self)
-            self.relationships = relationships
-        } else {
-            self.relationships = noteCards
-        }
-    }
-    
-    fileprivate func addRelationships(_ noteCard: NoteCard) {
-        guard noteCard !== self else { return }
-        relationships.insert(noteCard)
-    }
-    
-    fileprivate func setTags(_ tags: Set<Tag>) {
-        self.tags = tags
-    }
-    
-    fileprivate func addTag(_ tag: Tag) {
-        tags.insert(tag)
-    }
-}
-
-
-// MARK: - Object Modifier Setter
-
-extension ObjectModifier where Object == NoteCard {
-    
-    var native: String {
-        set { modifiedObject.setNative(newValue) }
-        get { modifiedObject.native }
-    }
-    
-    var translation: String {
-        set { modifiedObject.setTranslation(newValue) }
-        get { modifiedObject.translation }
-    }
-    
-    var isFavorite: Bool {
-        set { modifiedObject.setFavorite(newValue) }
-        get { modifiedObject.isFavorite }
-    }
-    
-    var formality: NoteCard.Formality {
-        set { modifiedObject.setFormality(newValue) }
-        get { modifiedObject.formality }
-    }
-    
-    var note: String {
-        set { modifiedObject.setNote(newValue) }
-        get { modifiedObject.note }
-    }
-    
-    func setCollection(_ collection: NoteCardCollection) {
-        let collection = collection.get(from: modifiedContext)
-        modifiedObject.setCollection(collection)
-    }
-    
-    func setRelationships(_ noteCards: Set<NoteCard>) {
-        let noteCards = noteCards.map({ $0.get(from: modifiedContext) })
-        modifiedObject.setRelationships(Set(noteCards))
-    }
-    
-    func addRelationships(_ noteCard: NoteCard) {
-        let noteCard = noteCard.get(from: modifiedContext)
-        modifiedObject.addRelationships(noteCard)
-    }
-    
-    func setTags(_ tags: Set<Tag>) {
-        let tags = tags.map({ $0.get(from: modifiedContext) })
-        modifiedObject.setTags(Set(tags))
-    }
-    
-    func addTag(_ tag: Tag) {
-        let tag = tag.get(from: modifiedContext)
-        modifiedObject.addTag(tag)
     }
 }
 
@@ -296,6 +190,67 @@ extension NoteCard {
             case .neutral: return .systemOrange
             case .formal: return .systemGreen
             }
+        }
+    }
+}
+
+
+
+// MARK: Note Card Modifier
+
+extension ObjectModifier where Object == NoteCard {
+    
+    var native: String {
+        set { modifiedObject.native = newValue.trimmed() }
+        get { modifiedObject.native }
+    }
+    
+    var translation: String {
+        set { modifiedObject.translation = newValue.trimmed() }
+        get { modifiedObject.translation }
+    }
+    
+    var favorited: Bool {
+        set { modifiedObject.isFavorite = newValue }
+        get { modifiedObject.isFavorite }
+    }
+    
+    var formality: NoteCard.Formality {
+        set { modifiedObject.formality = newValue }
+        get { modifiedObject.formality }
+    }
+    
+    var note: String {
+        set { modifiedObject.note = newValue.trimmed() }
+        get { modifiedObject.note }
+    }
+    
+    func setCollection(_ collection: NoteCardCollection) {
+        let collection = collection.get(from: modifiedContext)
+        modifiedObject.collection = collection
+    }
+    
+    func addRelationship(_ noteCard: NoteCard) {
+        let noteCard = noteCard.get(from: modifiedContext)
+        modifiedObject.linker.addTarget(noteCard)
+    }
+    
+    func setRelationships(_ noteCards: Set<NoteCard>) {
+        let noteCards = noteCards.map({ $0.get(from: modifiedContext) })
+        let linker = modifiedObject.linker
+        linker.targets.forEach(linker.removeTarget)
+        noteCards.forEach(linker.addTarget)
+    }
+    
+    func addTag(_ tag: Tag) {
+        let tag = tag.get(from: modifiedContext)
+        modifiedObject.tags.insert(tag)
+    }
+    
+    func setTags(_ tags: Set<Tag>) {
+        modifiedObject.tags = []
+        tags.forEach {
+            modifiedObject.tags.insert($0.get(from: modifiedContext))
         }
     }
 }

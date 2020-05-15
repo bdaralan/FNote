@@ -27,7 +27,7 @@ class NoteCardDetailPresenterModel: ObservableObject {
     
     func setFavorite(_ favorited: Bool, for noteCard: NoteCard) {
         var modifier = ObjectModifier<NoteCard>(.update(noteCard))
-        modifier.isFavorite = favorited
+        modifier.favorited = favorited
         modifier.save()
     }
 }

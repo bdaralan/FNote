@@ -23,6 +23,19 @@ class NoteCardLinker: NSManagedObject {
         super.awakeFromInsert()
         metadata = .init(context: managedObjectContext!)
     }
+    
+    
+    func addTarget(_ noteCard: NoteCard) {
+        guard noteCard !== source else { return }
+        targets.insert(noteCard)
+        noteCard.linker.targets.insert(source)
+    }
+    
+    func removeTarget(_ noteCard: NoteCard) {
+        guard noteCard !== source else { return }
+        targets.remove(noteCard)
+        noteCard.linker.targets.remove(source)
+    }
 }
 
 

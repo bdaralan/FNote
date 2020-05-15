@@ -60,8 +60,8 @@ class NoteCardCell: ManagedObjectCollectionViewCell<NoteCard> {
         noteButton.isUserInteractionEnabled = !object.note.isEmpty
         noteButton.tintColor = object.note.isEmpty ? .quaternaryLabel : .secondaryLabel
         
-        relationshipButton.isUserInteractionEnabled = !object.relationships.isEmpty
-        relationshipButton.tintColor = object.relationships.isEmpty ? .quaternaryLabel : .secondaryLabel
+        relationshipButton.isUserInteractionEnabled = !object.linker.targets.isEmpty
+        relationshipButton.tintColor = object.linker.targets.isEmpty ? .quaternaryLabel : .secondaryLabel
         
         tagButton.isUserInteractionEnabled = !object.tags.isEmpty
         tagButton.tintColor = object.tags.isEmpty ? .quaternaryLabel : .secondaryLabel

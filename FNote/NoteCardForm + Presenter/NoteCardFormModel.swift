@@ -16,7 +16,7 @@ class NoteCardFormModel: ObservableObject {
     @Published var native = ""
     @Published var translation = ""
     @Published var formality = 0
-    @Published var isFavorite = false
+    @Published var favorited = false
     @Published var note = ""
     
     @Published var selectableCollections: [NoteCardCollection] = []
@@ -128,10 +128,10 @@ extension NoteCardFormModel {
         native = noteCard.native
         translation = noteCard.translation
         formality = Int(noteCard.formality.rawValue)
-        isFavorite = noteCard.isFavorite
+        favorited = noteCard.isFavorite
         note = noteCard.note
         
-        selectedRelationships = noteCard.relationships
+        selectedRelationships = noteCard.linker.targets
         selectedTags = noteCard.tags
     }
 }

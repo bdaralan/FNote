@@ -301,7 +301,7 @@ extension NoteCardFormController {
     
     @objc private func handleToggleChanged(_ sender: UISwitch) {
         guard sender === favoriteCell.toggle else { return }
-        viewModel.isFavorite = sender.isOn
+        viewModel.favorited = sender.isOn
         tableView.endEditing(true)
     }
     
@@ -319,9 +319,9 @@ extension NoteCardFormController {
         formalityCell.uiView.selectedSegmentIndex = viewModel.formality
         formalityCell.uiView.setTitleTextAttributes([.foregroundColor: selectedColor], for: .selected)
         
-        let favoriteImage = viewModel.isFavorite ? favoriteActiveImage : favoriteInactiveImage
+        let favoriteImage = viewModel.favorited ? favoriteActiveImage : favoriteInactiveImage
         favoriteCell.imageView?.image = favoriteImage
-        favoriteCell.toggle!.setOn(viewModel.isFavorite, animated: true)
+        favoriteCell.toggle!.setOn(viewModel.favorited, animated: true)
         
         relationshipCell.detailTextLabel?.text = viewModel.uiRelationshipsCount
         

@@ -13,11 +13,12 @@ import CoreData
 
 class Tag: NSManagedObject {
     
-    @NSManaged private(set) var metadata: Metadata
+    @NSManaged fileprivate(set) var metadata: Metadata
     
-    @NSManaged private(set) var uuid: String
-    @NSManaged private(set) var name: String
-    @NSManaged private(set) var noteCards: Set<NoteCard>
+    @NSManaged fileprivate(set) var uuid: String
+    @NSManaged fileprivate(set) var name: String
+    @NSManaged fileprivate(set) var noteCards: Set<NoteCard>
+    
     
     override func awakeFromInsert() {
         super.awakeFromInsert()
@@ -26,26 +27,6 @@ class Tag: NSManagedObject {
     }
 }
 
-
-// MARK: - Setter
-
-extension Tag {
-    
-    fileprivate func setName(_ string: String) {
-        name = string.trimmed()
-    }
-}
-
-
-// MARK: - Object Modifier Setter
-
-extension ObjectModifier where Object == Tag {
-    
-    var name: String {
-        set { modifiedObject.setName(newValue) }
-        get { modifiedObject.name }
-    }
-}
 
 extension Tag {
     
@@ -64,9 +45,12 @@ extension Tag {
 }
 
 
-extension Collection where Element == Tag {
+// MARK: - Object Modifier Setter
+
+extension ObjectModifier where Object == Tag {
     
-    func sortedByName() -> [Tag] {
-        self.sorted(by: { $0.name < $1.name })
+    var name: String {
+        set { modifiedObject.name = newValue.trimmed() }
+        get { modifiedObject.name }
     }
 }
