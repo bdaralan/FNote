@@ -42,6 +42,13 @@ extension Tag {
         request.sortDescriptors = [.init(key: nameField, ascending: true)]
         return request
     }
+    
+    static func requestUnusedTags() -> NSFetchRequest<Tag> {
+        let request = Tag.fetchRequest() as NSFetchRequest<Tag>
+        let noteCardsField = #keyPath(Tag.noteCards)
+        request.predicate = .init(format: "\(noteCardsField).@count == 0")
+        return request
+    }
 }
 
 

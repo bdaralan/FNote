@@ -143,21 +143,10 @@ extension AppState {
 extension AppState {
     
     func deleteUnusedTags(in context: NSManagedObjectContext) -> Bool {
-        var deleted = false
-        
-        let predicate = NSPredicate(value: true)
-        let request = Tag.fetchRequest() as NSFetchRequest<Tag>
-        request.predicate = predicate
-        request.sortDescriptors = []
-        
-        let results = (try? context.fetch(request)) ?? []
-        
-        for tag in results where tag.noteCards.isEmpty {
-            deleted = true
-            context.delete(tag)
-        }
-        
-        return deleted
+        guard let results = try? context.fetch(Tag.requestUnusedTags()) else { return false }
+        guard results.isEmpty == false else { return false }
+        results.forEach(context.delete)
+        return true
     }
 }
 
