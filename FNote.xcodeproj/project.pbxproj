@@ -1150,7 +1150,7 @@
 				B4AB8FCE246E11AF00743480 /* FNoteV2.xcdatamodel */,
 				B4BB117523145DC400A380AA /* FNote.xcdatamodel */,
 			);
-			currentVersion = B4BB117523145DC400A380AA /* FNote.xcdatamodel */;
+			currentVersion = B4AB8FCE246E11AF00743480 /* FNoteV2.xcdatamodel */;
 			path = FNote.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

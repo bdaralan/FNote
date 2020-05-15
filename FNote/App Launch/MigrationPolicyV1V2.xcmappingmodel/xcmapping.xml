@@ -75,13 +75,14 @@
         <relationship name="entitymapping" type="1/1" destination="XDDEVENTITYMAPPING" idrefs="z136"></relationship>
     </object>
     <object type="XDDEVENTITYMAPPING" id="z108">
+        <attribute name="migrationpolicyclassname" type="string">FNote.ObjectMigrationPolicyV1V2</attribute>
         <attribute name="sourcename" type="string">NoteCardCollection</attribute>
         <attribute name="mappingtypename" type="string">Undefined</attribute>
         <attribute name="mappingnumber" type="int16">1</attribute>
         <attribute name="destinationname" type="string">NoteCardCollection</attribute>
         <attribute name="autogenerateexpression" type="bool">1</attribute>
         <relationship name="mappingmodel" type="1/1" destination="XDDEVMAPPINGMODEL" idrefs="z134"></relationship>
-        <relationship name="attributemappings" type="0/0" destination="XDDEVATTRIBUTEMAPPING" idrefs="z118 z131"></relationship>
+        <relationship name="attributemappings" type="0/0" destination="XDDEVATTRIBUTEMAPPING" idrefs="z131 z118"></relationship>
         <relationship name="relationshipmappings" type="0/0" destination="XDDEVRELATIONSHIPMAPPING" idrefs="z121 z124"></relationship>
     </object>
     <object type="XDDEVATTRIBUTEMAPPING" id="z109">
@@ -94,6 +95,7 @@
         <relationship name="entitymapping" type="1/1" destination="XDDEVENTITYMAPPING" idrefs="z115"></relationship>
     </object>
     <object type="XDDEVENTITYMAPPING" id="z111">
+        <attribute name="migrationpolicyclassname" type="string">FNote.ObjectMigrationPolicyV1V2</attribute>
         <attribute name="sourcename" type="string">Tag</attribute>
         <attribute name="mappingtypename" type="string">Undefined</attribute>
         <attribute name="mappingnumber" type="int16">3</attribute>
@@ -190,15 +192,15 @@
         <relationship name="entitymapping" type="1/1" destination="XDDEVENTITYMAPPING" idrefs="z136"></relationship>
     </object>
     <object type="XDDEVENTITYMAPPING" id="z130">
-        <attribute name="migrationpolicyclassname" type="string">ObjectMigrationPolicyV1V2</attribute>
+        <attribute name="migrationpolicyclassname" type="string">FNote.ObjectMigrationPolicyV1V2</attribute>
         <attribute name="sourcename" type="string">NoteCard</attribute>
         <attribute name="mappingtypename" type="string">Undefined</attribute>
         <attribute name="mappingnumber" type="int16">4</attribute>
         <attribute name="destinationname" type="string">NoteCard</attribute>
         <attribute name="autogenerateexpression" type="bool">1</attribute>
         <relationship name="mappingmodel" type="1/1" destination="XDDEVMAPPINGMODEL" idrefs="z134"></relationship>
-        <relationship name="attributemappings" type="0/0" destination="XDDEVATTRIBUTEMAPPING" idrefs="z126 z103 z109 z128 z117 z120"></relationship>
-        <relationship name="relationshipmappings" type="0/0" destination="XDDEVRELATIONSHIPMAPPING" idrefs="z127 z113 z132 z104 z123 z133"></relationship>
+        <relationship name="attributemappings" type="0/0" destination="XDDEVATTRIBUTEMAPPING" idrefs="z103 z109 z128 z117 z120 z126"></relationship>
+        <relationship name="relationshipmappings" type="0/0" destination="XDDEVRELATIONSHIPMAPPING" idrefs="z123 z127 z113 z104 z133 z132"></relationship>
     </object>
     <object type="XDDEVATTRIBUTEMAPPING" id="z131">
         <attribute name="name" type="string">name</attribute>
