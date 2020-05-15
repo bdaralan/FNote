@@ -37,7 +37,9 @@ class NoteCardCollectionCollectionViewModel: NSObject, CollectionViewComposition
     var ignoreSelectionCollectionIDs: Set<String> = []
     
     /// Context menus to be shown.
-    var contextMenus: [NoteCardCollectionCell.ContextMenu] = []
+    var contextMenus: [ContextMenu] = []
+    
+    var contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
     
     
     // MARK: Action
@@ -46,7 +48,7 @@ class NoteCardCollectionCollectionViewModel: NSObject, CollectionViewComposition
     var onCollectionSelected: ((NoteCardCollection) -> Void)?
     
     /// An action to perform on context menu selected.
-    var onContextMenuSelected: ((NoteCardCollectionCell.ContextMenu, NoteCardCollection) -> Void)?
+    var onContextMenuSelected: ((ContextMenu, NoteCardCollection) -> Void)?
     
     
     // MARK: Reference
@@ -121,7 +123,7 @@ extension NoteCardCollectionCollectionViewModel {
         return configuration
     }
 
-    private func createContextMenuAction(for menu: NoteCardCollectionCell.ContextMenu, with collection: NoteCardCollection) -> UIAction {
+    private func createContextMenuAction(for menu: ContextMenu, with collection: NoteCardCollection) -> UIAction {
         let attribute: UIMenuElement.Attributes = menu == .delete ? .destructive : .init()
         let action = UIAction(title: menu.title, image: menu.image, attributes: attribute) { action in
             self.onContextMenuSelected?(menu, collection)
@@ -183,8 +185,34 @@ extension NoteCardCollectionCollectionViewModel {
         
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 12
-        section.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
+        section.contentInsets = contentInsets
         
         return section
+    }
+}
+
+
+extension NoteCardCollectionCollectionViewModel {
+    
+    enum ContextMenu {
+        case rename
+        case delete
+        case importData
+        
+        var title: String {
+            switch self {
+            case .rename: return "Rename"
+            case .delete: return "Delete"
+            case .importData: return "Import"
+            }
+        }
+        
+        var image: UIImage {
+            switch self {
+            case .rename: return UIImage(systemName: "square.and.pencil")!
+            case .delete: return UIImage(systemName: "trash")!
+            case .importData: return UIImage(systemName: "plus.circle")!
+            }
+        }
     }
 }

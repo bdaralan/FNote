@@ -111,6 +111,17 @@ extension ObjectGenerator {
 }
 
 
+// MARK: - Object V1 to V2
+
+extension ObjectGenerator {
+    
+    /// - Parameter collection: The version 1 collection.
+    func importV1Collections(_ collections: [NoteCardCollection]) {
+        
+    }
+}
+
+
 // MARK: - Object to Record
 
 extension ObjectGenerator {

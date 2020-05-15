@@ -103,12 +103,14 @@ extension HomeNoteCardCollectionView {
         onSelected?(collection)
     }
     
-    func handleContextMenuSelected(_ menu: NoteCardCollectionCell.ContextMenu, collection: NoteCardCollection) {
+    func handleContextMenuSelected(_ menu: NoteCardCollectionCollectionViewModel.ContextMenu, collection: NoteCardCollection) {
         switch menu {
         case .rename:
             beginRenameNoteCardCollection(collection)
         case .delete:
             beginDeleteNoteCardCollection(collection)
+        case .importData:
+            break
         }
     }
 }

@@ -148,6 +148,12 @@ extension AppState {
         results.forEach(context.delete)
         return true
     }
+    
+    func fetchV1Collections() -> [NoteCardCollection] {
+        let request = NoteCardCollection.requestV1NoteCardCollections()
+        let results = try? parentContext.fetch(request)
+        return results ?? []
+    }
 }
 
 
@@ -155,7 +161,8 @@ extension AppState {
     
     func isDuplicateTagName(_ name: String) -> Bool {
         let nameField = #keyPath(Tag.name)
-        let predicate = NSPredicate(format: "\(nameField) =[c] %@", name)
+        let versionField = #keyPath(Tag.metadata.version)
+        let predicate = NSPredicate(format: "\(nameField) =[c] %@ AND \(versionField) > 1", name)
         let request = Tag.fetchRequest() as NSFetchRequest<Tag>
         request.predicate = predicate
         request.sortDescriptors = []
@@ -165,7 +172,8 @@ extension AppState {
     
     func isDuplicateCollectionName(_ name: String) -> Bool {
         let nameField = #keyPath(NoteCardCollection.name)
-        let predicate = NSPredicate(format: "\(nameField) =[c] %@", name)
+        let versionField = #keyPath(NoteCardCollection.metadata.version)
+        let predicate = NSPredicate(format: "\(nameField) =[c] %@ AND \(versionField) > 1", name)
         let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
         request.predicate = predicate
         request.sortDescriptors = []

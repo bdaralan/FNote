@@ -36,4 +36,7 @@ enum SFSymbol {
     
     static let option = "circle"
     static let selectedOption = "largecircle.fill.circle"
+    
+    static let archivedData = "archivebox"
+    static let importData = "tray.and.arrow.down"
 }

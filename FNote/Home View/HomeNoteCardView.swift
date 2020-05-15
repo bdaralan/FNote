@@ -32,6 +32,8 @@ struct HomeNoteCardView: View {
     
     @State private var nativeSortTrayItem: BDButtonTrayItem!
     @State private var translationSortTrayItem: BDButtonTrayItem!
+    @State private var archiveCollectionTrayItem: BDButtonTrayItem?
+    
     
     var currentCollection: NoteCardCollection? {
         appState.currentCollection
@@ -162,6 +164,8 @@ extension HomeNoteCardView {
         trayViewModel.items = createTrayItems()
         
         trayViewModel.onTrayWillExpand = { willExpand in
+            self.addArchivedCollectionTrayItem(willExpand)
+            
             // when collapsed, remove subitems
             // delay a bit so it doesn't show the main item label sliding down
             guard !willExpand else { return }
@@ -169,6 +173,34 @@ extension HomeNoteCardView {
                 self.trayViewModel.subitems = []
             }
         }
+        
+        // add the item back if switch tab while the tray is expanded
+        if trayViewModel.expanded {
+            archiveCollectionTrayItem = nil
+            addArchivedCollectionTrayItem(true)
+        }
+    }
+    
+    func addArchivedCollectionTrayItem(_ add: Bool) {
+        guard add, archiveCollectionTrayItem == nil else { // remove archive collection item
+            trayViewModel.items.removeAll(where: { $0 === archiveCollectionTrayItem })
+            archiveCollectionTrayItem = nil
+            return
+        }
+        
+        let archivedCollections = appState.fetchV1Collections()
+        guard archivedCollections.isEmpty == false else { return }
+        
+        // add archive collection item
+        let item = BDButtonTrayItem(title: "Archived Collections", image: .system(SFSymbol.archivedData)) { item in
+            self.cardPresenterModel.sheet = .archivedData(archivedCollections, onImported: {
+                self.addArchivedCollectionTrayItem(false)
+            })
+        }
+        
+        archiveCollectionTrayItem = item
+        item.animation = .tilt()
+        trayViewModel.items.insert(item, at: 2) // after collections item
     }
     
     func createTrayMainItem() -> BDButtonTrayItem {

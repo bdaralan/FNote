@@ -103,26 +103,3 @@ class NoteCardCollectionCell: ManagedObjectCollectionViewCell<NoteCardCollection
         )
     }
 }
-
-
-extension NoteCardCollectionCell {
-    
-    enum ContextMenu {
-        case rename
-        case delete
-        
-        var title: String {
-            switch self {
-            case .rename: return "Rename"
-            case .delete: return "Delete"
-            }
-        }
-        
-        var image: UIImage {
-            switch self {
-            case .rename: return UIImage(systemName: "square.and.pencil")!
-            case .delete: return UIImage(systemName: "trash")!
-            }
-        }
-    }
-}

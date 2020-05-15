@@ -26,6 +26,8 @@ struct NoteCardDetailPresenter: View {
     
     @State private var collectionViewModel: NoteCardCollectionCollectionViewModel?
     
+    @State private var userArchivedDataViewModel: UserArchivedDataViewModel?
+    
     
     var body: some View {
         Color.clear
@@ -46,6 +48,7 @@ extension NoteCardDetailPresenter {
         case edit(noteCard: NoteCard, completion: () -> Void)
         case create(noteCardIn: NoteCardCollection, completion: () -> Void)
         case allCollections(title: String, selectedID: String?, onSelected: ((NoteCardCollection) -> Void)?)
+        case archivedData([NoteCardCollection], onImported: () -> Void)
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
@@ -85,6 +88,10 @@ extension NoteCardDetailPresenter {
                     .navigationBarItems(trailing: dismissSheetNavItem())
             }
             .eraseToAnyView()
+            
+        case .archivedData:
+            return UserArchivedDataView(viewModel: userArchivedDataViewModel!)
+            .eraseToAnyView()
         }
     }
     
@@ -103,43 +110,13 @@ extension NoteCardDetailPresenter {
         switch sheet {
         
         case let .relationship(noteCard):
-            let model = NoteCardCollectionViewModel()
-            model.cellStyle = .short
-            model.contextMenus = [.copyNative]
-            
-            model.onContextMenuSelected = { menu, noteCard in
-                guard menu == .copyNative else { return }
-                UIPasteboard.general.string = noteCard.native
-            }
-            
-            model.onNoteCardSelected = { noteCard in
-                // setup cards to display
-                // clear current bordered cells
-                // show the cards to display
-                self.prepareNoteCardRelationships(for: model, with: noteCard)
-                model.reloadedVisibleCells()
-                model.updateSnapshot(animated: true)
-            }
-            
-            prepareNoteCardRelationships(for: model, with: noteCard)
-            relationshipViewModel = model
+            setupRelationshipModel(for: noteCard)
         
         case let .tag(noteCard):
-            let model = TagCollectionViewModel()
-            model.tags = noteCard.tags.sorted(by: { $0.name < $1.name })
-            tagViewModel = model
+            setupTagModel(for: noteCard)
         
         case let .note(noteCard):
-            noteTextViewModel = .init()
-            noteTextViewModel.renderMarkdown = viewModel.renderMarkdown
-            noteTextViewModel.renderSoftBreak = viewModel.renderSoftBreak
-            noteTextViewModel.disableEditing = true
-            noteTextViewModel.title = "Note"
-            noteTextViewModel.text = noteCard.note
-            
-            noteTextViewModel.onCommit = {
-                self.sheet.dismiss()
-            }
+            setupNoteTextViewModel(for: noteCard)
             
         case let .edit(noteCard, completion):
             setupNoteCardEditFormModel(noteCard: noteCard, completion: completion)
@@ -149,6 +126,9 @@ extension NoteCardDetailPresenter {
             
         case let .allCollections(_, selectedID, onSelected):
             setupAllCollectionViewModel(selectedID: selectedID, onSelected: onSelected)
+            
+        case let .archivedData(collections, onImported):
+            setupUserArchivedDataViewModel(collections: collections, onImported: onImported)
         }
         
         self.sheet.present(sheet)
@@ -158,11 +138,13 @@ extension NoteCardDetailPresenter {
         noteCardFormModel = nil
         relationshipViewModel = nil
         tagViewModel = nil
+        collectionViewModel = nil
+        userArchivedDataViewModel = nil
     }
 }
 
 
-// MARK: - All Collection
+// MARK: - Collections
 
 extension NoteCardDetailPresenter {
     
@@ -182,7 +164,89 @@ extension NoteCardDetailPresenter {
             model.borderedCollectionIDs = [collectionID]
         }
     }
+    
+    func setupUserArchivedDataViewModel(collections: [NoteCardCollection], onImported: @escaping () -> Void) {
+        let model = UserArchivedDataViewModel()
+        userArchivedDataViewModel = model
+        
+        model.title = "Archived Collections"
+        model.message = "These are previous version collections that can be imported to the current version."
+        
+        model.onDismiss = {
+            self.sheet.dismiss()
+        }
+        
+        model.onImport = { completion in
+            // TODO: import v1 data
+            onImported()
+        }
+        
+        let collectionModel = model.collectionViewModel
+        collectionModel.collections = collections
+        
+        collectionModel.contextMenus = [.delete]
+        
+        collectionModel.onContextMenuSelected = { menu, collection in
+            guard menu == .delete else { return }
+            let index = collectionModel.collections.firstIndex(of: collection)!
+            collectionModel.collections.remove(at: index)
+            collectionModel.updateSnapshot(animated: true)
+            
+            let modifier = ObjectModifier<NoteCardCollection>(.update(collection))
+            modifier.delete()
+            modifier.save()
+        }
+    }
 }
+
+
+// MARK: - View Note Card
+
+extension NoteCardDetailPresenter {
+    
+    func setupRelationshipModel(for noteCard: NoteCard) {
+        let model = NoteCardCollectionViewModel()
+        model.cellStyle = .short
+        model.contextMenus = [.copyNative]
+        
+        model.onContextMenuSelected = { menu, noteCard in
+            guard menu == .copyNative else { return }
+            UIPasteboard.general.string = noteCard.native
+        }
+        
+        model.onNoteCardSelected = { noteCard in
+            // setup cards to display
+            // clear current bordered cells
+            // show the cards to display
+            self.prepareNoteCardRelationships(for: model, with: noteCard)
+            model.reloadedVisibleCells()
+            model.updateSnapshot(animated: true)
+        }
+        
+        prepareNoteCardRelationships(for: model, with: noteCard)
+        relationshipViewModel = model
+    }
+    
+    func setupNoteTextViewModel(for noteCard: NoteCard) {
+        noteTextViewModel = .init()
+        noteTextViewModel.renderMarkdown = viewModel.renderMarkdown
+        noteTextViewModel.renderSoftBreak = viewModel.renderSoftBreak
+        noteTextViewModel.disableEditing = true
+        noteTextViewModel.title = "Note"
+        noteTextViewModel.text = noteCard.note
+        
+        noteTextViewModel.onCommit = {
+            self.sheet.dismiss()
+        }
+    }
+    
+    func setupTagModel(for noteCard: NoteCard) {
+        let model = TagCollectionViewModel()
+        model.tags = noteCard.tags.sorted(by: { $0.name < $1.name })
+        tagViewModel = model
+    }
+}
+
 
 // MARK: - Create Note Card
 
