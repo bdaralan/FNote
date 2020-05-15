@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import Combine
 
 
 class AppState: ObservableObject {
@@ -20,7 +21,7 @@ class AppState: ObservableObject {
     /// The context used to create, update, and delete objects.
     private(set) var cudContext: NSManagedObjectContext?
     
-    let currentNoteCardsWillChange = ObjectWillChangePublisher()
+    let archivedCollectionsWillChange = PassthroughSubject<[NoteCardCollection], Never>()
     
     var currentNoteCards: [NoteCard] {
         currentNoteCardsFetchController.fetchedObjects ?? []
@@ -124,9 +125,6 @@ extension AppState {
         currentRequest.predicate = newRequest.predicate
         currentRequest.sortDescriptors = newRequest.sortDescriptors
         
-        DispatchQueue.main.async {
-            self.currentNoteCardsWillChange.send()
-        }
         try? currentNoteCardsFetchController.performFetch()
     }
     
@@ -155,6 +153,7 @@ extension AppState {
         let request = NoteCardCollection.requestV1NoteCardCollections()
         let results = try? parentContext.fetch(request)
         archivedCollections = results ?? []
+        archivedCollectionsWillChange.send(archivedCollections)
     }
 }
 

@@ -70,6 +70,7 @@ struct HomeNoteCardView: View {
         .sheet(item: $sheet.current, content: presentationSheet)
         .alert(isPresented: $presentAlert, content: { self.alert! })
         .onAppear(perform: setupOnAppear)
+        .onReceive(appState.archivedCollectionsWillChange, perform: includeArchivedCollectionTrayItem)
     }
 }
 
@@ -165,26 +166,20 @@ extension HomeNoteCardView {
         trayViewModel.items = createTrayItems()
         
         trayViewModel.onTrayWillExpand = { willExpand in
-            if willExpand {
-                let hasArchives = self.appState.archivedCollections.isEmpty == false
-                self.includeArchivedCollectionTrayItem(hasArchives)
-            } else {
-                // when collapsed, remove subitems
-                // delay a bit so it doesn't show the main item label sliding down
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
-                    self.trayViewModel.subitems = []
-                }
+            print(self.appState.archivedCollections.count)
+            // when collapsed, remove subitems
+            // delay a bit so it doesn't show the main item label sliding down
+            guard willExpand == false else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+                self.trayViewModel.subitems = []
             }
         }
         
-        // add the item back if switch tab while the tray is expanded
-        if appState.archivedCollections.isEmpty == false {
-            includeArchivedCollectionTrayItem(true)
-        }
+        includeArchivedCollectionTrayItem(collections: appState.archivedCollections)
     }
     
-    func includeArchivedCollectionTrayItem(_ included: Bool) {
-        if included == false { // remove the archive collection item
+    func includeArchivedCollectionTrayItem(collections: [NoteCardCollection]) {
+        if collections.isEmpty { // remove the archive collection item
             trayViewModel.items.removeAll(where: { $0.id == archiveTrayItemID })
             return
         }
@@ -198,8 +193,6 @@ extension HomeNoteCardView {
         let item = BDButtonTrayItem(id: itemID, title: title, image: image) { item in
             self.cardPresenterModel.sheet = .archivedData(self.appState.archivedCollections, onImported: {
                 self.appState.fetchArchivedCollections()
-                let include = self.appState.archivedCollections.isEmpty == false
-                self.includeArchivedCollectionTrayItem(include)
             })
         }
     
