@@ -177,7 +177,6 @@ extension NoteCardDetailPresenter {
         }
         
         model.onImport = { completion in
-            // TODO: import v1 data
             let importContext = self.viewModel.appState.parentContext.newChildContext()
             ObjectGenerator.importV1Collections(collections, using: importContext)
 
@@ -187,6 +186,7 @@ extension NoteCardDetailPresenter {
             }
             
             importContext.quickSave()
+            importContext.parent!.quickSave()
             completion(true)
         }
         

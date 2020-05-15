@@ -34,6 +34,8 @@ class AppState: ObservableObject {
         tagFetchController.fetchedObjects ?? []
     }
     
+    private(set) var archivedCollections: [NoteCardCollection] = []
+    
     var iCloudActive: Bool {
         FileManager.default.ubiquityIdentityToken != nil
     }
@@ -149,10 +151,10 @@ extension AppState {
         return true
     }
     
-    func fetchV1Collections() -> [NoteCardCollection] {
+    func fetchArchivedCollections() {
         let request = NoteCardCollection.requestV1NoteCardCollections()
         let results = try? parentContext.fetch(request)
-        return results ?? []
+        archivedCollections = results ?? []
     }
 }
 

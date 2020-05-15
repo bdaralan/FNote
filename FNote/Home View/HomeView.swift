@@ -127,6 +127,7 @@ extension HomeView {
         appState.fetchCurrentNoteCards()
         appState.fetchCollections()
         appState.fetchTags()
+        appState.fetchArchivedCollections()
     }
     
     func refreshUIs() {

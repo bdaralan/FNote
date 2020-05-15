@@ -32,7 +32,8 @@ struct HomeNoteCardView: View {
     
     @State private var nativeSortTrayItem: BDButtonTrayItem!
     @State private var translationSortTrayItem: BDButtonTrayItem!
-    @State private var archiveCollectionTrayItem: BDButtonTrayItem?
+    
+    private let archiveTrayItemID = "archiveTrayItemID"
     
     
     var currentCollection: NoteCardCollection? {
@@ -164,41 +165,44 @@ extension HomeNoteCardView {
         trayViewModel.items = createTrayItems()
         
         trayViewModel.onTrayWillExpand = { willExpand in
-            self.addArchivedCollectionTrayItem(willExpand)
-            
-            // when collapsed, remove subitems
-            // delay a bit so it doesn't show the main item label sliding down
-            guard !willExpand else { return }
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
-                self.trayViewModel.subitems = []
+            if willExpand {
+                let hasArchives = self.appState.archivedCollections.isEmpty == false
+                self.includeArchivedCollectionTrayItem(hasArchives)
+            } else {
+                // when collapsed, remove subitems
+                // delay a bit so it doesn't show the main item label sliding down
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+                    self.trayViewModel.subitems = []
+                }
             }
         }
         
         // add the item back if switch tab while the tray is expanded
-        if trayViewModel.expanded {
-            archiveCollectionTrayItem = nil
-            addArchivedCollectionTrayItem(true)
+        if appState.archivedCollections.isEmpty == false {
+            includeArchivedCollectionTrayItem(true)
         }
     }
     
-    func addArchivedCollectionTrayItem(_ add: Bool) {
-        guard add, archiveCollectionTrayItem == nil else { // remove archive collection item
-            trayViewModel.items.removeAll(where: { $0 === archiveCollectionTrayItem })
-            archiveCollectionTrayItem = nil
+    func includeArchivedCollectionTrayItem(_ included: Bool) {
+        if included == false { // remove the archive collection item
+            trayViewModel.items.removeAll(where: { $0.id == archiveTrayItemID })
             return
         }
         
-        let archivedCollections = appState.fetchV1Collections()
-        guard archivedCollections.isEmpty == false else { return }
+        guard trayViewModel.items.contains(where: { $0.id == archiveTrayItemID }) == false else { return }
         
         // add archive collection item
-        let item = BDButtonTrayItem(title: "Archived Collections", image: .system(SFSymbol.archivedData)) { item in
-            self.cardPresenterModel.sheet = .archivedData(archivedCollections, onImported: {
-                self.addArchivedCollectionTrayItem(false)
+        let itemID = archiveTrayItemID
+        let title = "Archived Collections"
+        let image = BDButtonTrayItemImage.system(SFSymbol.archivedData)
+        let item = BDButtonTrayItem(id: itemID, title: title, image: image) { item in
+            self.cardPresenterModel.sheet = .archivedData(self.appState.archivedCollections, onImported: {
+                self.appState.fetchArchivedCollections()
+                let include = self.appState.archivedCollections.isEmpty == false
+                self.includeArchivedCollectionTrayItem(include)
             })
         }
-        
-        archiveCollectionTrayItem = item
+    
         item.animation = .tilt()
         trayViewModel.items.insert(item, at: 2) // after collections item
     }
