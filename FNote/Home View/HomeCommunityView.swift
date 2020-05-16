@@ -188,7 +188,7 @@ extension HomeCommunityView {
         
         if let user = user {
             let noUsername = user.username.isEmpty
-            userItem.title = noUsername ? user.username : "username required"
+            userItem.title = noUsername ? "username required" : user.username
             userItem.image = .system(noUsername ? SFSymbol.invalidUser : SFSymbol.validUser)
             userItem.activeColor = noUsername ? .red : .green
             userItem.animation = noUsername ? .pulse() : nil

@@ -26,8 +26,6 @@ struct NoteCardDetailPresenter: View {
     
     @State private var collectionViewModel: NoteCardCollectionCollectionViewModel?
     
-    @State private var userArchivedDataViewModel: UserArchivedDataViewModel?
-    
     
     var body: some View {
         Color.clear
@@ -48,7 +46,6 @@ extension NoteCardDetailPresenter {
         case edit(noteCard: NoteCard, completion: () -> Void)
         case create(noteCardIn: NoteCardCollection, completion: () -> Void)
         case allCollections(title: String, selectedID: String?, onSelected: ((NoteCardCollection) -> Void)?)
-        case archivedData([NoteCardCollection], onImported: () -> Void)
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
@@ -88,10 +85,6 @@ extension NoteCardDetailPresenter {
                     .navigationBarItems(trailing: dismissSheetNavItem())
             }
             .eraseToAnyView()
-            
-        case .archivedData:
-            return UserArchivedDataView(viewModel: userArchivedDataViewModel!)
-            .eraseToAnyView()
         }
     }
     
@@ -126,9 +119,6 @@ extension NoteCardDetailPresenter {
             
         case let .allCollections(_, selectedID, onSelected):
             setupAllCollectionViewModel(selectedID: selectedID, onSelected: onSelected)
-            
-        case let .archivedData(collections, onImported):
-            setupUserArchivedDataViewModel(collections: collections, onImported: onImported)
         }
         
         self.sheet.present(sheet)
@@ -139,7 +129,6 @@ extension NoteCardDetailPresenter {
         relationshipViewModel = nil
         tagViewModel = nil
         collectionViewModel = nil
-        userArchivedDataViewModel = nil
     }
 }
 
@@ -162,48 +151,6 @@ extension NoteCardDetailPresenter {
         
         if let collectionID = selectedID {
             model.borderedCollectionIDs = [collectionID]
-        }
-    }
-    
-    func setupUserArchivedDataViewModel(collections: [NoteCardCollection], onImported: @escaping () -> Void) {
-        let model = UserArchivedDataViewModel()
-        userArchivedDataViewModel = model
-        
-        model.title = "Archived Collections"
-        model.message = "These are previous version collections that can be imported to the current version."
-        
-        model.onDismiss = {
-            self.sheet.dismiss()
-        }
-        
-        model.onImport = { completion in
-            let importContext = self.viewModel.appState.parentContext.newChildContext()
-            ObjectGenerator.importV1Collections(collections, using: importContext)
-
-            for collection in collections {
-                let collection = collection.get(from: importContext)
-                importContext.delete(collection)
-            }
-            
-            importContext.quickSave()
-            importContext.parent!.quickSave()
-            completion(true)
-        }
-        
-        let collectionModel = model.collectionViewModel
-        collectionModel.collections = collections
-        
-        collectionModel.contextMenus = [.delete]
-        
-        collectionModel.onContextMenuSelected = { menu, collection in
-            guard menu == .delete else { return }
-            let index = collectionModel.collections.firstIndex(of: collection)!
-            collectionModel.collections.remove(at: index)
-            collectionModel.updateSnapshot(animated: true)
-            
-            let modifier = ObjectModifier<NoteCardCollection>(.update(collection))
-            modifier.delete()
-            modifier.save()
         }
     }
 }

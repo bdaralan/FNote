@@ -33,8 +33,6 @@ struct HomeNoteCardView: View {
     @State private var nativeSortTrayItem: BDButtonTrayItem!
     @State private var translationSortTrayItem: BDButtonTrayItem!
     
-    private let trayArchivesItemID = "trayArchivesItemID"
-    
     
     var currentCollection: NoteCardCollection? {
         appState.currentCollection
@@ -70,7 +68,6 @@ struct HomeNoteCardView: View {
         .sheet(item: $sheet.current, content: presentationSheet)
         .alert(isPresented: $presentAlert, content: { self.alert! })
         .onAppear(perform: setupOnAppear)
-        .onReceive(appState.archivedCollectionsWillChange.receive(on: DispatchQueue.main), perform: includeArchivedCollectionTrayItem)
     }
 }
 
@@ -166,7 +163,6 @@ extension HomeNoteCardView {
         trayViewModel.items = createTrayItems()
         
         trayViewModel.onTrayWillExpand = { willExpand in
-            print(self.appState.archivedCollections.count)
             // when collapsed, remove subitems
             // delay a bit so it doesn't show the main item label sliding down
             guard willExpand == false else { return }
@@ -174,30 +170,6 @@ extension HomeNoteCardView {
                 self.trayViewModel.subitems = []
             }
         }
-        
-        includeArchivedCollectionTrayItem(collections: appState.archivedCollections)
-    }
-    
-    func includeArchivedCollectionTrayItem(collections: [NoteCardCollection]) {
-        if collections.isEmpty { // remove the archive collection item
-            trayViewModel.items.removeAll(where: { $0.id == trayArchivesItemID })
-            return
-        }
-        
-        guard trayViewModel.items.contains(where: { $0.id == trayArchivesItemID }) == false else { return }
-        
-        // add archive collection item
-        let itemID = trayArchivesItemID
-        let title = "Archived Collections"
-        let image = BDButtonTrayItemImage.system(SFSymbol.archivedData)
-        let item = BDButtonTrayItem(id: itemID, title: title, image: image) { item in
-            self.cardPresenterModel.sheet = .archivedData(self.appState.archivedCollections, onImported: {
-                self.appState.fetchArchivedCollections()
-            })
-        }
-    
-        item.animation = .tilt()
-        trayViewModel.items.insert(item, at: 2) // after collections item
     }
     
     func createTrayMainItem() -> BDButtonTrayItem {

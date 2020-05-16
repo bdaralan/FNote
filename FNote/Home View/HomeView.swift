@@ -63,12 +63,18 @@ extension HomeView {
     
     func setupOnAppear() {
         showOnboardIfNeeded()
+        setCurrentCollectionIfNeeded()
     }
     
     func showOnboardIfNeeded() {
         guard AppCache.shouldShowOnboard else { return }
         onboardViewModel = .init()
         sheet.present(.onboard)
+    }
+    
+    func setCurrentCollectionIfNeeded() {
+        guard appState.currentCollection == nil, let collection = appState.collections.first else { return }
+        appState.setCurrentCollection(collection)
     }
     
     func dismissOnboard() {
@@ -114,6 +120,9 @@ extension HomeView {
         // update token
         history.updateLastToken(newHistoryToken)
         
+        // import old data if any
+        appState.importArchivedCollectionIfAny()
+        
         // update UI if remote changed
         DispatchQueue.global(qos: .default).async {
             self.refetchObjects()
@@ -127,7 +136,6 @@ extension HomeView {
         appState.fetchCurrentNoteCards()
         appState.fetchCollections()
         appState.fetchTags()
-        appState.fetchArchivedCollections()
     }
     
     func refreshUIs() {

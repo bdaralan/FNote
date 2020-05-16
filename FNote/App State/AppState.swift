@@ -21,8 +21,6 @@ class AppState: ObservableObject {
     /// The context used to create, update, and delete objects.
     private(set) var cudContext: NSManagedObjectContext?
     
-    let archivedCollectionsWillChange = PassthroughSubject<[NoteCardCollection], Never>()
-    
     var currentNoteCards: [NoteCard] {
         currentNoteCardsFetchController.fetchedObjects ?? []
     }
@@ -35,8 +33,6 @@ class AppState: ObservableObject {
         tagFetchController.fetchedObjects ?? []
     }
     
-    private(set) var archivedCollections: [NoteCardCollection] = []
-    
     var iCloudActive: Bool {
         FileManager.default.ubiquityIdentityToken != nil
     }
@@ -46,6 +42,8 @@ class AppState: ObservableObject {
     
     var noteCardSortOption: NoteCard.SearchField = .translation
     var noteCardSortOptionAscending = true
+    
+    private var isImportingData = false
     
     
     // MARK: Fetch Controller
@@ -149,11 +147,39 @@ extension AppState {
         return true
     }
     
-    func fetchArchivedCollections() {
+    func importArchivedCollectionIfAny() {
+        guard isImportingData == false else { return }
+        isImportingData = true
+        
+        let privateQueue = NSManagedObjectContextConcurrencyType.privateQueueConcurrencyType
+        let importContext = parentContext.newChildContext(type: privateQueue, mergesChangesFromParent: true)
+        
         let request = NoteCardCollection.requestV1NoteCardCollections()
-        let results = try? parentContext.fetch(request)
-        archivedCollections = results ?? []
-        archivedCollectionsWillChange.send(archivedCollections)
+        
+        guard let collections = try? importContext.fetch(request) else {
+            isImportingData = false
+            return
+        }
+        
+        guard collections.isEmpty == false else {
+            isImportingData = false
+            return
+        }
+        
+        ObjectGenerator.importV1Collections(collections, using: importContext)
+
+        for collection in collections {
+            let collection = collection.get(from: importContext)
+            importContext.delete(collection)
+        }
+        
+        importContext.perform { [weak self] in
+            importContext.quickSave()
+            self?.parentContext.perform { [weak self] in
+                self?.parentContext.quickSave()
+                self?.isImportingData = false
+            }
+        }
     }
 }
 
