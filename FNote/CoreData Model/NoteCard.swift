@@ -64,8 +64,8 @@ extension NoteCard {
     
     static func requestAllNoteCards() -> NSFetchRequest<NoteCard> {
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        let versionField = #keyPath(NoteCard.metadata.version)
-        request.predicate = .init(format: "\(versionField) > \(Metadata.previousVersion)")
+        let metadataField = #keyPath(NoteCard.metadata)
+        request.predicate = .init(format: "\(metadataField) != nil")
         request.sortDescriptors = []
         return request
     }
@@ -78,10 +78,10 @@ extension NoteCard {
         let collectionUUIDField = #keyPath(NoteCard.collection.uuid)
         let nativeField = #keyPath(NoteCard.native)
         let translationField = #keyPath(NoteCard.translation)
-        let versionField = #keyPath(NoteCard.metadata.version)
+        let metadataField = #keyPath(NoteCard.metadata)
         
         let request = NoteCard.fetchRequest() as NSFetchRequest<NoteCard>
-        let query = "\(collectionUUIDField) == %@ AND \(versionField) > \(Metadata.previousVersion)"
+        let query = "\(collectionUUIDField) == %@ AND \(metadataField) != nil"
         request.predicate = NSPredicate(format: query, collectionUUID)
         
         let sortByNative = NSSortDescriptor(key: nativeField, ascending: ascending)
@@ -116,8 +116,8 @@ extension NoteCard {
     
         // create predicate for the search scopes
         let fieldPredicates = searchFields.map { field -> NSPredicate in
-            let versionField = #keyPath(NoteCard.metadata.version)
-            let query = "\(field.rawValue) CONTAINS[c] %@ AND \(versionField) > \(Metadata.previousVersion)"
+            let metadataField = #keyPath(NoteCard.metadata)
+            let query = "\(field.rawValue) CONTAINS[c] %@ AND \(metadataField) != nil"
             let predicate = NSPredicate(format: query, searchText)
             return predicate
         }

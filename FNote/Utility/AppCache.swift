@@ -17,7 +17,7 @@ enum AppCache {
     
     typealias UbiquityIdentityToken = (NSCoding & NSCopying & NSObjectProtocol)
     
-    
+
     // MARK: Notification Name
     
     static let nPublicUserDidChange = Notification.Name(rawValue: "kAppCache.nEncodedPublicUserDidChange")
@@ -42,6 +42,7 @@ enum AppCache {
     
     
     // MARK: Ubiquitous
+    
     @BDPersist(in: .ubiquitousStore, key: "kAppCache.currentCollectionUUID", default: nil)
     static var currentCollectionUUID: String?
 }
@@ -56,12 +57,7 @@ extension AppCache {
     
     static func publicUser() -> PublicUser? {
         guard let data = publicUserData else { return nil }
-        do {
-            let user = try JSONDecoder().decode(PublicUser.self, from: data)
-            return user
-        } catch {
-            print("⚠️ failed to encode PublicUser with error: \(error) ⚠️")
-            return nil
-        }
+        let user = try? JSONDecoder().decode(PublicUser.self, from: data)
+        return user
     }
 }

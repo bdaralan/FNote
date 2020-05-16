@@ -192,8 +192,8 @@ extension AppState {
     
     func isDuplicateTagName(_ name: String) -> Bool {
         let nameField = #keyPath(Tag.name)
-        let versionField = #keyPath(Tag.metadata.version)
-        let predicate = NSPredicate(format: "\(nameField) =[c] %@ AND \(versionField) > 1", name)
+        let metadataField = #keyPath(Tag.metadata)
+        let predicate = NSPredicate(format: "\(nameField) =[c] %@ AND \(metadataField) != nil", name)
         let request = Tag.fetchRequest() as NSFetchRequest<Tag>
         request.predicate = predicate
         request.sortDescriptors = []
@@ -203,8 +203,8 @@ extension AppState {
     
     func isDuplicateCollectionName(_ name: String) -> Bool {
         let nameField = #keyPath(NoteCardCollection.name)
-        let versionField = #keyPath(NoteCardCollection.metadata.version)
-        let predicate = NSPredicate(format: "\(nameField) =[c] %@ AND \(versionField) > 1", name)
+        let metadataField = #keyPath(NoteCardCollection.metadata)
+        let predicate = NSPredicate(format: "\(nameField) =[c] %@ AND \(metadataField) != nil", name)
         let request = NoteCardCollection.fetchRequest() as NSFetchRequest<NoteCardCollection>
         request.predicate = predicate
         request.sortDescriptors = []

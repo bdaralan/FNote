@@ -37,8 +37,8 @@ extension Tag {
     static func requestAllTags() -> NSFetchRequest<Tag> {
         let request = Tag.fetchRequest() as NSFetchRequest<Tag>
         let nameField = #keyPath(Tag.name)
-        let versionField = #keyPath(Tag.metadata.version)
-        request.predicate = .init(format: "\(versionField) > \(Metadata.previousVersion)")
+        let metadataField = #keyPath(Tag.metadata)
+        request.predicate = .init(format: "\(metadataField) != nil")
         request.sortDescriptors = [.init(key: nameField, ascending: true)]
         return request
     }
