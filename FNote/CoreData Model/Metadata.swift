@@ -13,7 +13,6 @@ import CoreData
 
 class Metadata: NSManagedObject {
     
-    static let previousVersion = 1
     static let currentVersion = 2
 
     @NSManaged private(set) var creationDate: Date

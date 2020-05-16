@@ -57,7 +57,7 @@ extension Tag {
 extension ObjectModifier where Object == Tag {
     
     var name: String {
-        set { modifiedObject.name = newValue.trimmed() }
+        set { modifiedObject.name = newValue.trimmed().lowercased() }
         get { modifiedObject.name }
     }
 }

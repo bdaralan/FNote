@@ -82,31 +82,31 @@ extension RecordModifier {
     // MARK: Getter
     
     func string(for field: Field) -> String? {
-        record[field.stringValue] as? String
+        self[field] as? String
     }
     
     func integer(for field: Field) -> Int? {
-        record[field.stringValue] as? Int
+        self[field] as? Int
     }
     
     func integer64(for field: Field) -> Int64? {
-        record[field.stringValue] as? Int64
+        self[field] as? Int64
     }
     
     func bool(for field: Field, default value: Bool = false) -> Bool {
-        record[field.stringValue] as? Bool ?? value
+        self[field] as? Bool ?? value
     }
     
     func data(for field: Field) -> Data? {
-        record[field.stringValue] as? Data
+        self[field] as? Data
     }
     
     func stringList(for field: Field) -> [String] {
-        record[field.stringValue] as? [String] ?? []
+        self[field] as? [String] ?? []
     }
     
     func asset(for field: Field) -> CKAsset? {
-        record[field.stringValue] as? CKAsset
+        self[field] as? CKAsset
     }
 }
 

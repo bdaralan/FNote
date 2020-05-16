@@ -19,21 +19,20 @@ class NoteCard: NSManagedObject {
     @NSManaged fileprivate(set) var uuid: String
     @NSManaged fileprivate(set) var native: String
     @NSManaged fileprivate(set) var translation: String
-    @NSManaged fileprivate(set) var formalityValue: Int64
     @NSManaged fileprivate(set) var isFavorite: Bool
     @NSManaged fileprivate(set) var note: String
     
     @NSManaged fileprivate(set) var collection: NoteCardCollection?
-    
+    @NSManaged fileprivate(set) var linker: NoteCardLinker
     @NSManaged fileprivate(set) var tags: Set<Tag>
     
-    @NSManaged fileprivate(set) var linker: NoteCardLinker
-    @NSManaged fileprivate(set) var linkerTargets: Set<NoteCardLinker>
+    @NSManaged private var linkerTargets: Set<NoteCardLinker>
+    @NSManaged private var formalityValue: Int64
     
     @available(*, deprecated, message: "use link.targets instead.")
     @NSManaged private var relationships: Set<NoteCard>
     
-    var formality: Formality {
+    fileprivate(set) var formality: Formality {
         set { formalityValue = newValue.rawValue }
         get { Formality(rawValue: formalityValue) ?? .unspecified }
     }

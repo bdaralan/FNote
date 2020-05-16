@@ -28,6 +28,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         appState.noteCardSortOption = userPreference.noteCardSortOption
         appState.noteCardSortOptionAscending = userPreference.noteCardSortOptionAscending
         appState.fetchCurrentNoteCards()
+        appState.importArchivedCollectionIfAny()
+        appState.lowercaseAllTagsIfAny()
         
         // setup window & home view
         let window = UIWindow(windowScene: windowScene)

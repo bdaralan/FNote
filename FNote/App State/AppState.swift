@@ -44,6 +44,7 @@ class AppState: ObservableObject {
     var noteCardSortOptionAscending = true
     
     private var isImportingData = false
+    private var isLowercasingTags = false
     
     
     // MARK: Fetch Controller
@@ -147,16 +148,44 @@ extension AppState {
         return true
     }
     
+    func lowercaseAllTagsIfAny() {
+        guard isLowercasingTags == false else { return }
+        isLowercasingTags = true
+        
+        DispatchQueue.global(qos: .default).async {
+            let renameContext = self.parentContext.newChildContext(type: .privateQueueConcurrencyType)
+            let request = Tag.requestAllTags()
+            let results = try? renameContext.fetch(request)
+            let tags = results?.filter({ $0.name.filter(\.isUppercase).isEmpty == false }) ?? []
+            
+            guard tags.isEmpty == false else {
+                self.isLowercasingTags = false
+                return
+            }
+            
+            for tag in tags {
+                let tag = tag.get(from: renameContext)
+                var modifier = ObjectModifier<Tag>(.update(tag), useSeparateContext: false)
+                modifier.name = tag.name
+            }
+            
+            renameContext.perform {
+                renameContext.quickSave()
+                renameContext.parent?.perform {
+                    renameContext.parent?.quickSave()
+                    self.isLowercasingTags = false
+                }
+            }
+        }
+    }
+    
     func importArchivedCollectionIfAny() {
         guard isImportingData == false else { return }
         isImportingData = true
         
         DispatchQueue.global(qos: .default).async { [weak self] in
             guard let self = self else { return }
-            let importContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-            importContext.parent = self.parentContext
-            importContext.automaticallyMergesChangesFromParent = true
-            
+            let importContext = self.parentContext.newChildContext(type: .privateQueueConcurrencyType)
             let request = NoteCardCollection.requestV1NoteCardCollections()
             
             guard let collections = try? importContext.fetch(request) else {

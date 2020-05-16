@@ -123,6 +123,9 @@ extension HomeView {
         // import old data if any
         appState.importArchivedCollectionIfAny()
         
+        // lowercase tags if nay
+        appState.lowercaseAllTagsIfAny()
+        
         // update UI if remote changed
         DispatchQueue.global(qos: .default).async {
             self.refetchObjects()
