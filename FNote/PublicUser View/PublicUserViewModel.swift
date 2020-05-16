@@ -59,18 +59,13 @@ class PublicUserViewModel: ObservableObject {
     
     private func createInitialUser(username: String, userBio: String) {
         let recordManager = PublicRecordManager.shared
+        let data = PublicUser(userID: "", username: username, about: userBio)
         
-        recordManager.createInitialPublicUserRecord(username: username, userBio: userBio) { result in
+        recordManager.createInitialPublicUserRecord(withData: data) { result in
             switch result {
             case .success(let record):
                 let user = PublicUser(record: record)
-                AppCache.cacheUser(user)
-                if AppCache.hasSetupUserUpdateCKSubscription == false {
-                    recordManager.setupPublicUserUpdateSubscriptions(userID: user.userID) { result in
-                        guard case .success = result else { return }
-                        AppCache.hasSetupUserUpdateCKSubscription = true
-                    }
-                }
+                AppCache.cachePublicUser(user)
                 
                 DispatchQueue.main.async {
                     self.onUserUpdated?(user)

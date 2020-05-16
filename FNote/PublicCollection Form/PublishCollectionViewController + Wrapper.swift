@@ -214,7 +214,7 @@ extension PublishCollectionViewController {
     
     private func handleViewModelObjectWillChange() {
         let attributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: viewModel.author.isValid ? UIColor.label : .red
+            .foregroundColor: viewModel.author.username.isEmpty ? .red : UIColor.label
         ]
         let attributeString = NSAttributedString(string: viewModel.uiAuthorName, attributes: attributes)
         authorNameCell.detailTextLabel?.attributedText = attributeString

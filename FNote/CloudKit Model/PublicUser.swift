@@ -19,9 +19,6 @@ struct PublicUser: PublicRecord, Codable {
     
     let about: String
     
-    var isValid: Bool {
-        !userID.isEmpty && !username.trimmedUsername().isEmpty
-    }
     
     init(userID: String, username: String, about: String) {
         self.userID = userID
@@ -90,5 +87,12 @@ extension PublicUser {
         modifier[.lowercasedUsername] = username.lowercased()
         
         return record
+    }
+    
+    /// Get the public ID from CloudKit record ID.
+    /// - Parameter recordID: User CloudKit record ID.
+    /// - Returns: The public ID version.
+    static func publicID(from recordID: CKRecord.ID) -> String {
+        recordID.recordName.replacingOccurrences(of: "_", with: "")
     }
 }

@@ -23,11 +23,12 @@ enum SFSymbol {
     static let sortByNative = "n.circle"
     static let sortByTranslation = "t.circle"
     
+    static let user = "person.crop.circle"
     static let validUser = "person.crop.circle.badge.checkmark"
     static let invalidUser = "person.crop.circle.badge.exclam"
     
     static let search = "magnifyingglass"
-    static let refresh = "arrow.2.circlepath"
+    static let refresh = "arrow.2.circlepath.circle"
     static let matchByUsername = "person.circle"
     static let matchByAny = "doc.text.magnifyingglass"
     

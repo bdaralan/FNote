@@ -30,8 +30,6 @@ struct PublishCollectionForm: View {
     var body: some View {
         NavigationView {
             PublishCollectionViewControllerWrapper(viewModel: viewModel, onRowSelected: handleRowSelected)
-                .opacity(viewModel.author.isValid ? 1 : 0.4)
-                .disabled(viewModel.author.isValid == false)
                 .navigationBarTitle("Publish Collection", displayMode: .inline)
                 .navigationBarItems(leading: cancelNavButton, trailing: errorNavButton)
                 .edgesIgnoringSafeArea(.bottom)

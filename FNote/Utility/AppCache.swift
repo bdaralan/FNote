@@ -11,20 +11,22 @@ import BDUIKnit
 
 
 /// An object that provide access to application's values stored in `UserDefaults`.
-struct AppCache {
+enum AppCache {
     
     // MARK: Typealias
     
     typealias UbiquityIdentityToken = (NSCoding & NSCopying & NSObjectProtocol)
     
     
-    // MARK: Setup
+    // MARK: Notification Name
+    
+    static let nPublicUserDidChange = Notification.Name(rawValue: "kAppCache.nEncodedPublicUserDidChange")
+    
+    
+    // MARK: UserDefaults
     
     @BDPersist(in: .userDefaults, key: "kAppCache.ubiquityIdentityToken", default: nil)
     static var ubiquityIdentityToken: UbiquityIdentityToken?
-    
-    @BDPersist(in: .userDefaults, key: "kAppCache.currentCollectionUUID", default: nil)
-    static var currentCollectionUUID: String?
     
     @BDPersist(in: .userDefaults, key: "kAppCache.shouldShowOnboard", default: true)
     static var shouldShowOnboard: Bool
@@ -35,30 +37,31 @@ struct AppCache {
     @BDPersist(in: .userDefaults, key: "kAppCache.hasSetupUserUpdateCKSubscription", default: false)
     static var hasSetupUserUpdateCKSubscription: Bool
     
+    @BDPersist(in: .userDefaults, key: "kAppCache.publicUserData", default: nil, post: nPublicUserDidChange)
+    static var publicUserData: Data?
     
-    // MARK: Public User
     
-    static let nEncodedPublicUserDidChange = Notification.Name(rawValue: "kAppCache.nEncodedPublicUserDidChange")
-    
-    @BDPersist(in: .userDefaults, key: "kAppCache.encodedPublicUser", default: Data(), post: nEncodedPublicUserDidChange)
-    static private var encodedPublicUser: Data
+    // MARK: Ubiquitous
+    @BDPersist(in: .ubiquitousStore, key: "kAppCache.currentCollectionUUID", default: nil)
+    static var currentCollectionUUID: String?
 }
 
 
 extension AppCache {
     
-    static func cacheUser(_ user: PublicUser) {
+    static func cachePublicUser(_ user: PublicUser) {
         guard let data = try? JSONEncoder().encode(user) else { return }
-        encodedPublicUser = data
+        publicUserData = data
     }
     
-    static func cachedUser() -> PublicUser {
+    static func publicUser() -> PublicUser? {
+        guard let data = publicUserData else { return nil }
         do {
-            let user = try JSONDecoder().decode(PublicUser.self, from: encodedPublicUser)
+            let user = try JSONDecoder().decode(PublicUser.self, from: data)
             return user
         } catch {
             print("⚠️ failed to encode PublicUser with error: \(error) ⚠️")
-            return PublicUser(userID: "", username: "", about: "")
+            return nil
         }
     }
 }

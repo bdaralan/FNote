@@ -229,7 +229,7 @@ extension PublicRecordManager {
             }
             
             // remove the underscore _ from the ID and use that ID to fetch PublicUser record
-            let publicUserID = recordID.recordName.replacingOccurrences(of: "_", with: "")
+            let publicUserID = PublicUser.publicID(from: recordID)
             let publicRecordID = CKRecord.ID(recordName: publicUserID)
             let operation = CKFetchRecordsOperation(recordIDs: [publicRecordID])
             operation.qualityOfService = .userInitiated
@@ -299,10 +299,12 @@ extension PublicRecordManager {
         publicDatabase.add(queryOP)
     }
     
-    /// Attempt to create a public user record if first time user.
+    /// Create a public user record if it does not exist.
     ///
-    /// - Parameter completion: Return a newly created or an existing record, or an error if failed.
-    func createInitialPublicUserRecord(username: String = "", userBio: String = "", completion: @escaping (Result<CKRecord, CKError>) -> Void) {
+    /// - Parameters:
+    ///   - userData: The user data. The method uses current user's CloudKit record ID NOT the given ID.
+    ///   - completion: The completion block. Gives the existing or the newly created user record.
+    func createInitialPublicUserRecord(withData userData: PublicUser?, completion: @escaping (Result<CKRecord, CKError>) -> Void) {
         CKContainer.default().fetchUserRecordID { recordID, error in
             guard let recordID = recordID else {
                 completion(.failure(error as! CKError))
@@ -310,7 +312,7 @@ extension PublicRecordManager {
             }
             
             // remove the underscore _ from the ID and use that ID to fetch PublicUser record
-            let publicUserID = recordID.recordName.replacingOccurrences(of: "_", with: "")
+            let publicUserID = PublicUser.publicID(from: recordID)
             let publicRecordID = CKRecord.ID(recordName: publicUserID)
             
             self.publicDatabase.fetch(withRecordID: publicRecordID) { record, error in
@@ -319,21 +321,23 @@ extension PublicRecordManager {
                     return
                 }
                 
-                // create initial public user record here
-                if let ckError = error as? CKError, ckError.code == .unknownItem {
-                    let newUser = PublicUser(userID: publicUserID, username: username, about: userBio)
-                    let newRecord = newUser.createCKRecord()
-                    self.publicDatabase.save(newRecord) { record, error in
-                        if let record = record {
-                            completion(.success(record))
-                        } else {
-                            completion(.failure(error as! CKError))
-                        }
-                    }
+                let error = error as! CKError
+                
+                guard error.code == .unknownItem else {
+                    completion(.failure(error))
                     return
                 }
                 
-                completion(.failure(error as! CKError))
+                // create initial public user record here
+                let newUser = userData ?? PublicUser(userID: publicUserID, username: "", about: "")
+                let newUserRecord = newUser.createCKRecord()
+                self.publicDatabase.save(newUserRecord) { record, error in
+                    if let record = record {
+                        completion(.success(record))
+                    } else {
+                        completion(.failure(error as! CKError))
+                    }
+                }
             }
         }
     }
@@ -407,29 +411,37 @@ extension PublicRecordManager {
 //        publicDatabase.add(newCollectionSubOP)
     }
     
-    func setupPublicUserUpdateSubscriptions(userID: String, completion: ((Result<CKSubscription, CKError>) -> Void)?) {
-        let subscriptionID = "CKSUBID.PublicUser.CU"
-        let options: CKQuerySubscription.Options = [.firesOnRecordCreation, .firesOnRecordUpdate]
-        let userIDField = PublicUser.RecordFields.userID.stringValue
-        let predicate = NSPredicate(format: "\(userIDField) == %@", userID)
-        
-        let subscription = CKQuerySubscription(
-            recordType: PublicUser.recordType,
-            predicate: predicate,
-            subscriptionID: subscriptionID,
-            options: options
-        )
-        
-        let notification = CKQuerySubscription.NotificationInfo()
-        notification.shouldSendContentAvailable = true
-        
-        subscription.notificationInfo = notification
-        
-        publicDatabase.save(subscription) { subscription, error in
-            if let subscription = subscription {
-                completion?(.success(subscription))
-            } else {
+    func setupPublicUserRecordChangeSubscriptions(completion: ((Result<CKSubscription, CKError>) -> Void)?) {
+        CKContainer.default().fetchUserRecordID { recordID, error in
+            guard let recordID = recordID else {
                 completion?(.failure(error as! CKError))
+                return
+            }
+            
+            let publicUserID = PublicUser.publicID(from: recordID)
+            let subscriptionID = "CKSUBID.PublicUser.CU"
+            let options: CKQuerySubscription.Options = [.firesOnRecordCreation, .firesOnRecordUpdate]
+            let userIDField = PublicUser.RecordFields.userID.stringValue
+            let predicate = NSPredicate(format: "\(userIDField) == %@", publicUserID)
+            
+            let subscription = CKQuerySubscription(
+                recordType: PublicUser.recordType,
+                predicate: predicate,
+                subscriptionID: subscriptionID,
+                options: options
+            )
+            
+            let notification = CKQuerySubscription.NotificationInfo()
+            notification.shouldSendContentAvailable = true
+            
+            subscription.notificationInfo = notification
+            
+            self.publicDatabase.save(subscription) { subscription, error in
+                if let subscription = subscription {
+                    completion?(.success(subscription))
+                } else {
+                    completion?(.failure(error as! CKError))
+                }
             }
         }
     }

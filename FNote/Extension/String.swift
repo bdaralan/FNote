@@ -35,6 +35,10 @@ extension String {
     func isEmptyOrWhiteSpaces() -> Bool {
         self.trimmed().isEmpty
     }
+    
+    func ifEmpty(_ replacement: String) -> String {
+        isEmpty ? replacement : self
+    }
 }
 
 

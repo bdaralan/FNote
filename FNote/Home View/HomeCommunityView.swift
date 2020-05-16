@@ -27,6 +27,8 @@ struct HomeCommunityView: View {
     
     @State private var collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     @State private var isFetchingData = false
+    
+    @State private var user: PublicUser?
         
     var horizontalSizeClasses: [UserInterfaceSizeClass] {
         [horizontalSizeClass!]
@@ -36,9 +38,10 @@ struct HomeCommunityView: View {
         [sizeCategory]
     }
     
-    let userTrayItemID = "publicUserTrayItemID"
+    let userTrayID = "userTrayID"
+    let publishTrayID = "publishTrayID"
     
-    let cachedUserDidUpdate = NotificationCenter.default.publisher(for: AppCache.nEncodedPublicUserDidChange)
+    let cachedUserDidUpdate = NotificationCenter.default.publisher(for: AppCache.nPublicUserDidChange)
     
     
     var body: some View {
@@ -63,9 +66,12 @@ struct HomeCommunityView: View {
 extension HomeCommunityView {
     
     func setupOnAppear() {
+        user = AppCache.publicUser()
         setupViewModel()
         setupTrayViewModel()
+        updateUserTrayItem(user: user)
         fetchData(initiated: nil, completion: nil)
+        fetchUser(present: false)
     }
     
     func setupViewModel() {
@@ -116,11 +122,8 @@ extension HomeCommunityView {
     }
     
     func handlePublicUserDidUpdate(notification: Notification) {
-        guard let userTrayItem = trayViewModel.items.first(where: { $0.id == userTrayItemID }) else { return }
-        let user = AppCache.cachedUser()
-        updateUserTrayItem(item: userTrayItem, user: user)
-        publicUserViewModel?.update(with: user)
-        publishFormModel?.author = user
+        user = AppCache.publicUser()
+        updateUserTrayItem(user: user)
     }
 }
 
@@ -147,15 +150,21 @@ extension HomeCommunityView {
     }
     
     func createTrayItems() -> [BDButtonTrayItem] {
-        let user = BDButtonTrayItem(id: userTrayItemID, title: "", image: .system("")) { item in
-            self.presentPublicUserProfile(sender: item)
+        let userItem = BDButtonTrayItem(id: userTrayID, title: "", image: .system(SFSymbol.user)) { item in
+            if let user = self.user {
+                self.presentUserProfile(user: user)
+            } else {
+                self.fetchUser(present: true)
+            }
         }
         
-        let publish = BDButtonTrayItem(title: "Publish Collection", image: .system(SFSymbol.publishCollection)) { item in
-            self.beginPublishCollection()
+        let publishImage = BDButtonTrayItemImage.system(SFSymbol.publishCollection)
+        let publishItem = BDButtonTrayItem(id: publishTrayID, title: "Publish Collection", image: publishImage) { item in
+            guard let user = self.user else { return }
+            self.beginPublishCollection(author: user)
         }
         
-        let refresh = BDButtonTrayItem(title: "Refresh", image: .system(SFSymbol.refresh)) { item in
+        let refreshItem = BDButtonTrayItem(title: "Refresh", image: .system(SFSymbol.refresh)) { item in
             self.fetchData(initiated: {
                 self.setTrayItemRefreshState(item: item, refreshing: true)
             }, completion: { error in
@@ -163,9 +172,7 @@ extension HomeCommunityView {
             })
         }
         
-        updateUserTrayItem(item: user, user: AppCache.cachedUser())
-        
-        return [user, publish, refresh]
+        return [userItem, publishItem, refreshItem]
     }
     
     func setTrayItemRefreshState(item: BDButtonTrayItem, refreshing: Bool) {
@@ -175,31 +182,60 @@ extension HomeCommunityView {
         item.inactiveColor = refreshing ? .appAccent : nil
     }
     
-    func updateUserTrayItem(item: BDButtonTrayItem, user: PublicUser) {
-        if user.isValid {
-            item.title = user.username
-            item.image = .system(SFSymbol.validUser)
-            item.activeColor = .green
-            item.disabled = false
-            item.animation = nil
+    func updateUserTrayItem(user: PublicUser?) {
+        let userItem = trayViewModel.items.first(where: { $0.id == userTrayID })!
+        let publishItem = trayViewModel.items.first(where: { $0.id == publishTrayID })!
+        
+        if let user = user {
+            let noUsername = user.username.isEmpty
+            userItem.title = noUsername ? user.username : "username required"
+            userItem.image = .system(noUsername ? SFSymbol.invalidUser : SFSymbol.validUser)
+            userItem.activeColor = noUsername ? .red : .green
+            userItem.animation = noUsername ? .pulse() : nil
+            publishItem.disabled = noUsername
+            trayViewModel.expandIndicatorColor = noUsername ? .red : .secondary
         
         } else {
-            item.image = .system(SFSymbol.invalidUser)
-            item.activeColor = .red
-            item.animation = .pulse()
+            userItem.title = "invalid user"
+            userItem.image = .system(SFSymbol.invalidUser)
+            userItem.activeColor = .red
+            userItem.animation = .pulse()
+            publishItem.disabled = true
+            trayViewModel.expandIndicatorColor = .red
+        }
+    }
+    
+    func fetchUser(present: Bool) {
+        PublicRecordManager.shared.fetchPublicUserRecord { result in
+            switch result {
             
-            if user.userID.isEmpty {
-                item.title = "failed to load profile"
-            } else if user.username.isEmpty {
-                item.title = "username required"
-            } else {
-                item.disabled = true
+            case let .success(record):
+                let user = PublicUser(record: record)
+                AppCache.cachePublicUser(user)
+                guard present else { return }
+                DispatchQueue.main.async {
+                    self.presentUserProfile(user: user)
+                }
+            
+            case let .failure(error):
+                print(error)
+                guard error.code == .partialFailure else { return }
+                AppCache.publicUserData = nil
+                
+                guard present else { return }
+                PublicRecordManager.shared.createInitialPublicUserRecord(withData: nil) { result in
+                    guard case let .success(record) = result else { return }
+                    let user = PublicUser(record: record)
+                    AppCache.cachePublicUser(user)
+                    DispatchQueue.main.async {
+                        self.presentUserProfile(user: user)
+                    }
+                }
             }
         }
     }
     
-    func presentPublicUserProfile(sender: BDButtonTrayItem) {
-        let user = AppCache.cachedUser()
+    func presentUserProfile(user: PublicUser) {
         let model = PublicUserViewModel(user: user)
         
         model.onDone = {
@@ -210,8 +246,8 @@ extension HomeCommunityView {
         model.onUserUpdated = { user in
             model.disableUserInteraction = false
             model.update(with: user)
-            self.updateUserTrayItem(item: sender, user: user)
-            AppCache.cacheUser(user)
+            self.user = user
+            AppCache.cachePublicUser(user)
         }
         
         model.onUserUpdateFailed = { error in
@@ -276,9 +312,10 @@ extension HomeCommunityView {
 
 extension HomeCommunityView {
     
-    func beginPublishCollection() {
-        let user = AppCache.cachedUser()
-        let formModel = PublishCollectionFormModel(user: user)
+    func beginPublishCollection(author: PublicUser) {
+        guard author.username.isEmpty == false else { return }
+        
+        let formModel = PublishCollectionFormModel(user: author)
         formModel.commitTitle = "PUBLISH"
         
         formModel.selectableCollections = appState.collections

@@ -65,7 +65,7 @@ class PublishCollectionFormModel: ObservableObject {
 extension PublishCollectionFormModel {
     
     var hasValidInputs: Bool {
-        return author.isValid
+        return author.username.trimmedUsername().isEmpty == false
             && publishCollection != nil
             && !publishCollectionName.isEmptyOrWhiteSpaces()
             && !publishTags.isEmpty
@@ -78,11 +78,11 @@ extension PublishCollectionFormModel {
     }
     
     var uiPublishCollectionNamePlaceholder: String {
-        publishCollectionName.isEmpty ? "publish name" : publishCollectionName
+        publishCollectionName.ifEmpty("publish name")
     }
     
     var uiAuthorName: String {
-        author.isValid ? author.username : "required"
+        author.username.ifEmpty("required")
     }
     
     var uiCollectionName: String {
@@ -94,7 +94,7 @@ extension PublishCollectionFormModel {
     }
     
     var uiCollectionPublishName: String {
-        publishCollectionName.isEmpty ? "required" : publishCollectionName
+        publishCollectionName.ifEmpty("required")
     }
     
     var uiCollectionPublishNameColor: UIColor {
@@ -110,7 +110,7 @@ extension PublishCollectionFormModel {
     }
     
     var uiCollectionDescription: String {
-        publishDescription.isEmpty ? "required" : publishDescription
+        publishDescription.ifEmpty("required")
     }
     
     var uiCollectionDescriptionColor: UIColor {

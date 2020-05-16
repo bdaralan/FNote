@@ -33,7 +33,7 @@ struct HomeNoteCardView: View {
     @State private var nativeSortTrayItem: BDButtonTrayItem!
     @State private var translationSortTrayItem: BDButtonTrayItem!
     
-    private let archiveTrayItemID = "archiveTrayItemID"
+    private let trayArchivesItemID = "trayArchivesItemID"
     
     
     var currentCollection: NoteCardCollection? {
@@ -70,7 +70,7 @@ struct HomeNoteCardView: View {
         .sheet(item: $sheet.current, content: presentationSheet)
         .alert(isPresented: $presentAlert, content: { self.alert! })
         .onAppear(perform: setupOnAppear)
-        .onReceive(appState.archivedCollectionsWillChange, perform: includeArchivedCollectionTrayItem)
+        .onReceive(appState.archivedCollectionsWillChange.receive(on: DispatchQueue.main), perform: includeArchivedCollectionTrayItem)
     }
 }
 
@@ -180,14 +180,14 @@ extension HomeNoteCardView {
     
     func includeArchivedCollectionTrayItem(collections: [NoteCardCollection]) {
         if collections.isEmpty { // remove the archive collection item
-            trayViewModel.items.removeAll(where: { $0.id == archiveTrayItemID })
+            trayViewModel.items.removeAll(where: { $0.id == trayArchivesItemID })
             return
         }
         
-        guard trayViewModel.items.contains(where: { $0.id == archiveTrayItemID }) == false else { return }
+        guard trayViewModel.items.contains(where: { $0.id == trayArchivesItemID }) == false else { return }
         
         // add archive collection item
-        let itemID = archiveTrayItemID
+        let itemID = trayArchivesItemID
         let title = "Archived Collections"
         let image = BDButtonTrayItemImage.system(SFSymbol.archivedData)
         let item = BDButtonTrayItem(id: itemID, title: title, image: image) { item in

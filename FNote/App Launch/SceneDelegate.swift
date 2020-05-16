@@ -20,38 +20,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
         
-        let recordManager = PublicRecordManager.shared
-        
-        // create initial user if needed and cache the info for offline access.
-        recordManager.createInitialPublicUserRecord { result in
-            switch result {
-            case .success(let record):
-                let user = PublicUser(record: record)
-                AppCache.cacheUser(user)
-                if AppCache.hasSetupUserUpdateCKSubscription == false {
-                    recordManager.setupPublicUserUpdateSubscriptions(userID: user.userID) { result in
-                        guard case .success = result else { return }
-                        AppCache.hasSetupUserUpdateCKSubscription = true
-                    }
-                }
-            case .failure(let error):
-                print("failed to create initial user: \(error)")
-            }
-        }
+        setupPublicUserRecord()
+        setupOnboardState()
         
         // setup app state
         let userPreference = UserPreference.shared
         appState.noteCardSortOption = userPreference.noteCardSortOption
         appState.noteCardSortOptionAscending = userPreference.noteCardSortOptionAscending
         appState.fetchCurrentNoteCards()
-        
-        // logic to show onboard
-        let lastKnownVersion = AppCache.lastKnownVersion
-        let currentVersion = Bundle.main.appVersion
-        if lastKnownVersion == nil || lastKnownVersion != currentVersion {
-            AppCache.lastKnownVersion = currentVersion
-            AppCache.shouldShowOnboard = true
-        }
         
         // setup window & home view
         let window = UIWindow(windowScene: windowScene)
@@ -74,38 +50,43 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         self.window = window
     }
-    
-    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        
-    }
-
-    func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
-    }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-    }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
-    }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
         NSUbiquitousKeyValueStore.default.synchronize()
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
         NSUbiquitousKeyValueStore.default.synchronize()
+    }
+}
+
+
+extension SceneDelegate {
+    
+    func setupPublicUserRecord() {
+        let recordManager = PublicRecordManager.shared
+        
+        // create initial user if needed and cache the info for offline access.
+        recordManager.createInitialPublicUserRecord(withData: nil) { result in
+            guard case let .success(record) = result else { return }
+            let user = PublicUser(record: record)
+            AppCache.cachePublicUser(user)
+        }
+        
+        if AppCache.hasSetupUserUpdateCKSubscription == false {
+            recordManager.setupPublicUserRecordChangeSubscriptions { result in
+                guard case .success = result else { return }
+                AppCache.hasSetupUserUpdateCKSubscription = true
+            }
+        }
+    }
+    
+    func setupOnboardState() {
+        let lastKnownVersion = AppCache.lastKnownVersion
+        let currentVersion = Bundle.main.appVersion
+        if lastKnownVersion == nil || lastKnownVersion != currentVersion {
+            AppCache.lastKnownVersion = currentVersion
+            AppCache.shouldShowOnboard = true
+        }
     }
 }
