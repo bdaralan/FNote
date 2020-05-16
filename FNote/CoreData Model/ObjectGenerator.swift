@@ -149,7 +149,7 @@ extension ObjectGenerator {
             // create new collection
             let newCollection = collectionMap[collection]!
             var collectionModifier = ObjectModifier<NoteCardCollection>(.update(newCollection), useSeparateContext: false)
-            collectionModifier.name = "[imported] \(collection.name)"
+            collectionModifier.name = "[V1] \(collection.name)"
             
             // create new note cards for collection
             for noteCard in collection.noteCards {

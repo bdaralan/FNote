@@ -31,19 +31,18 @@ struct PublicCollectionDetailHeaderView: View {
                 Text("\(collection.primaryLanguage.localized) - \(collection.secondaryLanguage.localized)")
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text(String(quantity: collection.cardsCount, singular: "CARD", plural: "CARDS"))
+                    .foregroundColor(.secondary)
             }
             .font(.footnote)
             
             // Author & Date
             HStack {
-                HStack(spacing: 0) {
-                    Text("by ").foregroundColor(.secondary)
-                    Text(collection.authorName)
-                }
+                Text("by \(collection.authorName)")
                 Spacer()
                 Text(creationDate)
             }
             .font(.footnote)
+            .foregroundColor(.secondary)
             
             HStack {
                 // Collection Tags

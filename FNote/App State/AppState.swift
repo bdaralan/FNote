@@ -151,33 +151,37 @@ extension AppState {
         guard isImportingData == false else { return }
         isImportingData = true
         
-        let privateQueue = NSManagedObjectContextConcurrencyType.privateQueueConcurrencyType
-        let importContext = parentContext.newChildContext(type: privateQueue, mergesChangesFromParent: true)
-        
-        let request = NoteCardCollection.requestV1NoteCardCollections()
-        
-        guard let collections = try? importContext.fetch(request) else {
-            isImportingData = false
-            return
-        }
-        
-        guard collections.isEmpty == false else {
-            isImportingData = false
-            return
-        }
-        
-        ObjectGenerator.importV1Collections(collections, using: importContext)
-
-        for collection in collections {
-            let collection = collection.get(from: importContext)
-            importContext.delete(collection)
-        }
-        
-        importContext.perform { [weak self] in
-            importContext.quickSave()
-            self?.parentContext.perform { [weak self] in
-                self?.parentContext.quickSave()
-                self?.isImportingData = false
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            guard let self = self else { return }
+            let importContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+            importContext.parent = self.parentContext
+            importContext.automaticallyMergesChangesFromParent = true
+            
+            let request = NoteCardCollection.requestV1NoteCardCollections()
+            
+            guard let collections = try? importContext.fetch(request) else {
+                self.isImportingData = false
+                return
+            }
+            
+            guard collections.isEmpty == false else {
+                self.isImportingData = false
+                return
+            }
+            
+            ObjectGenerator.importV1Collections(collections, using: importContext)
+            
+            for collection in collections {
+                let collection = collection.get(from: importContext)
+                importContext.delete(collection)
+            }
+            
+            importContext.perform {
+                importContext.quickSave()
+                self.parentContext.perform {
+                    self.parentContext.quickSave()
+                    self.isImportingData = false
+                }
             }
         }
     }
