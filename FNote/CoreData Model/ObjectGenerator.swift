@@ -96,11 +96,7 @@ extension ObjectGenerator {
 
 extension ObjectGenerator {
     
-    func importPublicCollection(
-        _ collection: PublicCollection,
-        using context: NSManagedObjectContext,
-        completion: @escaping (NoteCardCollection?) -> Void
-    ) {
+    func importPublicCollection(_ collection: PublicCollection, completion: @escaping (NoteCardCollection?) -> Void) {
         let recordManager = PublicRecordManager.shared
         recordManager.queryCards(withCollectionID: collection.collectionID) { result in
             guard case let .success(records) = result else {
@@ -108,19 +104,21 @@ extension ObjectGenerator {
                 return
             }
             
-            // generating objects
-            let publicCards = records.map({ PublicCard(record: $0) })
-            let noteCards = self.generateNoteCards(from: publicCards)
-            
-            var modifier = ObjectModifier<NoteCardCollection>(.create(in: context), useSeparateContext: false)
-            modifier.name = "\(collection.name) by \(collection.authorName)"
-            
-            for noteCard in noteCards {
-                modifier.addNoteCard(noteCard)
-            }
-            
-            completion(modifier.modifiedObject)
+            let cards = records.map({ PublicCard(record: $0) })
+            self.importPublicCollection(collection, with: cards, completion: completion)
         }
+    }
+    
+    func importPublicCollection(_ collection: PublicCollection, with cards: [PublicCard], completion: (NoteCardCollection) -> Void) {
+        var modifier = ObjectModifier<NoteCardCollection>(.create(in: context), useSeparateContext: false)
+        modifier.name = "\(collection.name) by \(collection.authorName)"
+        
+        let noteCards = self.generateNoteCards(from: cards)
+        for noteCard in noteCards {
+            modifier.addNoteCard(noteCard)
+        }
+        
+        completion(modifier.modifiedObject)
     }
 }
 

@@ -157,7 +157,7 @@ extension PublicCollectionDetailView {
         
         let importContext = context.newChildContext()
         let generator = ObjectGenerator(context: importContext)
-        generator.importPublicCollection(collection, using: importContext) { collection in
+        generator.importPublicCollection(collection) { collection in
             DispatchQueue.main.async {
                 if collection == nil {
                     self.setAddToCollectionTrayItem()
