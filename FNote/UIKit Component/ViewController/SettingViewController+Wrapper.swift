@@ -298,7 +298,7 @@ struct SettingViewControllerWrapper: UIViewControllerRepresentable {
 
 
 struct SettingViewController_Previews: PreviewProvider {
-    static let preference = UserPreference.shared
+    static let preference = UserPreference.sample
     static var previews: some View {
         SettingViewControllerWrapper(preference: preference)
     }

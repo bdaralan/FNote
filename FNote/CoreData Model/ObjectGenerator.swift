@@ -116,7 +116,7 @@ extension ObjectGenerator {
 extension ObjectGenerator {
     
     /// - Parameter collection: The version 1 collection.
-    static func importV1Collections(_ collections: [NoteCardCollection], using context: NSManagedObjectContext) {
+    static func importV1Collections(_ collections: [NoteCardCollection], using context: NSManagedObjectContext, prefix: String) {
         var collectionMap = [NoteCardCollection: NoteCardCollection]() // [old: new]
         var cardMap = [NoteCard: NoteCard]() // [old: new]
         var tagMap = [Tag: Tag]() // [old: new]
@@ -149,7 +149,7 @@ extension ObjectGenerator {
             // create new collection
             let newCollection = collectionMap[collection]!
             var collectionModifier = ObjectModifier<NoteCardCollection>(.update(newCollection), useSeparateContext: false)
-            collectionModifier.name = "[V1] \(collection.name)"
+            collectionModifier.name = "\(prefix)\(collection.name)"
             
             // create new note cards for collection
             for noteCard in collection.noteCards {

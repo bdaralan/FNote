@@ -12,55 +12,69 @@ import BDUIKnit
 
 class UserPreference: ObservableObject {
     
-    static let shared = UserPreference()
+    // MARK: Key
+    
+    enum Keys: BDPersistKey {
+        var prefix: String { "kUserPreference." }
+        case useMarkdown
+        case useMarkdownSoftBreak
+        case showGeneralKeyboardUsage
+        case colorScheme
+        case noteCardSortOptionAscending
+        case noteCardSortOption
+    }
     
     
-    // MARK: iCloud
+    // MARK: Ubiquitous
         
-    @BDPersist(in: .ubiquitousStore, key: key("useMarkdown"), default: true)
+    @BDPersist(in: .ubiquitousStore, key: Keys.useMarkdown, default: true)
     var useMarkdown: Bool
     
-    @BDPersist(in: .ubiquitousStore, key: key("useMarkdownSoftBreak"), default: true)
+    @BDPersist(in: .ubiquitousStore, key: Keys.useMarkdownSoftBreak, default: true)
     var useMarkdownSoftBreak: Bool
     
-    @BDPersist(in: .ubiquitousStore, key: key("generalKeyboardUsage"), default: true)
+    @BDPersist(in: .ubiquitousStore, key: Keys.showGeneralKeyboardUsage, default: true)
     var showGeneralKeyboardUsage: Bool
     
     
-    // MARK: User Defaults
+    // MARK: UserDefaults
     
-    let colorSchemeKey = key("colorScheme")
     var colorScheme: ColorScheme {
         set {
-            UserDefaults.standard.set(newValue.rawValue, forKey: colorSchemeKey)
+            let store = BDSystemPersistentStore.userDefaults.store
+            store.setValue(newValue.rawValue, forKey: Keys.colorScheme.prefixedKey)
         }
         get {
-            let defaults = UserDefaults.standard
+            let store = BDSystemPersistentStore.userDefaults.store
             let defaultValue = ColorScheme.system
-            let rawValue = defaults.object(forKey: colorSchemeKey) as? Int ?? defaultValue.rawValue
+            let rawValue = store.getValue(forKey: Keys.colorScheme) as? Int ?? defaultValue.rawValue
             return ColorScheme(rawValue: rawValue) ?? defaultValue
         }
     }
     
-    @BDPersist(in: .userDefaults, key: key("noteCardSortOptionAscending"), default: true)
+    @BDPersist(in: .userDefaults, key: Keys.noteCardSortOptionAscending, default: true)
     var noteCardSortOptionAscending: Bool
     
-    let noteCardSortOptionKey = key("noteCardSortOption")
     var noteCardSortOption: NoteCard.SearchField {
         set {
-            UserDefaults.standard.set(newValue.rawValue, forKey: noteCardSortOptionKey)
+            let store = BDSystemPersistentStore.userDefaults.store
+            store.setValue(newValue.rawValue, forKey: Keys.noteCardSortOption)
         }
         get {
-            let defaults = UserDefaults.standard
+            let store = BDSystemPersistentStore.userDefaults.store
             let defaultValue = NoteCard.SearchField.translation.rawValue
-            let rawValue = defaults.object(forKey: noteCardSortOptionKey) as? String ?? defaultValue
+            let rawValue = store.getValue(forKey: Keys.noteCardSortOption) as? String ?? defaultValue
             return NoteCard.SearchField(rawValue: rawValue)!
         }
     }
     
     
-    private init() {}
+    // MARK: Constructor
     
+    fileprivate init() {}
+    
+    
+    // MARK: Method
     
     func applyColorScheme() {
         for window in UIApplication.shared.windows {
@@ -69,6 +83,8 @@ class UserPreference: ObservableObject {
     }
 }
 
+
+// MARK: - Color Scheme
 
 extension UserPreference {
     
@@ -88,6 +104,21 @@ extension UserPreference {
 }
 
 
-private func key(_ appending: String) -> String {
-    "kUserPreference.\(appending)"
+// MARK: - App State
+
+extension AppState {
+    
+    func getPreference() -> UserPreference {
+        UserPreference()
+    }
+}
+
+
+// MARK: - Sample
+
+extension UserPreference {
+    
+    static var sample: UserPreference {
+        UserPreference()
+    }
 }

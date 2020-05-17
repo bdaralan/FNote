@@ -58,7 +58,7 @@ extension HomeSettingView {
 
 
 struct HomeSettingView_Previews: PreviewProvider {
-    static let preference = UserPreference.shared
+    static let preference = UserPreference.sample
     static var previews: some View {
         Group {
             HomeSettingView(preference: preference).colorScheme(.light)

@@ -24,9 +24,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         setupOnboardState()
         
         // setup app state
-        let userPreference = UserPreference.shared
-        appState.noteCardSortOption = userPreference.noteCardSortOption
-        appState.noteCardSortOptionAscending = userPreference.noteCardSortOptionAscending
         appState.fetchCurrentNoteCards()
         appState.importArchivedCollectionIfAny()
         appState.lowercaseAllTagsIfAny()
@@ -36,7 +33,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let homeView = HomeView()
             .environmentObject(appState)
-            .environmentObject(userPreference)
             .environment(\.managedObjectContext, appState.parentContext)
         
         let rootViewCV = UIHostingController(rootView: homeView)
@@ -45,7 +41,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // setup appearance
         window.tintColor = .appAccent
-        userPreference.applyColorScheme()
+        appState.preference.applyColorScheme()
         UISwitch.appearance().onTintColor = .appAccent
         
         // make key and visible

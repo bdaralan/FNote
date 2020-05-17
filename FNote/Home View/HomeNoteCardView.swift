@@ -14,7 +14,6 @@ import BDUIKnit
 struct HomeNoteCardView: View {
         
     @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var userPreference: UserPreference
     
     var viewModel: NoteCardCollectionViewModel
     
@@ -84,8 +83,8 @@ extension HomeNoteCardView {
     
     func setupCardPresenterModel() {
         cardPresenterModel = .init(appState: appState)
-        cardPresenterModel.renderMarkdown = userPreference.useMarkdown
-        cardPresenterModel.renderSoftBreak = userPreference.useMarkdownSoftBreak
+        cardPresenterModel.renderMarkdown = appState.preference.useMarkdown
+        cardPresenterModel.renderSoftBreak = appState.preference.useMarkdownSoftBreak
     }
     
     func setupViewModel() {
@@ -211,8 +210,8 @@ extension HomeNoteCardView {
     
     func createNoteCardSortOptionTrayItems() -> [BDButtonTrayItem] {
         let getAscendingFor = { (option: NoteCard.SearchField) -> Bool in
-            let currentOption = self.appState.noteCardSortOption
-            let currentAscending = self.appState.noteCardSortOptionAscending
+            let currentOption = self.appState.preference.noteCardSortOption
+            let currentAscending = self.appState.preference.noteCardSortOptionAscending
             return currentOption == option ? !currentAscending : currentAscending
         }
         
@@ -226,7 +225,10 @@ extension HomeNoteCardView {
         
         nativeSortTrayItem = nativeItem
         translationSortTrayItem = translationItem
-        setNoteCardSortOption(appState.noteCardSortOption, ascending: appState.noteCardSortOptionAscending)
+        
+        let option = appState.preference.noteCardSortOption
+        let ascending = appState.preference.noteCardSortOptionAscending
+        setNoteCardSortOption(option, ascending: ascending)
         
         return [nativeItem, translationItem]
     }
@@ -253,12 +255,13 @@ extension HomeNoteCardView {
         }
         
         // reload if changed
-        guard appState.noteCardSortOption != option || appState.noteCardSortOptionAscending != ascending else { return }
-        userPreference.noteCardSortOption = option
-        userPreference.noteCardSortOptionAscending = ascending
+        let preference = appState.preference
+        guard preference.noteCardSortOption != option || preference.noteCardSortOptionAscending != ascending else { return }
+        preference.noteCardSortOption = option
+        preference.noteCardSortOptionAscending = ascending
         
-        appState.noteCardSortOption = option
-        appState.noteCardSortOptionAscending = ascending
+        preference.noteCardSortOption = option
+        preference.noteCardSortOptionAscending = ascending
         appState.fetchCurrentNoteCards()
         
         viewModel.noteCards = appState.currentNoteCards
@@ -395,11 +398,9 @@ extension HomeNoteCardView {
 
 struct HomeNoteCardView_Previews: PreviewProvider {
     static let appState = AppState(parentContext: .sample)
-    static let preference = UserPreference.shared
     static let viewModel = NoteCardCollectionViewModel()
     static var previews: some View {
         HomeNoteCardView(viewModel: viewModel)
-            .environmentObject(preference)
             .environmentObject(appState)
     }
 }

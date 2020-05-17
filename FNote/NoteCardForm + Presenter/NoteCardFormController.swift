@@ -367,7 +367,7 @@ struct NoteCardFormControllerWrapper: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> NoteCardFormController {
         let controller = NoteCardFormController(viewModel: viewModel)
         controller.tableView.backgroundColor = .clear
-        controller.showGeneralKeyboardUsage = UserPreference.shared.showGeneralKeyboardUsage
+        controller.showGeneralKeyboardUsage = viewModel.showGeneralKeyboardUsage
         return controller
     }
     

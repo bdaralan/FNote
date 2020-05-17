@@ -13,7 +13,6 @@ import BDUIKnit
 struct HomeView: View {
     
     @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var userPreference: UserPreference
     
     @State private var currentTab = Tab.card
     
@@ -44,7 +43,7 @@ struct HomeView: View {
                 .tag(Tab.community)
             
             // MARK: Setting Tab
-            HomeSettingView(preference: .shared)
+            HomeSettingView(preference: appState.preference)
                 .tabItem(Tab.setting.tabItem)
                 .tag(Tab.setting)
             
@@ -209,11 +208,9 @@ extension HomeView {
 
 struct HomeView_Previews: PreviewProvider {
     static let appState = AppState(parentContext: .sample)
-    static let userPreference = UserPreference.shared
     static var previews: some View {
         HomeView()
             .environmentObject(appState)
-            .environmentObject(userPreference)
             .environment(\.managedObjectContext, appState.parentContext)
     }
 }

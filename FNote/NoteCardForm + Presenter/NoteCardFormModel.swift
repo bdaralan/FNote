@@ -71,6 +71,8 @@ class NoteCardFormModel: ObservableObject {
     var commitTitle = "Commit"
     var navigationTitle = "Note Card"
     
+    var showGeneralKeyboardUsage = true
+    
     let formalities = NoteCard.Formality.allCases.map({ $0.title })
     
     var selectedFormality: NoteCard.Formality {

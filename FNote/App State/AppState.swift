@@ -18,8 +18,7 @@ class AppState: ObservableObject {
     /// The parent context used to read objects.
     private(set) var parentContext: NSManagedObjectContext
     
-    /// The context used to create, update, and delete objects.
-    private(set) var cudContext: NSManagedObjectContext?
+    private(set) lazy var preference = getPreference()
     
     var currentNoteCards: [NoteCard] {
         currentNoteCardsFetchController.fetchedObjects ?? []
@@ -37,11 +36,7 @@ class AppState: ObservableObject {
         FileManager.default.ubiquityIdentityToken != nil
     }
     
-    @Published private(set) var currentCollectionID: String? = AppCache.currentCollectionUUID
-    private(set) lazy var currentCollection = collections.first(where: { $0.uuid == currentCollectionID })
-    
-    var noteCardSortOption: NoteCard.SearchField = .translation
-    var noteCardSortOptionAscending = true
+    private(set) lazy var currentCollection = collections.first(where: { $0.uuid == AppCache.currentCollectionUUID })
     
     private var isImportingData = false
     private var isLowercasingTags = false
@@ -51,7 +46,7 @@ class AppState: ObservableObject {
     
     private lazy var currentNoteCardsFetchController: NSFetchedResultsController<NoteCard> = {
         let controller = NSFetchedResultsController<NoteCard>(
-            fetchRequest: NoteCard.requestNoteCards(collectionUUID: currentCollectionID ?? ""),
+            fetchRequest: NoteCard.requestNoteCards(collectionUUID: currentCollection?.uuid ?? ""),
             managedObjectContext: parentContext,
             sectionNameKeyPath: nil,
             cacheName: nil
@@ -102,28 +97,24 @@ extension AppState {
     /// - Parameter collection: The collection to assign or `nil` for none.
     func setCurrentCollection(_ collection: NoteCardCollection?) {
         AppCache.currentCollectionUUID = collection?.uuid
-        currentCollectionID = collection?.uuid
         currentCollection = collection
         fetchCurrentNoteCards()
     }
     
     func fetchCurrentNoteCards() {
-        let newRequest: NSFetchRequest<NoteCard>
+        let request: NSFetchRequest<NoteCard>
         
         if let collection = currentCollection {
-            newRequest = NoteCard.requestNoteCards(
-                collectionUUID: collection.uuid,
-                sortBy: noteCardSortOption,
-                ascending: noteCardSortOptionAscending
-            )
+            let uuid = collection.uuid
+            let sortBy = preference.noteCardSortOption
+            let ascending = preference.noteCardSortOptionAscending
+            request = NoteCard.requestNoteCards(collectionUUID: uuid, sortBy: sortBy, ascending: ascending)
         } else {
-            newRequest = NoteCard.requestNone()
+            request = NoteCard.requestNone()
         }
         
-        let currentRequest = currentNoteCardsFetchController.fetchRequest
-        currentRequest.predicate = newRequest.predicate
-        currentRequest.sortDescriptors = newRequest.sortDescriptors
-        
+        currentNoteCardsFetchController.fetchRequest.predicate = request.predicate
+        currentNoteCardsFetchController.fetchRequest.sortDescriptors = request.sortDescriptors
         try? currentNoteCardsFetchController.performFetch()
     }
     
@@ -137,7 +128,7 @@ extension AppState {
 }
 
 
-// MARK: - Delete Object
+// MARK: - Modifier & Import
 
 extension AppState {
     
@@ -198,7 +189,7 @@ extension AppState {
                 return
             }
             
-            ObjectGenerator.importV1Collections(collections, using: importContext)
+            ObjectGenerator.importV1Collections(collections, using: importContext, prefix: "[V1] ")
             
             for collection in collections {
                 let collection = collection.get(from: importContext)
@@ -206,10 +197,16 @@ extension AppState {
             }
             
             importContext.perform {
-                importContext.quickSave()
-                self.parentContext.perform {
-                    self.parentContext.quickSave()
+                do {
+                    try importContext.save()
+                    self.parentContext.perform {
+                        self.parentContext.quickSave()
+                        self.isImportingData = false
+                    }
+                } catch {
                     self.isImportingData = false
+                    print("⚠️ import data failed with error: \(error). ⚠️")
+                    print("⚠️ ignore the import and wait for future fix ⚠️")
                 }
             }
         }

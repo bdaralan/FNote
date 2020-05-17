@@ -215,6 +215,7 @@ extension NoteCardDetailPresenter {
         formModel.commitTitle = "Create"
         formModel.navigationTitle = "New Card"
         formModel.presentWithKeyboard = true
+        formModel.showGeneralKeyboardUsage = viewModel.appState.preference.showGeneralKeyboardUsage
         
         formModel.selectableCollections = viewModel.appState.collections
         formModel.selectableRelationships = viewModel.appState.currentNoteCards
@@ -266,6 +267,8 @@ extension NoteCardDetailPresenter {
         formModel.navigationTitle = "Card Detail"
         formModel.nativePlaceholder = noteCard.native
         formModel.translationPlaceholder = noteCard.translation
+        formModel.presentWithKeyboard = false
+        formModel.showGeneralKeyboardUsage = viewModel.appState.preference.showGeneralKeyboardUsage
         
         formModel.selectedCollection = collection
         formModel.selectableCollections = viewModel.appState.collections
