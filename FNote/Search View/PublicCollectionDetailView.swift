@@ -155,34 +155,19 @@ extension PublicCollectionDetailView {
         isPreparingToSave = true
         setLoadingTrayItem(title: "Preparing Cards...")
         
-        let recordManager = PublicRecordManager.shared
-        recordManager.queryCards(withCollectionID: collection.collectionID) { result in
-            guard case let .success(records) = result else {
-                DispatchQueue.main.async {
+        let importContext = context.newChildContext()
+        let generator = ObjectGenerator(context: importContext)
+        generator.importPublicCollection(collection, using: importContext) { collection in
+            DispatchQueue.main.async {
+                if collection == nil {
                     self.setAddToCollectionTrayItem()
                     self.isPreparingToSave = false
                     self.alert = self.prepareCardsFailedAlert
                     self.presentAlert = true
+                } else {
+                    self.isPreparingToSave = false
+                    self.confirmSaveCollection(context: importContext)
                 }
-                return
-            }
-            
-            DispatchQueue.main.async {
-                let saveContext = self.context.newChildContext()
-                let generator = ObjectGenerator(context: saveContext)
-                
-                let publicCards = records.map({ PublicCard(record: $0) })
-                let noteCards = generator.generateNoteCards(from: publicCards)
-                
-                var modifier = ObjectModifier<NoteCardCollection>(.create(in: saveContext), useSeparateContext: false)
-                modifier.name = "\(self.collection.name) by \(self.collection.authorName)"
-                
-                for noteCard in noteCards {
-                    modifier.addNoteCard(noteCard)
-                }
-                
-                self.isPreparingToSave = false
-                self.confirmSaveCollection(context: saveContext)
             }
         }
     }

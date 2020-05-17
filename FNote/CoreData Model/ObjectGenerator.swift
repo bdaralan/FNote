@@ -21,6 +21,156 @@ class ObjectGenerator {
 }
 
 
+// MARK: - Object V1 to V2
+
+extension ObjectGenerator {
+    
+    /// - Parameter collection: The version 1 collection.
+    static func importV1Collections(_ collections: [NoteCardCollection], using context: NSManagedObjectContext, prefix: String) {
+        var collectionMap = [NoteCardCollection: NoteCardCollection]() // [old: new]
+        var cardMap = [NoteCard: NoteCard]() // [old: new]
+        var tagMap = [Tag: Tag]() // [old: new]
+        
+        let allV2Tags = try! context.fetch(Tag.requestAllTags())
+        
+        // CREATE Objects without assigning values
+        for collection in collections {
+            let newCollection = NoteCardCollection(context: context)
+            collectionMap[collection] = newCollection
+            
+            for noteCard in collection.noteCards {
+                let newNoteCard = NoteCard(context: context)
+                cardMap[noteCard] = newNoteCard
+                
+                for tag in noteCard.tags {
+                    guard tagMap[tag] == nil else { continue }
+                    if let v2Tag = allV2Tags.first(where: { $0.name.lowercased() == tag.name.lowercased() }) {
+                        tagMap[tag] = v2Tag
+                    } else {
+                        let newTag = Tag(context: context)
+                        tagMap[tag] = newTag
+                    }
+                }
+            }
+        }
+        
+        // Assign Objects' values and relationship
+        for collection in collections {
+            // create new collection
+            let newCollection = collectionMap[collection]!
+            var collectionModifier = ObjectModifier<NoteCardCollection>(.update(newCollection), useSeparateContext: false)
+            collectionModifier.name = "\(prefix)\(collection.name)"
+            
+            // create new note cards for collection
+            for noteCard in collection.noteCards {
+                let newNoteCard = cardMap[noteCard]!
+                collectionModifier.addNoteCard(newNoteCard)
+                
+                var cardModifier = ObjectModifier<NoteCard>(.update(newNoteCard), useSeparateContext: false)
+                cardModifier.native = noteCard.native
+                cardModifier.translation = noteCard.translation
+                cardModifier.favorited = noteCard.isFavorite
+                cardModifier.note = noteCard.note
+                cardModifier.formality = noteCard.formality
+                
+                let oldRelationships = noteCard.value(forKey: "relationships") as? Set<NoteCard> ?? []
+                for relationship in oldRelationships {
+                    let relationship = cardMap[relationship]!
+                    cardModifier.addRelationship(relationship)
+                }
+                
+                // create new tags for note card
+                for tag in noteCard.tags {
+                    let newTag = tagMap[tag]!
+                    var tagModifier = ObjectModifier<Tag>(.update(newTag), useSeparateContext: false)
+                    tagModifier.name = tag.name
+                    cardModifier.addTag(newTag)
+                }
+            }
+        }
+    }
+}
+
+
+// MARK: - Import Public Record
+
+extension ObjectGenerator {
+    
+    func importPublicCollection(
+        _ collection: PublicCollection,
+        using context: NSManagedObjectContext,
+        completion: @escaping (NoteCardCollection?) -> Void
+    ) {
+        let recordManager = PublicRecordManager.shared
+        recordManager.queryCards(withCollectionID: collection.collectionID) { result in
+            guard case let .success(records) = result else {
+                completion(nil)
+                return
+            }
+            
+            // generating objects
+            let publicCards = records.map({ PublicCard(record: $0) })
+            let noteCards = self.generateNoteCards(from: publicCards)
+            
+            var modifier = ObjectModifier<NoteCardCollection>(.create(in: context), useSeparateContext: false)
+            modifier.name = "\(collection.name) by \(collection.authorName)"
+            
+            for noteCard in noteCards {
+                modifier.addNoteCard(noteCard)
+            }
+            
+            completion(modifier.modifiedObject)
+        }
+    }
+}
+
+
+// MARK: - Object to Record
+
+extension ObjectGenerator {
+    
+    static func generatePublicCards(from noteCards: Set<NoteCard>, collectionID: String, includeNote: Bool) -> [PublicCard] {
+        // create ID map for public card and use it to set relationships
+        // map value is [localID: publicID]
+        var cardIDMap = [String: String]()
+        for noteCard in noteCards {
+            let localID = noteCard.uuid
+            let publicID = UUID().uuidString
+            cardIDMap[localID] = publicID
+        }
+        
+        // unwrapping the map is safe here
+        let publicCards = noteCards.map { noteCard -> PublicCard in
+            let localID = noteCard.uuid
+            let publicID = cardIDMap[localID]!
+            let publicTags = noteCard.tags.map(\.name).sorted()
+            let publicNote = includeNote ? noteCard.note : ""
+            
+            let publicRelationshipIDs = noteCard.linker.targets.compactMap { relationship -> String? in
+                guard noteCard.collection === relationship.collection else { return nil }
+                return cardIDMap[relationship.uuid]!
+            }
+            
+            let publicCard = PublicCard(
+                collectionID: collectionID,
+                cardID: publicID,
+                native: noteCard.native,
+                translation: noteCard.translation,
+                favorited: noteCard.isFavorite,
+                formality: noteCard.formality,
+                note: publicNote,
+                tags: publicTags,
+                relationships: publicRelationshipIDs
+            )
+            
+            return publicCard
+        }
+        
+        return publicCards
+    }
+}
+
+
 // MARK: - Record to Object
 
 extension ObjectGenerator {
@@ -32,7 +182,7 @@ extension ObjectGenerator {
     /// - Parameter cards: The fully loaded public cards.
     ///
     /// - Returns: The generated note card with tags and relationships.
-    func generateNoteCards(from cards: [PublicCard]) -> [NoteCard] {
+    private func generateNoteCards(from cards: [PublicCard]) -> [NoteCard] {
         let tagMap = generateTagMap(from: cards)
         let cardMap = generateNoteCardMap(from: cards)
         
@@ -107,122 +257,5 @@ extension ObjectGenerator {
         }
         
         return result
-    }
-}
-
-
-// MARK: - Object V1 to V2
-
-extension ObjectGenerator {
-    
-    /// - Parameter collection: The version 1 collection.
-    static func importV1Collections(_ collections: [NoteCardCollection], using context: NSManagedObjectContext, prefix: String) {
-        var collectionMap = [NoteCardCollection: NoteCardCollection]() // [old: new]
-        var cardMap = [NoteCard: NoteCard]() // [old: new]
-        var tagMap = [Tag: Tag]() // [old: new]
-        
-        let allV2Tags = try! context.fetch(Tag.requestAllTags())
-        
-        // CREATE Objects without assigning values
-        for collection in collections {
-            let newCollection = NoteCardCollection(context: context)
-            collectionMap[collection] = newCollection
-            
-            for noteCard in collection.noteCards {
-                let newNoteCard = NoteCard(context: context)
-                cardMap[noteCard] = newNoteCard
-                
-                for tag in noteCard.tags {
-                    guard tagMap[tag] == nil else { continue }
-                    if let v2Tag = allV2Tags.first(where: { $0.name.lowercased() == tag.name.lowercased() }) {
-                        tagMap[tag] = v2Tag
-                    } else {
-                        let newTag = Tag(context: context)
-                        tagMap[tag] = newTag
-                    }
-                }
-            }
-        }
-        
-        // Assign Objects' values and relationship
-        for collection in collections {
-            // create new collection
-            let newCollection = collectionMap[collection]!
-            var collectionModifier = ObjectModifier<NoteCardCollection>(.update(newCollection), useSeparateContext: false)
-            collectionModifier.name = "\(prefix)\(collection.name)"
-            
-            // create new note cards for collection
-            for noteCard in collection.noteCards {
-                let newNoteCard = cardMap[noteCard]!
-                collectionModifier.addNoteCard(newNoteCard)
-                
-                var cardModifier = ObjectModifier<NoteCard>(.update(newNoteCard), useSeparateContext: false)
-                cardModifier.native = noteCard.native
-                cardModifier.translation = noteCard.translation
-                cardModifier.favorited = noteCard.isFavorite
-                cardModifier.note = noteCard.note
-                cardModifier.formality = noteCard.formality
-                
-                let oldRelationships = noteCard.value(forKey: "relationships") as? Set<NoteCard> ?? []
-                for relationship in oldRelationships {
-                    let relationship = cardMap[relationship]!
-                    cardModifier.addRelationship(relationship)
-                }
-                
-                // create new tags for note card
-                for tag in noteCard.tags {
-                    let newTag = tagMap[tag]!
-                    var tagModifier = ObjectModifier<Tag>(.update(newTag), useSeparateContext: false)
-                    tagModifier.name = tag.name
-                    cardModifier.addTag(newTag)
-                }
-            }
-        }
-    }
-}
-
-
-// MARK: - Object to Record
-
-extension ObjectGenerator {
-    
-    static func generatePublicCards(from noteCards: Set<NoteCard>, collectionID: String, includeNote: Bool) -> [PublicCard] {
-        // create ID map for public card and use it to set relationships
-        // map value is [localID: publicID]
-        var cardIDMap = [String: String]()
-        for noteCard in noteCards {
-            let localID = noteCard.uuid
-            let publicID = UUID().uuidString
-            cardIDMap[localID] = publicID
-        }
-        
-        // unwrapping the map is safe here
-        let publicCards = noteCards.map { noteCard -> PublicCard in
-            let localID = noteCard.uuid
-            let publicID = cardIDMap[localID]!
-            let publicTags = noteCard.tags.map(\.name).sorted()
-            let publicNote = includeNote ? noteCard.note : ""
-            
-            let publicRelationshipIDs = noteCard.linker.targets.compactMap { relationship -> String? in
-                guard noteCard.collection === relationship.collection else { return nil }
-                return cardIDMap[relationship.uuid]!
-            }
-            
-            let publicCard = PublicCard(
-                collectionID: collectionID,
-                cardID: publicID,
-                native: noteCard.native,
-                translation: noteCard.translation,
-                favorited: noteCard.isFavorite,
-                formality: noteCard.formality,
-                note: publicNote,
-                tags: publicTags,
-                relationships: publicRelationshipIDs
-            )
-            
-            return publicCard
-        }
-        
-        return publicCards
     }
 }
