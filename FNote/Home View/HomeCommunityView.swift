@@ -360,7 +360,7 @@ extension HomeCommunityView {
         let noteCards = collection.noteCards
         let includeNote = formModel.includesNote
         
-        let publicCards = ObjectGenerator.generatePublicCards(
+        let publicCards = ObjectMaker.makePublicCards(
             from: noteCards,
             collectionID: collectionID,
             includeNote: includeNote

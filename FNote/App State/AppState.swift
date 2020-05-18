@@ -189,7 +189,7 @@ extension AppState {
                 return
             }
             
-            ObjectGenerator.importV1Collections(collections, using: importContext, prefix: "[V1] ")
+            ObjectMaker.importV1Collections(collections, using: importContext, prefix: "[V1] ")
             
             for collection in collections {
                 let collection = collection.get(from: importContext)

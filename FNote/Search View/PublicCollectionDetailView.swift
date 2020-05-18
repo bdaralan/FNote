@@ -156,8 +156,8 @@ extension PublicCollectionDetailView {
         setLoadingTrayItem(title: "Preparing Cards...")
         
         let importContext = context.newChildContext()
-        let generator = ObjectGenerator(context: importContext)
-        generator.importPublicCollection(collection) { collection in
+        let objectMaker = ObjectMaker(context: importContext)
+        objectMaker.importPublicCollection(collection) { collection in
             DispatchQueue.main.async {
                 if collection == nil {
                     self.setAddToCollectionTrayItem()

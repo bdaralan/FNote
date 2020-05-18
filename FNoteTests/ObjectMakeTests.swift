@@ -13,72 +13,11 @@ import XCTest
 class ObjectMakeTests: XCTestCase {
 
     func testImportPublicCollection() {
-        continueAfterFailure = false
-        
-        let publicCollection = PublicCollection(
-            collectionID: UUID().uuidString,
-            authorID: UUID().uuidString,
-            authorName: "mock user",
-            name: "mock collection",
-            description: "mock description",
-            primaryLanguageCode: "kor",
-            secondaryLanguageCode: "en",
-            tags: ["some", "mock", "tag"],
-            cardsCount: 4
-        )
-        
-        let publicCard01 = PublicCard(
-            collectionID: publicCollection.collectionID,
-            cardID: "cardID01",
-            native: "N01",
-            translation: "T01",
-            favorited: true,
-            formality: .unspecified,
-            note: "note01",
-            tags: ["t01", "t02", "t03", "t04"],
-            relationships: ["cardID04", "cardID02"]
-        )
-        
-        let publicCard02 = PublicCard(
-            collectionID: publicCollection.collectionID,
-            cardID: "cardID02",
-            native: "N02",
-            translation: "T02",
-            favorited: false,
-            formality: .informal,
-            note: "note02",
-            tags: ["t02", "t03", "t04"],
-            relationships: ["cardID01", "cardID03"]
-        )
-        
-        let publicCard03 = PublicCard(
-            collectionID: publicCollection.collectionID,
-            cardID: "cardID03",
-            native: "N03",
-            translation: "T03",
-            favorited: true,
-            formality: .neutral,
-            note: "note03",
-            tags: ["t03", "t04"],
-            relationships: ["cardID02", "cardID04"]
-        )
-        
-        let publicCard04 = PublicCard(
-            collectionID: publicCollection.collectionID,
-            cardID: "cardID04",
-            native: "N04",
-            translation: "T04",
-            favorited: false,
-            formality: .formal,
-            note: "note04",
-            tags: ["t04"],
-            relationships: ["cardID03", "cardID01"]
-        )
-        
-        let publicCards = [publicCard01, publicCard02, publicCard03, publicCard04]
-        
         let importContext = CoreDataStack.current.mainContext.newChildContext()
         let objectMaker = ObjectMaker(context: importContext)
+        
+        let publicCollection = makeMockPublicCollection()
+        let publicCards = makeMockPublicCards(collection: publicCollection)
         
         let collection = objectMaker.makeNoteCardCollection(name: publicCollection.name, with: publicCards)
         
@@ -177,5 +116,74 @@ class ObjectMakeTests: XCTestCase {
         XCTAssertTrue(card04.linker.targets.contains(card01))
         XCTAssertFalse(card04.linker.targets.contains(card02))
         XCTAssertFalse(card04.linker.targets.contains(card04))
+    }
+    
+    
+    // MARK: Helper
+    
+    func makeMockPublicCollection() -> PublicCollection {
+        PublicCollection(
+            collectionID: UUID().uuidString,
+            authorID: UUID().uuidString,
+            authorName: "mock user",
+            name: "mock collection",
+            description: "mock description",
+            primaryLanguageCode: "kor",
+            secondaryLanguageCode: "en",
+            tags: ["some", "mock", "tag"],
+            cardsCount: 4
+        )
+    }
+    
+    func makeMockPublicCards(collection: PublicCollection) -> [PublicCard] {
+        let card01 = PublicCard(
+            collectionID: collection.collectionID,
+            cardID: "cardID01",
+            native: "N01",
+            translation: "T01",
+            favorited: true,
+            formality: .unspecified,
+            note: "note01",
+            tags: ["t01", "t02", "t03", "t04"],
+            relationships: ["cardID04", "cardID02"]
+        )
+        
+        let card02 = PublicCard(
+            collectionID: collection.collectionID,
+            cardID: "cardID02",
+            native: "N02",
+            translation: "T02",
+            favorited: false,
+            formality: .informal,
+            note: "note02",
+            tags: ["t02", "t03", "t04"],
+            relationships: ["cardID01", "cardID03"]
+        )
+        
+        let card03 = PublicCard(
+            collectionID: collection.collectionID,
+            cardID: "cardID03",
+            native: "N03",
+            translation: "T03",
+            favorited: true,
+            formality: .neutral,
+            note: "note03",
+            tags: ["t03", "t04"],
+            relationships: ["cardID02", "cardID04"]
+        )
+        
+        let card04 = PublicCard(
+            collectionID: collection.collectionID,
+            cardID: "cardID04",
+            native: "N04",
+            translation: "T04",
+            favorited: false,
+            formality: .formal,
+            note: "note04",
+            tags: ["t04"],
+            relationships: ["cardID03", "cardID01"]
+        )
+        
+        return [card01, card02, card03, card04]
     }
 }

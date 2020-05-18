@@ -105,20 +105,10 @@ extension ObjectMaker {
             }
             
             let cards = records.map({ PublicCard(record: $0) })
-            self.importPublicCollection(collection, with: cards, completion: completion)
+            let collectionName = "\(collection.name) by \(collection.authorName)"
+            let collection = self.makeNoteCardCollection(name: collectionName, with: cards)
+            completion(collection)
         }
-    }
-    
-    func importPublicCollection(_ collection: PublicCollection, with cards: [PublicCard], completion: (NoteCardCollection) -> Void) {
-        var modifier = ObjectModifier<NoteCardCollection>(.create(in: context), useSeparateContext: false)
-        modifier.name = "\(collection.name) by \(collection.authorName)"
-        
-        let noteCards = self.makeNoteCards(from: cards)
-        for noteCard in noteCards {
-            modifier.addNoteCard(noteCard)
-        }
-        
-        completion(modifier.modifiedObject)
     }
 }
 
@@ -127,6 +117,12 @@ extension ObjectMaker {
 
 extension ObjectMaker {
     
+    /// Make public cards from the given note cards.
+    /// - Parameters:
+    ///   - noteCards: The note cards used to make public cards.
+    ///   - collectionID: The public collection ID for the public cards.
+    ///   - includeNote: The value indicates whether to include card's note.
+    /// - Returns: An arrow of public cards.
     static func makePublicCards(from noteCards: Set<NoteCard>, collectionID: String, includeNote: Bool) -> [PublicCard] {
         // create ID map for public card and use it to set relationships
         // map value is [localID: publicID]
@@ -173,6 +169,23 @@ extension ObjectMaker {
 
 extension ObjectMaker {
     
+    /// Make `NoteCardCollection` with the given public cards.
+    /// - Parameters:
+    ///   - name: The name of the collection.
+    ///   - cards: The public cards to make into note cards.
+    /// - Returns: The newly made collection.
+    func makeNoteCardCollection(name: String, with cards: [PublicCard]) -> NoteCardCollection {
+        var modifier = ObjectModifier<NoteCardCollection>(.create(in: context), useSeparateContext: false)
+        modifier.name = name
+        
+        let noteCards = self.makeNoteCards(from: cards)
+        for noteCard in noteCards {
+            modifier.addNoteCard(noteCard)
+        }
+        
+        return modifier.modifiedObject
+    }
+    
     /// Make `NoteCard` objects from the given `PublicCard`.
     ///
     /// - Note: This also create tags and relationships.
@@ -180,7 +193,7 @@ extension ObjectMaker {
     /// - Parameter cards: The fully loaded public cards.
     ///
     /// - Returns: The made note cards with tags and relationships.
-    private func makeNoteCards(from cards: [PublicCard]) -> [NoteCard] {
+    func makeNoteCards(from cards: [PublicCard]) -> [NoteCard] {
         let tagMap = makeTagMap(from: cards)
         let cardMap = makeNoteCardMap(from: cards)
         
