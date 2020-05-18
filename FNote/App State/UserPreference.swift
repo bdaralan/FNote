@@ -41,11 +41,11 @@ class UserPreference: ObservableObject {
     
     var colorScheme: ColorScheme {
         set {
-            let store = BDSystemPersistentStore.userDefaults.store
+            let store = BDPersistStore.userDefaults.instance
             store.setValue(newValue.rawValue, forKey: Keys.colorScheme.prefixedKey)
         }
         get {
-            let store = BDSystemPersistentStore.userDefaults.store
+            let store = BDPersistStore.userDefaults.instance
             let defaultValue = ColorScheme.system
             let rawValue = store.getValue(forKey: Keys.colorScheme) as? Int ?? defaultValue.rawValue
             return ColorScheme(rawValue: rawValue) ?? defaultValue
@@ -57,11 +57,11 @@ class UserPreference: ObservableObject {
     
     var noteCardSortOption: NoteCard.SearchField {
         set {
-            let store = BDSystemPersistentStore.userDefaults.store
+            let store = BDPersistStore.userDefaults.instance
             store.setValue(newValue.rawValue, forKey: Keys.noteCardSortOption)
         }
         get {
-            let store = BDSystemPersistentStore.userDefaults.store
+            let store = BDPersistStore.userDefaults.instance
             let defaultValue = NoteCard.SearchField.translation.rawValue
             let rawValue = store.getValue(forKey: Keys.noteCardSortOption) as? String ?? defaultValue
             return NoteCard.SearchField(rawValue: rawValue)!
