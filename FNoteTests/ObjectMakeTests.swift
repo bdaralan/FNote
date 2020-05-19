@@ -7,14 +7,45 @@
 //
 
 import XCTest
+import CoreData
 @testable import FNote
 
 
 class ObjectMakeTests: XCTestCase {
+    
+    lazy var mockStore: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "FNote")
+        let storeDefaultUrl = NSPersistentContainer.defaultDirectoryURL()
+        let storeUrl = storeDefaultUrl.appendingPathComponent("mock.store")
+        let storeDescription = NSPersistentStoreDescription(url: storeUrl)
+        storeDescription.type = NSInMemoryStoreType
+        container.persistentStoreDescriptions = [storeDescription]
+        container.loadPersistentStores { description, error in
+            XCTAssertNil(error)
+        }
+        return container
+    }()
+    
+//    func testImportV1Collection() {
+//        let context = mockStore.viewContext.newChildContext()
+//
+//        let publicCollection = makeMockPublicCollection()
+//        let publicCards = makeMockPublicCards(collection: publicCollection)
+//
+//        let objectMaker = ObjectMaker(context: context)
+//        let collection = objectMaker.makeNoteCardCollection(name: "v1 collection", with: publicCards)
+//
+//        XCTAssertEqual(collection.name, "v1 collection")
+//
+//        collection.setValue(nil, forKey: "metadata")
+//        for noteCard in collection.noteCards {
+//            noteCard.setValue(nil, forKey: "metadata")
+//        }
+//    }
 
     func testImportPublicCollection() {
-        let importContext = CoreDataStack.current.mainContext.newChildContext()
-        let objectMaker = ObjectMaker(context: importContext)
+        let context = mockStore.viewContext.newChildContext()
+        let objectMaker = ObjectMaker(context: context)
         
         let publicCollection = makeMockPublicCollection()
         let publicCards = makeMockPublicCards(collection: publicCollection)
