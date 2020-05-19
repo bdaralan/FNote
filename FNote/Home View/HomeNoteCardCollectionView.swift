@@ -75,10 +75,8 @@ extension HomeNoteCardCollectionView {
         
         if let collection = appState.currentCollection {
             viewModel.selectedCollectionIDs = [collection.uuid]
-            viewModel.ignoreSelectionCollectionIDs = [collection.uuid]
         } else {
             viewModel.selectedCollectionIDs = []
-            viewModel.ignoreSelectionCollectionIDs = []
         }
     }
 }
@@ -99,8 +97,8 @@ extension HomeNoteCardCollectionView {
         viewModel.selectedCollectionIDs = [collection.uuid]
         viewModel.ignoreSelectionCollectionIDs = [collection.uuid]
         appState.setCurrentCollection(collection)
-        UISelectionFeedbackGenerator().selectionChanged()
         onSelected?(collection)
+        UISelectionFeedbackGenerator().selectionChanged()
     }
     
     func handleContextMenuSelected(_ menu: NoteCardCollectionCollectionViewModel.ContextMenu, collection: NoteCardCollection) {

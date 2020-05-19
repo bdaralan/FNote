@@ -26,6 +26,8 @@ struct NoteCardDetailPresenter: View {
     
     @State private var collectionViewModel: NoteCardCollectionCollectionViewModel?
     
+    @State private var noteCardCollectionViewModel: NoteCardCollectionViewModel?
+    
     
     var body: some View {
         Color.clear
@@ -46,6 +48,7 @@ extension NoteCardDetailPresenter {
         case edit(noteCard: NoteCard, completion: () -> Void)
         case create(noteCardIn: NoteCardCollection, completion: () -> Void)
         case allCollections(title: String, selectedID: String?, onSelected: ((NoteCardCollection) -> Void)?)
+        case noteCards([NoteCard], title: String)
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
@@ -84,6 +87,17 @@ extension NoteCardDetailPresenter {
                     .navigationBarTitle(Text(title), displayMode: .inline)
                     .navigationBarItems(trailing: dismissSheetNavItem())
             }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .eraseToAnyView()
+            
+        case .noteCards(_, let title):
+            return NavigationView {
+                CollectionViewWrapper(viewModel: noteCardCollectionViewModel!)
+                    .navigationBarTitle(Text(title), displayMode: .inline)
+                    .navigationBarItems(trailing: dismissSheetNavItem())
+                    .edgesIgnoringSafeArea(.all)
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
             .eraseToAnyView()
         }
     }
@@ -119,6 +133,9 @@ extension NoteCardDetailPresenter {
             
         case let .allCollections(_, selectedID, onSelected):
             setupAllCollectionViewModel(selectedID: selectedID, onSelected: onSelected)
+            
+        case let .noteCards(noteCards, _):
+            setupNoteCardCollectionViewModel(for: noteCards)
         }
         
         self.sheet.present(sheet)
@@ -152,6 +169,13 @@ extension NoteCardDetailPresenter {
         if let collectionID = selectedID {
             model.borderedCollectionIDs = [collectionID]
         }
+    }
+    
+    func setupNoteCardCollectionViewModel(for noteCards: [NoteCard]) {
+        noteCardCollectionViewModel = .init()
+        let model = noteCardCollectionViewModel!
+        model.noteCards = noteCards
+        model.cellStyle = .short
     }
 }
 

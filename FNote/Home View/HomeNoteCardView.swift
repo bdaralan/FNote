@@ -319,11 +319,11 @@ extension HomeNoteCardView {
     }
     
     func handleNoteCardCollectionSelected(_ collection: NoteCardCollection) {
-        viewModel.scrollToTop(animated: false)
-        
+        if collection !== appState.currentCollection {
+            viewModel.scrollToTop(animated: false)
+        }
         viewModel.noteCards = appState.currentNoteCards
         viewModel.updateSnapshot(animated: false)
-        
         trayViewModel.expanded = false
         sheet.dismiss()
     }

@@ -17,6 +17,7 @@ struct HomeSettingView: View {
     @State private var sheet = BDPresentationItem<Sheet>()
     
     @State private var archivesViewModel: NoteCardCollectionCollectionViewModel?
+    @State private var presenterViewModel: NoteCardDetailPresenterModel?
     
     
     var body: some View {
@@ -29,7 +30,7 @@ struct HomeSettingView: View {
                 .edgesIgnoringSafeArea(.all)
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        .sheet(item: $sheet.current, content: presentationSheet)
+        .sheet(item: $sheet.current, onDismiss: sheetDismissed, content: presentationSheet)
     }
 }
 
@@ -46,7 +47,11 @@ extension HomeSettingView {
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
         case .archives:
-            return UserArchivedDataView(collectionViewModel: archivesViewModel!)
+            return UserArchivedDataView(
+                collectionViewModel: archivesViewModel!,
+                onDone: { self.sheet.dismiss() }
+            )
+                .overlay(NoteCardDetailPresenter(viewModel: presenterViewModel!))
                 .eraseToAnyView()
         
         case .onboardView:
@@ -59,20 +64,60 @@ extension HomeSettingView {
         }
     }
     
+    func sheetDismissed() {
+        archivesViewModel = nil
+    }
+    
     func handleRowSelected(_ row: SettingViewController.Row) {
         switch row {
         case .welcome:
             sheet.present(.onboardView)
         
         case .archives:
-            let model = NoteCardCollectionCollectionViewModel()
-            archivesViewModel = model
-            model.collections = appState.fetchV1Collections()
+            setupArchivesViewModel()
             sheet.present(.archives)
         
         case .appearanceDark, .appearanceLight, .appearanceSystem: break
         case .markdownNoteToggle, .markdownSoftBreakToggle, .generalKeyboardUsage: break
         case .version: break
+        }
+    }
+    
+    func setupArchivesViewModel() {
+        archivesViewModel = .init()
+        presenterViewModel = .init(appState: appState)
+        
+        let archivesModel = archivesViewModel!
+        let presenterModel = presenterViewModel!
+        
+        archivesModel.collections = appState.fetchV1Collections()
+        archivesModel.contextMenus = [.delete, .importData]
+        
+        archivesModel.onContextMenuSelected = { menu, collection in
+            switch menu {
+            case .delete:
+                self.appState.objectWillChange.send()
+                archivesModel.collections.removeAll(where: { $0 === collection })
+                archivesModel.updateSnapshot(animated: true)
+                let modifier = ObjectModifier(.update(collection))
+                modifier.delete()
+                modifier.save()
+                
+            case .importData:
+                let importContext = self.appState.parentContext.newChildContext()
+                ObjectMaker.importV1Collections([collection], using: importContext, prefix: "[imported] ")
+                importContext.quickSave()
+                archivesModel.selectedCollectionIDs.insert(collection.uuid)
+                archivesModel.reloadVisibleCells()
+                
+            default:
+                fatalError("🧨 context menu \(menu) is not setup here 🧨")
+            }
+        }
+        
+        archivesModel.onCollectionSelected = { collection in
+            let noteCards = collection.noteCards.sorted(by: { $0.translation < $1.translation })
+            presenterModel.sheet = .noteCards(noteCards, title: collection.name)
         }
     }
 }

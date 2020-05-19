@@ -25,7 +25,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // setup app state
         appState.fetchCurrentNoteCards()
-//        appState.importArchivedCollectionIfAny()
         appState.lowercaseAllTagsIfAny()
         
         // setup window & home view

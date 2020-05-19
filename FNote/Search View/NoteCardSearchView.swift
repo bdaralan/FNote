@@ -83,7 +83,6 @@ extension NoteCardSearchView {
     
     func configureSearchTextField(_ textField: UITextField) {
         textField.font = .preferredFont(forTextStyle: .body)
-        textField.autocapitalizationType = .none // TODO: remove this on release
         textField.clearButtonMode = .always
     }
     

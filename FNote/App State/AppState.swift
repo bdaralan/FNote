@@ -149,7 +149,7 @@ extension AppState {
         guard isLowercasingTags == false else { return }
         isLowercasingTags = true
         
-        DispatchQueue.global(qos: .default).async {
+        DispatchQueue.global(qos: .utility).async {
             let renameContext = self.parentContext.newChildContext(type: .privateQueueConcurrencyType)
             let request = Tag.requestAllTags()
             let results = try? renameContext.fetch(request)
@@ -171,48 +171,6 @@ extension AppState {
                 renameContext.parent?.perform {
                     renameContext.parent?.quickSave()
                     self.isLowercasingTags = false
-                }
-            }
-        }
-    }
-    
-    func importArchivedCollectionIfAny() {
-        guard isImportingData == false else { return }
-        isImportingData = true
-        
-        DispatchQueue.global(qos: .default).async { [weak self] in
-            guard let self = self else { return }
-            let importContext = self.parentContext.newChildContext(type: .privateQueueConcurrencyType)
-            let request = NoteCardCollection.requestV1NoteCardCollections()
-            
-            guard let collections = try? importContext.fetch(request) else {
-                self.isImportingData = false
-                return
-            }
-            
-            guard collections.isEmpty == false else {
-                self.isImportingData = false
-                return
-            }
-            
-            ObjectMaker.importV1Collections(collections, using: importContext, prefix: "[V1] ")
-            
-            for collection in collections {
-                let collection = collection.get(from: importContext)
-                importContext.delete(collection)
-            }
-            
-            importContext.perform {
-                do {
-                    try importContext.save()
-                    self.parentContext.perform {
-                        self.parentContext.quickSave()
-                        self.isImportingData = false
-                    }
-                } catch {
-                    self.isImportingData = false
-                    print("⚠️ import data failed with error: \(error). ⚠️")
-                    print("⚠️ ignore the import and wait for future fix ⚠️")
                 }
             }
         }

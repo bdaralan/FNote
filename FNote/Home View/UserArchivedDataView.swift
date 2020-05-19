@@ -13,15 +13,19 @@ struct UserArchivedDataView: View {
     
     var collectionViewModel: NoteCardCollectionCollectionViewModel
     
+    var onDone: (() -> Void)?
+    
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                Text("description")
+                Text("These are previous version data that needed to be imported before they can be used.")
+                    .font(.callout)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .multilineTextAlignment(.leading)
                     .foregroundColor(.secondary)
                     .padding()
                 Divider()
+                
                 if collectionViewModel.collections.isEmpty {
                     VStack(spacing: 0) {
                         Spacer()
@@ -35,11 +39,25 @@ struct UserArchivedDataView: View {
                         Spacer()
                     }
                 } else {
+                    Text("Tap to view or Long Press to see import option")
+                        .font(.callout)
+                        .foregroundColor(.primary)
+                        .padding()
+                    Divider()
                     CollectionViewWrapper(viewModel: collectionViewModel)
                         .edgesIgnoringSafeArea(.all)
                 }
             }
-            .navigationBarTitle("Archives", displayMode: .inline)
+            .navigationBarTitle("Archived Collections", displayMode: .inline)
+            .navigationBarItems(trailing: doneNavItem)
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
+    }
+    
+    
+    var doneNavItem: some View {
+        Button(action: onDone ?? {}) {
+            Text("Done").bold()
         }
     }
 }
