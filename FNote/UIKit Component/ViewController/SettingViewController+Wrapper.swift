@@ -17,6 +17,7 @@ class SettingViewController: UITableViewController {
     let sections: [Section] = [
         .init(header: "APPEARANCE", footer: nil, rows: [.appearanceDark, .appearanceLight, .appearanceSystem]),
         .init(header: "CARD", footer: "If soft break is off, to create a new line, two return keys are required. Otherwise, the sentences continue", rows: [.generalKeyboardUsage, .markdownNoteToggle, .markdownSoftBreakToggle]),
+        .init(header: "Data", footer: nil, rows: [.archives]),
         .init(header: "ABOUT", footer: nil, rows: [.version, .welcome])
     ]
     
@@ -69,6 +70,14 @@ class SettingViewController: UITableViewController {
         cell.useToggle(true)
         cell.onLayoutSubviews = cell.applyRowStyle
         cell.selectionStyle = .none
+        return cell
+    }()
+    
+    let archiveCell: StaticTableViewCell = {
+        let cell = StaticTableViewCell(style: .value1)
+        cell.textLabel?.text = "Archives"
+        cell.detailTextLabel?.text = "previous version data"
+        cell.onLayoutSubviews = cell.applyInsetSelectionRowStyle
         return cell
     }()
     
@@ -150,6 +159,7 @@ extension SettingViewController {
         case .generalKeyboardUsage: return generalKeyboardToggleCell
         case .markdownNoteToggle: return markdownNoteToggleCell
         case .markdownSoftBreakToggle: return markdownSoftBreakToggleCell
+        case .archives: return archiveCell
         case .version: return versionCell
         case .welcome: return welcomeCell
         }
@@ -186,7 +196,9 @@ extension SettingViewController {
         case .welcome:
             selectionHaptic.selectionChanged()
             
-        case .generalKeyboardUsage, .markdownNoteToggle, .markdownSoftBreakToggle, .version: break
+        case .generalKeyboardUsage, .markdownNoteToggle, .markdownSoftBreakToggle: break
+        
+        case .archives, .version: break
         }
         
         onRowSelected?(row)
@@ -270,6 +282,8 @@ extension SettingViewController {
         case markdownSoftBreakToggle
         
         case generalKeyboardUsage
+        
+        case archives
         
         case version
         case welcome
