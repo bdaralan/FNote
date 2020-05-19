@@ -120,7 +120,7 @@ extension HomeView {
         history.updateLastToken(newHistoryToken)
         
         // import old data if any
-        appState.importArchivedCollectionIfAny()
+//        appState.importArchivedCollectionIfAny()
         
         // lowercase tags if nay
         appState.lowercaseAllTagsIfAny()
