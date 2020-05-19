@@ -19,6 +19,12 @@ class Tag: NSManagedObject {
     @NSManaged fileprivate(set) var name: String
     @NSManaged fileprivate(set) var noteCards: Set<NoteCard>
     
+    @NSManaged private var color: Int64
+    
+    var colorOption: ColorOption {
+        set { color = newValue.rawValue }
+        get { ColorOption(rawValue: color) ?? .gray }
+    }
     
     override func awakeFromInsert() {
         super.awakeFromInsert()
@@ -59,5 +65,10 @@ extension ObjectModifier where Object == Tag {
     var name: String {
         set { modifiedObject.name = newValue.trimmed().lowercased() }
         get { modifiedObject.name }
+    }
+    
+    var color: Tag.ColorOption {
+        set { modifiedObject.colorOption = newValue }
+        get { modifiedObject.colorOption }
     }
 }

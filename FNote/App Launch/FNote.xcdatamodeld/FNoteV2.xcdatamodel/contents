@@ -34,6 +34,7 @@
         <relationship name="targets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NoteCard" inverseName="linkerTargets" inverseEntity="NoteCard"/>
     </entity>
     <entity name="Tag" representedClassName=".Tag" syncable="YES">
+        <attribute name="color" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString=""/>
         <attribute name="uuid" optional="YES" attributeType="String"/>
         <relationship name="metadata" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Metadata" inverseName="tag" inverseEntity="Metadata"/>
@@ -44,6 +45,6 @@
         <element name="NoteCard" positionX="-63" positionY="-18" width="128" height="223"/>
         <element name="NoteCardCollection" positionX="-54" positionY="27" width="128" height="103"/>
         <element name="NoteCardLinker" positionX="-36" positionY="72" width="128" height="88"/>
-        <element name="Tag" positionX="-36" positionY="36" width="128" height="103"/>
+        <element name="Tag" positionX="-36" positionY="36" width="128" height="118"/>
     </elements>
 </model>

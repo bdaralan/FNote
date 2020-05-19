@@ -68,6 +68,7 @@ extension ObjectMigrationPolicyV1V2 {
     func handleCreateTagRelationships(dInstance: NSManagedObject, mapping: NSEntityMapping, manager: NSMigrationManager) {
         // assign metadata
         createMetadata(for: dInstance, in: manager.destinationContext)
+        dInstance.setValue(0, forKey: "color")
     }
     
     

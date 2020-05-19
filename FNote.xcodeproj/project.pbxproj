@@ -38,6 +38,9 @@
 		B44E786C23DCAA7700428D4A /* SearchFieldCollectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44E786B23DCAA7700428D4A /* SearchFieldCollectionHeader.swift */; };
 		B44E787023DE774600428D4A /* UICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44E786F23DE774600428D4A /* UICollectionView.swift */; };
 		B44FB93D24736E49007D2D31 /* UserArchivedDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44FB93C24736E49007D2D31 /* UserArchivedDataView.swift */; };
+		B44FB95F24745C8A007D2D31 /* NoteCard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44FB95E24745C89007D2D31 /* NoteCard+Extension.swift */; };
+		B44FB96124745CAA007D2D31 /* Tag+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44FB96024745CAA007D2D31 /* Tag+Extension.swift */; };
+		B44FB96324745EF9007D2D31 /* MigrationPolicyV1V2.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = B44FB96224745EF9007D2D31 /* MigrationPolicyV1V2.xcmappingmodel */; };
 		B4535C082403474900090313 /* PublicRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4535C072403474900090313 /* PublicRecord.swift */; };
 		B46723CF24627576003EECD1 /* ObjectMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46723CE24627576003EECD1 /* ObjectMaker.swift */; };
 		B46723D1246361E2003EECD1 /* SFSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46723D0246361E2003EECD1 /* SFSymbol.swift */; };
@@ -85,7 +88,6 @@
 		B4AB8FD3246E13E900743480 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AB8FCF246E13E900743480 /* Metadata.swift */; };
 		B4AB8FD5246E13E900743480 /* NoteCardLinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AB8FD1246E13E900743480 /* NoteCardLinker.swift */; };
 		B4AB8FD8246E168800743480 /* ObjectMigrationPolicyV1V2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AB8FD7246E168800743480 /* ObjectMigrationPolicyV1V2.swift */; };
-		B4AB8FDA246E1E5800743480 /* MigrationPolicyV1V2.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = B4AB8FD9246E1E5800743480 /* MigrationPolicyV1V2.xcmappingmodel */; };
 		B4AFD4522360B1B3004BAA9B /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AFD4512360B1B3004BAA9B /* CloudKit.framework */; };
 		B4B07063245E8210009E05F7 /* PublicCollectionDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B07062245E8210009E05F7 /* PublicCollectionDetailViewModel.swift */; };
 		B4B07065245E86D0009E05F7 /* PublicCollectionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B07064245E86D0009E05F7 /* PublicCollectionDetailView.swift */; };
@@ -167,6 +169,9 @@
 		B44E786B23DCAA7700428D4A /* SearchFieldCollectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFieldCollectionHeader.swift; sourceTree = "<group>"; };
 		B44E786F23DE774600428D4A /* UICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionView.swift; sourceTree = "<group>"; };
 		B44FB93C24736E49007D2D31 /* UserArchivedDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserArchivedDataView.swift; sourceTree = "<group>"; };
+		B44FB95E24745C89007D2D31 /* NoteCard+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteCard+Extension.swift"; sourceTree = "<group>"; };
+		B44FB96024745CAA007D2D31 /* Tag+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tag+Extension.swift"; sourceTree = "<group>"; };
+		B44FB96224745EF9007D2D31 /* MigrationPolicyV1V2.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = MigrationPolicyV1V2.xcmappingmodel; sourceTree = "<group>"; };
 		B4535C072403474900090313 /* PublicRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicRecord.swift; sourceTree = "<group>"; };
 		B46723CE24627576003EECD1 /* ObjectMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectMaker.swift; sourceTree = "<group>"; };
 		B46723D0246361E2003EECD1 /* SFSymbol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbol.swift; sourceTree = "<group>"; };
@@ -214,7 +219,6 @@
 		B4AB8FCF246E13E900743480 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Metadata.swift; path = "FNote/CoreData Model/Metadata.swift"; sourceTree = SOURCE_ROOT; };
 		B4AB8FD1246E13E900743480 /* NoteCardLinker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCardLinker.swift; sourceTree = SOURCE_ROOT; };
 		B4AB8FD7246E168800743480 /* ObjectMigrationPolicyV1V2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectMigrationPolicyV1V2.swift; sourceTree = "<group>"; };
-		B4AB8FD9246E1E5800743480 /* MigrationPolicyV1V2.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = MigrationPolicyV1V2.xcmappingmodel; sourceTree = "<group>"; };
 		B4AFD44F2360B1A8004BAA9B /* FNote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FNote.entitlements; sourceTree = "<group>"; };
 		B4AFD4512360B1B3004BAA9B /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B4B07062245E8210009E05F7 /* PublicCollectionDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicCollectionDetailViewModel.swift; sourceTree = "<group>"; };
@@ -351,9 +355,11 @@
 			children = (
 				B4AB8FCF246E13E900743480 /* Metadata.swift */,
 				B4BAC5342320405B007EAF15 /* NoteCard.swift */,
+				B44FB95E24745C89007D2D31 /* NoteCard+Extension.swift */,
 				B4AB8FD1246E13E900743480 /* NoteCardLinker.swift */,
 				B4BAC5362320405B007EAF15 /* NoteCardCollection.swift */,
 				B4BAC5382320405B007EAF15 /* Tag.swift */,
+				B44FB96024745CAA007D2D31 /* Tag+Extension.swift */,
 				B49A14062454705200AA1BF5 /* ObjectModifier.swift */,
 				B46723CE24627576003EECD1 /* ObjectMaker.swift */,
 				B4AB8FD7246E168800743480 /* ObjectMigrationPolicyV1V2.swift */,
@@ -427,7 +433,7 @@
 				B4BB117223145DC400A380AA /* SceneDelegate.swift */,
 				B4BB117E23145DC600A380AA /* LaunchScreen.storyboard */,
 				B4BB117423145DC400A380AA /* FNote.xcdatamodeld */,
-				B4AB8FD9246E1E5800743480 /* MigrationPolicyV1V2.xcmappingmodel */,
+				B44FB96224745EF9007D2D31 /* MigrationPolicyV1V2.xcmappingmodel */,
 			);
 			path = "App Launch";
 			sourceTree = "<group>";
@@ -748,6 +754,7 @@
 				B43B715823FB3D13002C8A1A /* OnboardViewControllerWrapper.swift in Sources */,
 				B496F256244E03910039FF6A /* PublicUserView.swift in Sources */,
 				B46F6A9F241F103600DCAF6E /* ActionCollectionViewCell.swift in Sources */,
+				B44FB96124745CAA007D2D31 /* Tag+Extension.swift in Sources */,
 				B47F128D24539C280013B883 /* PublicRecordSearchCollectionViewModel.swift in Sources */,
 				B420059B23F6433E008F5E63 /* OnboardCollectionViewModel.swift in Sources */,
 				B4816A6923D8D73C006485F7 /* AppState.swift in Sources */,
@@ -798,6 +805,7 @@
 				B4DD491F238A5ED300D183CF /* WelcomeGuideView.swift in Sources */,
 				650D14E92332B96100B6E2BF /* View.swift in Sources */,
 				B4E8811A23FF8E0600F475CE /* PublicCard.swift in Sources */,
+				B44FB96324745EF9007D2D31 /* MigrationPolicyV1V2.xcmappingmodel in Sources */,
 				B4B3C3A124257EBC0041515E /* OverlayView.swift in Sources */,
 				B46723D1246361E2003EECD1 /* SFSymbol.swift in Sources */,
 				B448744623DEB578005EBA45 /* TagCell.swift in Sources */,
@@ -818,7 +826,6 @@
 				B48C1A772467876B008523E6 /* NoteCardDetailPresenterModel.swift in Sources */,
 				B49C4C6A23D628760030D9B2 /* HomeView.swift in Sources */,
 				B476FE24241C6EAB0006A196 /* InsetRowStyle.swift in Sources */,
-				B4AB8FDA246E1E5800743480 /* MigrationPolicyV1V2.xcmappingmodel in Sources */,
 				B4BBDBDB23E4CD8000A0AEA1 /* ManagedObjectCollectionViewCell.swift in Sources */,
 				B4EC398123DB7AD90011569C /* Alert.swift in Sources */,
 				B48C1A752466D472008523E6 /* NoteCardDetailPresenter.swift in Sources */,
@@ -841,6 +848,7 @@
 				B4BAC53E2320405B007EAF15 /* Tag.swift in Sources */,
 				B49796EA23F78CF00035DF63 /* PageControlWrapper.swift in Sources */,
 				B46D813524273ED300FABD33 /* PublishCollectionViewController + Wrapper.swift in Sources */,
+				B44FB95F24745C8A007D2D31 /* NoteCard+Extension.swift in Sources */,
 				B448744823DEB73A005EBA45 /* TagCollectionViewModel.swift in Sources */,
 				B4BB117323145DC400A380AA /* SceneDelegate.swift in Sources */,
 				B44625FC23E3DE2D00B43526 /* UserPreference.swift in Sources */,
