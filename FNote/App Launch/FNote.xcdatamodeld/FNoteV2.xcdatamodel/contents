@@ -17,7 +17,7 @@
         <attribute name="uuid" optional="YES" attributeType="String"/>
         <relationship name="collection" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NoteCardCollection" inverseName="noteCards" inverseEntity="NoteCardCollection"/>
         <relationship name="linker" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="NoteCardLinker" inverseName="source" inverseEntity="NoteCardLinker"/>
-        <relationship name="linkerTargets" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="NoteCardLinker" inverseName="targets" inverseEntity="NoteCardLinker"/>
+        <relationship name="linkerTargets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NoteCardLinker" inverseName="targets" inverseEntity="NoteCardLinker"/>
         <relationship name="metadata" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Metadata" inverseName="card" inverseEntity="Metadata"/>
         <relationship name="relationships" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NoteCard" inverseName="relationships" inverseEntity="NoteCard"/>
         <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tag" inverseName="noteCards" inverseEntity="Tag"/>
@@ -40,10 +40,10 @@
         <relationship name="noteCards" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NoteCard" inverseName="tags" inverseEntity="NoteCard"/>
     </entity>
     <elements>
+        <element name="Metadata" positionX="-45" positionY="63" width="128" height="133"/>
         <element name="NoteCard" positionX="-63" positionY="-18" width="128" height="223"/>
         <element name="NoteCardCollection" positionX="-54" positionY="27" width="128" height="103"/>
-        <element name="Tag" positionX="-36" positionY="36" width="128" height="103"/>
-        <element name="Metadata" positionX="-45" positionY="63" width="128" height="133"/>
         <element name="NoteCardLinker" positionX="-36" positionY="72" width="128" height="88"/>
+        <element name="Tag" positionX="-36" positionY="36" width="128" height="103"/>
     </elements>
 </model>
