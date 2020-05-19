@@ -37,6 +37,7 @@
 		B448744A23DEC1B9005EBA45 /* CollectionHeaderLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B448744923DEC1B9005EBA45 /* CollectionHeaderLabel.swift */; };
 		B44E786C23DCAA7700428D4A /* SearchFieldCollectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44E786B23DCAA7700428D4A /* SearchFieldCollectionHeader.swift */; };
 		B44E787023DE774600428D4A /* UICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44E786F23DE774600428D4A /* UICollectionView.swift */; };
+		B44FB93D24736E49007D2D31 /* UserArchivedDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44FB93C24736E49007D2D31 /* UserArchivedDataView.swift */; };
 		B4535C082403474900090313 /* PublicRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4535C072403474900090313 /* PublicRecord.swift */; };
 		B46723CF24627576003EECD1 /* ObjectMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46723CE24627576003EECD1 /* ObjectMaker.swift */; };
 		B46723D1246361E2003EECD1 /* SFSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46723D0246361E2003EECD1 /* SFSymbol.swift */; };
@@ -165,6 +166,7 @@
 		B448744923DEC1B9005EBA45 /* CollectionHeaderLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionHeaderLabel.swift; sourceTree = "<group>"; };
 		B44E786B23DCAA7700428D4A /* SearchFieldCollectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFieldCollectionHeader.swift; sourceTree = "<group>"; };
 		B44E786F23DE774600428D4A /* UICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionView.swift; sourceTree = "<group>"; };
+		B44FB93C24736E49007D2D31 /* UserArchivedDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserArchivedDataView.swift; sourceTree = "<group>"; };
 		B4535C072403474900090313 /* PublicRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicRecord.swift; sourceTree = "<group>"; };
 		B46723CE24627576003EECD1 /* ObjectMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectMaker.swift; sourceTree = "<group>"; };
 		B46723D0246361E2003EECD1 /* SFSymbol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbol.swift; sourceTree = "<group>"; };
@@ -448,6 +450,7 @@
 				B40056EF23D6C26500997216 /* HomeTagView.swift */,
 				B4828F342409BDF100389EB1 /* HomeCommunityView.swift */,
 				B4BBDBEA23E4D79B00A0AEA1 /* HomeSettingView.swift */,
+				B44FB93C24736E49007D2D31 /* UserArchivedDataView.swift */,
 			);
 			path = "Home View";
 			sourceTree = "<group>";
@@ -807,6 +810,7 @@
 				B42BC61D2410B159000F2BA7 /* PublicUser.swift in Sources */,
 				B499A35C2326D988002D16A0 /* CoreDataStack.swift in Sources */,
 				B476FE22241C6A3B0006A196 /* ScrollViewSection.swift in Sources */,
+				B44FB93D24736E49007D2D31 /* UserArchivedDataView.swift in Sources */,
 				B4BAC54523206B28007EAF15 /* String.swift in Sources */,
 				B4AB8FD5246E13E900743480 /* NoteCardLinker.swift in Sources */,
 				B4BB117123145DC400A380AA /* AppDelegate.swift in Sources */,

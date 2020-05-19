@@ -12,14 +12,19 @@ import BDUIKnit
 
 struct HomeSettingView: View {
     
-    @ObservedObject var preference: UserPreference
+    @ObservedObject var appState: AppState
     
     @State private var sheet = BDPresentationItem<Sheet>()
+    
+    @State private var archivesViewModel: NoteCardCollectionCollectionViewModel?
     
     
     var body: some View {
         NavigationView {
-            SettingViewControllerWrapper(preference: preference, onRowSelected: handleRowSelected)
+            SettingViewControllerWrapper(
+                preference: appState.preference,
+                onRowSelected: handleRowSelected
+            )
                 .navigationBarTitle("Settings", displayMode: .large)
                 .edgesIgnoringSafeArea(.all)
         }
@@ -35,13 +40,21 @@ extension HomeSettingView {
     
     enum Sheet: BDPresentationSheetItem {
         case onboardView
+        case archives
     }
     
     func presentationSheet(for sheet: Sheet) -> some View {
         switch sheet {
+        case .archives:
+            return UserArchivedDataView(collectionViewModel: archivesViewModel!)
+                .eraseToAnyView()
+        
         case .onboardView:
-            let done = { self.sheet.dismiss() }
-            return OnboardView(viewModel: .init(), alwaysShowXButton: true, onDismiss: done)
+            return OnboardView(
+                viewModel: .init(),
+                alwaysShowXButton: true,
+                onDismiss: { self.sheet.dismiss() }
+            )
                 .eraseToAnyView()
         }
     }
@@ -51,18 +64,26 @@ extension HomeSettingView {
         case .welcome:
             sheet.present(.onboardView)
         
-        default: break
+        case .archives:
+            let model = NoteCardCollectionCollectionViewModel()
+            archivesViewModel = model
+            model.collections = appState.fetchV1Collections()
+            sheet.present(.archives)
+        
+        case .appearanceDark, .appearanceLight, .appearanceSystem: break
+        case .markdownNoteToggle, .markdownSoftBreakToggle, .generalKeyboardUsage: break
+        case .version: break
         }
     }
 }
 
 
 struct HomeSettingView_Previews: PreviewProvider {
-    static let preference = UserPreference.sample
+    static let appState = AppState(parentContext: .sample)
     static var previews: some View {
         Group {
-            HomeSettingView(preference: preference).colorScheme(.light)
-            HomeSettingView(preference: preference).colorScheme(.dark)
+            HomeSettingView(appState: appState).colorScheme(.light)
+            HomeSettingView(appState: appState).colorScheme(.dark)
         }
     }
 }

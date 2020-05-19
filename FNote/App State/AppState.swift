@@ -125,6 +125,12 @@ extension AppState {
     func fetchTags() {
         try? tagFetchController.performFetch()
     }
+    
+    func fetchV1Collections() -> [NoteCardCollection] {
+        let request = NoteCardCollection.requestV1NoteCardCollections()
+        let results = try? parentContext.fetch(request)
+        return results ?? []
+    }
 }
 
 
