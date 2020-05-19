@@ -19,7 +19,7 @@ struct UserArchivedDataView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                Text("These are previous version data that needed to be imported before they can be used.")
+                Text("These are previous version data. If they have not been automatically imported, you can import them manually.")
                     .font(.callout)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .foregroundColor(.secondary)

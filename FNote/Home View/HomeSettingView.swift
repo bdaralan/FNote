@@ -19,6 +19,9 @@ struct HomeSettingView: View {
     @State private var archivesViewModel: NoteCardCollectionCollectionViewModel?
     @State private var presenterViewModel: NoteCardDetailPresenterModel?
     
+    @State private var archivesAlert: Alert?
+    @State private var showArchiesAlert = false
+    
     
     var body: some View {
         NavigationView {
@@ -52,6 +55,7 @@ extension HomeSettingView {
                 onDone: { self.sheet.dismiss() }
             )
                 .overlay(NoteCardDetailPresenter(viewModel: presenterViewModel!))
+                .alert(isPresented: $showArchiesAlert, content: { self.archivesAlert! })
                 .eraseToAnyView()
         
         case .onboardView:
@@ -96,20 +100,9 @@ extension HomeSettingView {
         archivesModel.onContextMenuSelected = { menu, collection in
             switch menu {
             case .delete:
-                self.appState.objectWillChange.send()
-                archivesModel.collections.removeAll(where: { $0 === collection })
-                archivesModel.updateSnapshot(animated: true)
-                let modifier = ObjectModifier(.update(collection))
-                modifier.delete()
-                modifier.save()
-                
+                self.beginDelete(archivedCollection: collection)
             case .importData:
-                let importContext = self.appState.parentContext.newChildContext()
-                ObjectMaker.importV1Collections([collection], using: importContext, prefix: "[imported] ")
-                importContext.quickSave()
-                archivesModel.selectedCollectionIDs.insert(collection.uuid)
-                archivesModel.reloadVisibleCells()
-                
+                self.beginImport(archivedCollection: collection)
             default:
                 fatalError("🧨 context menu \(menu) is not setup here 🧨")
             }
@@ -119,6 +112,33 @@ extension HomeSettingView {
             let noteCards = collection.noteCards.sorted(by: { $0.translation < $1.translation })
             presenterModel.sheet = .noteCards(noteCards, title: collection.name)
         }
+    }
+    
+    func beginDelete(archivedCollection: NoteCardCollection) {
+        guard let archivesModel = archivesViewModel else {
+            fatalError("🧨 call beginDeleteArchived without setup archivesViewModel 🧨")
+        }
+        archivesAlert = Alert.DeleteNoteCardCollection(archivedCollection, onCancel: nil) {
+            self.appState.objectWillChange.send()
+            archivesModel.collections.removeAll(where: { $0 === archivedCollection })
+            archivesModel.updateSnapshot(animated: true)
+            let modifier = ObjectModifier(.update(archivedCollection))
+            modifier.delete()
+            modifier.save()
+        }
+        showArchiesAlert = true
+    }
+    
+    func beginImport(archivedCollection: NoteCardCollection) {
+        guard let archivesModel = archivesViewModel else {
+            fatalError("🧨 call beginDeleteArchived without setup archivesViewModel 🧨")
+        }
+        let importContext = appState.parentContext.newChildContext()
+        let collections = [archivedCollection]
+        ObjectMaker.importV1Collections(collections, using: importContext, prefix: "[imported] ")
+        importContext.quickSave()
+        archivesModel.selectedCollectionIDs.insert(archivedCollection.uuid)
+        archivesModel.reloadVisibleCells()
     }
 }
 

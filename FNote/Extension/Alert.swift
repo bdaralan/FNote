@@ -24,7 +24,7 @@ extension Alert {
         let countUnit = cardCount == 1 ? "card" : "cards"
         let title = Text("Delete Collection")
         let message = Text("Delete '\(collection.name)' with \(cardCount) \(countUnit).")
-        let cancel = Alert.Button.cancel(onCancel)
+        let cancel = Alert.Button.cancel(onCancel ?? {})
         let delete = Alert.Button.destructive(Text("Delete"), action: onDelete)
         return Alert(title: title, message: message, primaryButton: cancel, secondaryButton: delete)
     }
